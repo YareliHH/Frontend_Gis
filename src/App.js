@@ -1,25 +1,29 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+//compartidos
+import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
+import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
+import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
+import PaginaCliente from './Componentes/Inicio/PaginaCliente';
 
-function App() {
+//inicio
+import Registro from './Componentes/Inicio/registo.jsx';
+import Login from './Componentes/Inicio/login.jsx';
+
+const App = () => {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
+        <Route path="admin" element={<LayoutEncabezado><PaginaAdministrativa/></LayoutEncabezado>} />
+        <Route path="/cliente" element={<LayoutEncabezado><PaginaCliente /></LayoutEncabezado>} />
+        <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
+        <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
+
+        
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;
