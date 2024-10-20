@@ -17,16 +17,34 @@ const Registro = () => {
 
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
-  const [passwordMatchError, setPasswordMatchError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [passwordMatchError, setPasswordMatchError] = useState('');
   const [isPasswordSafe, setIsPasswordSafe] = useState(false);
-  const [mensaje, setMensaje] = useState('');
+  const [isPasswordFiltered, setIsPasswordFiltered] = useState(false);
 
-  const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
-  const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
-  const phoneRegex = /^[0-9]{10}$/;
+  const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // validar nombres
+  const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/; // validar correos electrónicos
+  const phoneRegex = /^[0-9]{10}$/; // validar teléfonos
 
+  // Verificar reglas de la contraseña
+  const checkPasswordRules = (password) => {
+    const errors = [];
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasMinLength = password.length >= 8;
+    const noRepeatingChars = !/(.)\1{2}/.test(password);
+
+    if (!hasUpperCase) errors.push('Debe tener al menos una letra mayúscula.');
+    if (!hasNumber) errors.push('Debe tener al menos un número.');
+    if (!hasSpecialChar) errors.push('Debe tener al menos un símbolo especial.');
+    if (!hasMinLength) errors.push('Debe tener más de 8 caracteres.');
+    if (!noRepeatingChars) errors.push('No puede tener más de 3 letras seguidas iguales.');
+
+    return errors;
+  };
+
+  // Verificar si la contraseña ha sido filtrada
   const checkPasswordSafety = async (password) => {
     setIsLoading(true);
     try {
@@ -40,9 +58,11 @@ const Registro = () => {
       if (hashes.includes(suffix.toUpperCase())) {
         setPasswordError('Contraseña insegura: ha sido filtrada en brechas de datos.');
         setIsPasswordSafe(false);
+        setIsPasswordFiltered(true);
       } else {
         setPasswordError('');
         setIsPasswordSafe(true);
+        setIsPasswordFiltered(false);
       }
     } catch (error) {
       console.error('Error al verificar la contraseña:', error);
@@ -52,22 +72,7 @@ const Registro = () => {
     }
   };
 
-  const evaluatePasswordStrength = (password) => {
-    const hasUpperCase = /[A-Z]/.test(password);
-    const hasLowerCase = /[a-z]/.test(password);
-    const hasNumber = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    const isLongEnough = password.length >= 8;
-
-    if (isLongEnough && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar) {
-      setPasswordStrength('Fuerte');
-    } else if (isLongEnough && (hasUpperCase || hasLowerCase) && (hasNumber || hasSpecialChar)) {
-      setPasswordStrength('Moderada');
-    } else {
-      setPasswordStrength('Débil');
-    }
-  };
-
+  // Manejo de cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     const trimmedValue = value.trim();
@@ -76,13 +81,56 @@ const Registro = () => {
       [name]: trimmedValue,
     });
 
+    // Validaciones en tiempo real
+    const newErrors = { ...errors }; // Copia de los errores actuales
+
+    // Validación del nombre
+    if (name === 'nombre' && !nameRegex.test(trimmedValue)) {
+      newErrors.nombre = 'El nombre debe contener solo letras.';
+    } else {
+      delete newErrors.nombre;
+    }
+
+    // Validación del apellido paterno
+    if (name === 'apellidoPaterno' && !nameRegex.test(trimmedValue)) {
+      newErrors.apellidoPaterno = 'El apellido paterno debe contener solo letras.';
+    } else {
+      delete newErrors.apellidoPaterno;
+    }
+
+    // Validación del apellido materno
+    if (name === 'apellidoMaterno' && !nameRegex.test(trimmedValue)) {
+      newErrors.apellidoMaterno = 'El apellido materno debe contener solo letras.';
+    } else {
+      delete newErrors.apellidoMaterno;
+    }
+
+    // Validación del correo
+    if (name === 'correo' && !emailRegex.test(trimmedValue)) {
+      newErrors.correo = 'El correo electrónico no es válido.';
+    } else {
+      delete newErrors.correo;
+    }
+
+    // Validación del teléfono
+    if (name === 'telefono' && !phoneRegex.test(trimmedValue)) {
+      newErrors.telefono = 'El teléfono debe contener 10 dígitos numéricos.';
+    } else {
+      delete newErrors.telefono;
+    }
+
+    // Validación de la contraseña
     if (name === 'password') {
-      if (trimmedValue.length >= 8) {
-        checkPasswordSafety(trimmedValue);
-        evaluatePasswordStrength(trimmedValue);
+      const passwordErrors = checkPasswordRules(trimmedValue);
+      if (passwordErrors.length > 0) {
+        setPasswordError(passwordErrors.join(' '));
+      } else {
+        setPasswordError('');
+        checkPasswordSafety(trimmedValue); // Verificar seguridad de la contraseña
       }
     }
 
+    // Validación de la confirmación de contraseña
     if (name === 'confirmPassword') {
       if (trimmedValue !== formData.password) {
         setPasswordMatchError('Las contraseñas no coinciden.');
@@ -90,28 +138,40 @@ const Registro = () => {
         setPasswordMatchError('');
       }
     }
+
+    setErrors(newErrors); // Actualizar los errores en el estado
   };
 
+  // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (passwordError || passwordMatchError) {
-      return;
+    // Validación final antes de enviar
+    if (Object.keys(errors).length > 0) {
+      return; // Detener el envío si hay errores
     }
 
+    // Verificación de correo electrónico
     try {
       const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
       if (correoResponse.data.exists) {
-        setMensaje('El correo ya está registrado. Intenta con otro.');
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          correo: 'El correo ya está registrado. Intenta con otro.',
+        }));
         return;
       }
     } catch (error) {
-      setMensaje('Error al verificar el correo.');
+      console.error('Error al verificar el correo:', error);
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        correo: 'Error al verificar el correo.',
+      }));
       return;
     }
 
+    // Encriptación de la contraseña
     const hashedPassword = CryptoJS.SHA256(formData.password).toString();
-
     const registroData = {
       ...formData,
       password: hashedPassword,
@@ -119,25 +179,17 @@ const Registro = () => {
 
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
-      setMensaje('Usuario registrado exitosamente');
+      setErrors({ success: 'Usuario registrado exitosamente' });
+      console.log(response.data);
     } catch (error) {
       console.error('Error al registrar usuario:', error);
-      setMensaje('Error al registrar usuario');
+      setErrors({ server: 'Error al registrar usuario' });
     }
   };
 
   return (
     <Container maxWidth="sm">
-      <Box 
-        sx={{ 
-          padding: 4, 
-          backgroundColor: '#f9f9f9', 
-          borderRadius: 2, 
-          boxShadow: 3, 
-          marginTop: 4, 
-          marginBottom: 4 
-        }}
-      >
+      <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Registro de Usuario
         </Typography>
@@ -204,7 +256,6 @@ const Registro = () => {
               <TextField
                 fullWidth
                 label="Correo Electrónico"
-                type="email"
                 name="correo"
                 value={formData.correo}
                 onChange={handleChange}
@@ -243,8 +294,8 @@ const Registro = () => {
               <TextField
                 fullWidth
                 label="Contraseña"
-                type="password"
                 name="password"
+                type="password"
                 value={formData.password}
                 onChange={handleChange}
                 InputProps={{
@@ -258,43 +309,41 @@ const Registro = () => {
                 error={!!passwordError}
                 helperText={passwordError}
               />
-              <Typography variant="body2" color={passwordStrength === 'Débil' ? 'error' : passwordStrength === 'Moderada' ? 'warning' : 'success'} align="left" sx={{ marginTop: 1 }}>
-                Fortaleza de la contraseña: {passwordStrength}
-              </Typography>
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Confirmar Contraseña"
-                type="password"
                 name="confirmPassword"
+                type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock />
-                    </InputAdornment>
-                  ),
-                }}
                 required
                 error={!!passwordMatchError}
                 helperText={passwordMatchError}
               />
             </Grid>
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" fullWidth color="primary" disabled={isLoading || !isPasswordSafe}>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
                 Registrar
               </Button>
             </Grid>
+            {errors.success && (
+              <Grid item xs={12}>
+                <Typography color="success.main" variant="body1" align="center">
+                  {errors.success}
+                </Typography>
+              </Grid>
+            )}
+            {errors.server && (
+              <Grid item xs={12}>
+                <Typography color="error.main" variant="body1" align="center">
+                  {errors.server}
+                </Typography>
+              </Grid>
+            )}
           </Grid>
         </form>
-
-        {mensaje && (
-          <Typography variant="body1" color={mensaje.includes('Error') ? 'error' : 'primary'} align="center" sx={{ marginTop: 2 }}>
-            {mensaje}
-          </Typography>
-        )}
       </Box>
     </Container>
   );
