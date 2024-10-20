@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress } from '@mui/material';
-import { Person, Email, Phone, Lock, AccountBox } from '@mui/icons-material';
+import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
+import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
@@ -21,7 +21,9 @@ const Registro = () => {
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [isPasswordSafe, setIsPasswordSafe] = useState(false);
   const [isPasswordFiltered, setIsPasswordFiltered] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState(0); // Estado para el medidor de fortaleza
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
@@ -29,7 +31,7 @@ const Registro = () => {
 
   const checkPasswordRules = (password) => {
     const errors = [];
-    let strength = 0; // Medidor de fortaleza
+    let strength = 0;
 
     const hasUpperCase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
@@ -43,14 +45,13 @@ const Registro = () => {
     if (!hasMinLength) errors.push('Debe tener más de 8 caracteres.');
     if (!noRepeatingChars) errors.push('No puede tener más de 3 letras seguidas iguales.');
 
-    // Incrementar fortaleza de acuerdo a las reglas cumplidas
     if (hasUpperCase) strength += 20;
     if (hasNumber) strength += 20;
     if (hasSpecialChar) strength += 20;
     if (hasMinLength) strength += 20;
     if (noRepeatingChars) strength += 20;
 
-    setPasswordStrength(strength); // Actualizar la fortaleza de la contraseña
+    setPasswordStrength(strength);
 
     return errors;
   };
@@ -286,7 +287,7 @@ const Registro = () => {
                 error={!!errors.telefono}
                 helperText={errors.telefono}
               />
-           </Grid>
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -304,11 +305,10 @@ const Registro = () => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label="toggle password visibility"
                         onClick={() => setShowPassword(!showPassword)}
                         edge="end"
                       >
-                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -317,9 +317,12 @@ const Registro = () => {
                 error={!!passwordError}
                 helperText={passwordError}
               />
-              {isLoading && <LinearProgress />}
-              <Box mt={2}>
-                <LinearProgress variant="determinate" value={passwordStrength} />
+              <Box mt={1}>
+                {isLoading ? (
+                  <LinearProgress />
+                ) : (
+                  <LinearProgress variant="determinate" value={passwordStrength} />
+                )}
               </Box>
             </Grid>
             <Grid item xs={12}>
@@ -339,11 +342,10 @@ const Registro = () => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label="toggle password visibility"
                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                         edge="end"
                       >
-                        {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -353,12 +355,26 @@ const Registro = () => {
                 helperText={passwordMatchError}
               />
             </Grid>
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" color="primary" fullWidth>
+                Registrar
+              </Button>
+            </Grid>
+            {errors.success && (
+              <Grid item xs={12}>
+                <Typography variant="body2" color="success.main" align="center">
+                  {errors.success}
+                </Typography>
+              </Grid>
+            )}
+            {errors.server && (
+              <Grid item xs={12}>
+                <Typography variant="body2" color="error" align="center">
+                  {errors.server}
+                </Typography>
+              </Grid>
+            )}
           </Grid>
-          <Box mt={3}>
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Registrarse
-            </Button>
-          </Box>
         </form>
       </Box>
     </Container>
@@ -366,4 +382,3 @@ const Registro = () => {
 };
 
 export default Registro;
-
