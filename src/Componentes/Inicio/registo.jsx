@@ -5,6 +5,7 @@ import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
 const Registro = () => {
+  const[activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     nombre: '',
     apellidoPaterno: '',
@@ -15,68 +16,93 @@ const Registro = () => {
     confirmPassword: '',
   });
 
-  const [mensaje, setMensaje] = useState('');
+  const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState('');
 
-  const validatePassword = (password) => {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    return regex.test(password);
-  };
 
-  const evaluatePasswordStrength = (password) => {
-    let strength = '';
-    const lengthCriteria = password.length >= 8;
-    const upperCaseCriteria = /[A-Z]/.test(password);
-    const lowerCaseCriteria = /[a-z]/.test(password);
-    const numberCriteria = /\d/.test(password);
+    const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;// validar nombres (letras, incluyendo caracteres acentuados y espacios)
+    const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/; //validar correos electrónicos (solo Gmail, Hotmail y Outlook)
+    const phoneRegex = /^[0-9]{10}$/;//para validar teléfonos (10 dígitos numéricos)
+
     
-    const criteriaMet = [lengthCriteria, upperCaseCriteria, lowerCaseCriteria, numberCriteria].filter(Boolean).length;
 
-    switch (criteriaMet) {
-      case 1:
-        strength = 'Muy débil';
-        break;
-      case 2:
-        strength = 'Débil';
-        break;
-      case 3:
-        strength = 'Fuerte';
-        break;
-      case 4:
-        strength = 'Muy fuerte';
-        break;
-      default:
-        strength = '';
+// Función para verificar si la contraseña cumple con las reglas personalizadas
+  const checkPasswordRules = (password) => {
+    const errors = [];
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasNumber = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasMinLength = password.length >= 8;
+    const noRepeatingChars = !/(.)\1{2}/.test(password); // No repetir más de 3 letras seguidas
+
+    if (!hasUpperCase) errors.push('Debe tener al menos una letra mayúscula.');
+    if (!hasNumber) errors.push('Debe tener al menos un número.');
+    if (!hasSpecialChar) errors.push('Debe tener al menos un símbolo especial.');
+    if (!hasMinLength) errors.push('Debe tener más de 8 caracteres.');
+    if (!noRepeatingChars) errors.push('No puede tener más de 3 letras seguidas iguales.');
+
+    return errors;
+  };
+  // Función para verificar si la contraseña ha sido filtrada en brechas de seguridad
+  const checkPasswordSafety = async (password) => {
+    setIsLoading(true); // Iniciar la carga
+    try {
+      const hashedPassword = CryptoJS.SHA1(password).toString(CryptoJS.enc.Hex);
+      const prefix = hashedPassword.slice(0, 5);
+      const suffix = hashedPassword.slice(5);
+      
+
+      const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
+      const hashes = response.data.split('\n').map(line => line.split(':')[0]);
+
+      if (hashes.includes(suffix.toUpperCase())) {
+        setPasswordError('Contraseña insegura: ha sido filtrada en brechas de datos.');
+        setIsPasswordSafe(false);
+        setIsPasswordFiltered(true); // Actualizar el estado de filtrado
+      } else {
+        setPasswordError('');
+        setIsPasswordSafe(true);
+        setIsPasswordFiltered(false); // Contraseña no filtrada
+      }
+    } catch (error) {
+      console.error('Error al verificar la contraseña:', error);
+      setPasswordError('Error al verificar la contraseña.');
+    } finally {
+      setIsLoading(false); // Detener la carga
     }
-
-    setPasswordStrength(strength);
   };
 
+  /////////////////
   const handleChange = (e) => {
+    const { name, value } = e.target;
+    const trimmedValue = value.trim();
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value,
+      [name]: trimmedValue,
     });
-
-    if (e.target.name === 'password') {
-      if (!validatePassword(e.target.value)) {
+  
+    // Validación para la contraseña
+    if (name === 'password') {
+      if (!validatePassword(trimmedValue)) {
         setPasswordError('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.');
       } else {
         setPasswordError('');
-        evaluatePasswordStrength(e.target.value);
+        evaluatePasswordStrength(trimmedValue);
       }
     }
-
-    if (e.target.name === 'confirmPassword') {
-      if (e.target.value !== formData.password) {
+  
+    // Validación para confirmar contraseña
+    if (name === 'confirmPassword') {
+      if (trimmedValue !== formData.password) {
         setPasswordMatchError('Las contraseñas no coinciden.');
       } else {
         setPasswordMatchError('');
       }
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -118,168 +144,81 @@ const Registro = () => {
       setMensaje('Error al registrar usuario');
     }
   };
-
+   // Validación para el nombre
+   if (name === 'nombre') {
+    if (!nameRegex.test(value)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        nombre: 'El nombre debe contener solo letras.',
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        nombre: '', // Limpia el error si la validación es correcta
+      }));
+    }
+  }
+  // Validación para apellido paterno
+  if (name === 'apellidoPaterno') {
+    if (!nameRegex.test(trimmedValue)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        apellidoPaterno: 'El apellido paterno debe contener solo letras.',
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        apellidoPaterno: '',
+      }));
+    }
+  }
+   // Validación para apellido materno
+   if (name === 'apellidoMaterno') {
+    if (!nameRegex.test(trimmedValue)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        apellidoMaterno: 'El apellido materno debe contener solo letras.',
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        apellidoMaterno: '',
+      }));
+    }
+  }
+  // Validación para correo
+  if (name === 'correo') {
+    if (!emailRegex.test(trimmedValue)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        correo: 'El correo electrónico no es válido.',
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        correo: '',
+      }));
+    }
+  }
+  // Validación para teléfono
+  if (name === 'telefono') {
+    if (!phoneRegex.test(trimmedValue)) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        telefono: 'El teléfono debe contener 10 dígitos numéricos.',
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        telefono: '',
+      }));
+    }
+  }
   return (
-    <Container maxWidth="sm">
-      <Box 
-        sx={{ 
-          padding: 4, 
-          backgroundColor: '#f9f9f9', 
-          borderRadius: 2, 
-          boxShadow: 3, 
-          marginTop: 4, 
-          marginBottom: 4 
-        }}
-      >
-        <Typography variant="h4" align="center" gutterBottom>
-          Registro de Usuario
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Person />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Apellido Paterno"
-                name="apellidoPaterno"
-                value={formData.apellidoPaterno}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountBox />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-              />
-            </Grid>
-            <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Apellido Materno"
-                name="apellidoMaterno"
-                value={formData.apellidoMaterno}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <AccountBox />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Correo Electrónico"
-                type="email"
-                name="correo"
-                value={formData.correo}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Email />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Teléfono"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Phone />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Contraseña"
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-                error={!!passwordError}
-                helperText={passwordError}
-              />
-              <Typography variant="body2" color={passwordStrength === 'Muy débil' ? 'error' : passwordStrength === 'Débil' ? 'warning' : passwordStrength === 'Fuerte' ? 'primary' : 'success'} align="left" sx={{ marginTop: 1 }}>
-                Fortaleza de la contraseña: {passwordStrength}
-              </Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Confirmar Contraseña"
-                type="password"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Lock />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-                error={!!passwordMatchError}
-                helperText={passwordMatchError}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Button type="submit" variant="contained" fullWidth color="primary">
-                Registrar
-              </Button>
-            </Grid>
-          </Grid>
-        </form>
-
-        {mensaje && (
-          <Typography variant="body1" color={mensaje.includes('Error') ? 'error' : 'primary'} align="center" sx={{ marginTop: 2 }}>
-            {mensaje}
-          </Typography>
-        )}
-      </Box>
+    // JSX para renderizar el formulario
+    <Container>
+      {/* Formulario aquí */}
     </Container>
   );
 };
-
 export default Registro;
