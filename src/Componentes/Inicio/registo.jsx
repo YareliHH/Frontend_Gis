@@ -26,7 +26,7 @@ const Registro = () => {
     const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/; //validar correos electrónicos (solo Gmail, Hotmail y Outlook)
     const phoneRegex = /^[0-9]{10}$/;//para validar teléfonos (10 dígitos numéricos)
 
-    
+
 
 // Función para verificar si la contraseña cumple con las reglas personalizadas
   const checkPasswordRules = (password) => {
@@ -119,11 +119,11 @@ const Registro = () => {
     try {
       const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
       if (correoResponse.data.exists) {
-        setMensaje('El correo ya está registrado. Intenta con otro.');
+        setErrors('El correo ya está registrado. Intenta con otro.');
         return;
       }
     } catch (error) {
-      setMensaje('Error al verificar el correo.');
+      setErrors('Error al verificar el correo.');
       return;
     }
 
@@ -137,11 +137,11 @@ const Registro = () => {
 
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
-      setMensaje('Usuario registrado exitosamente');
+      setErrors('Usuario registrado exitosamente');
       console.log(response.data);
     } catch (error) {
       console.error('Error al registrar usuario:', error);
-      setMensaje('Error al registrar usuario');
+      setErrors('Error al registrar usuario');
     }
   };
    // Validación para el nombre
