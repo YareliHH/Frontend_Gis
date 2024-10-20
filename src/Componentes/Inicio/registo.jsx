@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, TextField, Button, Grid, Typography, Box, InputAdornment } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox } from '@mui/icons-material';
 import axios from 'axios';
-import bcrypt from 'bcryptjs';
+import CryptoJS from 'crypto-js';
 
 const Registro = () => {
   const [formData, setFormData] = useState({
@@ -101,8 +101,8 @@ const Registro = () => {
       return;
     }
 
-    const salt = bcrypt.genSaltSync(10);
-    const hashedPassword = bcrypt.hashSync(formData.password, salt);
+    // Encriptación usando CryptoJS
+    const hashedPassword = CryptoJS.SHA256(formData.password).toString();
 
     const registroData = {
       ...formData,
