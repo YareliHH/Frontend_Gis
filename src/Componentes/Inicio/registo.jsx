@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, IconButton, LinearProgress } from '@mui/material';
-import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress } from '@mui/material';
+import { Person, Email, Phone, Lock, AccountBox } from '@mui/icons-material';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
@@ -22,8 +22,6 @@ const Registro = () => {
   const [isPasswordSafe, setIsPasswordSafe] = useState(false);
   const [isPasswordFiltered, setIsPasswordFiltered] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0); // Estado para el medidor de fortaleza
-  const [showPassword, setShowPassword] = useState(false); // Estado para mostrar/ocultar contraseña
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Estado para mostrar/ocultar confirmación de contraseña
 
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
@@ -288,7 +286,7 @@ const Registro = () => {
                 error={!!errors.telefono}
                 helperText={errors.telefono}
               />
-            </Grid>
+           </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -368,3 +366,4 @@ const Registro = () => {
 };
 
 export default Registro;
+
