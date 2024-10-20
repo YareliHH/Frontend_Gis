@@ -91,7 +91,7 @@ const Registro = () => {
     }
 
     try {
-      const correoResponse = await axios.post('http://localhost:3001/api/verificar-correo', { correo: formData.correo });
+      const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
       if (correoResponse.data.exists) {
         setMensaje('El correo ya está registrado. Intenta con otro.');
         return;
@@ -110,7 +110,7 @@ const Registro = () => {
     };
 
     try {
-      const response = await axios.post('http://localhost:3001/api/registro', registroData);
+      const response = await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
       setMensaje('Usuario registrado exitosamente');
       console.log(response.data);
     } catch (error) {
