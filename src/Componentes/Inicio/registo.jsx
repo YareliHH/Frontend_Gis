@@ -4,8 +4,8 @@ import { Person, Email, Phone, Lock, AccountBox } from '@mui/icons-material';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
-const Registro = () => {
-  const[activeStep, setActiveStep] = useState(0);
+const Registro = () => {     
+  const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({
     nombre: '',
     apellidoPaterno: '',
@@ -19,16 +19,15 @@ const Registro = () => {
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
   const [passwordMatchError, setPasswordMatchError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordSafe, setIsPasswordSafe] = useState(false);
+  const [isPasswordFiltered, setIsPasswordFiltered] = useState(false);
 
+  const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // Validar nombres (letras, incluyendo caracteres acentuados y espacios)
+  const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/; // Validar correos electrónicos (solo Gmail, Hotmail y Outlook)
+  const phoneRegex = /^[0-9]{10}$/; // Validar teléfonos (10 dígitos numéricos)
 
-    const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;// validar nombres (letras, incluyendo caracteres acentuados y espacios)
-    const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/; //validar correos electrónicos (solo Gmail, Hotmail y Outlook)
-    const phoneRegex = /^[0-9]{10}$/;//para validar teléfonos (10 dígitos numéricos)
-
-
-
-// Función para verificar si la contraseña cumple con las reglas personalizadas
+  // Verificar si la contraseña cumple con las reglas personalizadas
   const checkPasswordRules = (password) => {
     const errors = [];
     const hasUpperCase = /[A-Z]/.test(password);
@@ -45,14 +44,14 @@ const Registro = () => {
 
     return errors;
   };
-  // Función para verificar si la contraseña ha sido filtrada en brechas de seguridad
+
+  // Verificar si la contraseña ha sido filtrada en brechas de seguridad
   const checkPasswordSafety = async (password) => {
     setIsLoading(true); // Iniciar la carga
     try {
       const hashedPassword = CryptoJS.SHA1(password).toString(CryptoJS.enc.Hex);
       const prefix = hashedPassword.slice(0, 5);
       const suffix = hashedPassword.slice(5);
-      
 
       const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
       const hashes = response.data.split('\n').map(line => line.split(':')[0]);
@@ -74,7 +73,7 @@ const Registro = () => {
     }
   };
 
-  /////////////////
+  // Manejar cambios de campo
   const handleChange = (e) => {
     const { name, value } = e.target;
     const trimmedValue = value.trim();
@@ -82,48 +81,80 @@ const Registro = () => {
       ...formData,
       [name]: trimmedValue,
     });
-  
-    // Validación para la contraseña
-    if (name === 'password') {
-      if (!validatePassword(trimmedValue)) {
-        setPasswordError('La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número.');
-      } else {
-        setPasswordError('');
-        evaluatePasswordStrength(trimmedValue);
-      }
-    }
-  
-    // Validación para confirmar contraseña
-    if (name === 'confirmPassword') {
-      if (trimmedValue !== formData.password) {
-        setPasswordMatchError('Las contraseñas no coinciden.');
-      } else {
-        setPasswordMatchError('');
-      }
+
+    // Validaciones dinámicas
+    switch (name) {
+      case 'nombre':
+        if (!nameRegex.test(trimmedValue)) {
+          setErrors(prevErrors => ({ ...prevErrors, nombre: 'El nombre debe contener solo letras.' }));
+        } else {
+          setErrors(prevErrors => ({ ...prevErrors, nombre: '' }));
+        }
+        break;
+      case 'apellidoPaterno':
+        if (!nameRegex.test(trimmedValue)) {
+          setErrors(prevErrors => ({ ...prevErrors, apellidoPaterno: 'El apellido paterno debe contener solo letras.' }));
+        } else {
+          setErrors(prevErrors => ({ ...prevErrors, apellidoPaterno: '' }));
+        }
+        break;
+      case 'apellidoMaterno':
+        if (!nameRegex.test(trimmedValue)) {
+          setErrors(prevErrors => ({ ...prevErrors, apellidoMaterno: 'El apellido materno debe contener solo letras.' }));
+        } else {
+          setErrors(prevErrors => ({ ...prevErrors, apellidoMaterno: '' }));
+        }
+        break;
+      case 'correo':
+        if (!emailRegex.test(trimmedValue)) {
+          setErrors(prevErrors => ({ ...prevErrors, correo: 'El correo electrónico no es válido.' }));
+        } else {
+          setErrors(prevErrors => ({ ...prevErrors, correo: '' }));
+        }
+        break;
+      case 'telefono':
+        if (!phoneRegex.test(trimmedValue)) {
+          setErrors(prevErrors => ({ ...prevErrors, telefono: 'El teléfono debe contener 10 dígitos numéricos.' }));
+        } else {
+          setErrors(prevErrors => ({ ...prevErrors, telefono: '' }));
+        }
+        break;
+      case 'password':
+        const passwordErrors = checkPasswordRules(trimmedValue);
+        if (passwordErrors.length > 0) {
+          setPasswordError(passwordErrors.join(' '));
+        } else {
+          setPasswordError('');
+        }
+        break;
+      case 'confirmPassword':
+        if (trimmedValue !== formData.password) {
+          setPasswordMatchError('Las contraseñas no coinciden.');
+        } else {
+          setPasswordMatchError('');
+        }
+        break;
+      default:
+        break;
     }
   };
-  
 
+  // Manejar envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validatePassword(formData.password)) {
-      setPasswordError('La contraseña no cumple con los requisitos.');
-      return;
-    }
-    if (formData.password !== formData.confirmPassword) {
-      setPasswordMatchError('Las contraseñas no coinciden.');
-      return;
-    }
+    // Validar contraseña
+    if (passwordError) return;
+    if (passwordMatchError) return;
 
     try {
       const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
       if (correoResponse.data.exists) {
-        setErrors('El correo ya está registrado. Intenta con otro.');
+        setErrors(prevErrors => ({ ...prevErrors, correo: 'El correo ya está registrado. Intenta con otro.' }));
         return;
       }
     } catch (error) {
-      setErrors('Error al verificar el correo.');
+      setErrors(prevErrors => ({ ...prevErrors, correo: 'Error al verificar el correo.' }));
       return;
     }
 
@@ -137,88 +168,45 @@ const Registro = () => {
 
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
-      setErrors('Usuario registrado exitosamente');
+      setErrors({});
       console.log(response.data);
+      alert('Usuario registrado exitosamente');
     } catch (error) {
       console.error('Error al registrar usuario:', error);
-      setErrors('Error al registrar usuario');
+      setErrors(prevErrors => ({ ...prevErrors, general: 'Error al registrar usuario' }));
     }
   };
-   // Validación para el nombre
-   if (name === 'nombre') {
-    if (!nameRegex.test(value)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        nombre: 'El nombre debe contener solo letras.',
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        nombre: '', // Limpia el error si la validación es correcta
-      }));
-    }
-  }
-  // Validación para apellido paterno
-  if (name === 'apellidoPaterno') {
-    if (!nameRegex.test(trimmedValue)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        apellidoPaterno: 'El apellido paterno debe contener solo letras.',
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        apellidoPaterno: '',
-      }));
-    }
-  }
-   // Validación para apellido materno
-   if (name === 'apellidoMaterno') {
-    if (!nameRegex.test(trimmedValue)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        apellidoMaterno: 'El apellido materno debe contener solo letras.',
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        apellidoMaterno: '',
-      }));
-    }
-  }
-  // Validación para correo
-  if (name === 'correo') {
-    if (!emailRegex.test(trimmedValue)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        correo: 'El correo electrónico no es válido.',
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        correo: '',
-      }));
-    }
-  }
-  // Validación para teléfono
-  if (name === 'telefono') {
-    if (!phoneRegex.test(trimmedValue)) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        telefono: 'El teléfono debe contener 10 dígitos numéricos.',
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        telefono: '',
-      }));
-    }
-  }
+
   return (
-    // JSX para renderizar el formulario
     <Container>
-      {/* Formulario aquí */}
+      {/* Renderizar el formulario aquí */}
+      <Typography variant="h4" gutterBottom>Registro de Usuario</Typography>
+      <form onSubmit={handleSubmit}>
+        {/* Input para nombre */}
+        <TextField
+          label="Nombre"
+          name="nombre"
+          value={formData.nombre}
+          onChange={handleChange}
+          error={!!errors.nombre}
+          helperText={errors.nombre}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Person />
+              </InputAdornment>
+            ),
+          }}
+          fullWidth
+          margin="normal"
+        />
+        {/* Otros campos... */}
+        <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
+          {isLoading ? 'Registrando...' : 'Registrar'}
+        </Button>
+      </form>
     </Container>
   );
 };
+
 export default Registro;
