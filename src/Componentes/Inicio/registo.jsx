@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Grid, Typography, Box, InputAdornment } from '@mui/material';
+import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox } from '@mui/icons-material';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
-import { useHistory } from 'react-router-dom'; // Importar useHistory
 
 const Registro = () => {
-  const history = useHistory(); // Inicializar useHistory
   const [formData, setFormData] = useState({
     nombre: '',
     apellidoPaterno: '',
@@ -23,14 +21,16 @@ const Registro = () => {
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [isPasswordSafe, setIsPasswordSafe] = useState(false);
   const [isPasswordFiltered, setIsPasswordFiltered] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState(0); // Estado para el medidor de fortaleza
 
-  const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // validar nombres
-  const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/; // validar correos electrónicos
-  const phoneRegex = /^[0-9]{10}$/; // validar teléfonos
+  const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
+  const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
+  const phoneRegex = /^[0-9]{10}$/;
 
-  // Verificar reglas de la contraseña
   const checkPasswordRules = (password) => {
     const errors = [];
+    let strength = 0; // Medidor de fortaleza
+
     const hasUpperCase = /[A-Z]/.test(password);
     const hasNumber = /\d/.test(password);
     const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
@@ -43,10 +43,18 @@ const Registro = () => {
     if (!hasMinLength) errors.push('Debe tener más de 8 caracteres.');
     if (!noRepeatingChars) errors.push('No puede tener más de 3 letras seguidas iguales.');
 
+    // Incrementar fortaleza de acuerdo a las reglas cumplidas
+    if (hasUpperCase) strength += 20;
+    if (hasNumber) strength += 20;
+    if (hasSpecialChar) strength += 20;
+    if (hasMinLength) strength += 20;
+    if (noRepeatingChars) strength += 20;
+
+    setPasswordStrength(strength); // Actualizar la fortaleza de la contraseña
+
     return errors;
   };
 
-  // Verificar si la contraseña ha sido filtrada
   const checkPasswordSafety = async (password) => {
     setIsLoading(true);
     try {
@@ -74,7 +82,6 @@ const Registro = () => {
     }
   };
 
-  // Manejo de cambios en los campos del formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     const trimmedValue = value.trim();
@@ -83,56 +90,48 @@ const Registro = () => {
       [name]: trimmedValue,
     });
 
-    // Validaciones en tiempo real
-    const newErrors = { ...errors }; // Copia de los errores actuales
+    const newErrors = { ...errors };
 
-    // Validación del nombre
     if (name === 'nombre' && !nameRegex.test(trimmedValue)) {
       newErrors.nombre = 'El nombre debe contener solo letras.';
     } else {
       delete newErrors.nombre;
     }
 
-    // Validación del apellido paterno
     if (name === 'apellidoPaterno' && !nameRegex.test(trimmedValue)) {
       newErrors.apellidoPaterno = 'El apellido paterno debe contener solo letras.';
     } else {
       delete newErrors.apellidoPaterno;
     }
 
-    // Validación del apellido materno
     if (name === 'apellidoMaterno' && !nameRegex.test(trimmedValue)) {
       newErrors.apellidoMaterno = 'El apellido materno debe contener solo letras.';
     } else {
       delete newErrors.apellidoMaterno;
     }
 
-    // Validación del correo
     if (name === 'correo' && !emailRegex.test(trimmedValue)) {
-      newErrors.correo = 'El correo electrónico es válido.';
+      newErrors.correo = 'El correo electrónico no es válido.';
     } else {
       delete newErrors.correo;
     }
 
-    // Validación del teléfono
     if (name === 'telefono' && !phoneRegex.test(trimmedValue)) {
       newErrors.telefono = 'El teléfono debe contener 10 dígitos numéricos.';
     } else {
       delete newErrors.telefono;
     }
 
-    // Validación de la contraseña
     if (name === 'password') {
       const passwordErrors = checkPasswordRules(trimmedValue);
       if (passwordErrors.length > 0) {
         setPasswordError(passwordErrors.join(' '));
       } else {
         setPasswordError('');
-        checkPasswordSafety(trimmedValue); // Verificar seguridad de la contraseña
+        checkPasswordSafety(trimmedValue);
       }
     }
 
-    // Validación de la confirmación de contraseña
     if (name === 'confirmPassword') {
       if (trimmedValue !== formData.password) {
         setPasswordMatchError('Las contraseñas no coinciden.');
@@ -141,19 +140,16 @@ const Registro = () => {
       }
     }
 
-    setErrors(newErrors); // Actualizar los errores en el estado
+    setErrors(newErrors);
   };
 
-  // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validación final antes de enviar
     if (Object.keys(errors).length > 0) {
-      return; // Detener el envío si hay errores
+      return;
     }
 
-    // Verificación de correo electrónico
     try {
       const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
       if (correoResponse.data.exists) {
@@ -172,7 +168,6 @@ const Registro = () => {
       return;
     }
 
-    // Encriptación de la contraseña
     const hashedPassword = CryptoJS.SHA256(formData.password).toString();
     const registroData = {
       ...formData,
@@ -296,8 +291,8 @@ const Registro = () => {
               <TextField
                 fullWidth
                 label="Contraseña"
-                name="password"
                 type="password"
+                name="password"
                 value={formData.password}
                 onChange={handleChange}
                 InputProps={{
@@ -311,28 +306,36 @@ const Registro = () => {
                 error={!!passwordError}
                 helperText={passwordError}
               />
+              <Box sx={{ mt: 2 }}>
+                <Typography variant="body2" gutterBottom>
+                  Fortaleza de la contraseña:
+                </Typography>
+                <LinearProgress variant="determinate" value={passwordStrength} />
+              </Box>
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Confirmar Contraseña"
-                name="confirmPassword"
                 type="password"
+                name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock />
+                    </InputAdornment>
+                  ),
+                }}
                 required
                 error={!!passwordMatchError}
                 helperText={passwordMatchError}
               />
             </Grid>
             <Grid item xs={12}>
-              <Button variant="contained" color="primary" type="submit" fullWidth>
-                Registrar
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Button variant="outlined" color="secondary" onClick={() => history.goBack()} fullWidth>
-                Atrás
+              <Button type="submit" variant="contained" fullWidth>
+                Registrarse
               </Button>
             </Grid>
           </Grid>
