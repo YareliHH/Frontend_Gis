@@ -1,6 +1,23 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Grid, Typography, Box, InputAdornment } from '@mui/material';
-import { Person, Email, Phone, Lock, AccountBox } from '@mui/icons-material';
+import {
+  Container,
+  TextField,
+  Button,
+  Grid,
+  Typography,
+  Box,
+  InputAdornment,
+  IconButton,
+} from '@mui/material';
+import {
+  Person,
+  Email,
+  Phone,
+  Lock,
+  AccountBox,
+  Visibility,
+  VisibilityOff,
+} from '@mui/icons-material';
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
@@ -21,6 +38,9 @@ const Registro = () => {
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [isPasswordSafe, setIsPasswordSafe] = useState(false);
   const [isPasswordFiltered, setIsPasswordFiltered] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState('');
 
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/; // validar nombres
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/; // validar correos electrónicos
@@ -42,6 +62,17 @@ const Registro = () => {
     if (!noRepeatingChars) errors.push('No puede tener más de 3 letras seguidas iguales.');
 
     return errors;
+  };
+
+  // Verificar la fortaleza de la contraseña
+  const evaluatePasswordStrength = (password) => {
+    if (password.length < 8) {
+      setPasswordStrength('Débil');
+    } else if (password.length < 12) {
+      setPasswordStrength('Media');
+    } else {
+      setPasswordStrength('Fuerte');
+    }
   };
 
   // Verificar si la contraseña ha sido filtrada
@@ -107,7 +138,7 @@ const Registro = () => {
 
     // Validación del correo
     if (name === 'correo' && !emailRegex.test(trimmedValue)) {
-      newErrors.correo = 'El correo electrónico no es válido.';
+      newErrors.correo = 'El correo electrónico es válido.';
     } else {
       delete newErrors.correo;
     }
@@ -124,8 +155,10 @@ const Registro = () => {
       const passwordErrors = checkPasswordRules(trimmedValue);
       if (passwordErrors.length > 0) {
         setPasswordError(passwordErrors.join(' '));
+        setPasswordStrength('');
       } else {
         setPasswordError('');
+        evaluatePasswordStrength(trimmedValue); // Evaluar la fortaleza de la contraseña
         checkPasswordSafety(trimmedValue); // Verificar seguridad de la contraseña
       }
     }
@@ -214,7 +247,7 @@ const Registro = () => {
                 helperText={errors.nombre}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Apellido Paterno"
@@ -233,7 +266,7 @@ const Registro = () => {
                 helperText={errors.apellidoPaterno}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Apellido Materno"
@@ -295,7 +328,7 @@ const Registro = () => {
                 fullWidth
                 label="Contraseña"
                 name="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 value={formData.password}
                 onChange={handleChange}
                 InputProps={{
@@ -304,46 +337,68 @@ const Registro = () => {
                       <Lock />
                     </InputAdornment>
                   ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
                 }}
                 required
                 error={!!passwordError}
                 helperText={passwordError}
               />
+              {passwordStrength && (
+                <Typography variant="body2" color="textSecondary">
+                  Fortaleza: {passwordStrength}
+                </Typography>
+              )}
             </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
                 label="Confirmar Contraseña"
                 name="confirmPassword"
-                type="password"
+                type={showConfirmPassword ? 'text' : 'password'}
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
                 required
                 error={!!passwordMatchError}
                 helperText={passwordMatchError}
               />
             </Grid>
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
-                Registrar
+              <Button variant="contained" color="primary" type="submit" disabled={isLoading}>
+                {isLoading ? 'Cargando...' : 'Registrar'}
               </Button>
             </Grid>
-            {errors.success && (
-              <Grid item xs={12}>
-                <Typography color="success.main" variant="body1" align="center">
-                  {errors.success}
-                </Typography>
-              </Grid>
-            )}
-            {errors.server && (
-              <Grid item xs={12}>
-                <Typography color="error.main" variant="body1" align="center">
-                  {errors.server}
-                </Typography>
-              </Grid>
-            )}
           </Grid>
         </form>
+        {errors.success && (
+          <Typography variant="body2" color="green" align="center">
+            {errors.success}
+          </Typography>
+        )}
+        {errors.server && (
+          <Typography variant="body2" color="red" align="center">
+            {errors.server}
+          </Typography>
+        )}
       </Box>
     </Container>
   );
