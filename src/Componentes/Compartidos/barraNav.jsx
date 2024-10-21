@@ -1,50 +1,41 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box, Button, Switch } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import StoreIcon from '@mui/icons-material/Store';
 import InfoIcon from '@mui/icons-material/Info';
 import LoginIcon from '@mui/icons-material/Login';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material'; // Necesario para el modo oscuro
 import logo from '../imagenes/logoGL.jpg';
+
+// Creación del tema personalizado
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#1E90FF', // Azul primario
+    },
+    secondary: {
+      main: '#4682B4', // Azul intermedio (para resaltar)
+    },
+  },
+  components: {
+    MuiAppBar: {
+      styleOverrides: {
+        root: {
+          background: 'linear-gradient(45deg, #1E90FF 30%, #4682B4 90%)', // Degradado azul
+          boxShadow: '0 3px 5px 2px rgba(30, 144, 255, .3)', // Sombra ligera
+        },
+      },
+    },
+  },
+});
 
 const BarraNav = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [active, setActive] = useState('inicio');
-  const [darkMode, setDarkMode] = useState(false); // Estado para el modo oscuro
   const navigate = useNavigate();
   const menuRef = useRef(null);
-
-  // Crear el tema dinámicamente según el modo claro/oscuro
-  const theme = createTheme({
-    palette: {
-      mode: darkMode ? 'dark' : 'light', // Cambia entre claro y oscuro
-      primary: {
-        main: darkMode ? '#90caf9' : '#1E90FF', // Ajustes de color para cada modo
-      },
-      secondary: {
-        main: darkMode ? '#8f94fb' : '#4682B4', // Ajustes de color para cada modo
-      },
-    },
-    components: {
-      MuiAppBar: {
-        styleOverrides: {
-          root: {
-            background: darkMode 
-              ? 'linear-gradient(45deg, #121212 30%, #333333 90%)' // Degradado en modo oscuro
-              : 'linear-gradient(45deg, #1E90FF 30%, #4682B4 90%)', // Degradado en modo claro
-            boxShadow: darkMode 
-              ? '0 3px 5px 2px rgba(144, 202, 249, .3)' 
-              : '0 3px 5px 2px rgba(30, 144, 255, .3)',
-          },
-        },
-      },
-    },
-  });
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -78,10 +69,6 @@ const BarraNav = () => {
     }
   };
 
-  const handleThemeToggle = () => {
-    setDarkMode((prevMode) => !prevMode);
-  };
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -96,18 +83,12 @@ const BarraNav = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <CssBaseline /> {/* Esto aplica el modo oscuro correctamente */}
       <AppBar position="static">
         <Toolbar>
           <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
             <img src={logo} alt="Gislive Boutique Clínica" style={{ width: 80, height: 60, marginRight: 16 }} />
             <Typography variant="h6">Gislive Boutique Clínica</Typography>
           </Box>
-
-          {/* Alternar tema claro/oscuro */}
-          <IconButton sx={{ ml: 1 }} onClick={handleThemeToggle} color="inherit">
-            {darkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
