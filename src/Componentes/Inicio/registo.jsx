@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom'; // Hook de navegación
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 import CryptoJS from 'crypto-js';
 
 const Registro = () => {
@@ -102,8 +101,9 @@ const Registro = () => {
 
     // Validar cada campo según su tipo
     if (name === 'nombre' && !nameRegex.test(trimmedValue)) {
-      newErrors.nombre = 'El nombre debe contener solo letras.';
-    } else {
+      newErrors.nombre = 'El nombre debe contener solo letras.'; } 
+    else 
+    {
       delete newErrors.nombre;
     }
 
