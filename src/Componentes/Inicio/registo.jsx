@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom'; // Importa useNavigate
+import { useNavigate } from 'react-router-dom'; // Hook de navegación
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
@@ -28,10 +28,12 @@ const Registro = () => {
 
   const navigate = useNavigate(); // Hook para manejar la navegación
 
+  // Regex para validación de campos
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
   const phoneRegex = /^[0-9]{10}$/;
 
+  // Validar reglas de seguridad de la contraseña
   const checkPasswordRules = (password) => {
     const errors = [];
     let strength = 0;
@@ -59,6 +61,7 @@ const Registro = () => {
     return errors;
   };
 
+  // Verificar si la contraseña ha sido filtrada en brechas de datos
   const checkPasswordSafety = async (password) => {
     setIsLoading(true);
     try {
@@ -86,6 +89,7 @@ const Registro = () => {
     }
   };
 
+  // Manejar el cambio de los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     const trimmedValue = value.trim();
@@ -96,6 +100,7 @@ const Registro = () => {
 
     const newErrors = { ...errors };
 
+    // Validar cada campo según su tipo
     if (name === 'nombre' && !nameRegex.test(trimmedValue)) {
       newErrors.nombre = 'El nombre debe contener solo letras.';
     } else {
@@ -147,6 +152,7 @@ const Registro = () => {
     setErrors(newErrors);
   };
 
+  // Manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -188,9 +194,14 @@ const Registro = () => {
     }
   };
 
-  // Maneja el clic del botón "Atrás"
+  // Manejar el clic en el botón "Atrás"
   const handleBackClick = () => {
-    navigate(-1); // Navega a la página anterior
+    navigate(-1); // Navegar a la página anterior
+  };
+
+  // Manejar el clic en el botón "Siguiente"
+  const handleNextClick = () => {
+    navigate('/verificar-correo');
   };
 
   return (
@@ -261,7 +272,7 @@ const Registro = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Correo Electrónico"
+                label="Correo electrónico"
                 name="correo"
                 value={formData.correo}
                 onChange={handleChange}
@@ -351,17 +362,24 @@ const Registro = () => {
                 helperText={passwordMatchError}
               />
             </Grid>
-            <Grid item xs={12}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
-                Registrarse
-              </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Button variant="outlined" color="primary" fullWidth onClick={handleBackClick}>
-                Atrás
-              </Button>
-            </Grid>
           </Grid>
+          <Box mt={4}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={isLoading || isPasswordFiltered || passwordMatchError !== ''}
+            >
+              Registrar
+            </Button>
+            <Button onClick={handleNextClick} variant="text" color="secondary" fullWidth>
+              Siguiente
+            </Button>
+            <Button onClick={handleBackClick} variant="text" color="secondary" fullWidth>
+              Atrás
+            </Button>
+          </Box>
         </form>
       </Box>
     </Container>
