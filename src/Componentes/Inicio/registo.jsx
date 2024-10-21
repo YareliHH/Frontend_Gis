@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
@@ -24,6 +25,8 @@ const Registro = () => {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const navigate = useNavigate(); // Hook para manejar la navegación
 
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
@@ -185,6 +188,11 @@ const Registro = () => {
     }
   };
 
+  // Maneja el clic del botón "Atrás"
+  const handleBackClick = () => {
+    navigate(-1); // Navega a la página anterior
+  };
+
   return (
     <Container maxWidth="sm">
       <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
@@ -304,10 +312,7 @@ const Registro = () => {
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowPassword(!showPassword)}
-                        edge="end"
-                      >
+                      <IconButton onClick={() => setShowPassword(!showPassword)}>
                         {showPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -317,13 +322,7 @@ const Registro = () => {
                 error={!!passwordError}
                 helperText={passwordError}
               />
-              <Box mt={1}>
-                {isLoading ? (
-                  <LinearProgress />
-                ) : (
-                  <LinearProgress variant="determinate" value={passwordStrength} />
-                )}
-              </Box>
+              {isLoading && <LinearProgress />}
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -341,10 +340,7 @@ const Registro = () => {
                   ),
                   endAdornment: (
                     <InputAdornment position="end">
-                      <IconButton
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        edge="end"
-                      >
+                      <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
                         {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                       </IconButton>
                     </InputAdornment>
@@ -357,23 +353,14 @@ const Registro = () => {
             </Grid>
             <Grid item xs={12}>
               <Button type="submit" variant="contained" color="primary" fullWidth>
-                Registrar
+                Registrarse
               </Button>
             </Grid>
-            {errors.success && (
-              <Grid item xs={12}>
-                <Typography variant="body2" color="success.main" align="center">
-                  {errors.success}
-                </Typography>
-              </Grid>
-            )}
-            {errors.server && (
-              <Grid item xs={12}>
-                <Typography variant="body2" color="error" align="center">
-                  {errors.server}
-                </Typography>
-              </Grid>
-            )}
+            <Grid item xs={12}>
+              <Button variant="outlined" color="secondary" fullWidth onClick={handleBackClick}>
+                Atrás
+              </Button>
+            </Grid>
           </Grid>
         </form>
       </Box>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Typography, Box, Grid, InputAdornment } from '@mui/material';
 import { Email } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom'; // Importa useNavigate
 import axios from 'axios';
 
 const RecuperarContrasena = () => {
@@ -8,6 +9,8 @@ const RecuperarContrasena = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate(); // Hook para manejar la navegación
 
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
 
@@ -38,6 +41,10 @@ const RecuperarContrasena = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleBackClick = () => {
+    navigate(-1); // Navega a la página anterior
   };
 
   return (
@@ -88,6 +95,17 @@ const RecuperarContrasena = () => {
             )}
           </Grid>
         </form>
+
+        {/* Botón de "Atrás" */}
+        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+          <Button 
+            variant="contained" 
+            color="secondary" 
+            onClick={handleBackClick}
+          >
+            Atrás
+          </Button>
+        </Box>
       </Box>
     </Container>
   );
