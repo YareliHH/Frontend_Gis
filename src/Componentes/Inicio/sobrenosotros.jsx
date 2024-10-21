@@ -1,7 +1,14 @@
 import React from 'react';
-import { Container, Typography, Box } from '@mui/material';
+import { Container, Typography, Box, Button } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const SobreNosotros = () => {
+  const navigate = useNavigate(); // Hook para manejar la navegación
+
+  const handleBackClick = () => {
+    navigate(-1); 
+  };
+
   return (
     <Container maxWidth="md" sx={{ mt: 5 }}>
       <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3 }}>
@@ -38,6 +45,17 @@ const SobreNosotros = () => {
           y estilo, garantizando su comodidad durante largas jornadas de trabajo. Nos comprometemos a ofrecer productos de calidad excepcional y un servicio
           al cliente enfocado en las necesidades específicas de nuestros usuarios, ayudando a proyectar una imagen profesional y confiable.
         </Typography>
+      </Box>
+
+      {/* Botón de "Atrás" */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <Button 
+          variant="contained" 
+          color="primary" 
+          onClick={handleBackClick} 
+          sx={{ backgroundColor: '#1565c0', color: '#fff' }}>
+          Atrás
+        </Button>
       </Box>
     </Container>
   );

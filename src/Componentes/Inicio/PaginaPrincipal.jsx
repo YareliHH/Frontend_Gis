@@ -1,5 +1,6 @@
 import React from 'react';
-import { Grid, Card, CardMedia, Container } from '@mui/material';
+import { Container, Card, CardMedia } from '@mui/material';
+import Slider from "react-slick"; // Importar el carrusel de react-slick
 
 const images = [
   "https://i.pinimg.com/564x/09/20/1c/09201c1b05f91d5dde2e779d80543536.jpg",
@@ -13,11 +14,40 @@ const images = [
 ];
 
 const PaginaPrincipal = () => {
+  // Configuración del carrusel (opciones de react-slick)
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 4, // Cantidad de imágenes a mostrar al mismo tiempo
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 3,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 480,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+
   return (
     <Container maxWidth="lg" sx={{ marginTop: 4 }}>
-      <Grid container spacing={4}>
+      <Slider {...settings}>
         {images.map((image, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index}>
+          <div key={index}>
             <Card sx={{ boxShadow: 3, borderRadius: 2 }}>
               <CardMedia
                 component="img"
@@ -27,9 +57,9 @@ const PaginaPrincipal = () => {
                 sx={{ objectFit: 'cover' }}
               />
             </Card>
-          </Grid>
+          </div>
         ))}
-      </Grid>
+      </Slider>
     </Container>
   );
 };
