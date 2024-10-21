@@ -5,7 +5,7 @@ import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
 import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
 import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
-import RecuperacionContraseña from './Componentes/Inicio/RecuperacionContraseña';
+import RecuperarContrasena  from './Componentes/Inicio/RecuperarContraseña';
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
@@ -20,7 +20,7 @@ const App = () => {
         <Route path="/cliente" element={<LayoutEncabezado><PaginaCliente /></LayoutEncabezado>} />
         <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
-        <Route path="/recuperacionContraseña" element={<LayoutEncabezado><RecuperacionContraseña /></LayoutEncabezado>} />
+        <Route path="/recuperar_password" element={<RecuperarContrasena />} /> 
 
         
       </Routes>
