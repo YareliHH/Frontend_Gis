@@ -5,7 +5,7 @@ import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
 import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
 import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
-import RecuperarContrasena  from './Componentes/Inicio/RecuperarContraseña';
+import RecuperarContrasena  from './Componentes/RecuperarContraseña';
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
