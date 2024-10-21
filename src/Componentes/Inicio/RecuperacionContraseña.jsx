@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Container,TextField,Button,Typography,Box,Grid,} from '@mui/material';
+import { Container, TextField, Button, Typography, Box, Grid, InputAdornment } from '@mui/material';
 import { Email } from '@mui/icons-material';
 import axios from 'axios';
 
@@ -18,6 +18,7 @@ const RecuperarContrasena = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación de correo electrónico
     if (!emailRegex.test(correo)) {
       setError('Por favor, ingrese un correo electrónico válido.');
       return;
@@ -28,8 +29,9 @@ const RecuperarContrasena = () => {
     setLoading(true);
 
     try {
+      // Llamada a la API para recuperación de contraseña
       const response = await axios.post('https://backendgislive.onrender.com/api/recuperar-contrasena', { correo });
-      setSuccess('Se ha enviado un correo de recuperación, por favor revise su bandeja de entrada.');
+      setSuccess('Se ha enviado un correo de recuperación. Por favor, revise su bandeja de entrada.');
     } catch (error) {
       console.error('Error al enviar el correo de recuperación:', error);
       setError('Error al enviar el correo de recuperación. Inténtelo de nuevo más tarde.');
