@@ -5,8 +5,8 @@ import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
 import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
 import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
-import RecuperarContrasena from './Componentes/Inicio/recuperarContrasena'; // Nombre corregido
-
+import RecuperarContrasena from './Componentes/Inicio/recuperarContrasena'; 
+import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
@@ -22,6 +22,7 @@ const App = () => {
         <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
         <Route path="/recuperar_password" element={<RecuperarContrasena />} /> 
+        <Route path="/informacion/sobrenosotros" element={<Sobrenosotros />} /> 
 
         
       </Routes>
