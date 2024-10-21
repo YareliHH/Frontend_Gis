@@ -100,7 +100,7 @@ const RecuperarContrasena = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
           <Button 
             variant="contained" 
-            color="secondary" 
+            color="primary" 
             onClick={handleBackClick}
           >
             Atrás

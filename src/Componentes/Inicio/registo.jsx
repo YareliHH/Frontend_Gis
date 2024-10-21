@@ -357,7 +357,7 @@ const Registro = () => {
               </Button>
             </Grid>
             <Grid item xs={12}>
-              <Button variant="outlined" color="secondary" fullWidth onClick={handleBackClick}>
+              <Button variant="outlined" color="primary" fullWidth onClick={handleBackClick}>
                 Atrás
               </Button>
             </Grid>
