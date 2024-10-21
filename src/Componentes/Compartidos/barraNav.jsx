@@ -59,7 +59,7 @@ const BarraNav = () => {
         navigate('/admin/productos');
         break;
       case 'quienesSomos':
-        navigate('/informacion/sobrenosotros');
+        navigate('/admin/informacion/lista-quienes-somos');
         break;
       case 'login':
         navigate('/login');
@@ -107,7 +107,7 @@ const BarraNav = () => {
               startIcon={<InfoIcon />}
               onClick={() => {
                 handleClick('informacion');
-                handleMenuClick('sobrenosotros');
+                handleMenuClick('quienesSomos');
               }}
               sx={{ color: active === 'informacion' ? '#B0C4DE' : '#FFFFFF' }}
             >

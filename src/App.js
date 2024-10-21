@@ -22,7 +22,7 @@ const App = () => {
         <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
         <Route path="/recuperar_password" element={<RecuperarContrasena />} /> 
-        <Route path="/informacion/sobrenosotros" element={<Sobrenosotros />} /> 
+        <Route path="/admin/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
 
         
       </Routes>
