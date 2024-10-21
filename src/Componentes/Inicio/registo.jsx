@@ -373,10 +373,10 @@ const Registro = () => {
             >
               Registrar
             </Button>
-            <Button onClick={handleNextClick} variant="text" color="secondary" fullWidth>
+            <Button onClick={handleNextClick} variant="contained" color="secondary" fullWidth>
               Siguiente
             </Button>
-            <Button onClick={handleBackClick} variant="text" color="secondary" fullWidth>
+            <Button onClick={handleBackClick} variant="contained" color="secondary" fullWidth>
               Atrás
             </Button>
           </Box>
