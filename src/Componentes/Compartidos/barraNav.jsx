@@ -7,7 +7,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import LoginIcon from '@mui/icons-material/Login';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from '../imagenes/LogoGL.jpg';
+import logo from '../imagenes/LogoGL.png';
 
 // Creación del tema personalizado
 const theme = createTheme({
