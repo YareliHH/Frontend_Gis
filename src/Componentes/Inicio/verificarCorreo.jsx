@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; 
 
 const EmailVerification = () => {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
+  const navigate = useNavigate(); 
 
   const validateEmail = (e) => {
     const emailValue = e.target.value;
@@ -27,6 +29,10 @@ const EmailVerification = () => {
     } else {
       alert('Por favor, ingrese un correo electrónico válido.');
     }
+  };
+
+  const handleBack = () => {
+    navigate(-1); // Navegar hacia atrás
   };
 
   return (
@@ -58,8 +64,16 @@ const EmailVerification = () => {
           type="submit"
           color="primary"
           fullWidth
+          sx={{ mb: 2 }}
         >
           Verificar
+        </Button>
+        <Button
+          variant="outlined"
+          onClick={handleBack} // Llamar a la función para regresar
+          fullWidth
+        >
+          Atrás
         </Button>
       </form>
     </Box>
