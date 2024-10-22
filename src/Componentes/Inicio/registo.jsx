@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom'; // Hook de navegación
+import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
 import CryptoJS from 'crypto-js';
 
