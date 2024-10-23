@@ -5,9 +5,8 @@ import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
 import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
 import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
-import RecuperarContrasena from './Componentes/Inicio/recuperarContrasena'; 
 import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
-
+import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
 import SolicitarCodigo from './Componentes/Inicio/solicitarCodigo.jsx';
 
 //inicio
@@ -25,7 +24,7 @@ const App = () => {
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
         <Route path="/recuperar_password" element={<RecuperarContrasena />} /> 
         <Route path="/admin/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
-
+        <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
         <Route path="/solicitar_codigo" element={<SolicitarCodigo />} /> 
         
       </Routes>
