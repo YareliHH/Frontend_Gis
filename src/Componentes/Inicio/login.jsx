@@ -174,7 +174,7 @@ function Login() {
           </Button>
 
           {/* Enlace a "¿Olvidaste tu contraseña?" */}
-          <Link to="/solicitar_codigo" style={{ textDecoration: 'none' }}>
+          <Link to="//recuperar_password" style={{ textDecoration: 'none' }}>
             <Typography variant="body2" sx={{ mt: 2, color: '#1565c0', fontWeight: 'bold' }}>
               ¿Olvidaste tu contraseña?
             </Typography>

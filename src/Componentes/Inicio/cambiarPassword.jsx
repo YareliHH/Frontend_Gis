@@ -3,6 +3,14 @@ import axios from 'axios';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import {
+  Container,
+  TextField,
+  Typography,
+  Button,
+  Box,
+  Paper,
+} from '@mui/material';
 
 const MySwal = withReactContent(Swal);
 
@@ -11,7 +19,7 @@ function CambiarPassword() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const location = useLocation();
   const navigate = useNavigate();
-  const { email } = location.state; 
+  const { email } = location.state;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +36,7 @@ function CambiarPassword() {
 
     try {
       // Enviar nueva contraseña al backend
-      const response = await axios.post('https://backendgislive.onrender.com//api/cambio/reset-password', {
+      const response = await axios.post('https://backendgislive.onrender.com/api/cambio/reset-password', {
         email,
         newPassword,
       });
@@ -53,77 +61,45 @@ function CambiarPassword() {
     }
   };
 
-  // Estilos en línea
-  const estilos = {
-    contenedor: {
-      textAlign: 'center',
-      backgroundColor: '#e0f7fa',
-      padding: '20px',
-      borderRadius: '15px',
-      maxWidth: '400px',
-      margin: '40px auto',
-      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-    },
-    titulo: {
-      fontSize: '28px',
-      marginBottom: '20px',
-      color: '#004d40',
-    },
-    campo: {
-      marginBottom: '15px',
-      textAlign: 'center',
-    },
-    input: {
-      width: '100%',
-      padding: '12px',
-      borderRadius: '8px',
-      border: '1px solid #b2dfdb',
-      fontSize: '16px',
-      boxSizing: 'border-box',
-    },
-    boton: {
-      backgroundColor: '#00796b',
-      color: 'white',
-      border: 'none',
-      padding: '12px 20px',
-      borderRadius: '8px',
-      cursor: 'pointer',
-      fontSize: '16px',
-      fontWeight: 'bold',
-      transition: 'background-color 0.3s ease',
-      display: 'block',
-      margin: '20px auto 0',
-      width: '100%',
-    },
-  };
-
   return (
-    <div style={estilos.contenedor}>
-      <h1 style={estilos.titulo}>Cambiar Contraseña</h1>
-      <form onSubmit={handleSubmit}>
-        <div style={estilos.campo}>
-          <input
+    <Container maxWidth="sm" sx={{ mt: 5 }}>
+      <Paper elevation={3} sx={{ p: 4, backgroundColor: '#e0f7fa' }}>
+        <Typography variant="h4" align="center" gutterBottom sx={{ color: '#004d40' }}>
+          Cambiar Contraseña
+        </Typography>
+        <Box component="form" onSubmit={handleSubmit} noValidate>
+          <TextField
+            label="Nueva contraseña"
             type="password"
-            placeholder="Nueva contraseña"
+            fullWidth
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
-            style={estilos.input}
+            variant="outlined"
+            margin="normal"
           />
-        </div>
-        <div style={estilos.campo}>
-          <input
+          <TextField
+            label="Confirmar nueva contraseña"
             type="password"
-            placeholder="Confirmar nueva contraseña"
+            fullWidth
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            style={estilos.input}
+            variant="outlined"
+            margin="normal"
           />
-        </div>
-        <button type="submit" style={estilos.boton}>Cambiar Contraseña</button>
-      </form>
-    </div>
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            color="primary"
+            sx={{ mt: 2, backgroundColor: '#00796b', '&:hover': { backgroundColor: '#004d40' } }}
+          >
+            Cambiar Contraseña
+          </Button>
+        </Box>
+      </Paper>
+    </Container>
   );
 }
 
