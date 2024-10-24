@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //compartidos
 import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
+import LayoutEncabezadoAdmin from './Componentes/Compartidos/LayoutConEncabezadoAdmin.jsx';
 import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
 import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
@@ -31,10 +32,10 @@ const App = () => {
         <Route path="/recuperar_password" element={<RecuperarContrasena />} /> 
         <Route path="/admin/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
         <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
-        <Route path="/admin" element={<Deslinde/>} /> 
-        <Route path="/admin" element={<PerfilEmpresa/>} /> 
-        <Route path="/admin" element={<Politicas/>} /> 
-        <Route path="/admin" element={<TerminosCondiciones/>} /> 
+        <Route path="/admin" element={<LayoutEncabezadoAdmin><Deslinde/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin" element={<LayoutEncabezadoAdmin><PerfilEmpresa/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
 
         
       </Routes>

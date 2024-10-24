@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import OtpInput from 'react-otp-input';
-import PasswordStrengthBar from 'react-password-strength-bar';
-import PasswordChecklist from 'react-password-checklist';
 import Swal from 'sweetalert2';
 import { Box, Button, Card, Container, Grid, TextField, Typography } from '@mui/material';
 import logo from '../imagenes/LogoGL.png';
@@ -10,9 +7,7 @@ import logo from '../imagenes/LogoGL.png';
 export const ForgotPassword = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
-    const [otp, setOtp] = useState('');
     const [csrfToken, setCsrfToken] = useState('');
-    // Si necesitas manejar el estado de los inputs manualmente, puedes definir un edddstado aquí
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -48,7 +43,7 @@ export const ForgotPassword = () => {
             if (response.ok) {
                 Swal.fire({
                     title: '¡Éxito!',
-                    text: 'Tu token de verificación se ha enviado.',
+                    text: 'Se ha enviado un correo para restablecer tu contraseña.',
                     icon: 'success',
                     confirmButtonText: 'Continuar',
                 });
@@ -68,11 +63,6 @@ export const ForgotPassword = () => {
         }
     };
 
-    const handleVerifyToken = (e) => {
-        e.preventDefault();
-        setStep(3);
-    };
-
     const handleResetPassword = async (e) => {
         e.preventDefault();
         try {
@@ -82,7 +72,7 @@ export const ForgotPassword = () => {
                     'Content-Type': 'application/json',
                     'X-CSRF-Token': csrfToken,
                 },
-                body: JSON.stringify({ email: correo, token: otp, nuevaContrasena: password }),
+                body: JSON.stringify({ email: correo, nuevaContrasena: password }),
                 credentials: 'include',
             });
 
@@ -133,28 +123,6 @@ export const ForgotPassword = () => {
                         )}
 
                         {step === 2 && (
-                            <form onSubmit={handleVerifyToken}>
-                                <Typography variant="h6" textAlign="center" mb={2}>
-                                    Ingresa el token enviado a tu correo.
-                                </Typography>
-                                <Box display="flex" justifyContent="center" mb={2}>
-                                    <OtpInput
-                                        value={otp}
-                                        onChange={setOtp}
-                                        numInputs={6}
-                                        renderSeparator={<span>-</span>}
-                                        renderInput={(props) => (
-                                            <TextField {...props} sx={{ width: 50, margin: 1 }} variant="outlined" required />
-                                        )}
-                                    />
-                                </Box>
-                                <Button fullWidth variant="contained" color="primary" type="submit">
-                                    Verificar token
-                                </Button>
-                            </form>
-                        )}
-
-                        {step === 3 && (
                             <form onSubmit={handleResetPassword}>
                                 <Typography variant="h6" textAlign="center" mb={2}>
                                     Ingresa tu nueva contraseña.
@@ -169,26 +137,6 @@ export const ForgotPassword = () => {
                                     required
                                     sx={{ mb: 2 }}
                                 />
-                                {password && (
-                                    <PasswordStrengthBar
-                                        password={password}
-                                        shortScoreWord="Muy corta"
-                                        scoreWords={['Muy corta', 'Corta', 'Bien', 'Fuerte', 'Muy fuerte']}
-                                    />
-                                )}
-                                {password && (
-                                    <PasswordChecklist
-                                        rules={['minLength', 'specialChar', 'number', 'capital']}
-                                        minLength={8}
-                                        value={password}
-                                        messages={{
-                                            minLength: 'La contraseña tiene más de 8 caracteres.',
-                                            specialChar: 'La contraseña tiene caracteres especiales.',
-                                            number: 'La contraseña tiene un número.',
-                                            capital: 'La contraseña tiene una letra mayúscula.',
-                                        }}
-                                    />
-                                )}
 
                                 <TextField
                                     fullWidth
@@ -200,16 +148,6 @@ export const ForgotPassword = () => {
                                     required
                                     sx={{ mb: 2 }}
                                 />
-                                {password && confirmPassword && (
-                                    <PasswordChecklist
-                                        rules={['match']}
-                                        value={password}
-                                        valueAgain={confirmPassword}
-                                        messages={{
-                                            match: 'Las contraseñas coinciden.',
-                                        }}
-                                    />
-                                )}
                                 <Button fullWidth variant="contained" color="primary" type="submit">
                                     Restablecer contraseña
                                 </Button>
