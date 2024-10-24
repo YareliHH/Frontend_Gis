@@ -11,7 +11,7 @@ const MySwal = withReactContent(Swal);
 
 function Login() {
   const navigate = useNavigate();
-  const [correo, setEmail] = useState('');
+  const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
   const [captchaValue, setCaptchaValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -102,7 +102,7 @@ function Login() {
             required
             fullWidth
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setCorreo(e.target.value)}
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
