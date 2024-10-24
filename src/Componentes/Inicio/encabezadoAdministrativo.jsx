@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import { HomeOutlined, UserOutlined, PhoneOutlined, AppstoreOutlined, LogoutOutlined, DescriptionOutlined } from '@mui/icons-material'; // Cambié FileTextOutlined por DescriptionOutlined
+import { AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemText } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import logo from '../imagenes/LogoGL.png';
 
@@ -73,15 +72,8 @@ const EncabezadoAdministrativo = () => {
       
       <Drawer anchor="right" open={isMobileMenuOpen} onClose={toggleMobileMenu}>
         <List>
-          {['politicas', 'terminos', 'perfil', 'deslinde', 'cerrarSesion'].map((text, index) => (
+          {['politicas', 'terminos', 'perfil', 'deslinde', 'cerrarSesion'].map((text) => (
             <ListItem button key={text} onClick={() => { handleClick(text); handleMenuClick(text); }}>
-              <ListItemIcon>
-                {index === 0 ? <DescriptionOutlined /> :  // Cambié aquí el ícono de FileTextOutlined por DescriptionOutlined
-                 index === 1 ? <AppstoreOutlined /> :
-                 index === 2 ? <UserOutlined /> :
-                 index === 3 ? <PhoneOutlined /> :
-                 <LogoutOutlined />}
-              </ListItemIcon>
               <ListItemText primary={text.charAt(0).toUpperCase() + text.slice(1)} />
             </ListItem>
           ))}
