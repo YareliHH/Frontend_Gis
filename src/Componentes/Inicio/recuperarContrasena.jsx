@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useForm } from '../hook/useForm';
 import { useNavigate } from 'react-router-dom';
 import OtpInput from 'react-otp-input';
 import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from 'react-password-checklist';
 import Swal from 'sweetalert2';
-import { Box, Button, Card, Container, Grid, TextField, Typography, CircularProgress } from '@mui/material';
+import { Box, Button, Card, Container, Grid, TextField, Typography } from '@mui/material';
 import logo from '../imagenes/LogoGL.png';
 
 export const ForgotPassword = () => {
@@ -13,11 +12,10 @@ export const ForgotPassword = () => {
     const [step, setStep] = useState(1);
     const [otp, setOtp] = useState('');
     const [csrfToken, setCsrfToken] = useState('');
-    const { correo, password, confirmPassword, onInputChange } = useForm({
-        correo: '',
-        password: '',
-        confirmPassword: '',
-    });
+    // Si necesitas manejar el estado de los inputs manualmente, puedes definir un estado aquí
+    const [correo, setCorreo] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
     useEffect(() => {
         const fetchCsrfToken = async () => {
@@ -104,13 +102,14 @@ export const ForgotPassword = () => {
             console.error('Error restableciendo la contraseña:', error);
         }
     };
+
     return (
         <Container>
             <Grid container justifyContent="center" style={{ minHeight: '100vh' }}>
                 <Grid item xs={12} sm={10} md={8} lg={6}>
                     <Card elevation={3} sx={{ padding: 3, borderRadius: '1rem', border: '1px solid #ccc' }}>
                         <Box textAlign="center" mb={3}>
-                        <img src={logo} alt="Gislive Boutique Clínica" style={{ width: 80, height: 60, marginRight: 16 }} />
+                            <img src={logo} alt="Gislive Boutique Clínica" style={{ width: 80, height: 60, marginRight: 16 }} />
                         </Box>
 
                         {step === 1 && (
@@ -122,9 +121,8 @@ export const ForgotPassword = () => {
                                     fullWidth
                                     label="Correo electrónico"
                                     variant="outlined"
-                                    name="correo"
                                     value={correo}
-                                    onChange={onInputChange}
+                                    onChange={(e) => setCorreo(e.target.value)}
                                     required
                                     sx={{ mb: 3 }}
                                 />
@@ -166,9 +164,8 @@ export const ForgotPassword = () => {
                                     label="Nueva contraseña"
                                     variant="outlined"
                                     type="password"
-                                    name="password"
                                     value={password}
-                                    onChange={onInputChange}
+                                    onChange={(e) => setPassword(e.target.value)}
                                     required
                                     sx={{ mb: 2 }}
                                 />
@@ -198,9 +195,8 @@ export const ForgotPassword = () => {
                                     label="Confirmar contraseña"
                                     variant="outlined"
                                     type="password"
-                                    name="confirmPassword"
                                     value={confirmPassword}
-                                    onChange={onInputChange}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
                                     required
                                     sx={{ mb: 2 }}
                                 />
