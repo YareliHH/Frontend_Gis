@@ -37,9 +37,9 @@ function Login() {
         password,
         captchaValue,
       });
-
+      
       console.log('Respuesta del servidor:', response.data);  // Depurar respuesta del servidor
-
+      
       const { tipo } = response.data;
       localStorage.setItem('usuario', JSON.stringify(response.data));
       let ruta = '/';
