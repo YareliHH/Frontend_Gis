@@ -11,7 +11,7 @@ const MySwal = withReactContent(Swal);
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
+  const [correo, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [captchaValue, setCaptchaValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
@@ -27,13 +27,13 @@ function Login() {
     }
 
     // Agregando logs para depurar los valores de email y password
-    console.log('Correo enviado:', email);
+    console.log('Correo enviado:', correo);
     console.log('Contraseña enviada:', password);
     console.log('Valor de reCAPTCHA:', captchaValue);
 
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/login', {
-        email,
+        correo,
         password,
         captchaValue,
       });
