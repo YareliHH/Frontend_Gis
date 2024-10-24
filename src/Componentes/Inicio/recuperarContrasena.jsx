@@ -6,6 +6,7 @@ import PasswordStrengthBar from 'react-password-strength-bar';
 import PasswordChecklist from 'react-password-checklist';
 import Swal from 'sweetalert2';
 import { Box, Button, Card, Container, Grid, TextField, Typography, CircularProgress } from '@mui/material';
+import logo from '../imagenes/LogoGL.png';
 
 export const ForgotPassword = () => {
     const navigate = useNavigate();
@@ -109,7 +110,7 @@ export const ForgotPassword = () => {
                 <Grid item xs={12} sm={10} md={8} lg={6}>
                     <Card elevation={3} sx={{ padding: 3, borderRadius: '1rem', border: '1px solid #ccc' }}>
                         <Box textAlign="center" mb={3}>
-                            <img src="./assets/img/bsb-logo.svg" alt="BootstrapBrain Logo" width="175" height="57" />
+                        <img src={logo} alt="Gislive Boutique Clínica" style={{ width: 80, height: 60, marginRight: 16 }} />
                         </Box>
 
                         {step === 1 && (
