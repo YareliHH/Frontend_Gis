@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AppBar, Toolbar, Typography, IconButton, Menu, MenuItem, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
-import { HomeOutlined, UserOutlined, PhoneOutlined, AppstoreOutlined, LogoutOutlined, FileTextOutlined } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, IconButton, Drawer, List, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { HomeOutlined, UserOutlined, PhoneOutlined, AppstoreOutlined, LogoutOutlined, DescriptionOutlined } from '@mui/icons-material'; // Cambié FileTextOutlined por DescriptionOutlined
 import { useNavigate } from 'react-router-dom';
 import logo from '../imagenes/LogoGL.png';
 
@@ -66,7 +66,7 @@ const EncabezadoAdministrativo = () => {
             Gislive Boutique
           </Typography>
           <IconButton color="inherit" onClick={toggleMobileMenu}>
-          <img src={logo} alt="Gislive Boutique Clínica" style={{ width: 80, height: 60, marginRight: 16 }} />
+            <img src={logo} alt="Gislive Boutique Clínica" style={{ width: 80, height: 60, marginRight: 16 }} />
           </IconButton>
         </Toolbar>
       </AppBar>
@@ -76,7 +76,7 @@ const EncabezadoAdministrativo = () => {
           {['politicas', 'terminos', 'perfil', 'deslinde', 'cerrarSesion'].map((text, index) => (
             <ListItem button key={text} onClick={() => { handleClick(text); handleMenuClick(text); }}>
               <ListItemIcon>
-                {index === 0 ? <FileTextOutlined /> :
+                {index === 0 ? <DescriptionOutlined /> :  // Cambié aquí el ícono de FileTextOutlined por DescriptionOutlined
                  index === 1 ? <AppstoreOutlined /> :
                  index === 2 ? <UserOutlined /> :
                  index === 3 ? <PhoneOutlined /> :
