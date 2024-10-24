@@ -101,7 +101,7 @@ function Login() {
             margin="normal"
             required
             fullWidth
-            value={email}
+            value={correo}
             onChange={(e) => setCorreo(e.target.value)}
             InputProps={{
               startAdornment: (
