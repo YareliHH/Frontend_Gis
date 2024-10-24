@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import { Box, Button, Card, Container, Grid, TextField, Typography } from '@mui/material';
 import logo from '../imagenes/LogoGL.png';
 
-export const ForgotPassword = () => {
+export const RecuperarContrasena = () => {
     const navigate = useNavigate();
     const [step, setStep] = useState(1);
     const [csrfToken, setCsrfToken] = useState('');
@@ -159,3 +159,4 @@ export const ForgotPassword = () => {
         </Container>
     );
 };
+export default RecuperarContrasena;
