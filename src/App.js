@@ -7,7 +7,13 @@ import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
 import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
 import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
-import SolicitarCodigo from './Componentes/Inicio/solicitarCodigo.jsx';
+import RecuperarContrasena from './Componentes/Inicio/recuperarContrasena'; 
+
+//Admi
+import Deslinde from './Componentes/Administrativo/Deslinde'; 
+import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa'; 
+import Politicas from './Componentes/Administrativo/Politicas'; 
+import TerminosCondiciones from './Componentes/Administrativo/Terminos'; 
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
@@ -25,7 +31,11 @@ const App = () => {
         <Route path="/recuperar_password" element={<RecuperarContrasena />} /> 
         <Route path="/admin/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
         <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
-        <Route path="/solicitar_codigo" element={<SolicitarCodigo />} /> 
+        <Route path="/admin" element={<Deslinde/>} /> 
+        <Route path="/admin" element={<PerfilEmpresa/>} /> 
+        <Route path="/admin" element={<Politicas/>} /> 
+        <Route path="/admin" element={<TerminosCondiciones/>} /> 
+
         
       </Routes>
     </Router>
@@ -33,4 +43,3 @@ const App = () => {
 };
 
 export default App;
-//YARELI HERNANDEZ HERNANDEZ ALIAS EL PITSOTL
