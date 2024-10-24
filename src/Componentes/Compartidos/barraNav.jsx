@@ -55,8 +55,8 @@ const BarraNav = () => {
       case 'usuarios':
         navigate('/admin/usuarios');
         break;
-      case 'productos':
-        navigate('/admin/productos');
+      case 'perfil':
+        navigate('/admin/perfil');
         break;
       case 'quienesSomos':
         navigate('/admin/informacion/lista-quienes-somos');
@@ -95,12 +95,12 @@ const BarraNav = () => {
               color="inherit"
               startIcon={<StoreIcon />}
               onClick={() => {
-                handleClick('productos');
-                handleMenuClick('productos');
+                handleClick('perfil');
+                handleMenuClick('perfil');
               }}
-              sx={{ color: active === 'productos' ? '#B0C4DE' : '#FFFFFF' }}
+              sx={{ color: active === 'perfil' ? '#B0C4DE' : '#FFFFFF' }}
             >
-              Productos
+              Perfil
             </Button>
             <Button
               color="inherit"
@@ -151,8 +151,8 @@ const BarraNav = () => {
             </MenuItem>
             <MenuItem
               onClick={() => {
-                handleClick('productos');
-                handleMenuClick('productos');
+                handleClick('perfil');
+                handleMenuClick('perfil');
               }}
             >
               <StoreIcon sx={{ marginRight: 1 }} /> Productos
