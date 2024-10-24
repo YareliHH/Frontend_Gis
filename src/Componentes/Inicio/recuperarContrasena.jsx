@@ -12,7 +12,7 @@ export const ForgotPassword = () => {
     const [step, setStep] = useState(1);
     const [otp, setOtp] = useState('');
     const [csrfToken, setCsrfToken] = useState('');
-    // Si necesitas manejar el estado de los inputs manualmente, puedes definir un estado aquí
+    // Si necesitas manejar el estado de los inputs manualmente, puedes definir un edddstado aquí
     const [correo, setCorreo] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
