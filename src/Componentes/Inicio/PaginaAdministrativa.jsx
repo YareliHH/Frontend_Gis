@@ -3,7 +3,7 @@ import { Button, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom'; 
 
 const PaginaAdministrativa = () => {
-  const navigate = useNavigate(); // Hook para la navegación
+  const navigate = useNavigate(); // Hook para la navegaciónnnn
 
   const handleBack = () => {
     navigate('/'); // Navegar a la página principal
