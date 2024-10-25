@@ -52,14 +52,11 @@ const BarraNav = () => {
 
   const handleMenuClick = (key) => {
     switch (key) {
-      case 'usuarios':
-        navigate('/admin/usuarios');
-        break;
       case 'perfil':
-        navigate('/admin/perfil');
+        navigate('/perfil');
         break;
       case 'quienesSomos':
-        navigate('/admin/informacion/lista-quienes-somos');
+        navigate('/informacion/lista-quienes-somos');
         break;
       case 'login':
         navigate('/login');

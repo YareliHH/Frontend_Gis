@@ -27,9 +27,10 @@ const UserProfile = ({ user }) => {
         <Typography variant="body1" color="textSecondary">
           <strong>Email:</strong> {user.email}
         </Typography>
-        <Typography variant="body2" color="textSecondary">
-          <strong>Joined:</strong> {new Date(user.joinedDate).toLocaleDateString()}
+        <Typography variant="body1" color="textSecondary">
+          <strong>Teléfono:</strong> {user.phone}
         </Typography>
+
       </Box>
 
       {/* Acciones */}
@@ -38,7 +39,7 @@ const UserProfile = ({ user }) => {
           Editar perfil
         </Button>
         <Button variant="outlined" color="secondary" onClick={user.onLogout}>
-          Logout
+          Logo
         </Button>
       </Box>
     </Box>
@@ -47,10 +48,10 @@ const UserProfile = ({ user }) => {
 
 // Ejemplo de datos de usuario
 const userData = {
-  name: 'Yareli Hdez Hdez',
+  name: 'Yareli Hernandez Hernandez',
   email: '20221124@gmail.com',
+  phone: '7711443389', // Número de teléfono del usuario
   profilePicture: null, // Si no hay imagen de perfil, se mostrará un placeholder
-  joinedDate: '2023-04-15', // Fecha de registro del usuario
   onEditProfile: () => alert('Edit Profile clicked!'),
   onLogout: () => alert('Logout clicked!'),
 };

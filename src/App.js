@@ -30,13 +30,13 @@ const App = () => {
         <Route path="/cliente" element={<LayoutEncabezado><PaginaCliente /></LayoutEncabezado>} />
         <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
-        <Route path="/admin/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
+        <Route path="/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
         <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
         <Route path="/admin" element={<LayoutEncabezadoAdmin><Deslinde/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin" element={<LayoutEncabezadoAdmin><PerfilEmpresa/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
-        <Route path="/admin/perfil" element={<Perfil />} />
+        <Route path="/perfil" element={<Perfil />} />
         <Route path="recuperar_password" element={<RecuperarContraseña/>} />
         
       </Routes>
