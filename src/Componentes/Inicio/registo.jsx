@@ -165,7 +165,182 @@ const Registro = () => {
 
   return (
     <Container maxWidth="sm">
-      {/* Rest of the form code remains unchanged */}
+      <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          Registro de Usuario
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Nombre"
+                name="nombre"
+                value={formData.nombre}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Person />
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!errors.nombre}
+                helperText={errors.nombre}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Apellido Paterno"
+                name="apellidoPaterno"
+                value={formData.apellidoPaterno}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountBox />
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!errors.apellidoPaterno}
+                helperText={errors.apellidoPaterno}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                fullWidth
+                label="Apellido Materno"
+                name="apellidoMaterno"
+                value={formData.apellidoMaterno}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <AccountBox />
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!errors.apellidoMaterno}
+                helperText={errors.apellidoMaterno}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Correo electrónico"
+                name="correo"
+                value={formData.correo}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email />
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!errors.correo}
+                helperText={errors.correo}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Teléfono"
+                name="telefono"
+                value={formData.telefono}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Phone />
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!errors.telefono}
+                helperText={errors.telefono}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Contraseña"
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={formData.password}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!passwordError}
+                helperText={passwordError}
+              />
+              {isLoading && <LinearProgress />}
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Confirmar Contraseña"
+                name="confirmPassword"
+                type={showConfirmPassword ? 'text' : 'password'}
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Lock />
+                    </InputAdornment>
+                  ),
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!passwordMatchError}
+                helperText={passwordMatchError}
+              />
+            </Grid>
+          </Grid>
+          <Box mt={4}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              disabled={isLoading || isPasswordFiltered || passwordMatchError !== ''}
+            >
+              Registrar
+            </Button>
+            <Button onClick={handleNextClick} variant="text" color="primary" fullWidth>
+              Siguiente
+            </Button>
+            <Button onClick={handleBackClick} variant="text" color="primary" fullWidth>
+              Atrás
+            </Button>
+          </Box>
+        </form>
+      </Box>
     </Container>
   );
 };
