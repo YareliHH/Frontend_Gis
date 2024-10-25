@@ -27,7 +27,7 @@ const Deslinde = () => {
   // Obtener todas las políticas
   const fetchDeslinde = async () => {
     try {
-      const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
+      const response = await axios.get('https://backendgislive.onrender.com/api/getdeslinde');
       setDeslinde(response.data);
     } catch (error) {
       console.error("Error al obtener las políticas", error);
@@ -116,7 +116,7 @@ const Deslinde = () => {
       <Button 
         variant="contained" 
         color="primary" 
-        onClick={handleCreatePolitica}
+        onClick={handleCreateDeslinde}
         style={{ marginBottom: '20px' }}
       >
         Agregar Deslinde
