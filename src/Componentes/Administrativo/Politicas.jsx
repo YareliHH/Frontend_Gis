@@ -38,7 +38,6 @@ const Politicas = () => {
   const handleCreatePolitica = async () => {
     try {
       await axios.post('https://backendgislive.onrender.com/api/insert', {
-        numero_politica: politicas.length + 1,
         titulo: newTitulo,
         contenido: newContenido,
       });
