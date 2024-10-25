@@ -1,6 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Typography, TextField, Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Avatar, InputLabel } from '@mui/material';
+import {
+    Container,
+    Typography,
+    TextField,
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableRow,
+    Paper,
+    Avatar,
+    InputLabel,
+} from '@mui/material';
 
 const PerfilEmpresa = () => {
     const [perfil, setPerfil] = useState({
@@ -14,7 +27,7 @@ const PerfilEmpresa = () => {
         titulo_pagina: '',
         logo: null,
     });
-
+    
     const [loading, setLoading] = useState(true);
     const [file, setFile] = useState(null);
 
@@ -22,7 +35,7 @@ const PerfilEmpresa = () => {
         const fetchPerfil = async () => {
             try {
                 const response = await axios.get('https://backendgislive.onrender.com/api/perfil_empresa/get');
-                setPerfil(response.data);
+                setPerfil(response.data[0]); // Asumiendo que solo hay un perfil
             } catch (error) {
                 console.error('Error al obtener el perfil de la empresa:', error);
             } finally {
@@ -206,6 +219,60 @@ const PerfilEmpresa = () => {
                     Guardar Perfil
                 </Button>
             </form>
+            {/* Tabla para visualizar los datos de la empresa */}
+            <Typography variant="h5" gutterBottom style={{ marginTop: '30px' }}>Datos de la Empresa</Typography>
+            <TableContainer component={Paper}>
+                <Table>
+                    <TableBody>
+                        {perfil && (
+                            <>
+                                <TableRow>
+                                    <TableCell>Nombre de Empresa</TableCell>
+                                    <TableCell>{perfil.nombre_empresa}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Dirección</TableCell>
+                                    <TableCell>{perfil.direccion}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Teléfono</TableCell>
+                                    <TableCell>{perfil.telefono}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Correo Electrónico</TableCell>
+                                    <TableCell>{perfil.correo_electronico}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Descripción</TableCell>
+                                    <TableCell>{perfil.descripcion}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Slogan</TableCell>
+                                    <TableCell>{perfil.slogan}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Título de Página</TableCell>
+                                    <TableCell>{perfil.titulo_pagina}</TableCell>
+                                </TableRow>
+                                <TableRow>
+                                    <TableCell>Logo</TableCell>
+                                    <TableCell>
+                                        {perfil.logo ? (
+                                            <Avatar
+                                                src={perfil.logo}
+                                                alt="Logo de la Empresa"
+                                                style={{ width: '150px', height: 'auto', margin: '10px auto' }}
+                                            />
+                                        ) : (
+                                            'No hay logo disponible'
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            </>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Container>
     );
 };
