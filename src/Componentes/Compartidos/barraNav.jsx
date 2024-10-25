@@ -141,14 +141,7 @@ const BarraNav = () => {
                 handleMenuClick('usuarios');
               }}
             >
-              <AccountCircleIcon sx={{ marginRight: 1 }} /> Usuario
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClick('perfil');
-                handleMenuClick('perfil');
-              }}
-            >
+
               <StoreIcon sx={{ marginRight: 1 }} /> Productos
             </MenuItem>
             <MenuItem

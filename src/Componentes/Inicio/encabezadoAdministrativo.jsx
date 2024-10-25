@@ -32,6 +32,9 @@ const EncabezadoAdministrativo = () => {
       case "deslinde":
         navigate('/admin/deslinde');
         break;
+        case "redesSociales":
+          navigate('/admin/redesSociales');
+          break;
       case "quienesSomos":
         navigate('/admin/informacion/lista-quienes-somos');
         break;
