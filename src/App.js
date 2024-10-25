@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 //compartidos
 import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
 import LayoutEncabezadoAdmin from './Componentes/Compartidos/LayoutConEncabezadoAdmin.jsx';
+import EncabezadoAdministrativo from './Componentes/Inicio/encabezadoAdministrativo.jsx';
 import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
 import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
@@ -28,7 +29,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
-        <Route path="admin" element={<LayoutEncabezadoAdmin><PaginaAdministrativa/></LayoutEncabezadoAdmin>} />
+        <Route path="admin" element={<EncabezadoAdministrativo><PaginaAdministrativa/></EncabezadoAdministrativo>} />
         <Route path="/cliente" element={<LayoutEncabezado><PaginaCliente /></LayoutEncabezado>} />
         <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
