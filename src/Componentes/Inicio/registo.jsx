@@ -3,7 +3,6 @@ import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, Li
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
-import CryptoJS from 'crypto-js';
 
 const Registro = () => {
   const [formData, setFormData] = useState({
@@ -61,34 +60,6 @@ const Registro = () => {
     return errors;
   };
 
-  // Verificar si la contraseña ha sido filtrada en brechas de datos
-  const checkPasswordSafety = async (password) => {
-    setIsLoading(true);
-    try {
-      const hashedPassword = CryptoJS.SHA1(password).toString(CryptoJS.enc.Hex);
-      const prefix = hashedPassword.slice(0, 5);
-      const suffix = hashedPassword.slice(5);
-
-      const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
-      const hashes = response.data.split('\n').map(line => line.split(':')[0]);
-
-      if (hashes.includes(suffix.toUpperCase())) {
-        setPasswordError('Contraseña insegura: ha sido filtrada en brechas de datos.');
-        setIsPasswordSafe(false);
-        setIsPasswordFiltered(true);
-      } else {
-        setPasswordError('');
-        setIsPasswordSafe(true);
-        setIsPasswordFiltered(false);
-      }
-    } catch (error) {
-      console.error('Error al verificar la contraseña:', error);
-      setPasswordError('Error al verificar la contraseña.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // Manejar el cambio de los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -102,9 +73,8 @@ const Registro = () => {
 
     // Validar cada campo según su tipo
     if (name === 'nombre' && !nameRegex.test(trimmedValue)) {
-      newErrors.nombre = 'El nombre debe contener solo letras.'; } 
-    else 
-    {
+      newErrors.nombre = 'El nombre debe contener solo letras.'; 
+    } else {
       delete newErrors.nombre;
     }
 
@@ -138,7 +108,6 @@ const Registro = () => {
         setPasswordError(passwordErrors.join(' '));
       } else {
         setPasswordError('');
-        checkPasswordSafety(trimmedValue);
       }
     }
 
@@ -179,10 +148,9 @@ const Registro = () => {
       return;
     }
 
-    const hashedPassword = CryptoJS.SHA256(formData.password).toString();
+    // No se hashea la contraseña en el frontend
     const registroData = {
       ...formData,
-      password: hashedPassword,
     };
 
     try {
@@ -193,16 +161,6 @@ const Registro = () => {
       console.error('Error al registrar usuario:', error);
       setErrors({ server: 'Error al registrar usuario' });
     }
-  };
-
-  // Manejar el clic en el botón "Atrás"
-  const handleBackClick = () => {
-    navigate(-1); // Navegar a la página anterior
-  };
-
-  // Manejar el clic en el botón "Siguiente"
-  const handleNextClick = () => {
-    navigate('/verificar-correo');
   };
 
   return (
@@ -373,12 +331,6 @@ const Registro = () => {
               disabled={isLoading || isPasswordFiltered || passwordMatchError !== ''}
             >
               Registrar
-            </Button>
-            <Button onClick={handleNextClick} variant="text" color="primary" fullWidth>
-              Siguiente
-            </Button>
-            <Button onClick={handleBackClick} variant="text" color="primary" fullWidth>
-              Atrás
             </Button>
           </Box>
         </form>
