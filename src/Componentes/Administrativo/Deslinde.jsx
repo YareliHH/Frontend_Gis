@@ -37,7 +37,7 @@ const Deslinde = () => {
   // Crear una nueva deslinde
   const handleCreateDeslinde = async () => {
     try {
-      await axios.post('https://backendgislive.onrender.com/api/insert', {
+      await axios.post('https://backendgislive.onrender.com/api/deslinde', {
         titulo: newTitulo,
         contenido: newContenido,
       });
