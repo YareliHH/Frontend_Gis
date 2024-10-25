@@ -9,6 +9,7 @@ import PaginaCliente from './Componentes/Inicio/PaginaCliente';
 import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
 import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
 import Perfil from './Componentes/Inicio/perfil'; 
+import RecuperarContraseña from './Componentes/Inicio/recuperarPassword';
 
 //Admi
 import Deslinde from './Componentes/Administrativo/Deslinde'; 
@@ -36,6 +37,7 @@ const App = () => {
         <Route path="/admin" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin/perfil" element={<Perfil />} />
+        <Route path="recuperar_password" element={<RecuperarContraseña/>} />
         
       </Routes>
     </Router>

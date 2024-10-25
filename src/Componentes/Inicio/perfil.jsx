@@ -44,7 +44,7 @@ const UserProfile = ({ user }) => {
 // Ejemplo de datos de usuario (esto normalmente vendría de una API o del estado de tu aplicación)
 const userData = {
   name: 'Yareli Hdez Hdez',
-  email: 'yareli@example.com',
+  email: '20221124@gmail.com',
  // profilePicture: 'https://example.com/profile-picture.jpg', // URL de la imagen del perfil
   joinedDate: '2023-04-15', // Fecha de registro del usuario
   onEditProfile: () => alert('Edit Profile clicked!'),
@@ -60,4 +60,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App;
