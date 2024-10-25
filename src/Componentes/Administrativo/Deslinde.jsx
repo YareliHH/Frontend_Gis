@@ -16,7 +16,7 @@ import {
 import { Edit, Delete } from '@mui/icons-material';
 
 const Deslinde = () => {
-  const [deslinde, setdeslinde] = useState([]);
+  const [deslinde, setDeslinde] = useState([]);
   const [newTitulo, setNewTitulo] = useState('');
   const [newContenido, setNewContenido] = useState('');
   const [editId, setEditId] = useState(null);
@@ -28,7 +28,7 @@ const Deslinde = () => {
   const fetchDeslinde = async () => {
     try {
       const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
-      setdeslinde(response.data);
+      setDeslinde(response.data);
     } catch (error) {
       console.error("Error al obtener las políticas", error);
     }
@@ -173,7 +173,7 @@ const Deslinde = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => { handleUpdatePolitica(editId); handleClose(); }} color="primary">
+          <Button onClick={() => { handleUpdateDeslinde(editId); handleClose(); }} color="primary">
             Guardar
           </Button>
         </DialogActions>
