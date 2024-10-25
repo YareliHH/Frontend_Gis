@@ -37,7 +37,7 @@ const TerminosCondiciones = () => {
   // Crear un nuevo término
   const handleCreateTermino = async () => {
     try {
-      await axios.post('https://backendgislive.onrender.com/api/insert', {
+      await axios.post('https://backendgislive.onrender.com/api/terminos', {
         titulo: newTitulo,
         contenido: newContenido,
       });
