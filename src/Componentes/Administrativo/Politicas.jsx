@@ -79,7 +79,6 @@ const Politicas = () => {
   const handleClickOpen = (politica) => {
     setEditTitulo(politica.titulo);
     setEditContenido(politica.contenido);
-    setEditId(politica.numero_politica);
     setOpen(true);
   };
 
