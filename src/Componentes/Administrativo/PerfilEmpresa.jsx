@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Typography, TextField, Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Avatar, IconButton, InputLabel } from '@mui/material';
-import { Facebook, Instagram } from '@mui/icons-material';
+import { Container, Typography, TextField, Button, Table, TableBody, TableCell, TableContainer, TableRow, Paper, Avatar, InputLabel } from '@mui/material';
 
 const PerfilEmpresa = () => {
     const [perfil, setPerfil] = useState({
         id_empresa: '',
         nombre_empresa: '',
         slogan: '',
-        facebook: '',
-        instagram: '',
         direccion: '',
         correo_electronico: '',
         telefono: '',
@@ -32,7 +29,6 @@ const PerfilEmpresa = () => {
                 setLoading(false);
             }
         };
-
         fetchPerfil();
     }, []);
 
@@ -59,15 +55,27 @@ const PerfilEmpresa = () => {
         }
 
         try {
-            await axios.put('/api/perfil_empresa/updateDatos', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            alert('Perfil de empresa actualizado con éxito');
+            // Detecta si es un perfil nuevo o existente
+            if (perfil.id_empresa) {
+                // Si hay `id_empresa`, llama a la ruta de actualización
+                await axios.put('/api/perfil_empresa/updateDatos', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                alert('Perfil de empresa actualizado con éxito');
+            } else {
+                // Si no hay `id_empresa`, llama a la ruta de inserción
+                await axios.post('/api/perfil_empresa/perfil', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                    },
+                });
+                alert('Perfil de empresa agregado con éxito');
+            }
         } catch (error) {
-            console.error('Error al actualizar el perfil de la empresa:', error);
-            alert('Error al actualizar el perfil');
+            console.error('Error al guardar el perfil de la empresa:', error);
+            alert(error.response?.data || 'Error al guardar el perfil');
         }
     };
 
@@ -77,9 +85,7 @@ const PerfilEmpresa = () => {
 
     return (
         <Container maxWidth="md">
-            <Typography variant="h4" gutterBottom>
-                Perfil de Empresa
-            </Typography>
+            <Typography variant="h4" gutterBottom>Perfil de Empresa</Typography>
             <form onSubmit={handleSubmit}>
                 <TableContainer component={Paper}>
                     <Table>
@@ -182,7 +188,7 @@ const PerfilEmpresa = () => {
                                     <TableCell>Logo Actual</TableCell>
                                     <TableCell>
                                         <Avatar
-                                            src={`data:image/png;base64,${perfil.logo}`}
+                                            src={perfil.logo}
                                             alt="Logo de la Empresa"
                                             style={{ width: '150px', height: 'auto', margin: '10px auto' }}
                                         />
@@ -192,14 +198,13 @@ const PerfilEmpresa = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
                 <Button
                     variant="contained"
                     color="primary"
                     type="submit"
                     style={{ marginTop: '20px' }}
                 >
-                    Actualizar Perfil
+                    Guardar Perfil
                 </Button>
             </form>
         </Container>
