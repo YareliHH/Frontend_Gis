@@ -55,18 +55,17 @@ const PerfilEmpresa = () => {
         }
 
         try {
-            // Detecta si es un perfil nuevo o existente
             if (perfil.id_empresa) {
-                // Si hay `id_empresa`, llama a la ruta de actualización
-                await axios.put('https://backendgislive.onrender.com/api/perfil_empresa/updateDatos', formData, {
+                // Actualización del perfil existente
+                await axios.put('https://backendgislive.onrender.com/api/updateDatos', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
                 alert('Perfil de empresa actualizado con éxito');
             } else {
-                // Si no hay `id_empresa`, llama a la ruta de inserción
-                await axios.post('/api/perfil_empresa/perfil', formData, {
+                // Creación de un nuevo perfil
+                await axios.post('https://backendgislive.onrender.com/api/perfil', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
