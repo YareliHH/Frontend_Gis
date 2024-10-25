@@ -8,7 +8,6 @@ import PaginaAdministrativa from './Componentes/Inicio/PaginaAdministrativa';
 import PaginaCliente from './Componentes/Inicio/PaginaCliente';
 import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
 import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
-import Perfil from './Componentes/Inicio/perfil'; 
 import RecuperarContraseña from './Componentes/Inicio/recuperarPassword';
 
 //Admi
@@ -16,6 +15,7 @@ import Deslinde from './Componentes/Administrativo/Deslinde';
 import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa'; 
 import Politicas from './Componentes/Administrativo/Politicas'; 
 import TerminosCondiciones from './Componentes/Administrativo/Terminos'; 
+import RedesSociales from './Componentes/Administrativo/RedesSociales'; 
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
@@ -36,7 +36,7 @@ const App = () => {
         <Route path="/admin" element={<LayoutEncabezadoAdmin><PerfilEmpresa/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
-        <Route path="/perfil" element={<Perfil />} />
+        <Route path="/admin" element={<LayoutEncabezadoAdmin><RedesSociales/></LayoutEncabezadoAdmin>} /> 
         <Route path="recuperar_password" element={<RecuperarContraseña/>} />
         
       </Routes>
