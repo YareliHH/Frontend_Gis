@@ -17,7 +17,7 @@ import Deslinde from './Componentes/Administrativo/Deslinde';
 import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa'; 
 import Politicas from './Componentes/Administrativo/Politicas'; 
 import TerminosCondiciones from './Componentes/Administrativo/Terminos'; 
-import RedesSociales from './Componentes/Administrativo/RedesSociales'; 
+import RedesSociales from './Componentes/Administrativo/redesSociales'; 
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
@@ -28,7 +28,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
-        <Route path="admin" element={<LayoutEncabezado><PaginaAdministrativa/></LayoutEncabezado>} />
+        <Route path="admin" element={<LayoutEncabezadoAdmin><PaginaAdministrativa/></LayoutEncabezadoAdmin>} />
         <Route path="/cliente" element={<LayoutEncabezado><PaginaCliente /></LayoutEncabezado>} />
         <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
