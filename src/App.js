@@ -17,7 +17,7 @@ import Deslinde from './Componentes/Administrativo/Deslinde';
 import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa'; 
 import Politicas from './Componentes/Administrativo/Politicas'; 
 import TerminosCondiciones from './Componentes/Administrativo/Terminos'; 
-import RedesSociales from './Componentes/Administrativo/redesSociales'; 
+import RedesSociales from './Componentes/Administrativo/RedesSociales'; 
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
