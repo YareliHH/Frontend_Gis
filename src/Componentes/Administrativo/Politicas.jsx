@@ -27,7 +27,7 @@ const Politicas = () => {
   // Obtener todas las políticas
   const fetchPoliticas = async () => {
     try {
-      const response = await axios.get('https://backendgislive.onrender.com/api/getAllPoliticas');
+      const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
       setPoliticas(response.data);
     } catch (error) {
       console.error("Error al obtener las políticas", error);
