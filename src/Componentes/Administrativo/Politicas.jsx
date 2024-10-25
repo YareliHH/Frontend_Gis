@@ -35,7 +35,7 @@ const Politicas = () => {
   // Crear una nueva política
   const handleCreatePolitica = async () => {
     try {
-      await axios.post('/add_politica', { politica: newPolitica });
+      await axios.post('https://backendgislive.onrender.com/api/add_politica', { politica: newPolitica });
       setNewPolitica('');
       fetchPoliticas(); // Actualizar la lista
     } catch (error) {
@@ -46,7 +46,7 @@ const Politicas = () => {
   // Actualizar una política
   const handleUpdatePolitica = async (id) => {
     try {
-      await axios.put(`/edit_politica/${id}`, { politica: editPolitica });
+      await axios.put(`https://backendgislive.onrender.com/api/edit_politica/${id}`, { politica: editPolitica });
       setEditId(null);
       setEditPolitica('');
       fetchPoliticas(); // Actualizar la lista
@@ -58,7 +58,7 @@ const Politicas = () => {
   // Eliminar una política
   const handleDeletePolitica = async (id) => {
     try {
-      await axios.delete(`/delete_politica/${id}`);
+      await axios.delete(`https://backendgislive.onrender.com/api/delete_politica/${id}`);
       fetchPoliticas(); // Actualizar la lista
     } catch (error) {
       console.error("Error al eliminar la política", error);
