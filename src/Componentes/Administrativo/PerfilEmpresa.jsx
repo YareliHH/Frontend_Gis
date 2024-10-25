@@ -1,150 +1,179 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Container, Typography, TextField, Button, Grid, InputLabel, FormControl, Select, MenuItem, Avatar,} from '@mui/material';
 
-const EmpresaComponent = () => {
-  const [empresas, setEmpresas] = useState([]);
-  const [nombre, setNombre] = useState('');
-  const [slogan, setSlogan] = useState('');
-  const [logo, setLogo] = useState('');
-  const [redesSociales, setRedesSociales] = useState({ facebook: '', instagram: '' });
-  const [contacto, setContacto] = useState({ direccion: '', correoElectronico: '', telefono: '' });
-  const [accion, setAccion] = useState('Crear');
-  const [id, setId] = useState('');
+const PerfilEmpresa = () => {
+    const [perfil, setPerfil] = useState({
+        id_empresa: '',
+        nombre_empresa: '',
+        direccion: '',
+        telefono: '',
+        correo_electronico: '',
+        descripcion: '',
+        logo: null,
+        slogan: '',
+        titulo_pagina: '',
+    });
 
-  // Obtener empresas al cargar el componente
-  useEffect(() => {
-    const fetchEmpresas = async () => {
-      try {
-        const response = await axios.get('/api/empresas');
-        setEmpresas(response.data);
-      } catch (error) {
-        console.error('Error al obtener empresas:', error);
-      }
+    const [loading, setLoading] = useState(true);
+    const [file, setFile] = useState(null);
+
+    useEffect(() => {
+        const fetchPerfil = async () => {
+            try {
+                const response = await axios.get('/api/perfil_empresa/get');
+                setPerfil(response.data);
+            } catch (error) {
+                console.error('Error al obtener el perfil de la empresa:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPerfil();
+    }, []);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setPerfil((prevPerfil) => ({
+            ...prevPerfil,
+            [name]: value,
+        }));
     };
-    fetchEmpresas();
-  }, []);
 
-  // Manejar el envío del formulario
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const empresaData = {
-      nombre,
-      slogan,
-      logo,
-      redesSociales,
-      contacto,
+    const handleLogoChange = (e) => {
+        setFile(e.target.files[0]);
     };
 
-    try {
-      if (accion === 'Crear') {
-        await axios.post('/api/empresas', empresaData);
-        alert('Empresa creada exitosamente');
-      } else {
-        await axios.put(`/api/empresas/${id}`, empresaData);
-        alert('Empresa actualizada exitosamente');
-      }
-      // Limpiar el formulario
-      resetForm();
-      // Volver a obtener las empresas
-      const response = await axios.get('/api/empresas');
-      setEmpresas(response.data);
-    } catch (error) {
-      console.error('Error al guardar la empresa:', error);
-      alert('Error al guardar la empresa');
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const formData = new FormData();
+        for (const key in perfil) {
+            formData.append(key, perfil[key]);
+        }
+        if (file) {
+            formData.append('logo', file);
+        }
+
+        try {
+            await axios.put('/api/perfil_empresa/updateDatos', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            alert('Perfil de empresa actualizado con éxito');
+        } catch (error) {
+            console.error('Error al actualizar el perfil de la empresa:', error);
+            alert('Error al actualizar el perfil');
+        }
+    };
+
+    if (loading) {
+        return <div>Cargando...</div>;
     }
-  };
 
-  // Manejar la selección de una empresa para editar
-  const handleEdit = (empresa) => {
-    setId(empresa.id);
-    setNombre(empresa.nombre);
-    setSlogan(empresa.slogan);
-    setLogo(empresa.logo);
-    setRedesSociales(empresa.redesSociales);
-    setContacto(empresa.contacto);
-    setAccion('Actualizar');
-  };
-
-  // Manejar el cambio en los campos de texto
-  const resetForm = () => {
-    setId('');
-    setNombre('');
-    setSlogan('');
-    setLogo('');
-    setRedesSociales({ facebook: '', instagram: '' });
-    setContacto({ direccion: '', correoElectronico: '', telefono: '' });
-    setAccion('Crear');
-  };
-
-  return (
-    <div>
-      <h2>{accion} Empresa</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Nombre"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Slogan"
-          value={slogan}
-          onChange={(e) => setSlogan(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Logo URL"
-          value={logo}
-          onChange={(e) => setLogo(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Facebook URL"
-          value={redesSociales.facebook}
-          onChange={(e) => setRedesSociales({ ...redesSociales, facebook: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Instagram URL"
-          value={redesSociales.instagram}
-          onChange={(e) => setRedesSociales({ ...redesSociales, instagram: e.target.value })}
-        />
-        <input
-          type="text"
-          placeholder="Dirección"
-          value={contacto.direccion}
-          onChange={(e) => setContacto({ ...contacto, direccion: e.target.value })}
-        />
-        <input
-          type="email"
-          placeholder="Correo Electrónico"
-          value={contacto.correoElectronico}
-          onChange={(e) => setContacto({ ...contacto, correoElectronico: e.target.value })}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Teléfono"
-          value={contacto.telefono}
-          onChange={(e) => setContacto({ ...contacto, telefono: e.target.value })}
-        />
-        <button type="submit">{accion} Empresa</button>
-      </form>
-
-      <h2>Lista de Empresas</h2>
-      <ul>
-        {empresas.map((empresa) => (
-          <li key={empresa.id}>
-            <h3>{empresa.nombre}</h3>
-            <p>{empresa.slogan}</p>
-            <button onClick={() => handleEdit(empresa)}>Editar</button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+    return (
+        <Container maxWidth="sm">
+            <Typography variant="h4" gutterBottom>
+                Perfil de Empresa
+            </Typography>
+            <form onSubmit={handleSubmit}>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Nombre de Empresa"
+                            name="nombre_empresa"
+                            value={perfil.nombre_empresa}
+                            onChange={handleChange}
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Dirección"
+                            name="direccion"
+                            value={perfil.direccion}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Teléfono"
+                            name="telefono"
+                            value={perfil.telefono}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Correo Electrónico"
+                            name="correo_electronico"
+                            value={perfil.correo_electronico}
+                            onChange={handleChange}
+                            required
+                            type="email"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Descripción"
+                            name="descripcion"
+                            value={perfil.descripcion}
+                            onChange={handleChange}
+                            multiline
+                            rows={4}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Slogan"
+                            name="slogan"
+                            value={perfil.slogan}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Título de Página"
+                            name="titulo_pagina"
+                            value={perfil.titulo_pagina}
+                            onChange={handleChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <InputLabel>Logo</InputLabel>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleLogoChange}
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Button variant="contained" color="primary" type="submit">
+                            Actualizar Perfil
+                        </Button>
+                    </Grid>
+                </Grid>
+            </form>
+            {perfil.logo && (
+                <Grid item xs={12} style={{ marginTop: '20px', textAlign: 'center' }}>
+                    <Typography variant="h6">Logo Actual:</Typography>
+                    <Avatar
+                        src={`data:image/png;base64,${perfil.logo}`}
+                        alt="Logo de la Empresa"
+                        style={{ width: '150px', height: 'auto', margin: '10px auto' }}
+                    />
+                </Grid>
+            )}
+        </Container>
+    );
 };
 
-export default EmpresaComponent;
+export default PerfilEmpresa;
