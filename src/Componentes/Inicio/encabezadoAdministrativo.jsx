@@ -9,20 +9,22 @@ import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.png';
 
+// Creación del tema personalizado
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#000000',
+      main: '#1E90FF', // Azul primario
     },
     secondary: {
-      main: '#333333',
+      main: '#4682B4', // Azul intermedio (para resaltar)
     },
   },
   components: {
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: '#000000',
+          background: 'linear-gradient(45deg, #1E90FF 30%, #4682B4 90%)', // Degradado azul
+          boxShadow: '0 3px 5px 2px rgba(30, 144, 255, .3)', // Sombra ligera
         },
       },
     },
@@ -128,6 +130,17 @@ const EncabezadoAdministrativo = () => {
               sx={{ color: active === 'perfil' ? '#B0C4DE' : '#FFFFFF' }}
             >
               Perfil
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<AccountCircleIcon />}
+              onClick={() => {
+                handleClick('deslinde');
+                handleMenuClick('deslinde');
+              }}
+              sx={{ color: active === 'deslinde' ? '#B0C4DE' : '#FFFFFF' }}
+            >
+              Deslinde Legal
             </Button>
             <Button
               color="inherit"
