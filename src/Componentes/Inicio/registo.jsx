@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
+import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton , Snackbar, Alert } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom'; 
 import axios from 'axios';
@@ -24,6 +24,10 @@ const Registro = () => {
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success', 'error', etc.
 
   const navigate = useNavigate(); // Hook para manejar la navegación
 
@@ -122,6 +126,12 @@ const Registro = () => {
     setErrors(newErrors);
   };
 
+
+  // Manejar el cierre del Snackbar
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   // Manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -156,10 +166,16 @@ const Registro = () => {
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
       setErrors({ success: 'Usuario registrado exitosamente' });
+      setSnackbarMessage('Usuario registrado exitosamente');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
       console.log(response.data);
     } catch (error) {
       console.error('Error al registrar usuario:', error);
       setErrors({ server: 'Error al registrar usuario' });
+      setSnackbarMessage('Error al registrar usuario');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
@@ -334,6 +350,16 @@ const Registro = () => {
             </Button>
           </Box>
         </form>
+         {/* Snackbar para mostrar mensajes de éxito o error */}
+         <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={handleSnackbarClose}
+        >
+          <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Box>
     </Container>
   );
