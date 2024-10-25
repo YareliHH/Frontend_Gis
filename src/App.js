@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
+
 //compartidos
 import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
 import LayoutEncabezadoAdmin from './Componentes/Compartidos/LayoutConEncabezadoAdmin.jsx';
@@ -33,11 +34,11 @@ const App = () => {
         <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
         <Route path="/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
         <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
-        <Route path="/admin/deslinde" element={<LayoutConEncabezadoAdmin><Deslinde/></LayoutConEncabezadoAdmin>} /> 
-        <Route path="/admin/perfil" element={<LayoutConEncabezadoAdmin><PerfilEmpresa/></LayoutConEncabezadoAdmin>} /> 
-        <Route path="/admin/politicas" element={<LayoutConEncabezadoAdmin><Politicas/></LayoutConEncabezadoAdmin>} /> 
-        <Route path="/admin/terminos" element={<LayoutConEncabezadoAdmin><TerminosCondiciones/></LayoutConEncabezadoAdmin>} /> 
-        <Route path="/admin/redesSociales" element={<LayoutConEncabezadoAdmin><RedesSociales/></LayoutConEncabezadoAdmin>} /> 
+        <Route path="/admin/deslinde" element={<LayoutEncabezadoAdmin><Deslinde/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin/perfil" element={<LayoutEncabezadoAdmin><PerfilEmpresa/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin/politicas" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin/terminos" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin/redesSociales" element={<LayoutEncabezadoAdmin><RedesSociales/></LayoutEncabezadoAdmin>} /> 
         <Route path="recuperar_password" element={<RecuperarContraseña/>} />
         
       </Routes>
