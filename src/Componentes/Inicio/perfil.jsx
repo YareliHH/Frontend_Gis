@@ -24,14 +24,18 @@ const UserProfile = ({ user }) => {
       {/* Información del usuario */}
       <Box mt={2} textAlign="center">
         <Typography variant="h5">{user.name}</Typography>
-        <Typography variant="body1" color="textSecondary"><strong>Email:</strong> {user.email}</Typography>
-        <Typography variant="body2" color="textSecondary"><strong>Joined:</strong> {new Date(user.joinedDate).toLocaleDateString()}</Typography>
+        <Typography variant="body1" color="textSecondary">
+          <strong>Email:</strong> {user.email}
+        </Typography>
+        <Typography variant="body2" color="textSecondary">
+          <strong>Joined:</strong> {new Date(user.joinedDate).toLocaleDateString()}
+        </Typography>
       </Box>
 
       {/* Acciones */}
       <Box mt={3} display="flex" gap={2}>
         <Button variant="contained" color="primary" onClick={user.onEditProfile}>
-          Edit Profile
+          Editar perfil
         </Button>
         <Button variant="outlined" color="secondary" onClick={user.onLogout}>
           Logout
@@ -41,11 +45,11 @@ const UserProfile = ({ user }) => {
   );
 };
 
-// Ejemplo de datos de usuario (esto normalmente vendría de una API o del estado de tu aplicación)
+// Ejemplo de datos de usuario
 const userData = {
   name: 'Yareli Hdez Hdez',
   email: '20221124@gmail.com',
- // profilePicture: 'https://example.com/profile-picture.jpg', // URL de la imagen del perfil
+  profilePicture: null, // Si no hay imagen de perfil, se mostrará un placeholder
   joinedDate: '2023-04-15', // Fecha de registro del usuario
   onEditProfile: () => alert('Edit Profile clicked!'),
   onLogout: () => alert('Logout clicked!'),
@@ -60,4 +64,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default App;
