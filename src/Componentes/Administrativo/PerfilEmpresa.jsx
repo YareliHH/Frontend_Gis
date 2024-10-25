@@ -21,7 +21,7 @@ const PerfilEmpresa = () => {
     useEffect(() => {
         const fetchPerfil = async () => {
             try {
-                const response = await axios.get('/api/perfil_empresa/get');
+                const response = await axios.get('https://backendgislive.onrender.com/api/perfil_empresa/get');
                 setPerfil(response.data);
             } catch (error) {
                 console.error('Error al obtener el perfil de la empresa:', error);
@@ -58,7 +58,7 @@ const PerfilEmpresa = () => {
             // Detecta si es un perfil nuevo o existente
             if (perfil.id_empresa) {
                 // Si hay `id_empresa`, llama a la ruta de actualización
-                await axios.put('/api/perfil_empresa/updateDatos', formData, {
+                await axios.put('https://backendgislive.onrender.com/api/perfil_empresa/updateDatos', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data',
                     },
