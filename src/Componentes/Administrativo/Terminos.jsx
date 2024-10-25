@@ -4,13 +4,9 @@ import {
   Container, 
   TextField, 
   Button, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
+  List, 
+  ListItem, 
+  ListItemText, 
   IconButton, 
   Dialog, 
   DialogActions, 
@@ -127,46 +123,32 @@ const TerminosCondiciones = () => {
         Agregar Término
       </Button>
 
-      {/* Tabla de términos */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Título</TableCell>
-              <TableCell>Contenido</TableCell>
-              <TableCell>Versión</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {terminos.map(termino => (
-              <TableRow key={termino.id}>
-                <TableCell>{termino.titulo}</TableCell>
-                <TableCell>{termino.contenido}</TableCell>
-                <TableCell>{termino.version}</TableCell>
-                <TableCell>
-                  <IconButton 
-                    edge="end" 
-                    aria-label="edit" 
-                    onClick={() => handleClickOpen(termino)}
-                  >
-                    <Edit />
-                  </IconButton>
-                  <IconButton 
-                    edge="end" 
-                    aria-label="delete" 
-                    onClick={() => handleDeleteTermino(termino.id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <List>
+        {terminos.map(termino => (
+          <ListItem key={termino.id} divider>
+            <ListItemText 
+              primary={`${termino.titulo} (Versión: ${termino.version})`} 
+              secondary={termino.contenido} 
+            />
+            <IconButton 
+              edge="end" 
+              aria-label="edit" 
+              onClick={() => handleClickOpen(termino)}
+            >
+              <Edit />
+            </IconButton>
+            <IconButton 
+              edge="end" 
+              aria-label="delete" 
+              onClick={() => handleDeleteTermino(termino.id)}
+            >
+              <Delete />
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
 
-      {/* Diálogo para editar término */}
+      {/* Dialogo para editar término */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Término</DialogTitle>
         <DialogContent>

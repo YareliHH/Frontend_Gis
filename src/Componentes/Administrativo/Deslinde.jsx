@@ -4,18 +4,14 @@ import {
   Container, 
   TextField, 
   Button, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
+  List, 
+  ListItem, 
+  ListItemText, 
   IconButton, 
   Dialog, 
   DialogActions, 
   DialogContent, 
-  DialogTitle, 
-  Paper 
+  DialogTitle 
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
@@ -28,6 +24,7 @@ const Deslinde = () => {
   const [editContenido, setEditContenido] = useState('');
   const [open, setOpen] = useState(false);
 
+  // Obtener todas las políticas
   const fetchDeslinde = async () => {
     try {
       const response = await axios.get('https://backendgislive.onrender.com/api/getdeslinde');
@@ -37,6 +34,7 @@ const Deslinde = () => {
     }
   };
 
+  // Crear una nueva deslinde
   const handleCreateDeslinde = async () => {
     try {
       await axios.post('https://backendgislive.onrender.com/api/insert', {
@@ -51,6 +49,7 @@ const Deslinde = () => {
     }
   };
 
+  // Actualizar un deslinde
   const handleUpdateDeslinde = async (id) => {
     try {
       await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
@@ -66,6 +65,7 @@ const Deslinde = () => {
     }
   };
 
+  // Eliminar un deslinde (lógicamente)
   const handleDeleteDeslinde = async (id) => {
     try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
@@ -75,8 +75,8 @@ const Deslinde = () => {
     }
   };
 
+  // Manejar el diálogo de edición
   const handleClickOpen = (deslinde) => {
-    setEditId(deslinde.id);
     setEditTitulo(deslinde.titulo);
     setEditContenido(deslinde.contenido);
     setOpen(true);
@@ -95,7 +95,7 @@ const Deslinde = () => {
 
   return (
     <Container>
-      <h1>Gestión de Deslinde Legal</h1>
+      <h1>Gestión de Deslinde Legal </h1>
 
       <TextField 
         label="Título de la nueva deslinde" 
@@ -122,35 +122,30 @@ const Deslinde = () => {
         Agregar Deslinde
       </Button>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Título</TableCell>
-              <TableCell>Contenido</TableCell>
-              <TableCell>Versión</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {deslinde.map((des) => (
-              <TableRow key={des.id}>
-                <TableCell>{des.titulo}</TableCell>
-                <TableCell>{des.contenido}</TableCell>
-                <TableCell>{des.version}</TableCell>
-                <TableCell>
-                  <IconButton color="primary" onClick={() => handleClickOpen(des)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton color="secondary" onClick={() => handleDeleteDeslinde(des.id)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <List>
+        {deslinde.map(deslinde=> (
+          <ListItem key={deslinde.id} divider>
+            <ListItemText 
+              primary={`${deslinde.titulo} (Versión: ${deslinde.version})`} 
+              secondary={deslinde.contenido} 
+            />
+            <IconButton 
+              edge="end" 
+              aria-label="edit" 
+              onClick={() => handleClickOpen(deslinde)}
+            >
+              <Edit />
+            </IconButton>
+            <IconButton 
+              edge="end" 
+              aria-label="delete" 
+              onClick={() => handleDeleteDeslinde(deslinde.id)}
+            >
+              <Delete />
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
 
       {/* Dialogo para editar política */}
       <Dialog open={open} onClose={handleClose}>

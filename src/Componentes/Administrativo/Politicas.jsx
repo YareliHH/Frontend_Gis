@@ -4,13 +4,9 @@ import {
   Container, 
   TextField, 
   Button, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
+  List, 
+  ListItem, 
+  ListItemText, 
   IconButton, 
   Dialog, 
   DialogActions, 
@@ -81,7 +77,6 @@ const Politicas = () => {
 
   // Manejar el diálogo de edición
   const handleClickOpen = (politica) => {
-    setEditId(politica.id);
     setEditTitulo(politica.titulo);
     setEditContenido(politica.contenido);
     setOpen(true);
@@ -127,46 +122,32 @@ const Politicas = () => {
         Agregar Política
       </Button>
 
-      {/* Tabla de políticas */}
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Título</TableCell>
-              <TableCell>Contenido</TableCell>
-              <TableCell>Versión</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {politicas.map(politica => (
-              <TableRow key={politica.id}>
-                <TableCell>{politica.titulo}</TableCell>
-                <TableCell>{politica.contenido}</TableCell>
-                <TableCell>{politica.version}</TableCell>
-                <TableCell>
-                  <IconButton 
-                    edge="end" 
-                    aria-label="edit" 
-                    onClick={() => handleClickOpen(politica)}
-                  >
-                    <Edit />
-                  </IconButton>
-                  <IconButton 
-                    edge="end" 
-                    aria-label="delete" 
-                    onClick={() => handleDeletePolitica(politica.id)}
-                  >
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <List>
+        {politicas.map(politica => (
+          <ListItem key={politica.id} divider>
+            <ListItemText 
+              primary={`${politica.titulo} (Versión: ${politica.version})`} 
+              secondary={politica.contenido} 
+            />
+            <IconButton 
+              edge="end" 
+              aria-label="edit" 
+              onClick={() => handleClickOpen(politica)}
+            >
+              <Edit />
+            </IconButton>
+            <IconButton 
+              edge="end" 
+              aria-label="delete" 
+              onClick={() => handleDeletePolitica(politica.id)}
+            >
+              <Delete />
+            </IconButton>
+          </ListItem>
+        ))}
+      </List>
 
-      {/* Diálogo para editar política */}
+      {/* Dialogo para editar política */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Política</DialogTitle>
         <DialogContent>
