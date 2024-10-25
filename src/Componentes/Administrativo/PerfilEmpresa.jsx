@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Container, Typography, TextField, Button, Grid, InputLabel, FormControl, Select, MenuItem, Avatar,} from '@mui/material';
+import { Container, Typography, TextField, Button, Grid, InputLabel, Avatar, IconButton } from '@mui/material';
+import { Facebook, Instagram } from '@mui/icons-material';
 
 const PerfilEmpresa = () => {
     const [perfil, setPerfil] = useState({
         id_empresa: '',
         nombre_empresa: '',
-        direccion: '',
-        telefono: '',
-        correo_electronico: '',
-        descripcion: '',
-        logo: null,
         slogan: '',
+        facebook: '',
+        instagram: '',
+        direccion: '',
+        correo_electronico: '',
+        telefono: '',
+        descripcion: '',
         titulo_pagina: '',
+        logo: null,
     });
 
     const [loading, setLoading] = useState(true);
@@ -159,6 +162,15 @@ const PerfilEmpresa = () => {
                         <Button variant="contained" color="primary" type="submit">
                             Actualizar Perfil
                         </Button>
+                    </Grid>
+                    <Grid item xs={12} style={{ textAlign: 'center', marginTop: '20px' }}>
+                        <Typography variant="h6">Redes Sociales</Typography>
+                        <IconButton color="primary" onClick={() => window.open(perfil.facebook, '_blank')}>
+                            <Facebook />
+                        </IconButton>
+                        <IconButton color="secondary" onClick={() => window.open(perfil.instagram, '_blank')}>
+                            <Instagram />
+                        </IconButton>
                     </Grid>
                 </Grid>
             </form>
