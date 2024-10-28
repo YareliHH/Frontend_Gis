@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton , Snackbar, Alert } from '@mui/material';
+import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Notificaciones from '../Compartidos/Notificaciones'; // Importar el componente Notificaciones
 
 const Registro = () => {
   const [formData, setFormData] = useState({
@@ -19,24 +20,20 @@ const Registro = () => {
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [passwordMatchError, setPasswordMatchError] = useState('');
-  const [isPasswordSafe, setIsPasswordSafe] = useState(false);
-  const [isPasswordFiltered, setIsPasswordFiltered] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success', 'error', etc.
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success' or 'error'
 
-  const navigate = useNavigate(); // Hook para manejar la navegación
+  const navigate = useNavigate();
 
-  // Regex para validación de campos
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
   const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
   const phoneRegex = /^[0-9]{10}$/;
 
-  // Validar reglas de seguridad de la contraseña
   const checkPasswordRules = (password) => {
     const errors = [];
     let strength = 0;
@@ -60,11 +57,9 @@ const Registro = () => {
     if (noRepeatingChars) strength += 20;
 
     setPasswordStrength(strength);
-
     return errors;
   };
 
-  // Manejar el cambio de los inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     const trimmedValue = value.trim();
@@ -75,9 +70,8 @@ const Registro = () => {
 
     const newErrors = { ...errors };
 
-    // Validar cada campo según su tipo
     if (name === 'nombre' && !nameRegex.test(trimmedValue)) {
-      newErrors.nombre = 'El nombre debe contener solo letras.'; 
+      newErrors.nombre = 'El nombre debe contener solo letras.';
     } else {
       delete newErrors.nombre;
     }
@@ -108,37 +102,24 @@ const Registro = () => {
 
     if (name === 'password') {
       const passwordErrors = checkPasswordRules(trimmedValue);
-      if (passwordErrors.length > 0) {
-        setPasswordError(passwordErrors.join(' '));
-      } else {
-        setPasswordError('');
-      }
+      setPasswordError(passwordErrors.length > 0 ? passwordErrors.join(' ') : '');
     }
 
     if (name === 'confirmPassword') {
-      if (trimmedValue !== formData.password) {
-        setPasswordMatchError('Las contraseñas no coinciden.');
-      } else {
-        setPasswordMatchError('');
-      }
+      setPasswordMatchError(trimmedValue !== formData.password ? 'Las contraseñas no coinciden.' : '');
     }
 
     setErrors(newErrors);
   };
 
-
-  // Manejar el cierre del Snackbar
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
-  // Manejar el envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (Object.keys(errors).length > 0) {
-      return;
-    }
+    if (Object.keys(errors).length > 0) return;
 
     try {
       const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
@@ -158,21 +139,16 @@ const Registro = () => {
       return;
     }
 
-    // No se hashea la contraseña en el frontend
-    const registroData = {
-      ...formData,
-    };
+    const registroData = { ...formData };
 
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
-      setErrors({ success: 'Usuario registrado exitosamente' });
       setSnackbarMessage('Usuario registrado exitosamente');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
-      console.log(response.data);
+      setErrors({});
     } catch (error) {
       console.error('Error al registrar usuario:', error);
-      setErrors({ server: 'Error al registrar usuario' });
       setSnackbarMessage('Error al registrar usuario');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -344,22 +320,19 @@ const Registro = () => {
               variant="contained"
               color="primary"
               fullWidth
-              disabled={isLoading || isPasswordFiltered || passwordMatchError !== ''}
+              disabled={isLoading || passwordMatchError !== ''}
             >
               Registrar
             </Button>
           </Box>
         </form>
-         {/* Snackbar para mostrar mensajes de éxito o error */}
-         <Snackbar
+
+        <Notificaciones
           open={snackbarOpen}
-          autoHideDuration={6000}
-          onClose={handleSnackbarClose}
-        >
-          <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
+          message={snackbarMessage}
+          type={snackbarSeverity}
+          handleClose={handleSnackbarClose}
+        />
       </Box>
     </Container>
   );

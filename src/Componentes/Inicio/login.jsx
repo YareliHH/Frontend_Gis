@@ -6,6 +6,8 @@ import withReactContent from "sweetalert2-react-content";
 import ReCAPTCHA from "react-google-recaptcha"; 
 import { Container, Typography,TextField, Button,Box,Snackbar,Alert,InputAdornment} from '@mui/material';
 import { Email as EmailIcon, Lock as LockIcon } from '@mui/icons-material';
+import Notificaciones from '../Compartidos/Notificaciones.jsx'; // Importar el componente Notificaciones
+
 
 const MySwal = withReactContent(Swal);
 
