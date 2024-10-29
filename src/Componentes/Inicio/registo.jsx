@@ -3,7 +3,7 @@ import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, Ci
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Notificaciones from '../Compartidos/Notificaciones'; // Importar el componente Notificaciones
+import Notificaciones from '../Compartidos/Notificaciones';
 
 const Registro = () => {
   const [formData, setFormData] = useState({
@@ -14,20 +14,23 @@ const Registro = () => {
     telefono: '',
     password: '',
     confirmPassword: '',
-    token: '', // Campo para el token de verificación
+    token: '',
   });
 
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [passwordMatchError, setPasswordMatchError] = useState('');
-  const [isEmailVerified, setIsEmailVerified] = useState(false); // Nuevo estado para verificar el correo
-  const [isTokenSent, setIsTokenSent] = useState(false); // Estado para controlar si el token ha sido enviado
-  const [tokenError, setTokenError] = useState(''); // Estado para manejar errores de token
+  const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [tokenVerified, setTokenVerified] = useState(false);
+  const [showTokenField, setShowTokenField] = useState(false);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const navigate = useNavigate();
 
@@ -113,11 +116,8 @@ const Registro = () => {
     setErrors(newErrors);
   };
 
-  const handleSnackbarClose = () => {
-    setSnackbarOpen(false);
-  };
-
-  const handleEmailVerification = async () => {
+  const handleVerifyEmail = async () => {
+    setIsVerifying(true);
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
       if (response.data.exists) {
@@ -126,33 +126,30 @@ const Registro = () => {
           correo: 'El correo ya está registrado. Intenta con otro.',
         }));
       } else {
-        setIsTokenSent(true);
-        setSnackbarMessage('Se ha enviado un código de verificación a tu correo.');
+        setSnackbarMessage('Código de verificación enviado a tu correo.');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
+        setShowTokenField(true);
       }
     } catch (error) {
       console.error('Error al verificar el correo:', error);
-      setSnackbarMessage('Error al verificar el correo.');
+      setSnackbarMessage('Error al enviar el código de verificación.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
+    } finally {
+      setIsVerifying(false);
     }
   };
 
-  const handleTokenVerification = async () => {
+  const handleVerifyToken = async () => {
     try {
-      const response = await axios.post('https://backendgislive.onrender.com/api/verify-token', {
-        correo: formData.correo,
-        token: formData.token,
-      });
+      const response = await axios.post('https://backendgislive.onrender.com/api/verify-token', { correo: formData.correo, token: formData.token });
       if (response.data.valid) {
-        setIsEmailVerified(true);
+        setTokenVerified(true);
         setSnackbarMessage('Token verificado exitosamente.');
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
       } else {
-        setIsEmailVerified(false);
-        setTokenError('Token inválido o expirado.');
         setSnackbarMessage('Token inválido o expirado.');
         setSnackbarSeverity('error');
         setSnackbarOpen(true);
@@ -168,7 +165,7 @@ const Registro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!isEmailVerified) {
+    if (!tokenVerified) {
       setSnackbarMessage('Debes verificar el token antes de registrarte.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -176,9 +173,9 @@ const Registro = () => {
     }
 
     setIsLoading(true);
+
     try {
-      const registroData = { ...formData };
-      await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
+      await axios.post('https://backendgislive.onrender.com/api/registro', formData);
       setSnackbarMessage('Usuario registrado exitosamente');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
@@ -198,6 +195,10 @@ const Registro = () => {
     }
   };
 
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <Container maxWidth="sm">
       <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
@@ -206,6 +207,60 @@ const Registro = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                label="Correo electrónico"
+                name="correo"
+                value={formData.correo}
+                onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Email />
+                    </InputAdornment>
+                  ),
+                }}
+                required
+                error={!!errors.correo}
+                helperText={errors.correo}
+              />
+              <Button
+                onClick={handleVerifyEmail}
+                variant="outlined"
+                color="primary"
+                fullWidth
+                disabled={isVerifying || tokenVerified}
+                startIcon={isVerifying ? <CircularProgress size={20} color="inherit" /> : null}
+                sx={{ mt: 2 }}
+              >
+                {isVerifying ? 'Verificando...' : 'Enviar código de verificación'}
+              </Button>
+            </Grid>
+
+            {showTokenField && (
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Código de Verificación"
+                  name="token"
+                  value={formData.token}
+                  onChange={handleChange}
+                  helperText="Ingresa el código de verificación enviado a tu correo."
+                />
+                <Button
+                  onClick={handleVerifyToken}
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                  disabled={tokenVerified}
+                >
+                  Verificar Token
+                </Button>
+              </Grid>
+            )}
+
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -266,41 +321,22 @@ const Registro = () => {
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Correo electrónico"
-                name="correo"
-                value={formData.correo}
+                label="Teléfono"
+                name="telefono"
+                value={formData.telefono}
                 onChange={handleChange}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Email />
+                      <Phone />
                     </InputAdornment>
                   ),
                 }}
                 required
-                error={!!errors.correo}
-                helperText={errors.correo}
+                error={!!errors.telefono}
+                helperText={errors.telefono}
               />
-              <Button onClick={handleEmailVerification} variant="outlined" sx={{ mt: 1 }} disabled={isTokenSent}>
-                Verificar Correo
-              </Button>
             </Grid>
-            {isTokenSent && (
-              <Grid item xs={12}>
-                <TextField
-                  fullWidth
-                  label="Código de Verificación"
-                  name="token"
-                  value={formData.token}
-                  onChange={(e) => setFormData({ ...formData, token: e.target.value })}
-                  error={!!tokenError}
-                  helperText={tokenError || 'Ingresa el código de verificación enviado a tu correo.'}
-                />
-                <Button onClick={handleTokenVerification} variant="outlined" sx={{ mt: 1 }} disabled={isEmailVerified}>
-                  Verificar Token
-                </Button>
-              </Grid>
-            )}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -362,7 +398,7 @@ const Registro = () => {
               variant="contained"
               color="primary"
               fullWidth
-              disabled={isLoading || !isEmailVerified || passwordMatchError !== ''}
+              disabled={isLoading || !tokenVerified || passwordMatchError !== ''}
               startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {isLoading ? 'Registrando...' : 'Registrar'}
