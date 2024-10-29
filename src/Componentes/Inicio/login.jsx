@@ -17,7 +17,7 @@ function Login() {
   const [captchaValue, setCaptchaValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [loading, setLoading] = useState(false); // Estado para mostrar la carga en el botón
+  const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +28,7 @@ function Login() {
       return;
     }
 
-    setLoading(true); // Mostrar el indicador de carga en el botón
+    setLoading(true); 
 
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/login', {
