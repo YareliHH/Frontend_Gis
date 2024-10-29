@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, LinearProgress, IconButton } from '@mui/material';
+import { Container, TextField, Button, Grid, Typography, Box, InputAdornment, CircularProgress, IconButton } from '@mui/material';
 import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -18,7 +18,7 @@ const Registro = () => {
 
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Estado de carga para el botón
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
@@ -26,7 +26,7 @@ const Registro = () => {
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success' or 'error'
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success' o 'error'
 
   const navigate = useNavigate();
 
@@ -119,7 +119,10 @@ const Registro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Si hay errores, detener el registro
     if (Object.keys(errors).length > 0) return;
+
+    setIsLoading(true); // Activar carga en el botón
 
     try {
       const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
@@ -128,6 +131,7 @@ const Registro = () => {
           ...prevErrors,
           correo: 'El correo ya está registrado. Intenta con otro.',
         }));
+        setIsLoading(false); // Desactivar carga si el correo ya existe
         return;
       }
     } catch (error) {
@@ -136,22 +140,30 @@ const Registro = () => {
         ...prevErrors,
         correo: 'Error al verificar el correo.',
       }));
+      setIsLoading(false); // Desactivar carga en caso de error
       return;
     }
 
     const registroData = { ...formData };
 
     try {
-      const response = await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
+      await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
       setSnackbarMessage('Usuario registrado exitosamente');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
+
+      setTimeout(() => {
+        navigate('/login'); // Redirigir a /login después de registro exitoso
+      }, 2000); // Tiempo para mostrar notificación antes de redirigir
+
       setErrors({});
     } catch (error) {
       console.error('Error al registrar usuario:', error);
       setSnackbarMessage('Error al registrar usuario');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
+    } finally {
+      setIsLoading(false); // Desactivar carga después de proceso de registro
     }
   };
 
@@ -284,7 +296,6 @@ const Registro = () => {
                 error={!!passwordError}
                 helperText={passwordError}
               />
-              {isLoading && <LinearProgress />}
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -321,8 +332,9 @@ const Registro = () => {
               color="primary"
               fullWidth
               disabled={isLoading || passwordMatchError !== ''}
+              startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
             >
-              Registrar
+              {isLoading ? 'Registrando...' : 'Registrar'}
             </Button>
           </Box>
         </form>
