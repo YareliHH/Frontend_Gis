@@ -14,19 +14,20 @@ const Registro = () => {
     telefono: '',
     password: '',
     confirmPassword: '',
+    token: '', // Campo para el token de verificación
   });
 
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Estado de carga para el botón
+  const [isLoading, setIsLoading] = useState(false);
   const [passwordMatchError, setPasswordMatchError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState(0);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isEmailVerified, setIsEmailVerified] = useState(false); // Nuevo estado para verificar el correo
+  const [isTokenSent, setIsTokenSent] = useState(false); // Estado para controlar si el token ha sido enviado
+  const [tokenError, setTokenError] = useState(''); // Estado para manejar errores de token
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // 'success' o 'error'
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); 
 
   const navigate = useNavigate();
 
@@ -116,45 +117,75 @@ const Registro = () => {
     setSnackbarOpen(false);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Si hay errores, detener el registro
-    if (Object.keys(errors).length > 0) return;
-
-    setIsLoading(true); // Activar carga en el botón
-
+  const handleEmailVerification = async () => {
     try {
-      const correoResponse = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
-      if (correoResponse.data.exists) {
+      const response = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
+      if (response.data.exists) {
         setErrors((prevErrors) => ({
           ...prevErrors,
           correo: 'El correo ya está registrado. Intenta con otro.',
         }));
-        setIsLoading(false); // Desactivar carga si el correo ya existe
-        return;
+      } else {
+        setIsTokenSent(true);
+        setSnackbarMessage('Se ha enviado un código de verificación a tu correo.');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
       }
     } catch (error) {
       console.error('Error al verificar el correo:', error);
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        correo: 'Error al verificar el correo.',
-      }));
-      setIsLoading(false); // Desactivar carga en caso de error
+      setSnackbarMessage('Error al verificar el correo.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleTokenVerification = async () => {
+    try {
+      const response = await axios.post('https://backendgislive.onrender.com/api/verify-token', {
+        correo: formData.correo,
+        token: formData.token,
+      });
+      if (response.data.valid) {
+        setIsEmailVerified(true);
+        setSnackbarMessage('Token verificado exitosamente.');
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      } else {
+        setIsEmailVerified(false);
+        setTokenError('Token inválido o expirado.');
+        setSnackbarMessage('Token inválido o expirado.');
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      console.error('Error al verificar el token:', error);
+      setSnackbarMessage('Error al verificar el token.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isEmailVerified) {
+      setSnackbarMessage('Debes verificar el token antes de registrarte.');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
       return;
     }
 
-    const registroData = { ...formData };
-
+    setIsLoading(true);
     try {
+      const registroData = { ...formData };
       await axios.post('https://backendgislive.onrender.com/api/registro', registroData);
       setSnackbarMessage('Usuario registrado exitosamente');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
 
       setTimeout(() => {
-        navigate('/login'); // Redirigir a /login después de registro exitoso
-      }, 2000); // Tiempo para mostrar notificación antes de redirigir
+        navigate('/login');
+      }, 2000);
 
       setErrors({});
     } catch (error) {
@@ -163,7 +194,7 @@ const Registro = () => {
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     } finally {
-      setIsLoading(false); // Desactivar carga después de proceso de registro
+      setIsLoading(false);
     }
   };
 
@@ -250,26 +281,26 @@ const Registro = () => {
                 error={!!errors.correo}
                 helperText={errors.correo}
               />
+              <Button onClick={handleEmailVerification} variant="outlined" sx={{ mt: 1 }} disabled={isTokenSent}>
+                Verificar Correo
+              </Button>
             </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Teléfono"
-                name="telefono"
-                value={formData.telefono}
-                onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Phone />
-                    </InputAdornment>
-                  ),
-                }}
-                required
-                error={!!errors.telefono}
-                helperText={errors.telefono}
-              />
-            </Grid>
+            {isTokenSent && (
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Código de Verificación"
+                  name="token"
+                  value={formData.token}
+                  onChange={(e) => setFormData({ ...formData, token: e.target.value })}
+                  error={!!tokenError}
+                  helperText={tokenError || 'Ingresa el código de verificación enviado a tu correo.'}
+                />
+                <Button onClick={handleTokenVerification} variant="outlined" sx={{ mt: 1 }} disabled={isEmailVerified}>
+                  Verificar Token
+                </Button>
+              </Grid>
+            )}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -331,7 +362,7 @@ const Registro = () => {
               variant="contained"
               color="primary"
               fullWidth
-              disabled={isLoading || passwordMatchError !== ''}
+              disabled={isLoading || !isEmailVerified || passwordMatchError !== ''}
               startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {isLoading ? 'Registrando...' : 'Registrar'}
