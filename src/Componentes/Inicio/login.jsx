@@ -4,10 +4,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import ReCAPTCHA from "react-google-recaptcha"; 
-import { Container, Typography,TextField, Button,Box,Snackbar,Alert,InputAdornment} from '@mui/material';
+import { Container, Typography, TextField, Button, Box, Snackbar, Alert, InputAdornment, CircularProgress } from '@mui/material';
 import { Email as EmailIcon, Lock as LockIcon } from '@mui/icons-material';
 import Notificaciones from '../Compartidos/Notificaciones.jsx'; // Importar el componente Notificaciones
-
 
 const MySwal = withReactContent(Swal);
 
@@ -18,6 +17,7 @@ function Login() {
   const [captchaValue, setCaptchaValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [loading, setLoading] = useState(false); // Estado para mostrar la carga en el botón
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,10 +28,7 @@ function Login() {
       return;
     }
 
-    // Agregando logs para depurar los valores de email y password
-    console.log('Correo enviado:', correo);
-    console.log('Contraseña enviada:', password);
-    console.log('Valor de reCAPTCHA:', captchaValue);
+    setLoading(true); // Mostrar el indicador de carga en el botón
 
     try {
       const response = await axios.post('https://backendgislive.onrender.com/api/login', {
@@ -39,8 +36,6 @@ function Login() {
         password,
         captchaValue,
       });
-      
-      console.log('Respuesta del servidor:', response.data);  // Depurar respuesta del servidor
       
       const { tipo } = response.data;
       localStorage.setItem('usuario', JSON.stringify(response.data));
@@ -57,6 +52,7 @@ function Login() {
         default:
           setErrorMessage('Tipo de usuario desconocido');
           setOpenSnackbar(true);
+          setLoading(false); // Ocultar el indicador de carga si ocurre un error
           return;
       }
 
@@ -71,17 +67,15 @@ function Login() {
       });
     } catch (error) {
       console.error('Error al iniciar sesión:', error);  // Depurar cualquier error de la solicitud
-      if (error.response) {
-        setErrorMessage('Correo o contraseña incorrectos');
-      } else {
-        setErrorMessage('Error al iniciar sesión. Inténtalo de nuevo más tarde.');
-      }
+      setErrorMessage(error.response ? 'Correo o contraseña incorrectos' : 'Error al iniciar sesión. Inténtalo de nuevo más tarde.');
       setOpenSnackbar(true);
+    } finally {
+      setLoading(false); // Ocultar el indicador de carga después de la solicitud
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex',  minHeight: '50vh' }}>
+    <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
       <Box 
         sx={{ 
           display: 'flex', 
@@ -90,7 +84,7 @@ function Login() {
           backgroundColor: '#e3f2fd', 
           padding: 4, 
           borderRadius: 3, 
-          boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.1)' 
+          boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)' 
         }}
       >
         <Typography variant="h4" component="h1" sx={{ mb: 3, color: '#1565c0', fontWeight: 'bold' }}>
@@ -142,7 +136,7 @@ function Login() {
               },
             }}
           />
-          <Box sx={{ my: 2 }}>
+          <Box sx={{ my: 2, display: 'flex', justifyContent: 'center' }}>
             <ReCAPTCHA
               sitekey="6LcKwWEqAAAAAMe2IRU4TukPaY92LJnE6c8pZtSo" 
               onChange={(value) => setCaptchaValue(value)}
@@ -153,29 +147,34 @@ function Login() {
             variant="contained" 
             color="primary" 
             fullWidth
+            disabled={loading} // Deshabilitar el botón cuando está cargando
+            startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
             sx={{
               padding: '10px 0',
-              backgroundColor: '#1565c0',
+              backgroundColor: loading ? '#1565c0' : '#1565c0',
               fontWeight: 'bold',
               '&:hover': {
-                backgroundColor: '#1e88e5',
+                backgroundColor: loading ? '#1565c0' : '#1e88e5',
               },
-              boxShadow: '0px 4px 15px rgba(21, 101, 192, 0.5)'
+              boxShadow: '0px 4px 15px rgba(21, 101, 192, 0.5)',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
           >
-            Iniciar Sesión
+            {loading ? 'Cargando...' : 'Iniciar Sesión'}
           </Button>
 
           {/* Enlace a "¿Olvidaste tu contraseña?" */}
           <Link to="/recuperar_password" style={{ textDecoration: 'none' }}>
-            <Typography variant="body2" sx={{ mt: 2, color: '#1565c0', fontWeight: 'bold' }}>
+            <Typography variant="body2" sx={{ mt: 2, color: '#1565c0', fontWeight: 'bold', textAlign: 'center' }}>
               ¿Olvidaste tu contraseña?
             </Typography>
           </Link>
 
           {/* Enlace a "Regístrate" */}
           <Link to="/registro" style={{ textDecoration: 'none' }}>
-            <Typography variant="body2" sx={{ mt: 1, color: '#1565c0', fontWeight: 'bold' }}>
+            <Typography variant="body2" sx={{ mt: 1, color: '#1565c0', fontWeight: 'bold', textAlign: 'center' }}>
               Regístrate
             </Typography>
           </Link>
