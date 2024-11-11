@@ -87,17 +87,6 @@ const BarraNav = () => {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               color="inherit"
-              startIcon={<StoreIcon />}
-              onClick={() => {
-                handleClick('perfil');
-                handleMenuClick('perfil');
-              }}
-              sx={{ color: active === 'perfil' ? '#B0C4DE' : '#FFFFFF' }}
-            >
-              Perfil
-            </Button>
-            <Button
-              color="inherit"
               startIcon={<InfoIcon />}
               onClick={() => {
                 handleClick('informacion');

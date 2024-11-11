@@ -1,18 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Container, 
-  TextField, 
-  Button, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  IconButton, 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogTitle 
-} from '@mui/material';
+import {  Container,  TextField,  Button,  List,  ListItem,  ListItemText,  IconButton,Dialog,DialogActions,DialogContent, DialogTitle } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
 const Deslinde = () => {
@@ -24,13 +12,13 @@ const Deslinde = () => {
   const [editContenido, setEditContenido] = useState('');
   const [open, setOpen] = useState(false);
 
-  // Obtener todas las políticas
+  // Obtener todas el deslinde
   const fetchDeslinde = async () => {
     try {
       const response = await axios.get('https://backendgislive.onrender.com/api/getdeslinde');
       setDeslinde(response.data);
     } catch (error) {
-      console.error("Error al obtener las políticas", error);
+      console.error("Error al obtener el deslinde", error);
     }
   };
 
@@ -45,7 +33,7 @@ const Deslinde = () => {
       setNewContenido('');
       fetchDeslinde();
     } catch (error) {
-      console.error("Error al crear la política", error);
+      console.error("Error al crear el deslinde", error);
     }
   };
 
@@ -61,7 +49,7 @@ const Deslinde = () => {
       setEditContenido('');
       fetchDeslinde();
     } catch (error) {
-      console.error("Error al actualizar la deslinde", error);
+      console.error("Error al actualizar el deslinde", error);
     }
   };
 
@@ -71,7 +59,7 @@ const Deslinde = () => {
       await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
       fetchDeslinde();
     } catch (error) {
-      console.error("Error al eliminar la deslinde", error);
+      console.error("Error al eliminar el deslinde", error);
     }
   };
 

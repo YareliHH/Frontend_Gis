@@ -129,7 +129,7 @@ const EncabezadoAdministrativo = () => {
               }}
               sx={{ color: active === 'perfil' ? '#B0C4DE' : '#FFFFFF' }}
             >
-              Perfil
+              Perfil de empresa
             </Button>
             <Button
               color="inherit"
