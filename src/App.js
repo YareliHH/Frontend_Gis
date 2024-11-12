@@ -25,9 +25,51 @@ import RedesSociales from './Componentes/Administrativo/RedesSociales';
 import Registro from './Componentes/Inicio/registo.jsx';
 import Login from './Componentes/Inicio/login.jsx';
 
+
+const ThemeToggleButton = () => {
+  const { toggleTheme, theme } = useTheme();
+  return (
+    <button 
+      onClick={toggleTheme} 
+      style={{ 
+        marginLeft: 'auto', 
+        background: 'none', 
+        border: 'none', 
+        cursor: 'pointer', 
+        padding: '10px',
+        fontSize: '1.2rem', 
+        verticalAlign: 'middle', 
+        lineHeight: '1.5', 
+        display: 'flex', 
+        alignItems: 'center', 
+      }}
+      aria-label="Toggle theme"
+    >
+      <FontAwesomeIcon 
+        icon={theme === 'dark' ? faSun : faMoon} 
+        style={{ color: theme === 'dark' ? 'yellow' : 'black' }}
+      />
+      <style>{`
+        @media (max-width: 768px) {
+          button {
+            font-size: 1.3rem;
+          }
+        }
+        @media (max-width: 480px) {
+          button {
+            font-size: 1.1rem;
+          }
+        }
+      `}</style>
+    </button>
+  );
+};
+
+
 const App = () => {
   return (
     <ThemeProvider>
+      <ThemeToggleButton/>
     <Router>
       <Routes>
         <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
