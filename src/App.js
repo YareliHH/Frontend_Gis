@@ -13,6 +13,7 @@ import Sobrenosotros from './Componentes/Inicio/sobrenosotros';
 import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
 import RecuperarContraseña from './Componentes/Inicio/recuperarPassword';
 import { ThemeProvider, useTheme } from './Componentes/Temas/themeContext';
+
 //Admi
 import Deslinde from './Componentes/Administrativo/Deslinde'; 
 import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa'; 
@@ -45,7 +46,7 @@ const App = () => {
         
       </Routes>
     </Router>
-    </ThemeProvider>
+  </ThemeProvider>
   );
 };
 
