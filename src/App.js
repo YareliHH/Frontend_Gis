@@ -12,7 +12,7 @@ import PaginaCliente from './Componentes/Inicio/PaginaCliente';
 import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
 import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
 import RecuperarContraseña from './Componentes/Inicio/recuperarPassword';
-
+import { ThemeProvider, useTheme } from './Componentes/Temas/themeContext';
 //Admi
 import Deslinde from './Componentes/Administrativo/Deslinde'; 
 import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa'; 
@@ -26,6 +26,7 @@ import Login from './Componentes/Inicio/login.jsx';
 
 const App = () => {
   return (
+    <ThemeProvider>
     <Router>
       <Routes>
         <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
@@ -44,6 +45,7 @@ const App = () => {
         
       </Routes>
     </Router>
+    </ThemeProvider>
   );
 };
 
