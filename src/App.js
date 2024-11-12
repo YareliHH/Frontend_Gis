@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-
+import { ThemeProvider, useTheme } from './Componentes/Temas/themeContext';
 
 //compartidos
 import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
@@ -12,7 +12,7 @@ import PaginaCliente from './Componentes/Inicio/PaginaCliente';
 import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
 import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
 import RecuperarContraseña from './Componentes/Inicio/recuperarPassword';
-import { ThemeProvider, useTheme } from './Componentes/Temas/themeContext';
+
 
 //Admi
 import Deslinde from './Componentes/Administrativo/Deslinde'; 
@@ -26,6 +26,7 @@ import Registro from './Componentes/Inicio/registo.jsx';
 import Login from './Componentes/Inicio/login.jsx';
 
 
+// Componente de cambio de tema
 const ThemeToggleButton = () => {
   const { toggleTheme, theme } = useTheme();
   return (
@@ -41,40 +42,50 @@ const ThemeToggleButton = () => {
         verticalAlign: 'middle', 
         lineHeight: '1.5', 
         display: 'flex', 
-        alignItems: 'center', 
+        alignItems: 'center',
       }}
       aria-label="Toggle theme"
     >
+      {theme === 'light' ? '🌞' : '🌜'}
     </button>
   );
 };
 
-
+// Aplicación principal
 const App = () => {
   return (
     <ThemeProvider>
-      <ThemeToggleButton/>
-    <Router>
-      <Routes>
-        <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
-        <Route path="admin" element={<LayoutEncabezadoAdmin><PaginaAdministrativa/></LayoutEncabezadoAdmin>} />
-        <Route path="/cliente" element={<LayoutEncabezado><PaginaCliente /></LayoutEncabezado>} />
-        <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
-        <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
-        <Route path="/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
-        <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
-        <Route path="/admin/deslinde" element={<LayoutEncabezadoAdmin><Deslinde/></LayoutEncabezadoAdmin>} /> 
-        <Route path="/admin/perfil" element={<LayoutEncabezadoAdmin><PerfilEmpresa/></LayoutEncabezadoAdmin>} /> 
-        <Route path="/admin/politicas" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
-        <Route path="/admin/terminos" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
-        <Route path="/admin/redesSociales" element={<LayoutEncabezadoAdmin><RedesSociales/></LayoutEncabezadoAdmin>} /> 
-        <Route path="recuperar_password" element={<RecuperarContraseña/>} />
-        
-      </Routes>
-    </Router>
-  </ThemeProvider>
+      <Router>
+        <LayoutEncabezado>
+          <ThemeToggleButton />
+        </LayoutEncabezado>
+        <Routes>
+          {/* Ruta principal */}
+          <Route path="/" element={<PaginaPrincipal />} />
+          
+          {/* Rutas de administración */}
+          <Route path="admin" element={<LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/deslinde" element={<LayoutEncabezadoAdmin><Deslinde /></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/perfil" element={<LayoutEncabezadoAdmin><PerfilEmpresa /></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/politicas" element={<LayoutEncabezadoAdmin><Politicas /></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/terminos" element={<LayoutEncabezadoAdmin><TerminosCondiciones /></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/redesSociales" element={<LayoutEncabezadoAdmin><RedesSociales /></LayoutEncabezadoAdmin>} />
+          
+          {/* Rutas de cliente */}
+          <Route path="/cliente" element={<LayoutEncabezado><PaginaCliente /></LayoutEncabezado>} />
+          
+          {/* Rutas de inicio de sesión y registro */}
+          <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
+          <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
+          
+          {/* Rutas adicionales */}
+          <Route path="/informacion/lista-quienes-somos" element={<Sobrenosotros />} /> 
+          <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
+          <Route path="/recuperar_password" element={<RecuperarContraseña />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 };
 
 export default App;
-
