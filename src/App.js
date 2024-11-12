@@ -45,22 +45,6 @@ const ThemeToggleButton = () => {
       }}
       aria-label="Toggle theme"
     >
-      <FontAwesomeIcon 
-        icon={theme === 'dark' ? faSun : faMoon} 
-        style={{ color: theme === 'dark' ? 'yellow' : 'black' }}
-      />
-      <style>{`
-        @media (max-width: 768px) {
-          button {
-            font-size: 1.3rem;
-          }
-        }
-        @media (max-width: 480px) {
-          button {
-            font-size: 1.1rem;
-          }
-        }
-      `}</style>
     </button>
   );
 };
