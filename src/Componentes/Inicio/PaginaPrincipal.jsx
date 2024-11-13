@@ -30,8 +30,8 @@ const PaginaPrincipal = () => {
 
   const colors = {
     background: isDarkMode
-      ? 'linear-gradient(135deg, #A7C7E7 30%, #1D2A38 100%)'
-      : '#A7C7E7',
+      ? 'linear-gradient(135deg, #FFFFFF 30%, #FFFFFF 100%)'
+      : '#FFFFFF',
     primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF',
     secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', 
     cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF', 
