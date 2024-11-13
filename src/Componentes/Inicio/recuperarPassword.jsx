@@ -22,7 +22,7 @@ const RecuperarContrasena = () => {
 
     try {
       // Enviar una solicitud al backend para recuperar la contraseña
-      await axios.post('https://backendgislive.onrender.com/api/recuperar-contrasena', { correo: email });
+      await axios.post('https://backendgislive.onrender.com/api/recuperacion', { correo: email });
       
       // Si la solicitud es exitosa, redirigir al usuario a la página de verificación
       setSnackbar({ open: true, message: 'Se ha enviado un código de verificación a tu correo electrónico', severity: 'success' });
