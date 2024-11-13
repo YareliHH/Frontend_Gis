@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Box, Snackbar, Alert } from '@mui/material';
-import { Email } from '@mui/icons-material';
+import { Container, TextField, Button, Typography, Box, Snackbar, Alert, IconButton } from '@mui/material';
+import { Email, ArrowBack } from '@mui/icons-material';
 import axios from 'axios';
-
 import { useNavigate } from 'react-router-dom';
 
 const RecuperarContrasena = () => {
@@ -43,9 +42,19 @@ const RecuperarContrasena = () => {
     setSnackbar({ ...snackbar, open: false });
   };
 
+  // Manejar el clic en el botón de atrás
+  const handleBack = () => {
+    navigate(-1); // Regresar a la página anterior
+  };
+
   return (
     <Container maxWidth="sm">
       <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
+        {/* Botón de Atrás */}
+        <IconButton onClick={handleBack} color="primary" sx={{ position: 'absolute', top: 20, left: 20 }}>
+          <ArrowBack />
+        </IconButton>
+
         <Typography variant="h4" align="center" gutterBottom>
           Recuperar Contraseña
         </Typography>
@@ -92,4 +101,3 @@ const RecuperarContrasena = () => {
 };
 
 export default RecuperarContrasena;
-
