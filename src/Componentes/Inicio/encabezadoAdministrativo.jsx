@@ -144,6 +144,17 @@ const EncabezadoAdministrativo = () => {
             </Button>
             <Button
               color="inherit"
+              startIcon={<AccountCircleIcon />}
+              onClick={() => {
+                handleClick('redes');
+                handleMenuClick('redes');
+              }}
+              sx={{ color: active === 'redes' ? '#B0C4DE' : '#FFFFFF' }}
+            >
+              Redes Sociales
+            </Button>
+            <Button
+              color="inherit"
               startIcon={<LogoutIcon />}
               onClick={() => {
                 handleClick('cerrarSesion');
