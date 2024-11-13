@@ -29,11 +29,11 @@ const PaginaPrincipal = () => {
   }, []);
 
   const colors = {
-    background: '#FFFFFF', // Fondo blanco fijo
-    primaryText: isDarkMode ? '#82B1FF' : '#1E3A5F', // Azul claro en oscuro, azul oscuro en claro
-    secondaryText: isDarkMode ? '#B0BEC5' : '#4C6E8D', // Gris claro en oscuro, azul más suave en claro
-    cardBackground: isDarkMode ? '#4C6E8D' : '#FFFFFF', // Fondo de tarjeta en modo claro
-    cardHover: isDarkMode ? '#3A5F7A' : '#D1E9FF', // Fondo de tarjeta al pasar el ratón
+    background: '#FFFFFF', 
+    primaryText: isDarkMode ? '#82B1FF' : '#1E3A5F', 
+    secondaryText: isDarkMode ? '#B0BEC5' : '#4C6E8D', 
+    cardBackground: isDarkMode ? '#4C6E8D' : '#FFFFFF', 
+    cardHover: isDarkMode ? '#3A5F7A' : '#D1E9FF', 
   };
 
   return (

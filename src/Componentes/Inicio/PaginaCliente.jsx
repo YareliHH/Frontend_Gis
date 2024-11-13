@@ -30,10 +30,10 @@ const PaginaCliente = () => {
 
   const colors = {
     background: '#FFFFFF', // Fondo blanco fijo
-    primaryText: isDarkMode ? '#82B1FF' : '#1E3A5F', // Azul claro en oscuro, azul oscuro en claro
-    secondaryText: isDarkMode ? '#B0BEC5' : '#4C6E8D', // Gris claro en oscuro, azul más suave en claro
-    cardBackground: isDarkMode ? '#4C6E8D' : '#FFFFFF', // Fondo de tarjeta en modo claro
-    cardHover: isDarkMode ? '#3A5F7A' : '#D1E9FF', // Fondo de tarjeta al pasar el ratón
+    primaryText: isDarkMode ? '#82B1FF' : '#1E3A5F', 
+    secondaryText: isDarkMode ? '#B0BEC5' : '#4C6E8D', 
+    cardBackground: isDarkMode ? '#4C6E8D' : '#FFFFFF', 
+    cardHover: isDarkMode ? '#3A5F7A' : '#D1E9FF', 
   };
 
   return (
@@ -48,33 +48,33 @@ const PaginaCliente = () => {
       <Container maxWidth="lg" sx={{ py: 10 }} disableGutters>
         {/* Encabezado principal */}
         <Box sx={{ textAlign: 'center', mb: 8 }}>
-          <Typography
-            variant="h3"
-            component="h1"
-            sx={{
-              fontWeight: 'bold',
-              color: colors.primaryText,
-              fontFamily: 'Roboto, sans-serif',
-            }}
-          >
-            Bienvenidos a nuestra tienda de uniformes clínicos
-          </Typography>
+        <Typography
+        variant="h3"
+        component="h1"
+        sx={{
+          fontWeight: 'bold',
+          color: 'black', // Cambiado a negro
+          fontFamily: 'Roboto, sans-serif',
+        }}
+      >
+        Bienvenidos a nuestra tienda de uniformes clínicos
+      </Typography>
         </Box>
 
         {/* Sección de productos */}
         <Box component="section" sx={{ mb: 12 }}>
-          <Typography
-            variant="h4"
-            sx={{
-              color: colors.primaryText,
-              fontWeight: 'bold',
-              textAlign: 'center',
-              mb: 6,
-              fontFamily: 'Montserrat, sans-serif',
-            }}
-          >
-            Las mejores prendas de Gislive Boutique
-          </Typography>
+        <Typography
+          variant="h4"
+          sx={{
+            color: 'black', // Cambiado a negro
+            fontWeight: 'bold',
+            textAlign: 'center',
+            mb: 6,
+            fontFamily: 'Montserrat, sans-serif',
+          }}
+        >
+          Las mejores prendas de Gislive Boutique
+        </Typography>
           <Grid container spacing={4} justifyContent="center">
             {[ 
               {
