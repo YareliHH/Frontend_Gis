@@ -7,7 +7,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import logo from '../imagenes/LogoGL.png';
+import logo from '../imagenes/LogoGL.jpg';
 
 // Creación del tema personalizado
 const theme = createTheme({
