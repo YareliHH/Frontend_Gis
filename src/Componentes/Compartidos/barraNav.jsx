@@ -126,15 +126,6 @@ const BarraNav = () => {
           >
             <MenuItem
               onClick={() => {
-                handleClick('usuarios');
-                handleMenuClick('usuarios');
-              }}
-            >
-
-              <StoreIcon sx={{ marginRight: 1 }} /> Productos
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
                 handleClick('informacion');
                 handleMenuClick('quienesSomos');
               }}
