@@ -4,6 +4,7 @@ import { Person, Email, Phone, Lock, AccountBox, Visibility, VisibilityOff } fro
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Notificaciones from '../Compartidos/Notificaciones';
+import zxcvbn from 'zxcvbn';
 
 const Registro = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,7 @@ const Registro = () => {
 
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); 
   const [isVerifying, setIsVerifying] = useState(false);
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState(0);

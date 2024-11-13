@@ -28,7 +28,6 @@ import Login from './Componentes/Inicio/login.jsx';
 const App = () => {
   return (
     <ThemeProvider>
-      <ThemeToggleButton/>
     <Router>
       <Routes>
         <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
