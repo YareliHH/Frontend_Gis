@@ -35,7 +35,7 @@ const PaginaPrincipal = () => {
     primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF',
     secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', 
     cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF', 
-    cardHover: isDarkMode ? '#3A4A5A' : '#E3F2FD', // Fondo de tarjeta al pasar el ratón
+    cardHover: isDarkMode ? '#3A4A5A' : '#E3F2FD', 
   };
 
   return (
