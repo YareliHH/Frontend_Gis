@@ -9,7 +9,7 @@ import {
   CardMedia,
   IconButton,
 } from '@mui/material';
-import { ShoppingCart, LocalHospital, People, Phone, Email } from '@mui/icons-material';
+import { Phone, Email } from '@mui/icons-material';
 
 // Importar las imágenes locales de los productos
 import img1 from '../imagenes/img1.png';
@@ -19,7 +19,7 @@ import img4 from '../imagenes/img4.jpg';
 import img5 from '../imagenes/img5.jpg';
 import img6 from '../imagenes/img6.jpg';
 
-const Home = () => {
+const PaginaPrincipal = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Detectar el tema del sistema
@@ -39,13 +39,13 @@ const Home = () => {
   }, []);
 
   const colors = {
-    background: isDarkMode 
-      ? 'linear-gradient(135deg, #1A2A3A 30%, #1D2A38 100%)'  // Gradiente en modo oscuro
-      : 'linear-gradient(135deg, #FFFFFF 30%, #E3F2FD 100%)', // Gradiente en modo claro
-    primaryText: isDarkMode ? '#82B1FF' : '#1976d2',          // Azul brillante en oscuro
-    secondaryText: isDarkMode ? '#B0BEC5' : '#616161',        // Gris claro en oscuro
-    cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF',       // Fondo de tarjeta oscuro en modo oscuro
-    cardHover: isDarkMode ? '#3A4A5A' : '#E3F2FD',            // Fondo de tarjeta al pasar el ratón
+    background: isDarkMode
+      ? 'linear-gradient(135deg, #1A2A3A 30%, #1D2A38 100%)' // Gradiente en modo oscuro
+      : '#FFFFFF', // Fondo blanco en modo claro
+    primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF', // Azul brillante en oscuro
+    secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', // Gris claro en oscuro
+    cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF', // Fondo de tarjeta en modo claro
+    cardHover: isDarkMode ? '#3A4A5A' : '#E3F2FD', // Fondo de tarjeta al pasar el ratón
   };
 
   return (
@@ -69,17 +69,6 @@ const Home = () => {
               fontFamily: 'Roboto, sans-serif',
             }}
           >
-            Boutique Quirúrgica
-          </Typography>
-          <Typography
-            variant="subtitle1"
-            sx={{
-              color: colors.secondaryText,
-              mt: 2,
-              fontFamily: 'Roboto, sans-serif',
-            }}
-          >
-            Viste con comodidad y estilo en tu trabajo diario
           </Typography>
         </Box>
 
@@ -151,7 +140,7 @@ const Home = () => {
                     alt={product.title}
                     image={product.img}
                     sx={{
-                      height: 180,
+                      height: 300, // Imagen más grande
                       width: '100%',
                       objectFit: 'cover',
                     }}
@@ -221,7 +210,7 @@ const Home = () => {
             </Typography>
           </Box>
           <Typography variant="body2" sx={{ color: colors.secondaryText, textAlign: 'center', mt: 3 }}>
-            <strong>Ubicación:</strong>Velazque Ibarra, #12, Huejutla de Reyes, Hidalgo, México
+            <strong>Ubicación:</strong> Velazque Ibarra, #12, Huejutla de Reyes, Hidalgo, México
           </Typography>
         </Box>
       </Container>
@@ -229,4 +218,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default PaginaPrincipal;
