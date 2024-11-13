@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box,Typography,Container, Grid, Card, CardContent, CardMedia,} from '@mui/material';
+import { Box, Typography, Container, Grid, Card, CardContent, CardMedia } from '@mui/material';
 
 // Importar las imágenes locales de los productos
 import img1 from '../imagenes/img1.png';
@@ -29,13 +29,11 @@ const PaginaPrincipal = () => {
   }, []);
 
   const colors = {
-    background: isDarkMode
-      ? 'linear-gradient(135deg, #FFFFFF 30%, #FFFFFF 100%)'
-      : '#FFFFFF',
-    primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF',
-    secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', 
-    cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF', 
-    cardHover: isDarkMode ? '#3A4A5A' : '#E3F2FD', 
+    background: '#FFFFFF', // Fondo blanco fijo
+    primaryText: isDarkMode ? '#82B1FF' : '#1E3A5F', // Azul claro en oscuro, azul oscuro en claro
+    secondaryText: isDarkMode ? '#B0BEC5' : '#4C6E8D', // Gris claro en oscuro, azul más suave en claro
+    cardBackground: isDarkMode ? '#4C6E8D' : '#FFFFFF', // Fondo de tarjeta en modo claro
+    cardHover: isDarkMode ? '#3A5F7A' : '#D1E9FF', // Fondo de tarjeta al pasar el ratón
   };
 
   return (
@@ -59,7 +57,7 @@ const PaginaPrincipal = () => {
               fontFamily: 'Roboto, sans-serif',
             }}
           >
-            Bienvenidos a nuestra tienda de uniformes clinicos y Quirorjicos
+            Bienvenidos a nuestra tienda de uniformes clínicos
           </Typography>
         </Box>
 
@@ -137,8 +135,8 @@ const PaginaPrincipal = () => {
                     alt={product.title}
                     image={product.img}
                     sx={{
-                      height: 400, 
-                      width: '150%',
+                      height: 300, 
+                      width: '100%',
                       objectFit: 'cover',
                     }}
                   />
@@ -157,6 +155,16 @@ const PaginaPrincipal = () => {
                     <Typography variant="body2" sx={{ color: colors.secondaryText }}>
                       {product.description}
                     </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        fontWeight: 'bold',
+                        color: colors.primaryText,
+                        mt: 2,
+                      }}
+                    >
+                      {product.price}
+                    </Typography>
                   </CardContent>
                 </Card>
               </Grid>
@@ -169,4 +177,3 @@ const PaginaPrincipal = () => {
 };
 
 export default PaginaPrincipal;
-
