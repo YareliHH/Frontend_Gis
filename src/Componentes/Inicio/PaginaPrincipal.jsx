@@ -40,7 +40,7 @@ const PaginaPrincipal = () => {
 
   const colors = {
     background: isDarkMode
-      ? 'linear-gradient(135deg, #1A2A3A 30%, #1D2A38 100%)' // Gradiente en modo oscuro
+      ? 'linear-gradient(135deg, #FFFFFFF 30%, #1D2A38 100%)' // Gradiente en modo oscuro
       : '#FFFFFF', // Fondo blanco en modo claro
     primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF', // Azul brillante en oscuro
     secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', // Gris claro en oscuro
