@@ -30,11 +30,11 @@ const PaginaPrincipal = () => {
 
   const colors = {
     background: isDarkMode
-      ? 'linear-gradient(135deg, #FFFFFFF 30%, #1D2A38 100%)'
-      : '#FFFFFF',
-    primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF', // Azul brillante en oscuro
-    secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', // Gris claro en oscuro
-    cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF', // Fondo de tarjeta en modo claro
+      ? 'linear-gradient(135deg, #A7C7E7 30%, #1D2A38 100%)'
+      : '#A7C7E7',
+    primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF',
+    secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', 
+    cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF', 
     cardHover: isDarkMode ? '#3A4A5A' : '#E3F2FD', // Fondo de tarjeta al pasar el ratón
   };
 
@@ -59,7 +59,7 @@ const PaginaPrincipal = () => {
               fontFamily: 'Roboto, sans-serif',
             }}
           >
-            Bienvenidos a nuestra tienda de uniformes médicos
+            Bienvenidos a nuestra tienda de uniformes clinicos y Quirorjicos
           </Typography>
         </Box>
 
@@ -75,7 +75,7 @@ const PaginaPrincipal = () => {
               fontFamily: 'Montserrat, sans-serif',
             }}
           >
-            Nuestros Productos
+            Las mejores prendas de Gislive Boutique
           </Typography>
           <Grid container spacing={4} justifyContent="center">
             {[ 
@@ -83,31 +83,37 @@ const PaginaPrincipal = () => {
                 title: 'Uniforme Médico Mujer',
                 img: img1,
                 description: 'Cómodo y resistente para tu jornada diaria.',
+                price: '$250.00',
               },
               {
                 title: 'Uniforme Médico Mujer',
                 img: img2,
                 description: 'Elegante y práctico para una apariencia profesional.',
+                price: '$300.00',
               },
               {
                 title: 'Uniforme Médico Mujer',
                 img: img3,
                 description: 'Alta calidad y confort para el quirófano.',
+                price: '$250.00',
               },
               {
                 title: 'Uniforme Médico Mujer',
                 img: img4,
                 description: 'Alta calidad y confort para el quirófano.',
+                price: '$300.00',
               },
               {
                 title: 'Uniforme Médico Mujer',
                 img: img5,
                 description: 'Alta calidad y confort para el quirófano.',
+                price: '$350.00',
               },
               {
                 title: 'Uniforme Médico Mujer',
                 img: img6,
                 description: 'Alta calidad y confort para el quirófano.',
+                price: '$350.00',
               },
             ].map((product, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -122,7 +128,7 @@ const PaginaPrincipal = () => {
                     backgroundColor: colors.cardBackground,
                     '&:hover': {
                       boxShadow: 6,
-                      transform: 'scale(1.05)', // Animación de zoom al pasar el ratón
+                      transform: 'scale(1.05)', 
                     },
                   }}
                 >
@@ -131,8 +137,8 @@ const PaginaPrincipal = () => {
                     alt={product.title}
                     image={product.img}
                     sx={{
-                      height: 300, // Imagen más grande
-                      width: '100%',
+                      height: 400, 
+                      width: '150%',
                       objectFit: 'cover',
                     }}
                   />
