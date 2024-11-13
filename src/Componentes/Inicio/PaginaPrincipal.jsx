@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Typography,
-  Container,
-  Grid,
-  Card,
-  CardContent,
-  CardMedia,
-  IconButton,
-} from '@mui/material';
-import { Phone, Email } from '@mui/icons-material';
+import { Box,Typography,Container, Grid, Card, CardContent, CardMedia,} from '@mui/material';
 
 // Importar las imágenes locales de los productos
 import img1 from '../imagenes/img1.png';
@@ -40,8 +30,8 @@ const PaginaPrincipal = () => {
 
   const colors = {
     background: isDarkMode
-      ? 'linear-gradient(135deg, #FFFFFFF 30%, #1D2A38 100%)' // Gradiente en modo oscuro
-      : '#FFFFFF', // Fondo blanco en modo claro
+      ? 'linear-gradient(135deg, #FFFFFFF 30%, #1D2A38 100%)'
+      : '#FFFFFF',
     primaryText: isDarkMode ? '#82B1FF' : '#FFFFFF', // Azul brillante en oscuro
     secondaryText: isDarkMode ? '#B0BEC5' : '#FFFFF', // Gris claro en oscuro
     cardBackground: isDarkMode ? '#2A3A4A' : '#FFFFFF', // Fondo de tarjeta en modo claro
@@ -69,6 +59,7 @@ const PaginaPrincipal = () => {
               fontFamily: 'Roboto, sans-serif',
             }}
           >
+            Bienvenidos a nuestra tienda de uniformes médicos
           </Typography>
         </Box>
 
@@ -166,56 +157,10 @@ const PaginaPrincipal = () => {
             ))}
           </Grid>
         </Box>
-
-        {/* Sección de contacto */}
-        <Box
-          component="section"
-          sx={{
-            backgroundColor: colors.cardBackground,
-            py: 8,
-            borderRadius: '16px',
-            boxShadow: 3,
-            mb: 5,
-          }}
-        >
-          <Typography
-            variant="h4"
-            sx={{
-              color: colors.primaryText,
-              fontWeight: 'bold',
-              textAlign: 'center',
-              mb: 6,
-              fontFamily: 'Montserrat, sans-serif',
-            }}
-          >
-            Contáctanos
-          </Typography>
-          <Typography variant="body1" sx={{ color: colors.secondaryText, textAlign: 'center', mb: 3 }}>
-            Visítanos en nuestra tienda o contáctanos para más información.
-          </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2 }}>
-            <IconButton color="primary" sx={{ fontSize: 40 }}>
-              <Phone />
-            </IconButton>
-            <Typography variant="body2" sx={{ color: colors.secondaryText }}>
-              <strong>Teléfono:</strong> 7711443389
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mt: 2 }}>
-            <IconButton color="primary" sx={{ fontSize: 40 }}>
-              <Email />
-            </IconButton>
-            <Typography variant="body2" sx={{ color: colors.secondaryText }}>
-              <strong>Email:</strong> gislive@gmail.com
-            </Typography>
-          </Box>
-          <Typography variant="body2" sx={{ color: colors.secondaryText, textAlign: 'center', mt: 3 }}>
-            <strong>Ubicación:</strong> Velazque Ibarra, #12, Huejutla de Reyes, Hidalgo, México
-          </Typography>
-        </Box>
       </Container>
     </Box>
   );
 };
 
 export default PaginaPrincipal;
+
