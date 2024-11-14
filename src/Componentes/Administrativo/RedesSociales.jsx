@@ -37,7 +37,7 @@ const RedesSociales = () => {
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    type: 'success',  // success, error, warning, info
+    type: 'success',  
   });
 
   const handleCloseNotification = () => {

@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Container, 
-  TextField, 
-  Button, 
-  List, 
-  ListItem, 
-  ListItemText, 
-  IconButton, 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
-  DialogTitle 
+import {
+  Container,
+  TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  IconButton
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
@@ -59,6 +63,7 @@ const TerminosCondiciones = () => {
       setEditId(null);
       setEditTitulo('');
       setEditContenido('');
+      setOpen(false); // Cerrar el diálogo después de guardar
       fetchTerminos();
     } catch (error) {
       console.error("Error al actualizar el término", error);
@@ -123,30 +128,55 @@ const TerminosCondiciones = () => {
         Agregar Término
       </Button>
 
-      <List>
-        {terminos.map(termino => (
-          <ListItem key={termino.id} divider>
-            <ListItemText 
-              primary={`${termino.titulo} (Versión: ${termino.version})`} 
-              secondary={termino.contenido} 
-            />
-            <IconButton 
-              edge="end" 
-              aria-label="edit" 
-              onClick={() => handleClickOpen(termino)}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton 
-              edge="end" 
-              aria-label="delete" 
-              onClick={() => handleDeleteTermino(termino.id)}
-            >
-              <Delete />
-            </IconButton>
-          </ListItem>
-        ))}
-      </List>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+        <Table aria-label="tabla de terminos">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Título
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Contenido
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Versión
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Estado
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Fecha de Creación
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Fecha de Actualización
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Acciones
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {terminos.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_actualizacion).toLocaleDateString()}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>
+                  <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
+                    <Edit />
+                  </IconButton>
+                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteTermino(item.id)}>
+                    <Delete />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {/* Dialogo para editar término */}
       <Dialog open={open} onClose={handleClose}>
