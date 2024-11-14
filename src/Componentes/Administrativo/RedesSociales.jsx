@@ -178,101 +178,104 @@ const RedesSociales = () => {
         Redes Sociales
       </Typography>
 
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd' }}>
-        <Table aria-label="tabla de redes sociales">
-          <TableHead>
-            <TableRow>
-              <TableCell>Red Social</TableCell>
-              <TableCell>Enlace</TableCell>
-              <TableCell>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                <TextField
-                  select
-                  label="Selecciona una red social"
-                  value={selectedSocial}
-                  onChange={handleSocialSelect}
-                  fullWidth
-                >
-                  {availableSocials.map((option) => (
-                    <MenuItem key={option.name} value={option.name}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </TableCell>
-              <TableCell>
-                <TextField
-                  fullWidth
-                  label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
-                  value={url}
-                  onChange={handleInputChange}
-                  InputProps={{
-                    startAdornment: selectedSocial === 'whatsapp' && (
-                      <Typography sx={{ color: 'gray' }}>+52</Typography>
-                    ),
-                  }}
-                />
-              </TableCell>
-              <TableCell align="right">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SaveIcon />}
-                  onClick={handleSave}
-                  disabled={!selectedSocial || !url}
-                >
-                  Guardar
-                </Button>
-              </TableCell>
-            </TableRow>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+  <Table aria-label="tabla de redes sociales">
+    <TableHead>
+      <TableRow>
+        <TableCell
+          sx={{
+            fontWeight: 'bold',
+            backgroundColor: '#1976d2',
+            color: '#fff',
+            textAlign: 'center',
+          }}
+        >
+          Red Social
+        </TableCell>
+        <TableCell
+          sx={{
+            fontWeight: 'bold',
+            backgroundColor: '#1976d2',
+            color: '#fff',
+            textAlign: 'center',
+          }}
+        >
+          Enlace
+        </TableCell>
+        <TableCell
+          align="center"
+          sx={{
+            fontWeight: 'bold',
+            backgroundColor: '#1976d2',
+            color: '#fff',
+          }}
+        >
+          Acciones
+        </TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      <TableRow>
+        <TableCell>
+          <TextField
+            select
+            label="Selecciona una red social"
+            value={selectedSocial}
+            onChange={handleSocialSelect}
+            fullWidth
+          >
+            {availableSocials.map((option) => (
+              <MenuItem key={option.name} value={option.name}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </TableCell>
+        <TableCell>
+          <TextField
+            fullWidth
+            label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
+            value={url}
+            onChange={handleInputChange}
+            InputProps={{
+              startAdornment: selectedSocial === 'whatsapp' && (
+                <Typography sx={{ color: 'gray' }}>+52</Typography>
+              ),
+            }}
+          />
+        </TableCell>
+        <TableCell align="center">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<SaveIcon />}
+            onClick={handleSave}
+            disabled={!selectedSocial || !url}
+          >
+            Guardar
+          </Button>
+        </TableCell>
+      </TableRow>
 
-            {Object.keys(socialData).map((social) => (
-              <TableRow key={social}>
-                <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
-                <TableCell>{socialData[social]?.url}</TableCell>
-                <TableCell align="right">
-                  <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer><TableContainer style={{ marginTop: '20px' }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Titulo</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Cotenido</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {deslinde.map((item) => (
-              <TableRow key={item.id}>
-                <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>
-                  <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteDeslinde(item.id)}>
-                    <Delete />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      {Object.keys(socialData).map((social) => (
+        <TableRow key={social}>
+          <TableCell sx={{ textAlign: 'center' }}>
+            {availableSocials.find((s) => s.name === social)?.label || social}
+          </TableCell>
+          <TableCell sx={{ textAlign: 'center' }}>{socialData[social]?.url}</TableCell>
+          <TableCell sx={{ textAlign: 'center' }}>
+            <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
+              <DeleteIcon />
+            </IconButton>
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
 
       <Notificaciones
         open={notification.open}
