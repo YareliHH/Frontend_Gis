@@ -67,6 +67,7 @@ const Deslinde = () => {
   const handleClickOpen = (deslinde) => {
     setEditTitulo(deslinde.titulo);
     setEditContenido(deslinde.contenido);
+    setEditId(deslinde.id); // Añadir el ID para actualizar correctamente
     setOpen(true);
   };
 
@@ -83,39 +84,43 @@ const Deslinde = () => {
 
   return (
     <Container>
-    <h1>Gestión de Deslinde Legal</h1>
+      <h1>Gestión de Deslinde Legal</h1>
 
-    <TextField
-      label="Título de la nueva deslinde"
-      variant="outlined"
-      value={newTitulo}
-      onChange={(e) => setNewTitulo(e.target.value)}
-      fullWidth
-      margin="normal"
-    />
-    <TextField
-      label="Contenido de la nueva deslinde"
-      variant="outlined"
-      value={newContenido}
-      onChange={(e) => setNewContenido(e.target.value)}
-      fullWidth
-      margin="normal"
-    />
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={handleCreateDeslinde}
-      style={{ marginBottom: '20px' }}
-    >
-      Agregar Deslinde
-    </Button>
+      <TextField
+        label="Título de la nueva deslinde"
+        variant="outlined"
+        value={newTitulo}
+        onChange={(e) => setNewTitulo(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
+      <TextField
+        label="Contenido de la nueva deslinde"
+        variant="outlined"
+        value={newContenido}
+        onChange={(e) => setNewContenido(e.target.value)}
+        fullWidth
+        margin="normal"
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleCreateDeslinde}
+        style={{ marginBottom: '20px' }}
+      >
+        Agregar Deslinde
+      </Button>
 
-    <TableContainer style={{ marginTop: '20px' }}>
+      <TableContainer style={{ marginTop: '20px' }}>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Red Social</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Número</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Contenido</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Versión</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Estado</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Creación</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Actualización</TableCell>
               <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
@@ -124,6 +129,10 @@ const Deslinde = () => {
               <TableRow key={item.id}>
                 <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell> {/* Nueva columna para versión */}
+                <TableCell sx={{ textAlign: 'center' }}>{item.estado}</TableCell> {/* Nueva columna para estado */}
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fechaCreacion).toLocaleDateString()}</TableCell> {/* Fecha de creación */}
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fechaActualizacion).toLocaleDateString()}</TableCell> {/* Fecha de actualización */}
                 <TableCell sx={{ textAlign: 'center' }}>
                   <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
                     <Edit />
@@ -138,7 +147,7 @@ const Deslinde = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialogo para editar política */}
+      {/* Dialogo para editar deslinde */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Deslinde</DialogTitle>
         <DialogContent>
@@ -175,6 +184,5 @@ const Deslinde = () => {
     </Container>
   );
 };
-
 
 export default Deslinde;
