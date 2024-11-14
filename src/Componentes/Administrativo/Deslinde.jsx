@@ -204,13 +204,13 @@ const Deslinde = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => { handleUpdateDeslinde(editId); }} color="primary">
+          <Button onClick={() => handleUpdateDeslinde(editId)} color="primary">
             Guardar
           </Button>
         </DialogActions>
       </Dialog>
     </Container>
   );
-}
+};
 
 export default Deslinde;
