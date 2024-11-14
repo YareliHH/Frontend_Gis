@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {  Container,  TextField,  Button,  List,  ListItem,  ListItemText,  IconButton,Dialog,DialogActions,DialogContent, DialogTitle } from '@mui/material';
+import { Container, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, ListItem, IconButton, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
 const Deslinde = () => {
