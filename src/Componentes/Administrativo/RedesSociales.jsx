@@ -17,7 +17,7 @@ import {
 } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Save as SaveIcon } from '@mui/icons-material';
 import axios from 'axios';
-import Notificaciones from '../../Compartidos/Notificaciones';
+import Notificaciones from '../Compartidos/Notificaciones';
 
 const availableSocials = [
   { label: 'Facebook', name: 'facebook', type: 'url' },
