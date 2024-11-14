@@ -69,11 +69,11 @@ const Deslinde = () => {
     }
   };
 
-  // Eliminar un deslinde (lógicamente)
+  // Eliminar un deslinde (lógicamente) y actualizar el estado local
   const handleDeleteDeslinde = async (id) => {
     try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
-      fetchDeslinde();
+      setDeslinde(prevDeslinde => prevDeslinde.filter(item => item.id !== id));
     } catch (error) {
       console.error("Error al eliminar el deslinde", error);
     }
@@ -135,10 +135,19 @@ const Deslinde = () => {
                 Título
               </TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Contenido
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
                 Versión
               </TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Contenido
+                Estado
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Fecha de Creación
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Fecha de Actualización
               </TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
                 Acciones
@@ -149,8 +158,11 @@ const Deslinde = () => {
             {deslinde.map((item) => (
               <TableRow key={item.id}>
                 <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_actualizacion).toLocaleDateString()}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>
                   <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
                     <Edit />
