@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {TextField,Grid, Typography, Box,Button,MenuItem,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,IconButton,} from '@mui/material';
+import { TextField, Grid, Typography, Box, Button, MenuItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Save as SaveIcon } from '@mui/icons-material';
 import axios from 'axios';
 import Notificaciones from '../Compartidos/Notificaciones';
@@ -58,7 +58,7 @@ const RedesSociales = () => {
     if (!url) {
       setNotification({
         open: true,
-        message: 'Por favor, ingresa un enlace o número.',
+        message: 'Por favor, ingresa un número.',
         type: 'error',
       });
       return false;
@@ -88,7 +88,7 @@ const RedesSociales = () => {
           setIsEditing(null);
           setNotification({
             open: true,
-            message: 'Red social actualizada con éxito.',
+            message: 'Red social actualizada.',
             type: 'success',
           });
         } else {
@@ -100,7 +100,7 @@ const RedesSociales = () => {
           setSocialData({ ...socialData, [selectedSocial]: newSocial });
           setNotification({
             open: true,
-            message: 'Red social agregada con éxito.',
+            message: 'Red social agregada.',
             type: 'success',
           });
         }
@@ -153,13 +153,16 @@ const RedesSociales = () => {
         p: 3,
         borderRadius: '10px',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
       }}
     >
       <Typography variant="h5" gutterBottom>
         Redes Sociales
       </Typography>
 
-      <Grid container spacing={2} sx={{ mb: 3 }}>
+      <Grid container spacing={2} sx={{ mb: 3 }} justifyContent="center">
         <Grid item xs={6}>
           <TextField
             select
@@ -208,20 +211,24 @@ const RedesSociales = () => {
       </Grid>
 
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
-        <TableContainer component={Paper} sx={{ maxWidth: 900, backgroundColor: '#f5f5f5' }}>
+        <TableContainer component={Paper} sx={{ maxWidth: 900, backgroundColor: '#f5f5f5', marginTop: 2 }}>
           <Table aria-label="tabla de redes sociales">
             <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Red Social</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Enlace / Número</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>
-                  Acciones
-                </TableCell>
-              </TableRow>
+            <TableRow>
+            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#a6cef5', color: '#fff', textAlign: 'center' }}>
+              Red Social
+            </TableCell>
+            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#a6cef5', color: '#fff', textAlign: 'center' }}>
+              Número
+            </TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#a6cef5', color: '#fff' }}>
+              Acciones
+            </TableCell>
+          </TableRow>
             </TableHead>
             <TableBody>
               {Object.keys(socialData).map((social) => (
-                <TableRow key={social}>
+                <TableRow key={social} sx={{ textAlign: 'center' }}>
                   <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
                   <TableCell>
                     <a
@@ -233,7 +240,7 @@ const RedesSociales = () => {
                       {socialData[social]?.url}
                     </a>
                   </TableCell>
-                  <TableCell align="right">
+                  <TableCell align="center">
                     <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
                       <EditIcon />
                     </IconButton>
@@ -248,12 +255,7 @@ const RedesSociales = () => {
         </TableContainer>
       </Box>
 
-      <Notificaciones
-        open={notification.open}
-        message={notification.message}
-        type={notification.type}
-        handleClose={handleCloseNotification}
-      />
+      <Notificaciones open={notification.open} message={notification.message} type={notification.type} onClose={handleCloseNotification} />
     </Box>
   );
 };

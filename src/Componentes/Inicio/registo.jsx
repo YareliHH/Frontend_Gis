@@ -364,6 +364,7 @@ const Registro = () => {
                 error={!!passwordError}
                 helperText={passwordError}
               />
+              
             </Grid>
             <Grid item xs={12}>
               <TextField
