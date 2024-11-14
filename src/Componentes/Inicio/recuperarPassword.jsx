@@ -25,7 +25,7 @@ const RecuperarContrasena = () => {
 
     setIsLoading(true);
     try {
-      await axios.post('https://backendgislive.onrender.com/api/recuperacion', { correo: email }); // Cambiado a 'correo'
+      await axios.post('https://backendgislive.onrender.com/api/recuperacion_contra', { correo: email }); // Cambiado a 'correo'
       setSnackbar({
         open: true,
         message: 'Se ha enviado un código de verificación a tu correo electrónico.',
