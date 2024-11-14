@@ -1,6 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import {  Container,  TextField,  Button,  List,  ListItem,  ListItemText,  IconButton,Dialog,DialogActions,DialogContent, DialogTitle } from '@mui/material';
+import {
+  Container,
+  TextField,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  IconButton
+} from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
 const Deslinde = () => {
@@ -12,7 +28,7 @@ const Deslinde = () => {
   const [editContenido, setEditContenido] = useState('');
   const [open, setOpen] = useState(false);
 
-  // Obtener todas el deslinde
+  // Obtener todos los deslindes
   const fetchDeslinde = async () => {
     try {
       const response = await axios.get('https://backendgislive.onrender.com/api/getdeslinde');
@@ -22,7 +38,7 @@ const Deslinde = () => {
     }
   };
 
-  // Crear una nueva deslinde
+  // Crear un nuevo deslinde
   const handleCreateDeslinde = async () => {
     try {
       await axios.post('https://backendgislive.onrender.com/api/deslinde', {
@@ -65,6 +81,7 @@ const Deslinde = () => {
 
   // Manejar el diálogo de edición
   const handleClickOpen = (deslinde) => {
+    setEditId(deslinde.id);
     setEditTitulo(deslinde.titulo);
     setEditContenido(deslinde.contenido);
     setOpen(true);
@@ -84,7 +101,7 @@ const Deslinde = () => {
   return (
     <Container>
       <h1>Gestión de Deslinde Legal</h1>
-  
+
       <TextField 
         label="Título de la nueva deslinde" 
         variant="outlined" 
@@ -109,7 +126,7 @@ const Deslinde = () => {
       >
         Agregar Deslinde
       </Button>
-  
+
       <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
         <Table aria-label="tabla de deslinde">
           <TableHead>
@@ -136,10 +153,10 @@ const Deslinde = () => {
                 <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>
                   <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
-                    <EditIcon />
+                    <Edit />
                   </IconButton>
                   <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteDeslinde(item.id)}>
-                    <DeleteIcon />
+                    <Delete />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -147,7 +164,7 @@ const Deslinde = () => {
           </TableBody>
         </Table>
       </TableContainer>
-  
+
       {/* Diálogo para editar deslinde */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Deslinde</DialogTitle>
@@ -181,5 +198,6 @@ const Deslinde = () => {
       </Dialog>
     </Container>
   );
-}  
+}
+
 export default Deslinde;
