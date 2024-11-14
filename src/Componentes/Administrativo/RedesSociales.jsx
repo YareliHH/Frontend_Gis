@@ -44,11 +44,12 @@ const RedesSociales = () => {
     setNotification({ ...notification, open: false });
   };
 
+  // Cargar redes sociales desde el backend
   useEffect(() => {
     const fetchSocials = async () => {
       try {
         const response = await axios.get('https://backendgislive.onrender.com/api/redesSociales/get');
-        setSocialData(response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})); 
+        setSocialData(response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {}));
       } catch (error) {
         console.error('Error al obtener las redes sociales:', error);
       }
@@ -57,6 +58,7 @@ const RedesSociales = () => {
     fetchSocials();
   }, []);
 
+  // Controlar el cambio de la URL o número
   const handleInputChange = (e) => {
     if (selectedSocial === 'whatsapp') {
       const value = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -66,11 +68,13 @@ const RedesSociales = () => {
     }
   };
 
+  // Seleccionar una red social
   const handleSocialSelect = (e) => {
     setSelectedSocial(e.target.value);
     setUrl(''); 
   };
 
+  // Validación del input antes de guardar
   const validateInput = () => {
     if (!url) {
       setNotification({
@@ -93,15 +97,21 @@ const RedesSociales = () => {
     return true;
   };
 
+  // Guardar o actualizar la red social
   const handleSave = async () => {
     if (validateInput()) {
       try {
+        const urlWithPrefix = selectedSocial === 'whatsapp' ? `+52${url}` : url;
+
         if (isEditing !== null) {
           await axios.put(`https://backendgislive.onrender.com/api/redesSociales/editar/${isEditing}`, {
             nombre_red: selectedSocial,
-            url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
+            url: urlWithPrefix,
           });
-          setSocialData({ ...socialData, [selectedSocial]: { ...socialData[selectedSocial], url: `+52${url}` } });
+          setSocialData({
+            ...socialData,
+            [selectedSocial]: { ...socialData[selectedSocial], url: urlWithPrefix },
+          });
           setIsEditing(null);
           setNotification({
             open: true,
@@ -111,7 +121,7 @@ const RedesSociales = () => {
         } else {
           const response = await axios.post('https://backendgislive.onrender.com/api/redesSociales/nuevo', {
             nombre_red: selectedSocial,
-            url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
+            url: urlWithPrefix,
           });
           const newSocial = response.data;
           setSocialData({ ...socialData, [selectedSocial]: newSocial });
@@ -121,6 +131,8 @@ const RedesSociales = () => {
             type: 'success',
           });
         }
+
+        // Limpiar los campos
         setSelectedSocial('');
         setUrl('');
       } catch (error) {
@@ -134,6 +146,7 @@ const RedesSociales = () => {
     }
   };
 
+  // Eliminar red social
   const handleDelete = async (social) => {
     try {
       const id = socialData[social]?.id;
@@ -156,6 +169,7 @@ const RedesSociales = () => {
     }
   };
 
+  // Editar una red social
   const handleEdit = (social) => {
     setIsEditing(socialData[social].id);
     setSelectedSocial(social);
