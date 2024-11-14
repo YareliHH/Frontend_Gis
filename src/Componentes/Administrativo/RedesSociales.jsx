@@ -50,7 +50,7 @@ const RedesSociales = () => {
   useEffect(() => {
     const fetchSocials = async () => {
       try {
-        const response = await axios.get('https://backendgislive.onrender.com/api/redes_sociales/get');
+        const response = await axios.get('https://backendgislive.onrender.com/api/redesSociales/get');
         setSocialData(response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})); // Guardamos el objeto completo
       } catch (error) {
         console.error('Error al obtener las redes sociales:', error);
@@ -104,7 +104,7 @@ const RedesSociales = () => {
       try {
         if (isEditing !== null) {
           // Editar la red social
-          await axios.put(`https://backendgislive.onrender.com/api/redes_sociales/editar/${isEditing}`, {
+          await axios.put(`https://backendgislive.onrender.com/api/redesSociales/editar/${isEditing}`, {
             nombre_red: selectedSocial,
             url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
           });
@@ -117,7 +117,7 @@ const RedesSociales = () => {
           });
         } else {
           // Añadir nueva red social
-          const response = await axios.post('https://backendgislive.onrender.com/api/redes_sociales/nuevo', {
+          const response = await axios.post('https://backendgislive.onrender.com/api/redesSociales/nuevo', {
             nombre_red: selectedSocial,
             url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
           });
@@ -146,7 +146,7 @@ const RedesSociales = () => {
   const handleDelete = async (social) => {
     try {
       const id = socialData[social]?.id;
-      await axios.delete(`https://backendgislive.onrender.com/api/redes_sociales/eliminar/${id}`);
+      await axios.delete(`https://backendgislive.onrender.com/api/redesSociales/eliminar/${id}`);
       const updatedData = { ...socialData };
       delete updatedData[social];
       setSocialData(updatedData);
@@ -171,81 +171,91 @@ const RedesSociales = () => {
     setSelectedSocial(social);
     setUrl(socialData[social].url.replace('+52', '')); 
   };
-
   return (
-    <Box
-      sx={{
-        mt: 4,
-        backgroundColor: '#fff',
-        p: 3,
-        borderRadius: '10px',
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-      }}
-    >
+    <Box sx={{
+      mt: 4,
+      backgroundColor: '#fff',
+      p: 3,
+      borderRadius: '10px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+      textAlign: 'center',  // Centrado en el contenedor
+      maxWidth: '800px',
+      margin: 'auto',
+    }}>
       <Typography variant="h5" gutterBottom>
         Redes Sociales
       </Typography>
-
-      <Grid container spacing={2} sx={{ mb: 3 }}>
-        <Grid item xs={6}>
-          <TextField
-            select
-            label="Selecciona una red social"
-            value={selectedSocial}
-            onChange={handleSocialSelect}
-            fullWidth
-          >
-            {availableSocials.map((option) => (
-              <MenuItem key={option.name} value={option.name}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </TextField>
-        </Grid>
-
-              <Grid item xs={6}>
-        <TextField
-          fullWidth
-          label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
-          value={url}
-          onChange={handleInputChange}
-          InputProps={{
-            startAdornment: selectedSocial === 'whatsapp' && (
-              <Typography sx={{ color: 'gray' }}>+52</Typography>
-            ),
-          }}
-        />
-      </Grid>
-
-
-        <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<SaveIcon />}
-            onClick={handleSave}
-            disabled={!selectedSocial || !url}
-          >
-            Guardar
-          </Button>
-        </Grid>
-      </Grid>
-
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd' }}>
-        <Table aria-label="tabla de redes sociales">
+  
+      <TableContainer component={Paper} sx={{
+        backgroundColor: '#f9f9f9',
+        maxWidth: '100%',
+        margin: 'auto',
+      }}>
+        <Table aria-label="tabla de redes sociales" sx={{
+          minWidth: 500,  // Tamaño mínimo de la tabla
+          borderCollapse: 'collapse',
+        }}>
           <TableHead>
             <TableRow>
-              <TableCell>Red Social</TableCell>
-              <TableCell>Enlace</TableCell>
-              <TableCell align="right">Acciones</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '14px' }}>Red Social</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '14px' }}>Enlace</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '14px' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
+            <TableRow>
+              <TableCell align="center">
+                <TextField
+                  select
+                  label="Selecciona una red social"
+                  value={selectedSocial}
+                  onChange={handleSocialSelect}
+                  fullWidth
+                  sx={{
+                    maxWidth: '200px',
+                    margin: 'auto',
+                  }}
+                >
+                  {availableSocials.map((option) => (
+                    <MenuItem key={option.name} value={option.name}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </TableCell>
+              <TableCell align="center">
+                <TextField
+                  fullWidth
+                  label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
+                  value={url}
+                  onChange={handleInputChange}
+                  sx={{ maxWidth: '250px', margin: 'auto' }}
+                  InputProps={{
+                    startAdornment: selectedSocial === 'whatsapp' && (
+                      <Typography sx={{ color: 'gray' }}>+52</Typography>
+                    ),
+                  }}
+                />
+              </TableCell>
+              <TableCell align="center">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<SaveIcon />}
+                  onClick={handleSave}
+                  disabled={!selectedSocial || !url}
+                  sx={{ minWidth: '100px' }}
+                >
+                  Guardar
+                </Button>
+              </TableCell>
+            </TableRow>
+  
             {Object.keys(socialData).map((social) => (
               <TableRow key={social}>
-                <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
-                <TableCell>{socialData[social]?.url}</TableCell>
-                <TableCell align="right">
+                <TableCell align="center">{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
+                <TableCell align="center">{socialData[social]?.url}</TableCell>
+                <TableCell align="center">
                   <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
                     <EditIcon />
                   </IconButton>
@@ -258,7 +268,7 @@ const RedesSociales = () => {
           </TableBody>
         </Table>
       </TableContainer>
-
+  
       <Notificaciones
         open={notification.open}
         message={notification.message}
@@ -267,6 +277,8 @@ const RedesSociales = () => {
       />
     </Box>
   );
+  
 };
+
 
 export default RedesSociales;
