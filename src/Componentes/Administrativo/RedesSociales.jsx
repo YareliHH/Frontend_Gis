@@ -246,7 +246,7 @@ const RedesSociales = () => {
             ))}
           </TableBody>
         </Table>
-      </TableContainer> dame este codigo igual a la de  <TableContainer style={{ marginTop: '20px' }}>
+      </TableContainer><TableContainer style={{ marginTop: '20px' }}>
         <Table>
           <TableHead>
             <TableRow>
