@@ -194,6 +194,10 @@ const RedesSociales = () => {
             sx={{ backgroundColor: '#fff' }}
           />
         </Grid>
+      </Grid>
+
+      {/* Botón de agregar abajo */}
+      <Grid container justifyContent="center" sx={{ mb: 2 }}>
         <Grid item xs={12} md={2}>
           <Button
             variant="contained"
