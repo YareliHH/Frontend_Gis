@@ -176,6 +176,7 @@ const RedesSociales = () => {
             fullWidth
             value={selectedSocial}
             onChange={handleSocialSelect}
+            sx={{ backgroundColor: '#fff' }}
           >
             {availableSocials.map((social) => (
               <MenuItem key={social.name} value={social.name}>
@@ -190,6 +191,7 @@ const RedesSociales = () => {
             fullWidth
             value={url}
             onChange={handleInputChange}
+            sx={{ backgroundColor: '#fff' }}
           />
         </Grid>
         <Grid item xs={12} md={2}>
@@ -205,13 +207,13 @@ const RedesSociales = () => {
         </Grid>
       </Grid>
 
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd' }}>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', borderRadius: '8px' }}>
         <Table aria-label="tabla de redes sociales">
           <TableHead>
             <TableRow>
-              <TableCell align="center">Red Social</TableCell>
-              <TableCell align="center">Enlace</TableCell>
-              <TableCell align="center">Acciones</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Red Social</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Enlace</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

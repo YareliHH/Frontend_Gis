@@ -13,6 +13,9 @@ import {
     Paper,
     Avatar,
     InputLabel,
+    CircularProgress,
+    Snackbar,
+    Alert,
 } from '@mui/material';
 
 const PerfilEmpresa = () => {
@@ -27,9 +30,12 @@ const PerfilEmpresa = () => {
         titulo_pagina: '',
         logo: null,
     });
-    
     const [loading, setLoading] = useState(true);
     const [file, setFile] = useState(null);
+    const [formError, setFormError] = useState(null);
+    const [openSnackbar, setOpenSnackbar] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
     useEffect(() => {
         const fetchPerfil = async () => {
@@ -57,8 +63,26 @@ const PerfilEmpresa = () => {
         setFile(e.target.files[0]);
     };
 
+    const validateForm = () => {
+        if (!perfil.nombre_empresa || !perfil.correo_electronico) {
+            setFormError('Los campos "Nombre de Empresa" y "Correo Electrónico" son obligatorios.');
+            return false;
+        }
+
+        if (file && file.size > 2 * 1024 * 1024) {
+            setFormError('El tamaño del archivo de logo no puede ser mayor a 2MB.');
+            return false;
+        }
+
+        setFormError(null); // Reset error if all validations pass
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) return;
+
         const formData = new FormData();
         for (const key in perfil) {
             formData.append(key, perfil[key]);
@@ -68,6 +92,7 @@ const PerfilEmpresa = () => {
         }
 
         try {
+            setLoading(true);
             if (perfil.id_empresa) {
                 // Actualización del perfil existente
                 await axios.put('https://backendgislive.onrender.com/api/updateDatos', formData, {
@@ -75,7 +100,8 @@ const PerfilEmpresa = () => {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-                alert('Perfil de empresa actualizado con éxito');
+                setSnackbarMessage('Perfil de empresa actualizado con éxito');
+                setSnackbarSeverity('success');
             } else {
                 // Creación de un nuevo perfil
                 await axios.post('https://backendgislive.onrender.com/api/perfil', formData, {
@@ -83,16 +109,26 @@ const PerfilEmpresa = () => {
                         'Content-Type': 'multipart/form-data',
                     },
                 });
-                alert('Perfil de empresa agregado con éxito');
+                setSnackbarMessage('Perfil de empresa agregado con éxito');
+                setSnackbarSeverity('success');
             }
+            setOpenSnackbar(true);
         } catch (error) {
             console.error('Error al guardar el perfil de la empresa:', error);
-            alert(error.response?.data || 'Error al guardar el perfil');
+            setSnackbarMessage('Error al guardar el perfil de la empresa.');
+            setSnackbarSeverity('error');
+            setOpenSnackbar(true);
+        } finally {
+            setLoading(false);
         }
     };
 
     if (loading) {
-        return <div>Cargando...</div>;
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+                <CircularProgress />
+            </div>
+        );
     }
 
     return (
@@ -111,6 +147,7 @@ const PerfilEmpresa = () => {
                                         value={perfil.nombre_empresa}
                                         onChange={handleChange}
                                         required
+                                        error={!!formError}
                                     />
                                 </TableCell>
                             </TableRow>
@@ -146,6 +183,7 @@ const PerfilEmpresa = () => {
                                         onChange={handleChange}
                                         required
                                         type="email"
+                                        error={!!formError}
                                     />
                                 </TableCell>
                             </TableRow>
@@ -219,60 +257,17 @@ const PerfilEmpresa = () => {
                     Guardar Perfil
                 </Button>
             </form>
-            {/* Tabla para visualizar los datos de la empresa */}
-            <Typography variant="h5" gutterBottom style={{ marginTop: '30px' }}>Datos de la Empresa</Typography>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableBody>
-                        {perfil && (
-                            <>
-                                <TableRow>
-                                    <TableCell>Nombre de Empresa</TableCell>
-                                    <TableCell>{perfil.nombre_empresa}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Dirección</TableCell>
-                                    <TableCell>{perfil.direccion}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Teléfono</TableCell>
-                                    <TableCell>{perfil.telefono}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Correo Electrónico</TableCell>
-                                    <TableCell>{perfil.correo_electronico}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Descripción</TableCell>
-                                    <TableCell>{perfil.descripcion}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Slogan</TableCell>
-                                    <TableCell>{perfil.slogan}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Título de Página</TableCell>
-                                    <TableCell>{perfil.titulo_pagina}</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>Logo</TableCell>
-                                    <TableCell>
-                                        {perfil.logo ? (
-                                            <Avatar
-                                                src={perfil.logo}
-                                                alt="Logo de la Empresa"
-                                                style={{ width: '150px', height: 'auto', margin: '10px auto' }}
-                                            />
-                                        ) : (
-                                            'No hay logo disponible'
-                                        )}
-                                    </TableCell>
-                                </TableRow>
-                            </>
-                        )}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+
+            {/* Snackbar for notifications */}
+            <Snackbar
+                open={openSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setOpenSnackbar(false)}
+            >
+                <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </Container>
     );
 };
