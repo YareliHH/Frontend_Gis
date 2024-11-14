@@ -83,8 +83,8 @@ const Deslinde = () => {
 
   return (
     <Container>
-      <h1>Gestión de Deslinde Legal </h1>
-
+      <h1>Gestión de Deslinde Legal</h1>
+  
       <TextField 
         label="Título de la nueva deslinde" 
         variant="outlined" 
@@ -109,33 +109,46 @@ const Deslinde = () => {
       >
         Agregar Deslinde
       </Button>
-
-      <List>
-        {deslinde.map(deslinde=> (
-          <ListItem key={deslinde.id} divider>
-            <ListItemText 
-              primary={`${deslinde.titulo} (Versión: ${deslinde.version})`} 
-              secondary={deslinde.contenido} 
-            />
-            <IconButton 
-              edge="end" 
-              aria-label="edit" 
-              onClick={() => handleClickOpen(deslinde)}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton 
-              edge="end" 
-              aria-label="delete" 
-              onClick={() => handleDeleteDeslinde(deslinde.id)}
-            >
-              <Delete />
-            </IconButton>
-          </ListItem>
-        ))}
-      </List>
-
-      {/* Dialogo para editar política */}
+  
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+        <Table aria-label="tabla de deslinde">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Título
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Versión
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Contenido
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Acciones
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {deslinde.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>
+                  <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteDeslinde(item.id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+  
+      {/* Diálogo para editar deslinde */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Deslinde</DialogTitle>
         <DialogContent>
@@ -168,6 +181,5 @@ const Deslinde = () => {
       </Dialog>
     </Container>
   );
-};
-
+}  
 export default Deslinde;

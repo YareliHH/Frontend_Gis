@@ -51,7 +51,7 @@ const RedesSociales = () => {
     const fetchSocials = async () => {
       try {
         const response = await axios.get('https://backendgislive.onrender.com/api/redesSociales/get');
-        setSocialData(response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})); // Guardamos el objeto completo
+        setSocialData(response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})); 
       } catch (error) {
         console.error('Error al obtener las redes sociales:', error);
       }
@@ -72,7 +72,7 @@ const RedesSociales = () => {
 
   const handleSocialSelect = (e) => {
     setSelectedSocial(e.target.value);
-    setUrl(''); // Limpiar el campo de URL al seleccionar una nueva red social
+    setUrl(''); 
   };
 
   // Validación simplificada: solo se valida que el campo no esté vacío y que no se duplique
@@ -80,7 +80,7 @@ const RedesSociales = () => {
     if (!url) {
       setNotification({
         open: true,
-        message: 'Por favor, ingresa un enlace o número.',
+        message: 'Por favor, ingresa un enlace',
         type: 'error',
       });
       return false;
@@ -112,7 +112,7 @@ const RedesSociales = () => {
           setIsEditing(null);
           setNotification({
             open: true,
-            message: 'Red social actualizada con éxito.',
+            message: 'Red social actualizada.',
             type: 'success',
           });
         } else {
@@ -125,7 +125,7 @@ const RedesSociales = () => {
           setSocialData({ ...socialData, [selectedSocial]: newSocial });
           setNotification({
             open: true,
-            message: 'Red social agregada con éxito.',
+            message: 'Red social agregada.',
             type: 'success',
           });
         }
@@ -178,104 +178,33 @@ const RedesSociales = () => {
         Redes Sociales
       </Typography>
 
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
-  <Table aria-label="tabla de redes sociales">
-    <TableHead>
-      <TableRow>
-        <TableCell
-          sx={{
-            fontWeight: 'bold',
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            textAlign: 'center',
-          }}
-        >
-          Red Social
-        </TableCell>
-        <TableCell
-          sx={{
-            fontWeight: 'bold',
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            textAlign: 'center',
-          }}
-        >
-          Enlace
-        </TableCell>
-        <TableCell
-          align="center"
-          sx={{
-            fontWeight: 'bold',
-            backgroundColor: '#1976d2',
-            color: '#fff',
-          }}
-        >
-          Acciones
-        </TableCell>
-      </TableRow>
-    </TableHead>
-    <TableBody>
-      <TableRow>
-        <TableCell>
-          <TextField
-            select
-            label="Selecciona una red social"
-            value={selectedSocial}
-            onChange={handleSocialSelect}
-            fullWidth
-          >
-            {availableSocials.map((option) => (
-              <MenuItem key={option.name} value={option.name}>
-                {option.label}
-              </MenuItem>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd' }}>
+        <Table aria-label="tabla de redes sociales">
+          <TableHead>
+            <TableRow>
+              <TableCell>Red Social</TableCell>
+              <TableCell>Enlace / Número</TableCell>
+              <TableCell align="right">Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Object.keys(socialData).map((social) => (
+              <TableRow key={social}>
+                <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
+                <TableCell>{socialData[social]?.url}</TableCell>
+                <TableCell align="right">
+                  <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
             ))}
-          </TextField>
-        </TableCell>
-        <TableCell>
-          <TextField
-            fullWidth
-            label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
-            value={url}
-            onChange={handleInputChange}
-            InputProps={{
-              startAdornment: selectedSocial === 'whatsapp' && (
-                <Typography sx={{ color: 'gray' }}>+52</Typography>
-              ),
-            }}
-          />
-        </TableCell>
-        <TableCell align="center">
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<SaveIcon />}
-            onClick={handleSave}
-            disabled={!selectedSocial || !url}
-          >
-            Guardar
-          </Button>
-        </TableCell>
-      </TableRow>
-
-      {Object.keys(socialData).map((social) => (
-        <TableRow key={social}>
-          <TableCell sx={{ textAlign: 'center' }}>
-            {availableSocials.find((s) => s.name === social)?.label || social}
-          </TableCell>
-          <TableCell sx={{ textAlign: 'center' }}>{socialData[social]?.url}</TableCell>
-          <TableCell sx={{ textAlign: 'center' }}>
-            <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
-              <DeleteIcon />
-            </IconButton>
-          </TableCell>
-        </TableRow>
-      ))}
-    </TableBody>
-  </Table>
-</TableContainer>
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       <Notificaciones
         open={notification.open}
