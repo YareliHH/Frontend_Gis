@@ -180,21 +180,18 @@ const RedesSociales = () => {
         </Grid>
 
         <Grid item xs={6}>
-          <TextField
-            fullWidth
-            label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Enlace'}
-            value={url}
-            onChange={handleInputChange}
-            InputProps={{
-              startAdornment: selectedSocial === 'whatsapp' && <Typography sx={{ color: 'gray' }}>+52</Typography>,
-            }}
-            helperText={
-              selectedSocial === 'whatsapp'
-                ? 'Ingresa los 10 dígitos restantes, ej: 1234567890'
-                : 'Ingresa el enlace de la red social'
-            }
-          />
-        </Grid>
+        <TextField
+          fullWidth
+          label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
+          value={url}
+          onChange={handleInputChange}
+          InputProps={{
+            startAdornment: selectedSocial === 'whatsapp' && (
+              <Typography sx={{ color: 'gray' }}>+52</Typography>
+            ),
+          }}
+        />
+      </Grid>
 
         <Grid item xs={12}>
           <Button
@@ -215,13 +212,40 @@ const RedesSociales = () => {
           <Table aria-label="tabla de redes sociales">
             <TableHead>
             <TableRow>
-            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#a6cef5', color: '#fff', textAlign: 'center' }}>
+            <TableCell
+              sx={{
+                fontWeight: 'bold',
+                backgroundColor: '#a6cef5',
+                color: '#fff',
+                textAlign: 'center',
+                padding: '16px 24px', // Aumentar el tamaño de la celda
+                fontSize: '1.1rem', // Aumentar el tamaño de la fuente
+              }}
+            >
               Red Social
             </TableCell>
-            <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#a6cef5', color: '#fff', textAlign: 'center' }}>
+            <TableCell
+              sx={{
+                fontWeight: 'bold',
+                backgroundColor: '#a6cef5',
+                color: '#fff',
+                textAlign: 'center',
+                padding: '16px 24px', // Aumentar el tamaño de la celda
+                fontSize: '1.1rem', // Aumentar el tamaño de la fuente
+              }}
+            >
               Número
             </TableCell>
-            <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#a6cef5', color: '#fff' }}>
+            <TableCell
+              align="center"
+              sx={{
+                fontWeight: 'bold',
+                backgroundColor: '#a6cef5',
+                color: '#fff',
+                padding: '16px 24px', // Aumentar el tamaño de la celda
+                fontSize: '1.1rem', // Aumentar el tamaño de la fuente
+              }}
+            >
               Acciones
             </TableCell>
           </TableRow>

@@ -83,57 +83,60 @@ const Deslinde = () => {
 
   return (
     <Container>
-      <h1>Gestión de Deslinde Legal </h1>
+    <h1>Gestión de Deslinde Legal</h1>
 
-      <TextField 
-        label="Título de la nueva deslinde" 
-        variant="outlined" 
-        value={newTitulo} 
-        onChange={(e) => setNewTitulo(e.target.value)} 
-        fullWidth
-        margin="normal"
-      />
-      <TextField 
-        label="Contenido de la nueva deslinde" 
-        variant="outlined" 
-        value={newContenido} 
-        onChange={(e) => setNewContenido(e.target.value)} 
-        fullWidth
-        margin="normal"
-      />
-      <Button 
-        variant="contained" 
-        color="primary" 
-        onClick={handleCreateDeslinde}
-        style={{ marginBottom: '20px' }}
-      >
-        Agregar Deslinde
-      </Button>
+    <TextField
+      label="Título de la nueva deslinde"
+      variant="outlined"
+      value={newTitulo}
+      onChange={(e) => setNewTitulo(e.target.value)}
+      fullWidth
+      margin="normal"
+    />
+    <TextField
+      label="Contenido de la nueva deslinde"
+      variant="outlined"
+      value={newContenido}
+      onChange={(e) => setNewContenido(e.target.value)}
+      fullWidth
+      margin="normal"
+    />
+    <Button
+      variant="contained"
+      color="primary"
+      onClick={handleCreateDeslinde}
+      style={{ marginBottom: '20px' }}
+    >
+      Agregar Deslinde
+    </Button>
 
-      <List>
-        {deslinde.map(deslinde=> (
-          <ListItem key={deslinde.id} divider>
-            <ListItemText 
-              primary={`${deslinde.titulo} (Versión: ${deslinde.version})`} 
-              secondary={deslinde.contenido} 
-            />
-            <IconButton 
-              edge="end" 
-              aria-label="edit" 
-              onClick={() => handleClickOpen(deslinde)}
-            >
-              <Edit />
-            </IconButton>
-            <IconButton 
-              edge="end" 
-              aria-label="delete" 
-              onClick={() => handleDeleteDeslinde(deslinde.id)}
-            >
-              <Delete />
-            </IconButton>
-          </ListItem>
-        ))}
-      </List>
+    <TableContainer style={{ marginTop: '20px' }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Red Social</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Número</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Acciones</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {deslinde.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>
+                  <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
+                    <Edit />
+                  </IconButton>
+                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteDeslinde(item.id)}>
+                    <Delete />
+                  </IconButton>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
       {/* Dialogo para editar política */}
       <Dialog open={open} onClose={handleClose}>
@@ -161,7 +164,10 @@ const Deslinde = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => { handleUpdateDeslinde(editId); handleClose(); }} color="primary">
+          <Button
+            onClick={() => { handleUpdateDeslinde(editId); handleClose(); }}
+            color="primary"
+          >
             Guardar
           </Button>
         </DialogActions>
@@ -169,5 +175,6 @@ const Deslinde = () => {
     </Container>
   );
 };
+
 
 export default Deslinde;
