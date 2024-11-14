@@ -63,7 +63,8 @@ const Deslinde = () => {
       setEditId(null);
       setEditTitulo('');
       setEditContenido('');
-      fetchDeslinde();
+      setOpen(false); // Cerrar el diálogo después de guardar
+      fetchDeslinde(); // Refrescar la lista de deslindes para reflejar los cambios
     } catch (error) {
       console.error("Error al actualizar el deslinde", error);
     }
@@ -203,7 +204,7 @@ const Deslinde = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => { handleUpdateDeslinde(editId); handleClose(); }} color="primary">
+          <Button onClick={() => { handleUpdateDeslinde(editId); }} color="primary">
             Guardar
           </Button>
         </DialogActions>
