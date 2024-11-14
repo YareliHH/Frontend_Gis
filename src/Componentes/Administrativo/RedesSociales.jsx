@@ -1,20 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  TextField,
-  Grid,
-  Typography,
-  Box,
-  Button,
-  MenuItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  IconButton,
-} from '@mui/material';
+import {TextField,Grid, Typography, Box,Button,MenuItem,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,IconButton,} from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon, Save as SaveIcon } from '@mui/icons-material';
 import axios from 'axios';
 import Notificaciones from '../Compartidos/Notificaciones';
@@ -215,48 +200,53 @@ const RedesSociales = () => {
             startIcon={<SaveIcon />}
             onClick={handleSave}
             disabled={!selectedSocial || !url}
+            sx={{ mt: 2 }}
           >
             Guardar
           </Button>
         </Grid>
       </Grid>
 
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd' }}>
-        <Table aria-label="tabla de redes sociales">
-          <TableHead>
-            <TableRow>
-              <TableCell>Red Social</TableCell>
-              <TableCell>Enlace / Número</TableCell>
-              <TableCell align="right">Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {Object.keys(socialData).map((social) => (
-              <TableRow key={social}>
-                <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
-                <TableCell>
-                  <a
-                    href={socialData[social]?.url.startsWith('http') ? socialData[social]?.url : `tel:+52${socialData[social]?.url}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ color: '#1976d2' }}
-                  >
-                    {socialData[social]?.url}
-                  </a>
-                </TableCell>
-                <TableCell align="right">
-                  <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
-                    <DeleteIcon />
-                  </IconButton>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+        <TableContainer component={Paper} sx={{ maxWidth: 900, backgroundColor: '#f5f5f5' }}>
+          <Table aria-label="tabla de redes sociales">
+            <TableHead>
+              <TableRow>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Red Social</TableCell>
+                <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Enlace / Número</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>
+                  Acciones
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {Object.keys(socialData).map((social) => (
+                <TableRow key={social}>
+                  <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
+                  <TableCell>
+                    <a
+                      href={socialData[social]?.url.startsWith('http') ? socialData[social]?.url : `tel:+52${socialData[social]?.url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ color: '#1976d2', textDecoration: 'none' }}
+                    >
+                      {socialData[social]?.url}
+                    </a>
+                  </TableCell>
+                  <TableCell align="right">
+                    <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
 
       <Notificaciones
         open={notification.open}
