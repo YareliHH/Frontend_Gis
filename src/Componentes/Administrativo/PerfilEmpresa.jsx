@@ -35,7 +35,7 @@ const PerfilEmpresa = () => {
         const fetchPerfil = async () => {
             try {
                 const response = await axios.get('https://backendgislive.onrender.com/api/perfil_empresa/get');
-                setPerfil(response.data[0]); // Asumiendo que solo hay un perfil
+                setPerfil(response.data[0]); 
             } catch (error) {
                 console.error('Error al obtener el perfil de la empresa:', error);
             } finally {

@@ -62,7 +62,7 @@ const RedesSociales = () => {
 
   const handleInputChange = (e) => {
     if (selectedSocial === 'whatsapp') {
-      // Solo permitir números y hasta 10 dígitos
+     
       const value = e.target.value.replace(/\D/g, '').slice(0, 10);
       setUrl(value);
     } else {
@@ -72,7 +72,7 @@ const RedesSociales = () => {
 
   const handleSocialSelect = (e) => {
     setSelectedSocial(e.target.value);
-    setUrl(''); // Limpiar el campo de URL al seleccionar una nueva red social
+    setUrl(''); 
   };
 
   // Validación simplificada: solo se valida que el campo no esté vacío y que no se duplique
@@ -171,104 +171,112 @@ const RedesSociales = () => {
     setSelectedSocial(social);
     setUrl(socialData[social].url.replace('+52', '')); 
   };
+
   return (
-    <Box sx={{
-      mt: 4,
-      backgroundColor: '#fff',
-      p: 3,
-      borderRadius: '10px',
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-      textAlign: 'center',  // Centrado en el contenedor
-      maxWidth: '800px',
-      margin: 'auto',
-    }}>
+    <Box sx={{ mt: 4, backgroundColor: '#fff', p: 3, borderRadius: '10px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
       <Typography variant="h5" gutterBottom>
         Redes Sociales
       </Typography>
-  
-      <TableContainer component={Paper} sx={{
-        backgroundColor: '#f9f9f9',
-        maxWidth: '100%',
-        margin: 'auto',
-      }}>
-        <Table aria-label="tabla de redes sociales" sx={{
-          minWidth: 500,  // Tamaño mínimo de la tabla
-          borderCollapse: 'collapse',
-        }}>
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '14px' }}>Red Social</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '14px' }}>Enlace</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold', fontSize: '14px' }}>Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell align="center">
-                <TextField
-                  select
-                  label="Selecciona una red social"
-                  value={selectedSocial}
-                  onChange={handleSocialSelect}
-                  fullWidth
-                  sx={{
-                    maxWidth: '200px',
-                    margin: 'auto',
-                  }}
-                >
-                  {availableSocials.map((option) => (
-                    <MenuItem key={option.name} value={option.name}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              </TableCell>
-              <TableCell align="center">
-                <TextField
-                  fullWidth
-                  label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
-                  value={url}
-                  onChange={handleInputChange}
-                  sx={{ maxWidth: '250px', margin: 'auto' }}
-                  InputProps={{
-                    startAdornment: selectedSocial === 'whatsapp' && (
-                      <Typography sx={{ color: 'gray' }}>+52</Typography>
-                    ),
-                  }}
-                />
-              </TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="contained"
-                  color="primary"
-                  startIcon={<SaveIcon />}
-                  onClick={handleSave}
-                  disabled={!selectedSocial || !url}
-                  sx={{ minWidth: '100px' }}
-                >
-                  Guardar
-                </Button>
-              </TableCell>
-            </TableRow>
-  
-            {Object.keys(socialData).map((social) => (
-              <TableRow key={social}>
-                <TableCell align="center">{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
-                <TableCell align="center">{socialData[social]?.url}</TableCell>
-                <TableCell align="center">
-                  <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
+
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+  <Table aria-label="tabla de redes sociales">
+    <TableHead>
+      <TableRow>
+        <TableCell
+          sx={{
+            fontWeight: 'bold',
+            backgroundColor: '#1976d2',
+            color: '#fff',
+            textAlign: 'center',
+          }}
+        >
+          Red Social
+        </TableCell>
+        <TableCell
+          sx={{
+            fontWeight: 'bold',
+            backgroundColor: '#1976d2',
+            color: '#fff',
+            textAlign: 'center',
+          }}
+        >
+          Enlace
+        </TableCell>
+        <TableCell
+          align="center"
+          sx={{
+            fontWeight: 'bold',
+            backgroundColor: '#1976d2',
+            color: '#fff',
+          }}
+        >
+          Acciones
+        </TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      <TableRow>
+        <TableCell>
+          <TextField
+            select
+            label="Selecciona una red social"
+            value={selectedSocial}
+            onChange={handleSocialSelect}
+            fullWidth
+          >
+            {availableSocials.map((option) => (
+              <MenuItem key={option.name} value={option.name}>
+                {option.label}
+              </MenuItem>
             ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-  
+          </TextField>
+        </TableCell>
+        <TableCell>
+          <TextField
+            fullWidth
+            label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Ingresa el enlace de la red social'}
+            value={url}
+            onChange={handleInputChange}
+            InputProps={{
+              startAdornment: selectedSocial === 'whatsapp' && (
+                <Typography sx={{ color: 'gray' }}>+52</Typography>
+              ),
+            }}
+          />
+        </TableCell>
+        <TableCell align="center">
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<SaveIcon />}
+            onClick={handleSave}
+            disabled={!selectedSocial || !url}
+          >
+            Guardar
+          </Button>
+        </TableCell>
+      </TableRow>
+
+      {Object.keys(socialData).map((social) => (
+        <TableRow key={social}>
+          <TableCell sx={{ textAlign: 'center' }}>
+            {availableSocials.find((s) => s.name === social)?.label || social}
+          </TableCell>
+          <TableCell sx={{ textAlign: 'center' }}>{socialData[social]?.url}</TableCell>
+          <TableCell sx={{ textAlign: 'center' }}>
+            <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
+              <EditIcon />
+            </IconButton>
+            <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
+              <DeleteIcon />
+            </IconButton>
+          </TableCell>
+        </TableRow>
+      ))}
+    </TableBody>
+  </Table>
+</TableContainer>
+
       <Notificaciones
         open={notification.open}
         message={notification.message}
@@ -277,7 +285,6 @@ const RedesSociales = () => {
       />
     </Box>
   );
-  
 };
 
 
