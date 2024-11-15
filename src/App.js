@@ -12,6 +12,7 @@ import PaginaCliente from './Componentes/Inicio/PaginaCliente';
 import Sobrenosotros from './Componentes/Inicio/sobrenosotros'; 
 import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
 import RecuperarContraseña from './Componentes/Inicio/recuperarPassword';
+import CambiarContra from './Componentes/Inicio/CambiarPassword.jsx'
 import { ThemeProvider, useTheme } from './Componentes/Temas/themeContext';
 
 //Admi
@@ -43,6 +44,8 @@ const App = () => {
         <Route path="/admin/terminos" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin/redesSociales" element={<LayoutEncabezadoAdmin><RedesSociales/></LayoutEncabezadoAdmin>} /> 
         <Route path="/recuperar_password" element={<RecuperarContraseña/>} />
+        <Route path="/resetear_contrasena" element={<CambiarContra/>} />
+
         
       </Routes>
     </Router>
