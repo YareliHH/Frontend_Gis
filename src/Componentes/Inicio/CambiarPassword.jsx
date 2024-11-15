@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Card, CardContent, IconButton, CircularProgress } from '@mui/material';
-import { Lock, ArrowBack, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Lock, ArrowBack, Visibility, VisibilityOff, CheckCircle } from '@mui/icons-material';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import zxcvbn from 'zxcvbn';
 import CryptoJS from 'crypto-js';
-import { FaCheckCircle } from 'react-icons/fa';
 import Notificaciones from '../Compartidos/Notificaciones'; // Importar componente de notificaciones
 
 const CambiarContrasena = () => {
@@ -49,22 +48,15 @@ const CambiarContrasena = () => {
     // Validación de reglas de contraseña
     const checkPasswordRules = (password) => {
         const errors = [];
-        const hasUpperCase = /[A-Z]/.test(password);
-        const hasNumber = /\d/.test(password);
-        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-        const hasMinLength = password.length >= 8;
-        const noRepeatingChars = !/(.)\1{2}/.test(password);
-
-        if (!hasUpperCase) errors.push('Al menos 1 mayúscula.');
-        if (!hasNumber) errors.push('Al menos 1 número.');
-        if (!hasSpecialChar) errors.push('Al menos 1 símbolo especial.');
-        if (!hasMinLength) errors.push('Más de 8 caracteres.');
-        if (!noRepeatingChars) errors.push('No más de 3 letras seguidas.');
-
+        if (!/[A-Z]/.test(password)) errors.push('Al menos 1 mayúscula.');
+        if (!/\d/.test(password)) errors.push('Al menos 1 número.');
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('Al menos 1 símbolo especial.');
+        if (password.length < 8) errors.push('Más de 8 caracteres.');
+        if (/(.)\1{2}/.test(password)) errors.push('No más de 3 letras seguidas.');
         return errors;
     };
 
-    // Validación de seguridad de la contraseña usando la API de pwnedpasswords
+    // Validación de seguridad de la contraseña
     const checkPasswordSafety = async (password) => {
         setIsLoading(true);
         try {
@@ -220,9 +212,9 @@ const CambiarContrasena = () => {
                         {passwordError && <Typography variant="body2" sx={{ color: 'red', fontSize: '0.8rem', mb: 1 }}>{passwordError}</Typography>}
                         {isPasswordFiltered && <Typography variant="body2" sx={{ color: 'red', fontSize: '0.8rem', mb: 1 }}>Contraseña filtrada. Elige otra.</Typography>}
                         {isPasswordSafe && !isPasswordFiltered && newPassword && (
-                            <p>
-                                <FaCheckCircle style={{ color: 'green' }} /> Contraseña segura
-                            </p>
+                            <Typography variant="body2" sx={{ color: 'green', display: 'flex', alignItems: 'center' }}>
+                                <CheckCircle sx={{ color: 'green', mr: 1 }} /> Contraseña segura
+                            </Typography>
                         )}
 
                         {/* Barra de fortaleza de la contraseña */}
