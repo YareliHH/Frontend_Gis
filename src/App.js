@@ -42,7 +42,7 @@ const App = () => {
         <Route path="/admin/politicas" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin/terminos" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin/redesSociales" element={<LayoutEncabezadoAdmin><RedesSociales/></LayoutEncabezadoAdmin>} /> 
-        <Route path="recuperar_password" element={<RecuperarContraseña/>} />
+        <Route path="/recuperar_password" element={<RecuperarContraseña/>} />
         
       </Routes>
     </Router>
