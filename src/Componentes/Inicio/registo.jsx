@@ -20,13 +20,14 @@ const Registro = () => {
 
   const [errors, setErrors] = useState({});
   const [passwordError, setPasswordError] = useState('');
-  const [isLoading, setIsLoading] = useState(false); 
+  const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [tokenVerified, setTokenVerified] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
   const [showTokenField, setShowTokenField] = useState(false);
 
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -131,9 +132,9 @@ const Registro = () => {
         setSnackbarSeverity('success');
         setSnackbarOpen(true);
         setShowTokenField(true);
+        setEmailVerified(true);
       }
     } catch (error) {
-      console.error('Error al verificar el correo:', error);
       setSnackbarMessage('Error al enviar el código de verificación.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -156,7 +157,6 @@ const Registro = () => {
         setSnackbarOpen(true);
       }
     } catch (error) {
-      console.error('Error al verificar el token:', error);
       setSnackbarMessage('Error al verificar el token.');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -187,7 +187,6 @@ const Registro = () => {
 
       setErrors({});
     } catch (error) {
-      console.error('Error al registrar usuario:', error);
       setSnackbarMessage('Error al registrar usuario');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
@@ -221,22 +220,25 @@ const Registro = () => {
                       <Email />
                     </InputAdornment>
                   ),
+                  readOnly: emailVerified,
                 }}
                 required
                 error={!!errors.correo}
-                helperText={errors.correo}
+                helperText={errors.correo || (emailVerified ? 'El correo ya fue validado para su registro.' : '')}
               />
-              <Button
-                onClick={handleVerifyEmail}
-                variant="outlined"
-                color="primary"
-                fullWidth
-                disabled={isVerifying || tokenVerified}
-                startIcon={isVerifying ? <CircularProgress size={20} color="inherit" /> : null}
-                sx={{ mt: 2 }}
-              >
-                {isVerifying ? 'Verificando...' : 'Enviar código de verificación'}
-              </Button>
+              {!emailVerified && (
+                <Button
+                  onClick={handleVerifyEmail}
+                  variant="outlined"
+                  color="primary"
+                  fullWidth
+                  disabled={isVerifying}
+                  startIcon={isVerifying ? <CircularProgress size={20} color="inherit" /> : null}
+                  sx={{ mt: 2 }}
+                >
+                  {isVerifying ? 'Verificando...' : 'Enviar código de verificación'}
+                </Button>
+              )}
             </Grid>
 
             {showTokenField && (
@@ -247,21 +249,26 @@ const Registro = () => {
                   name="token"
                   value={formData.token}
                   onChange={handleChange}
-                  helperText="Ingresa el código de verificación enviado a tu correo."
+                  InputProps={{
+                    readOnly: tokenVerified,
+                  }}
+                  helperText={tokenVerified ? 'Token validado correctamente.' : 'Ingresa el código enviado a tu correo.'}
                 />
-                <Button
-                  onClick={handleVerifyToken}
-                  variant="outlined"
-                  color="primary"
-                  fullWidth
-                  sx={{ mt: 2 }}
-                  disabled={tokenVerified}
-                >
-                  Verificar Token
-                </Button>
+                {!tokenVerified && (
+                  <Button
+                    onClick={handleVerifyToken}
+                    variant="outlined"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                  >
+                    Verificar Token
+                  </Button>
+                )}
               </Grid>
             )}
 
+            {/* Campos adicionales */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -364,7 +371,6 @@ const Registro = () => {
                 error={!!passwordError}
                 helperText={passwordError}
               />
-              
             </Grid>
             <Grid item xs={12}>
               <TextField
@@ -400,7 +406,7 @@ const Registro = () => {
               variant="contained"
               color="primary"
               fullWidth
-              disabled={isLoading || !tokenVerified || passwordMatchError !== ''}
+              disabled={isLoading || !tokenVerified}
               startIcon={isLoading ? <CircularProgress size={20} color="inherit" /> : null}
             >
               {isLoading ? 'Registrando...' : 'Registrar'}
