@@ -36,7 +36,7 @@ const Registro = () => {
   const navigate = useNavigate();
 
   const nameRegex = /^[a-zA-ZÀ-ÿ\s]+$/;
-  const emailRegex = /^[^\s@]+@(gmail\.com|hotmail\.com|outlook\.com)$/;
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail|hotmail|outlook|yahoo|live|uthh\.edu)\.(com|mx)$/;
   const phoneRegex = /^[0-9]{10}$/;
 
   const checkPasswordRules = (password) => {
