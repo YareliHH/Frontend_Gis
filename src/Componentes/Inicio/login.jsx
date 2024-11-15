@@ -4,8 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import ReCAPTCHA from "react-google-recaptcha"; 
-import { Container, Typography, TextField, Button, Box, Snackbar, Alert, InputAdornment, CircularProgress } from '@mui/material';
-import { Email as EmailIcon, Lock as LockIcon } from '@mui/icons-material';
+import { Container, Typography, TextField, Button, Box, Snackbar, Alert, InputAdornment, CircularProgress, IconButton } from '@mui/material';
+import { Email as EmailIcon, Lock as LockIcon, Visibility, VisibilityOff } from '@mui/icons-material';
 import Notificaciones from '../Compartidos/Notificaciones.jsx'; // Importar el componente Notificaciones
 
 const MySwal = withReactContent(Swal);
@@ -14,6 +14,7 @@ function Login() {
   const navigate = useNavigate();
   const [correo, setCorreo] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Estado para controlar la visibilidad de la contraseña
   const [captchaValue, setCaptchaValue] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [openSnackbar, setOpenSnackbar] = useState(false);
@@ -52,7 +53,7 @@ function Login() {
         default:
           setErrorMessage('Tipo de usuario desconocido');
           setOpenSnackbar(true);
-          setLoading(false); // Ocultar el indicador de carga si ocurre un error
+          setLoading(false); 
           return;
       }
 
@@ -66,13 +67,16 @@ function Login() {
         navigate(ruta);  
       });
     } catch (error) {
-      console.error('Error al iniciar sesión:', error);  // Depurar cualquier error de la solicitud
+      console.error('Error al iniciar sesión:', error); 
       setErrorMessage(error.response ? 'Correo o contraseña incorrectos' : 'Error al iniciar sesión. Inténtalo de nuevo más tarde.');
       setOpenSnackbar(true);
     } finally {
-      setLoading(false); // Ocultar el indicador de carga después de la solicitud
+      setLoading(false); 
     }
   };
+
+  // Cambiar la visibilidad de la contraseña
+  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
 
   return (
     <Container component="main" maxWidth="xs" sx={{ mt: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh' }}>
@@ -115,7 +119,7 @@ function Login() {
           />
           <TextField
             label="Contraseña"
-            type="password"
+            type={showPassword ? 'text' : 'password'} // Cambia el tipo según el estado de showPassword
             variant="outlined"
             margin="normal"
             required
@@ -126,6 +130,13 @@ function Login() {
               startAdornment: (
                 <InputAdornment position="start">
                   <LockIcon sx={{ color: '#1565c0' }} />
+                </InputAdornment>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={handleClickShowPassword} edge="end">
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
                 </InputAdornment>
               ),
             }}
@@ -147,7 +158,7 @@ function Login() {
             variant="contained" 
             color="primary" 
             fullWidth
-            disabled={loading} // Deshabilitar el botón cuando está cargando
+            disabled={loading} 
             startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
             sx={{
               padding: '10px 0',
