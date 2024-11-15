@@ -5,7 +5,6 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import zxcvbn from 'zxcvbn';
 import CryptoJS from 'crypto-js';
-import { FaCheckCircle } from 'react-icons/fa';
 import Notificaciones from '../Compartidos/Notificaciones'; // Importar componente de notificaciones
 
 const CambiarContrasena = () => {
