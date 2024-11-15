@@ -5,11 +5,13 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import zxcvbn from 'zxcvbn';
 import CryptoJS from 'crypto-js';
+import { FaCheckCircle } from 'react-icons/fa';
 import Notificaciones from '../Compartidos/Notificaciones'; // Importar componente de notificaciones
 
 const CambiarContrasena = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
     const [passwordStrength, setPasswordStrength] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
     const [passwordError, setPasswordError] = useState('');
@@ -24,9 +26,9 @@ const CambiarContrasena = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
-    const token = searchParams.get('token'); // Token de recuperación de contraseña
+    const token = searchParams.get('token');
 
-    // Función para manejar el cambio de contraseña y validar seguridad
+    // Manejar cambios en los campos de contraseña
     const handleChange = async (e) => {
         const { name, value } = e.target;
 
@@ -47,15 +49,22 @@ const CambiarContrasena = () => {
     // Validación de reglas de contraseña
     const checkPasswordRules = (password) => {
         const errors = [];
-        if (!/[A-Z]/.test(password)) errors.push('Al menos 1 mayúscula.');
-        if (!/\d/.test(password)) errors.push('Al menos 1 número.');
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('Al menos 1 símbolo especial.');
-        if (password.length < 8) errors.push('Más de 8 caracteres.');
-        if (/(.)\1{2}/.test(password)) errors.push('No más de 3 letras seguidas.');
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+        const hasMinLength = password.length >= 8;
+        const noRepeatingChars = !/(.)\1{2}/.test(password);
+
+        if (!hasUpperCase) errors.push('Al menos 1 mayúscula.');
+        if (!hasNumber) errors.push('Al menos 1 número.');
+        if (!hasSpecialChar) errors.push('Al menos 1 símbolo especial.');
+        if (!hasMinLength) errors.push('Más de 8 caracteres.');
+        if (!noRepeatingChars) errors.push('No más de 3 letras seguidas.');
+
         return errors;
     };
 
-    // Validación de seguridad de la contraseña
+    // Validación de seguridad de la contraseña usando la API de pwnedpasswords
     const checkPasswordSafety = async (password) => {
         setIsLoading(true);
         try {
@@ -86,25 +95,25 @@ const CambiarContrasena = () => {
     // Manejo del submit
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage('');
 
         if (!token) {
-            setNotificationMessage('El token es inválido o ha expirado.');
-            setNotificationType('error');
-            setOpenNotification(true);
+            setErrorMessage('El token es inválido o ha expirado.');
             return;
         }
 
         if (newPassword !== confirmPassword) {
-            setNotificationMessage('Las contraseñas no coinciden.');
-            setNotificationType('error');
-            setOpenNotification(true);
+            setErrorMessage('Las contraseñas no coinciden.');
             return;
         }
 
-        if (passwordRulesErrors.length > 0 || passwordStrength < 3 || !isPasswordSafe) {
-            setNotificationMessage('Asegúrate de que la contraseña cumple con los requisitos de seguridad.');
-            setNotificationType('error');
-            setOpenNotification(true);
+        if (passwordRulesErrors.length > 0) {
+            setErrorMessage('Errores: ' + passwordRulesErrors.join(', '));
+            return;
+        }
+
+        if (passwordStrength < 3) {
+            setErrorMessage('La contraseña debe ser fuerte o muy fuerte para ser cambiada.');
             return;
         }
 
@@ -183,6 +192,11 @@ const CambiarContrasena = () => {
                             />
                         </Box>
 
+                        {passwordRulesErrors.length > 0 && (
+                            <Typography variant="body2" sx={{ color: 'red', fontSize: '0.8rem', mb: 2 }}>
+                                Errores: {passwordRulesErrors.join(', ')}
+                            </Typography>
+                        )}
                         <Box sx={{ mb: 2 }}>
                             <TextField
                                 fullWidth
@@ -203,6 +217,15 @@ const CambiarContrasena = () => {
                             />
                         </Box>
 
+                        {passwordError && <Typography variant="body2" sx={{ color: 'red', fontSize: '0.8rem', mb: 1 }}>{passwordError}</Typography>}
+                        {isPasswordFiltered && <Typography variant="body2" sx={{ color: 'red', fontSize: '0.8rem', mb: 1 }}>Contraseña filtrada. Elige otra.</Typography>}
+                        {isPasswordSafe && !isPasswordFiltered && newPassword && (
+                            <p>
+                                <FaCheckCircle style={{ color: 'green' }} /> Contraseña segura
+                            </p>
+                        )}
+
+                        {/* Barra de fortaleza de la contraseña */}
                         <Box sx={{ mt: 2 }}>
                             <Typography variant="body2">Fortaleza de la contraseña</Typography>
                             <Box
@@ -218,22 +241,42 @@ const CambiarContrasena = () => {
                                     sx={{
                                         height: '100%',
                                         width: `${(passwordStrength / 4) * 100}%`,
-                                        backgroundColor: passwordStrength < 2 ? 'red' : passwordStrength === 2 ? 'yellow' : 'green',
+                                        backgroundColor:
+                                            passwordStrength < 2
+                                                ? 'red'
+                                                : passwordStrength === 2
+                                                    ? 'yellow'
+                                                    : 'green',
                                         borderRadius: '5px',
+                                        transition: 'width 0.3s ease-in-out, background-color 0.3s ease-in-out',
                                     }}
                                 />
                             </Box>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    position: 'absolute',
+                                    top: '100%',
+                                    left: '50%',
+                                    transform: 'translateX(-50%)',
+                                    whiteSpace: 'nowrap',
+                                }}
+                            >
+                                {['Muy débil', 'Débil', 'Fuerte', 'Muy fuerte'][passwordStrength]}
+                            </Typography>
                         </Box>
 
                         <Button
                             type="submit"
                             variant="contained"
                             color="primary"
-                            sx={{ mt: 3, width: '100%' }}
+                            sx={{ mt: 2, width: '100%' }}
                             disabled={isLoading}
                         >
                             {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Cambiar Contraseña'}
                         </Button>
+
+                        {errorMessage && <Typography variant="body2" sx={{ color: 'red', mt: 2 }}>{errorMessage}</Typography>}
                     </form>
                 </CardContent>
             </Card>
