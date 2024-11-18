@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Container, Grid, Typography, IconButton, Box, Modal, Button } from '@mui/material';
-import { Facebook, Twitter, Instagram, WhatsApp } from '@mui/icons-material';
+import { Facebook, Instagram, WhatsApp } from '@mui/icons-material';
 import axios from 'axios';
 
 const availableSocials = [
@@ -136,6 +136,26 @@ const Footer = () => {
               }
             >
               Deslinde Legal
+            </Button>
+          </Grid>
+        </Grid>
+
+        {/* Nuevos enlaces */}
+        <Grid container justifyContent="center" spacing={2} sx={{ mb: 2 }}>
+          <Grid item>
+            <Button
+              color="inherit"
+              onClick={() => handleOpenModal('Preguntas Frecuentes', 'Contenido no disponible')}
+            >
+              Preguntas Frecuentes
+            </Button>
+          </Grid>
+          <Grid item>
+            <Button
+              color="inherit"
+              onClick={() => handleOpenModal('Contáctanos', 'Contenido no disponible')}
+            >
+              Contáctanos
             </Button>
           </Grid>
         </Grid>
