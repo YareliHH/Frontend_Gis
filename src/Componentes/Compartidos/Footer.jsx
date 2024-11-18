@@ -1,53 +1,46 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Grid, Typography, IconButton, Box, Modal, Button, Divider } from '@mui/material';
-import { FaFacebook, FaTwitter, FaInstagram, FaWhatsapp } from 'react-icons/fa';
+import { Container, Grid, Typography, IconButton, Box, Modal, Button } from '@mui/material';
+import { Facebook, Twitter, Instagram, WhatsApp } from '@mui/icons-material';
 import axios from 'axios';
 
 const availableSocials = [
-  { label: 'Facebook', name: 'facebook', icon: <FaFacebook /> },
-  { label: 'Twitter', name: 'twitter', icon: <FaTwitter /> },
-  { label: 'Instagram', name: 'instagram', icon: <FaInstagram /> },
-  { label: 'WhatsApp', name: 'whatsapp', icon: <FaWhatsapp /> },
+  { label: 'Facebook', name: 'facebook', link: 'https://facebook.com', icon: <Facebook /> },
+  { label: 'Twitter', name: 'twitter', link: 'https://twitter.com', icon: <Twitter /> },
+  { label: 'Instagram', name: 'instagram', link: 'https://instagram.com', icon: <Instagram /> },
+  { label: 'WhatsApp', name: 'whatsapp', link: 'https://whatsapp.com', icon: <WhatsApp /> },
 ];
 
 const Footer = () => {
-  const [socials, setSocials] = useState([]);
   const [privacyPolicy, setPrivacyPolicy] = useState([]);
   const [termsConditions, setTermsConditions] = useState([]);
   const [disclaimer, setDisclaimer] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
   const [modalTitle, setModalTitle] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Obtener datos del backend
   useEffect(() => {
-    const fetchSocials = async () => {
-      try {
-        const response = await axios.get('https://backendgislive.onrender.com/api/redesSociales/sociales');
-        setSocials(response.data);
-      } catch (error) {
-        console.error('Error al obtener las redes sociales', error);
-      }
-    };
-
     const fetchPrivacyPolicy = async () => {
       try {
-        const response = await axios.get('https://backendgislive.onrender.com/api/politicas/politicas_privacidad');
+        const response = await axios.get(
+          'https://backendgislive.onrender.com/api/politicas/politicas_privacidad'
+        );
         const activePolicy = response.data.filter((policy) => policy.estado === 'activo');
         setPrivacyPolicy(activePolicy);
       } catch (error) {
-        console.error('Error al obtener las políticas de privacidad', error);
+        console.error('Error al obtener las políticas de privacidad:', error);
       }
     };
 
     const fetchTermsConditions = async () => {
       try {
-        const response = await axios.get('https://backendgislive.onrender.com/api/termiCondicion/terminos_condiciones');
+        const response = await axios.get(
+          'https://backendgislive.onrender.com/api/termiCondicion/terminos_condiciones'
+        );
         const activeTerms = response.data.filter((term) => term.estado === 'activo');
         setTermsConditions(activeTerms);
       } catch (error) {
-        console.error('Error al obtener los términos y condiciones', error);
+        console.error('Error al obtener los términos y condiciones:', error);
       }
     };
 
@@ -57,11 +50,10 @@ const Footer = () => {
         const activeDisclaimer = response.data.filter((disclaimer) => disclaimer.estado === 'activo');
         setDisclaimer(activeDisclaimer);
       } catch (error) {
-        console.error('Error al obtener el deslinde legal', error);
+        console.error('Error al obtener el deslinde legal:', error);
       }
     };
 
-    fetchSocials();
     fetchPrivacyPolicy();
     fetchTermsConditions();
     fetchDisclaimer();
@@ -81,7 +73,7 @@ const Footer = () => {
   return (
     <footer
       style={{
-        backgroundColor: isDarkMode ? '#333333' : '#00bcd4',
+        backgroundColor: '#00bcd4',
         color: '#ffffff',
         padding: '20px',
         position: 'fixed',
@@ -99,8 +91,8 @@ const Footer = () => {
                 onClick={() => window.open(social.link, '_blank', 'noopener,noreferrer')}
                 sx={{
                   color: '#ffffff',
-                  backgroundColor: isDarkMode ? '#444444' : '#0097a7',
-                  '&:hover': { backgroundColor: isDarkMode ? '#555555' : '#00796b' },
+                  backgroundColor: '#0097a7',
+                  '&:hover': { backgroundColor: '#00796b' },
                 }}
               >
                 {social.icon}
@@ -114,7 +106,12 @@ const Footer = () => {
           <Grid item>
             <Button
               color="inherit"
-              onClick={() => handleOpenModal('Política de Privacidad', privacyPolicy[0]?.contenido || 'No disponible')}
+              onClick={() =>
+                handleOpenModal(
+                  'Política de Privacidad',
+                  privacyPolicy[0]?.contenido || 'Contenido no disponible'
+                )
+              }
             >
               Política de Privacidad
             </Button>
@@ -123,7 +120,10 @@ const Footer = () => {
             <Button
               color="inherit"
               onClick={() =>
-                handleOpenModal('Términos y Condiciones', termsConditions[0]?.contenido || 'No disponible')
+                handleOpenModal(
+                  'Términos y Condiciones',
+                  termsConditions[0]?.contenido || 'Contenido no disponible'
+                )
               }
             >
               Términos y Condiciones
@@ -132,7 +132,9 @@ const Footer = () => {
           <Grid item>
             <Button
               color="inherit"
-              onClick={() => handleOpenModal('Deslinde Legal', disclaimer[0]?.contenido || 'No disponible')}
+              onClick={() =>
+                handleOpenModal('Deslinde Legal', disclaimer[0]?.contenido || 'Contenido no disponible')
+              }
             >
               Deslinde Legal
             </Button>
