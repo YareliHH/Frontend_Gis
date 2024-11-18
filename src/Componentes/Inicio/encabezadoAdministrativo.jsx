@@ -93,7 +93,15 @@ const EncabezadoAdministrativo = () => {
       <AppBar position="static">
         <Toolbar>
           <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
-            <img src={logo} alt="Gislive Boutique Clínica" style={{ width: 80, height: 60, marginRight: 16 }} />
+          <img
+          src={logo}
+          alt="Gislive Boutique Clínica"
+          style={{
+            width: 50, // Tamaño más pequeño
+            height: 50, // Tamaño más pequeño
+            borderRadius: '50%', // Hace que el logo sea redondo
+            marginRight: 16,
+          }}/>
             <Typography variant="h6">Gislive Boutique Clínica</Typography>
           </Box>
 
