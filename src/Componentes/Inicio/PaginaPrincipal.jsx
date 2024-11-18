@@ -135,7 +135,7 @@ const PaginaPrincipal = () => {
                     alt={product.title}
                     image={product.img}
                     sx={{
-                      height: 300, 
+                      height: 200, 
                       width: '100%',
                       objectFit: 'cover',
                     }}
