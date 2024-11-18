@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import zxcvbn from 'zxcvbn';
 import CryptoJS from 'crypto-js';
-import Notificaciones from '../Compartidos/Notificaciones'; // Importar componente de notificaciones
+import Notificaciones from '../Compartidos/Notificaciones'; 
 
 const CambiarContrasena = () => {
     const [newPassword, setNewPassword] = useState('');
