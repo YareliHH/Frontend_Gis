@@ -4,10 +4,9 @@ import { Facebook, Twitter, Instagram, WhatsApp } from '@mui/icons-material';
 import axios from 'axios';
 
 const availableSocials = [
-  { label: 'Facebook', name: 'facebook', link: 'https://facebook.com', icon: <Facebook /> },
-  { label: 'Twitter', name: 'twitter', link: 'https://twitter.com', icon: <Twitter /> },
-  { label: 'Instagram', name: 'instagram', link: 'https://instagram.com', icon: <Instagram /> },
-  { label: 'WhatsApp', name: 'whatsapp', link: 'https://whatsapp.com', icon: <WhatsApp /> },
+  { label: 'Facebook', name: 'facebook', link: 'https://www.facebook.com/profile.php?id=100063876570345&mibextid=ZbWKwL', icon: <Facebook /> },
+  { label: 'Instagram', name: 'instagram', link: 'https://www.instagram.com/gislive17?igsh=MzJtbTM4enkyOG9x', icon: <Instagram /> },
+  { label: 'WhatsApp', name: 'whatsapp', link: 'https://api.whatsapp.com/send?phone=%2B522223308869&context=ARA-7mGivUJFUEhTCJcUvVw3isMybJ0cvNB5ZQJpr7_W2YbIu0lW2PaTd_6IRTf4t7Omu86WIcnSurSelQlBtkOmPkfDYdALFw7CMcZSUaAJIEtmWXmkdjBluOf1kTuLe4PKmIqGwvI-TdP3jh22YRk7YQ&source=FB_Page&app=facebook&entry_point=page_cta', icon: <WhatsApp /> },
 ];
 
 const Footer = () => {
