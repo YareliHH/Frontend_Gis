@@ -82,9 +82,9 @@ const BarraNav = () => {
           src={logo}
           alt="Gislive Boutique Clínica"
           style={{
-            width: 50, // Tamaño más pequeño
-            height: 60, // Tamaño más pequeño
-            borderRadius: '70%', // Hace que el logo sea redondo
+            width: 40, // Tamaño más pequeño
+            height: 50, // Tamaño más pequeño
+            borderRadius: '50%', // Hace que el logo sea redondo
             marginRight: 16,
           }}/>
            <Typography variant="h6">Gislive Boutique Clínica</Typography>
