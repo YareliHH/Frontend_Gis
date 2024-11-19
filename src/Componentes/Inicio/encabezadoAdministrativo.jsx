@@ -10,11 +10,12 @@ import {
   Button,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import StoreIcon from '@mui/icons-material/Store';
-import InfoIcon from '@mui/icons-material/Info';
+import GavelIcon from '@mui/icons-material/Gavel'; // Ícono para términos y condiciones
+import PolicyIcon from '@mui/icons-material/Policy'; // Ícono para políticas
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'; // Icono para categorías
+import ShareIcon from '@mui/icons-material/Share'; // Ícono para Redes Sociales
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'; // Ícono para configuración
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
@@ -43,7 +44,7 @@ const theme = createTheme({
 
 const EncabezadoAdministrativo = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú para categorías
+  const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú para configuración
   const [active, setActive] = useState('inicio');
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -140,10 +141,10 @@ const EncabezadoAdministrativo = () => {
             <Button
               color="inherit"
               startIcon={<MoreHorizIcon />}
-              onClick={handleCategoryMenuOpen} // Abrir menú de categorías
+              onClick={handleCategoryMenuOpen} // Abrir menú de configuración
               sx={{ color: '#FFFFFF' }}
             >
-              Categorías
+              Configuración
             </Button>
             <Button
               color="inherit"
@@ -158,7 +159,7 @@ const EncabezadoAdministrativo = () => {
             </Button>
           </Box>
 
-          {/* Menú de Categorías */}
+          {/* Menú de Configuración */}
           <Menu
             id="menu-category"
             anchorEl={anchorCategoryEl}
@@ -175,7 +176,7 @@ const EncabezadoAdministrativo = () => {
                 handleCategoryMenuClose();
               }}
             >
-              <StoreIcon sx={{ marginRight: 1 }} /> Políticas
+              <PolicyIcon sx={{ marginRight: 1 }} /> Políticas
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -184,7 +185,7 @@ const EncabezadoAdministrativo = () => {
                 handleCategoryMenuClose();
               }}
             >
-              <InfoIcon sx={{ marginRight: 1 }} /> Términos
+              <GavelIcon sx={{ marginRight: 1 }} /> Términos y Condiciones
             </MenuItem>
             <MenuItem
               onClick={() => {
@@ -196,14 +197,14 @@ const EncabezadoAdministrativo = () => {
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Deslinde Legal
             </MenuItem>
             <MenuItem
-              onClick={() => {
-                handleClick('redesSociales');
-                handleMenuClick('redesSociales');
-                handleCategoryMenuClose();
-              }}
-            >
-              <InfoIcon sx={{ marginRight: 1 }} /> Redes Sociales
-            </MenuItem>
+            onClick={() => {
+              handleClick('redesSociales');
+              handleMenuClick('redesSociales');
+              handleCategoryMenuClose();
+            }}
+          >
+            <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
+          </MenuItem>
           </Menu>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
