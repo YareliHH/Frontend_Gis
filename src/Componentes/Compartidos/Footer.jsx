@@ -73,9 +73,9 @@ const Footer = () => {
     <footer
       style={{
         backgroundColor: '#00bcd4',
+        marginTop: '20px',
         color: '#ffffff',
         padding: '20px',
-        position: 'fixed',
         width: '100%',
         bottom: 0,
       }}
