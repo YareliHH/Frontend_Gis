@@ -28,12 +28,81 @@ const PerfilEmpresa = () => {
   });
 
   const [file, setFile] = useState(null);
+  const [errors, setErrors] = useState({});
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
+  const validateField = (name, value) => {
+    let error = "";
+
+    switch (name) {
+      case "nombre_empresa":
+        if (!value) {
+          error = "El nombre de la empresa es obligatorio.";
+        } else if (value.length < 3) {
+          error = "El nombre debe tener al menos 3 caracteres.";
+        }
+        break;
+
+      case "direccion":
+        if (value && value.length > 100) {
+          error = "La dirección no puede exceder los 100 caracteres.";
+        }
+        break;
+
+      case "telefono":
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!value) {
+          error = "El teléfono es obligatorio.";
+        } else if (!phoneRegex.test(value)) {
+          error = "El teléfono debe contener 10 dígitos numéricos.";
+        }
+        break;
+
+      case "correo_electronico":
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!value) {
+          error = "El correo electrónico es obligatorio.";
+        } else if (!emailRegex.test(value)) {
+          error = "Ingresa un correo electrónico válido.";
+        }
+        break;
+
+      case "descripcion":
+        if (value && value.length > 500) {
+          error = "La descripción no puede exceder los 500 caracteres.";
+        }
+        break;
+
+      case "slogan":
+        if (value && value.length > 50) {
+          error = "El slogan no puede exceder los 50 caracteres.";
+        }
+        break;
+
+      case "titulo_pagina":
+        if (!value) {
+          error = "El título de la página es obligatorio.";
+        } else if (value.length < 5 || value.length > 100) {
+          error = "El título debe tener entre 5 y 100 caracteres.";
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    return error;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Validar el campo actual
+    const error = validateField(name, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
+
     setPerfil((prevPerfil) => ({
       ...prevPerfil,
       [name]: value,
@@ -41,15 +110,41 @@ const PerfilEmpresa = () => {
   };
 
   const handleLogoChange = (e) => {
-    setFile(e.target.files[0]);
-    setPerfil((prevPerfil) => ({
-      ...prevPerfil,
-      logo: URL.createObjectURL(e.target.files[0]),
-    }));
+    const file = e.target.files[0];
+    if (file && file.size > 2 * 1024 * 1024) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        logo: "El logo no puede exceder los 2 MB.",
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        logo: "",
+      }));
+      setFile(file);
+      setPerfil((prevPerfil) => ({
+        ...prevPerfil,
+        logo: URL.createObjectURL(file),
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Validar todos los campos antes de enviar
+    let formValid = true;
+    const newErrors = {};
+    for (const field in perfil) {
+      const error = validateField(field, perfil[field]);
+      if (error) {
+        formValid = false;
+        newErrors[field] = error;
+      }
+    }
+    setErrors(newErrors);
+
+    if (!formValid) return;
 
     const formData = new FormData();
     for (const key in perfil) {
@@ -81,7 +176,7 @@ const PerfilEmpresa = () => {
   };
 
   return (
-    <Container maxWidth="md"> {/* Tamaño extendido */}
+    <Container maxWidth="md">
       <Box
         sx={{
           padding: 5,
@@ -96,7 +191,6 @@ const PerfilEmpresa = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            {/* Nombre de Empresa */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -104,11 +198,11 @@ const PerfilEmpresa = () => {
                 name="nombre_empresa"
                 value={perfil.nombre_empresa}
                 onChange={handleChange}
+                error={!!errors.nombre_empresa}
+                helperText={errors.nombre_empresa}
                 required
               />
             </Grid>
-
-            {/* Dirección */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -116,10 +210,10 @@ const PerfilEmpresa = () => {
                 name="direccion"
                 value={perfil.direccion}
                 onChange={handleChange}
+                error={!!errors.direccion}
+                helperText={errors.direccion}
               />
             </Grid>
-
-            {/* Teléfono */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -127,6 +221,8 @@ const PerfilEmpresa = () => {
                 name="telefono"
                 value={perfil.telefono}
                 onChange={handleChange}
+                error={!!errors.telefono}
+                helperText={errors.telefono}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -136,8 +232,6 @@ const PerfilEmpresa = () => {
                 }}
               />
             </Grid>
-
-            {/* Correo Electrónico */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -145,12 +239,12 @@ const PerfilEmpresa = () => {
                 name="correo_electronico"
                 value={perfil.correo_electronico}
                 onChange={handleChange}
+                error={!!errors.correo_electronico}
+                helperText={errors.correo_electronico}
                 type="email"
                 required
               />
             </Grid>
-
-            {/* Slogan */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -158,10 +252,10 @@ const PerfilEmpresa = () => {
                 name="slogan"
                 value={perfil.slogan}
                 onChange={handleChange}
+                error={!!errors.slogan}
+                helperText={errors.slogan}
               />
             </Grid>
-
-            {/* Título de Página */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -169,10 +263,10 @@ const PerfilEmpresa = () => {
                 name="titulo_pagina"
                 value={perfil.titulo_pagina}
                 onChange={handleChange}
+                error={!!errors.titulo_pagina}
+                helperText={errors.titulo_pagina}
               />
             </Grid>
-
-            {/* Descripción */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -182,10 +276,10 @@ const PerfilEmpresa = () => {
                 onChange={handleChange}
                 multiline
                 rows={4}
+                error={!!errors.descripcion}
+                helperText={errors.descripcion}
               />
             </Grid>
-
-            {/* Logo */}
             <Grid item xs={12} sm={6}>
               <InputLabel>Logo</InputLabel>
               <input
@@ -193,6 +287,11 @@ const PerfilEmpresa = () => {
                 accept="image/*"
                 onChange={handleLogoChange}
               />
+              {errors.logo && (
+                <Typography color="error" variant="body2">
+                  {errors.logo}
+                </Typography>
+              )}
               {perfil.logo && (
                 <Avatar
                   src={perfil.logo}
@@ -202,8 +301,6 @@ const PerfilEmpresa = () => {
               )}
             </Grid>
           </Grid>
-
-          {/* Botón Guardar */}
           <Box mt={4}>
             <Button
               type="submit"
@@ -215,8 +312,6 @@ const PerfilEmpresa = () => {
             </Button>
           </Box>
         </form>
-
-        {/* Snackbar */}
         <Snackbar
           open={openSnackbar}
           autoHideDuration={6000}
