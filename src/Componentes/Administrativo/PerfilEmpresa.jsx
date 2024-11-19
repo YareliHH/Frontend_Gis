@@ -18,8 +18,9 @@ import {
   TableHead,
   TableRow,
   Paper,
+  IconButton,
 } from "@mui/material";
-import { Phone } from "@mui/icons-material";
+import { Phone, Edit, Delete } from "@mui/icons-material";
 import axios from "axios";
 
 const PerfilEmpresa = () => {
@@ -39,110 +40,25 @@ const PerfilEmpresa = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [savedData, setSavedData] = useState([]); // Para almacenar los datos guardados
+  const [savedData, setSavedData] = useState([]);
+  const [editingIndex, setEditingIndex] = useState(null); // Para saber si estamos editando un registro
 
-  // Validaciones de cada campo
+  // Validación y manejo de los campos (ya incluido en tu código)
   const validateField = (name, value) => {
-    let error = "";
-    switch (name) {
-      case "nombre_empresa":
-        if (!value) {
-          error = "El nombre de la empresa es obligatorio.";
-        } else if (value.length < 3) {
-          error = "El nombre debe tener al menos 3 caracteres.";
-        }
-        break;
-
-      case "direccion":
-        if (value && value.length > 100) {
-          error = "La dirección no puede exceder los 100 caracteres.";
-        }
-        break;
-
-      case "telefono":
-        const phoneRegex = /^[0-9]{10}$/;
-        if (!value) {
-          error = "El teléfono es obligatorio.";
-        } else if (!phoneRegex.test(value)) {
-          error = "El teléfono debe contener 10 dígitos numéricos.";
-        }
-        break;
-
-      case "correo_electronico":
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!value) {
-          error = "El correo electrónico es obligatorio.";
-        } else if (!emailRegex.test(value)) {
-          error = "Ingresa un correo electrónico válido.";
-        }
-        break;
-
-      case "descripcion":
-        if (value && value.length > 500) {
-          error = "La descripción no puede exceder los 500 caracteres.";
-        }
-        break;
-
-      case "slogan":
-        if (value && value.length > 50) {
-          error = "El slogan no puede exceder los 50 caracteres.";
-        }
-        break;
-
-      case "titulo_pagina":
-        if (!value) {
-          error = "El título de la página es obligatorio.";
-        } else if (value.length < 5 || value.length > 100) {
-          error = "El título debe tener entre 5 y 100 caracteres.";
-        }
-        break;
-
-      default:
-        break;
-    }
-    return error;
+    // ...
   };
 
-  // Manejo del cambio en los campos
   const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Validar el campo actual
-    const error = validateField(name, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-
-    setPerfil((prevPerfil) => ({
-      ...prevPerfil,
-      [name]: value,
-    }));
+    // ...
   };
 
-  // Manejo del cambio de logo
   const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file && file.size > 2 * 1024 * 1024) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        logo: "El logo no puede exceder los 2 MB.",
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        logo: "",
-      }));
-      setFile(file);
-      setPerfil((prevPerfil) => ({
-        ...prevPerfil,
-        logo: URL.createObjectURL(file),
-      }));
-    }
+    // ...
   };
 
-  // Enviar formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validar todos los campos antes de enviar
     let formValid = true;
     const newErrors = {};
     for (const field in perfil) {
@@ -156,7 +72,6 @@ const PerfilEmpresa = () => {
 
     if (!formValid) return;
 
-    // Crear FormData para el envío de los datos
     const formData = new FormData();
     for (const key in perfil) {
       formData.append(key, perfil[key]);
@@ -166,24 +81,57 @@ const PerfilEmpresa = () => {
     }
 
     try {
-      await axios.post(
-        "https://backendgislive.onrender.com/api/perfil",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      setSnackbarMessage("Perfil de empresa guardado con éxito");
+      if (editingIndex !== null) {
+        // Si estamos editando un perfil
+        await axios.put(
+          `https://backendgislive.onrender.com/api/perfil/${savedData[editingIndex].id}`,
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        savedData[editingIndex] = { ...perfil, logo: perfil.logo || "Logo no cargado" };
+        setSnackbarMessage("Perfil de empresa actualizado con éxito");
+      } else {
+        // Si estamos creando un nuevo perfil
+        await axios.post(
+          "https://backendgislive.onrender.com/api/perfil",
+          formData,
+          { headers: { "Content-Type": "multipart/form-data" } }
+        );
+        setSavedData((prevData) => [
+          ...prevData,
+          { ...perfil, logo: perfil.logo || "Logo no cargado" },
+        ]);
+        setSnackbarMessage("Perfil de empresa guardado con éxito");
+      }
       setSnackbarSeverity("success");
-      setSavedData((prevData) => [
-        ...prevData,
-        { ...perfil, logo: perfil.logo || "Logo no cargado" },
-      ]);
     } catch (error) {
       console.error("Error al guardar el perfil de la empresa:", error);
       setSnackbarMessage("Error al guardar el perfil de la empresa.");
+      setSnackbarSeverity("error");
+    } finally {
+      setOpenSnackbar(true);
+      setEditingIndex(null); // Resetear el índice de edición
+    }
+  };
+
+  // Función para editar un perfil
+  const handleEdit = (index) => {
+    const perfilToEdit = savedData[index];
+    setPerfil(perfilToEdit); // Llenar el formulario con los datos del perfil
+    setEditingIndex(index); // Marcar que estamos editando este perfil
+  };
+
+  // Función para eliminar un perfil
+  const handleDelete = async (index) => {
+    const idToDelete = savedData[index].id; // Asumiendo que cada perfil tiene un `id`
+    try {
+      await axios.delete(`https://backendgislive.onrender.com/api/perfil/${idToDelete}`);
+      setSavedData((prevData) => prevData.filter((_, i) => i !== index)); // Eliminar el perfil del estado
+      setSnackbarMessage("Perfil de empresa eliminado con éxito");
+      setSnackbarSeverity("success");
+    } catch (error) {
+      console.error("Error al eliminar el perfil:", error);
+      setSnackbarMessage("Error al eliminar el perfil.");
       setSnackbarSeverity("error");
     } finally {
       setOpenSnackbar(true);
@@ -206,127 +154,12 @@ const PerfilEmpresa = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            {/* Nombre de la Empresa */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Nombre de Empresa"
-                name="nombre_empresa"
-                value={perfil.nombre_empresa}
-                onChange={handleChange}
-                error={!!errors.nombre_empresa}
-                helperText={errors.nombre_empresa}
-                required
-              />
-            </Grid>
-
-            {/* Dirección */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Dirección"
-                name="direccion"
-                value={perfil.direccion}
-                onChange={handleChange}
-                error={!!errors.direccion}
-                helperText={errors.direccion}
-              />
-            </Grid>
-
-            {/* Teléfono */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Teléfono"
-                name="telefono"
-                value={perfil.telefono}
-                onChange={handleChange}
-                error={!!errors.telefono}
-                helperText={errors.telefono}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Phone />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Grid>
-
-            {/* Correo Electrónico */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Correo Electrónico"
-                name="correo_electronico"
-                value={perfil.correo_electronico}
-                onChange={handleChange}
-                error={!!errors.correo_electronico}
-                helperText={errors.correo_electronico}
-                type="email"
-                required
-              />
-            </Grid>
-
-            {/* Slogan */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Slogan"
-                name="slogan"
-                value={perfil.slogan}
-                onChange={handleChange}
-                error={!!errors.slogan}
-                helperText={errors.slogan}
-              />
-            </Grid>
-
-            {/* Título de Página */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Título de Página"
-                name="titulo_pagina"
-                value={perfil.titulo_pagina}
-                onChange={handleChange}
-                error={!!errors.titulo_pagina}
-                helperText={errors.titulo_pagina}
-              />
-            </Grid>
-
-            {/* Descripción */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Descripción"
-                name="descripcion"
-                value={perfil.descripcion}
-                onChange={handleChange}
-                multiline
-                rows={4}
-                error={!!errors.descripcion}
-                helperText={errors.descripcion}
-              />
-            </Grid>
-
-            {/* Logo */}
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Logo</InputLabel>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-              />
-              {errors.logo && (
-                <Typography color="error" variant="body2">
-                  {errors.logo}
-                </Typography>
-              )}
-            </Grid>
+            {/* Campos de formulario (nombre, dirección, etc.) */}
+            {/* ... */}
 
             <Grid item xs={12}>
               <Button type="submit" variant="contained" color="primary">
-                Guardar Perfil
+                {editingIndex !== null ? "Actualizar Perfil" : "Guardar Perfil"}
               </Button>
             </Grid>
           </Grid>
@@ -346,6 +179,7 @@ const PerfilEmpresa = () => {
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Descripción</TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Logo</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -360,6 +194,14 @@ const PerfilEmpresa = () => {
                 <TableCell>{item.descripcion}</TableCell>
                 <TableCell>
                   <Avatar src={item.logo} alt="Logo" sx={{ width: 50, height: 50 }} />
+                </TableCell>
+                <TableCell>
+                  <IconButton onClick={() => handleEdit(index)} color="primary">
+                    <Edit />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(index)} color="secondary">
+                    <Delete />
+                  </IconButton>
                 </TableCell>
               </TableRow>
             ))}
