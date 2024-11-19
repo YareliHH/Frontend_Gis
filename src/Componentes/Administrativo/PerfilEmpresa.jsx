@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {Container,Box,Typography,Grid,TextField,Button,InputAdornment,Avatar,InputLabel,Snackbar,Alert,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,} from "@mui/material";
 import { Phone } from "@mui/icons-material";
+import { Edit, Delete } from '@mui/icons-material';
 import axios from "axios";
 
 const PerfilEmpresa = () => {
