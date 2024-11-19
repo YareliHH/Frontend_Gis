@@ -54,60 +54,58 @@ const Politicas = () => {
     }
   };
 
-// Función para editar política
-const handleUpdatePolitica = async (id) => {
-  try {
-    // Solicitud para actualizar política
-    await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
-      titulo: editTitulo,
-      contenido: editContenido,
-    });
-    // Limpia los datos del formulario
-    setEditId(null);
+  // Función para actualizar una política
+  const handleUpdatePolitica = async (id) => {
+    try {
+      await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
+        titulo: editTitulo,
+        contenido: editContenido,
+      });
+      setEditId(null);
+      setEditTitulo('');
+      setEditContenido('');
+      setOpen(false); // Cierra el diálogo
+      fetchPoliticas(); // Refresca la lista
+    } catch (error) {
+      console.error('Error al actualizar la política:', error);
+    }
+  };
+
+  // Función para eliminar (desactivar) una política
+  const handleDeletePolitica = async (id) => {
+    try {
+      await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
+      fetchPoliticas(); // Refresca la lista
+    } catch (error) {
+      console.error('Error al eliminar la política:', error);
+    }
+  };
+
+  // Abrir el diálogo de edición
+  const handleClickOpen = (politica) => {
+    setEditId(politica.id); // Establece el ID de la política a editar
+    setEditTitulo(politica.titulo); // Carga el título
+    setEditContenido(politica.contenido); // Carga el contenido
+    setOpen(true); // Abre el cuadro de diálogo
+  };
+
+  // Cerrar el cuadro de diálogo de edición
+  const handleClose = () => {
+    setOpen(false); // Cierra el diálogo
     setEditTitulo('');
     setEditContenido('');
-    setOpen(false); // Cierra el diálogo
-    fetchPoliticas(); // Refresca la lista
-  } catch (error) {
-    console.error('Error al actualizar la política:', error);
-  }
-};
-
-// Función para eliminar política (lógica)
-const handleDeletePolitica = async (id) => {
-  try {
-    // Solicitud para eliminar (desactivar) política
-    await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
-    fetchPoliticas(); // Refresca la lista
-  } catch (error) {
-    console.error('Error al eliminar la política:', error);
-  }
-};
-
-// Abrir el diálogo de edición
-const handleClickOpen = (politica) => {
-  setEditId(politica.id); // ID de la política a editar
-  setEditTitulo(politica.titulo); // Cargar título actual
-  setEditContenido(politica.contenido); // Cargar contenido actual
-  setOpen(true); // Abre el cuadro de diálogo
-};
-
-// Cerrar el diálogo de edición
-const handleClose = () => {
-  setOpen(false); // Cierra el cuadro de diálogo
-  setEditTitulo('');
-  setEditContenido('');
-  setEditId(null);
-};
+    setEditId(null);
+  };
 
   useEffect(() => {
-    fetchPoliticas();
+    fetchPoliticas(); // Cargar las políticas al cargar el componente
   }, []);
 
   return (
     <Container>
       <h1>Gestión de Políticas de Privacidad</h1>
 
+      {/* Formulario para crear una nueva política */}
       <TextField
         label="Título de la nueva política"
         variant="outlined"
@@ -135,31 +133,18 @@ const handleClose = () => {
         Agregar Política
       </Button>
 
+      {/* Tabla para mostrar políticas */}
       <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
         <Table aria-label="tabla de politicas">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Título
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Contenido
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Versión
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Estado
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Creación
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Actualización
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Acciones
-              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Contenido</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Versión</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Estado</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Creación</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Actualización</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
