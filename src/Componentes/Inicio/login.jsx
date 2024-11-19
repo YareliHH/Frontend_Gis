@@ -22,41 +22,47 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!captchaValue) {
       setErrorMessage('Por favor, resuelve el reCAPTCHA.');
       setOpenSnackbar(true);
       return;
     }
-
-    setLoading(true); 
-
+  
+    setLoading(true);
+  
     try {
-      const response = await axios.post('https://backendgislive.onrender.com/api/login', {
-        correo,
-        password,
-        captchaValue,
-      });
-      
+      const response = await axios.post(
+        'https://backendgislive.onrender.com/api/login',
+        {
+          correo,
+          password,
+          captchaValue,
+        },
+        {
+          withCredentials: true, // Esto habilita el envío y recepción de cookies
+        }
+      );
+  
       const { tipo } = response.data;
       localStorage.setItem('usuario', JSON.stringify(response.data));
       let ruta = '/';
       let mensaje = 'Has iniciado sesión correctamente.';
-
+  
       switch (tipo) {
         case "usuario":
-          ruta = '/cliente';  
+          ruta = '/cliente';
           break;
-        case "admin": 
-          ruta = '/admin'; 
+        case "admin":
+          ruta = '/admin';
           break;
         default:
           setErrorMessage('Tipo de usuario desconocido');
           setOpenSnackbar(true);
-          setLoading(false); 
+          setLoading(false);
           return;
       }
-
+  
       MySwal.fire({
         position: 'center',
         icon: 'success',
@@ -64,16 +70,20 @@ function Login() {
         showConfirmButton: false,
         timer: 2000,
       }).then(() => {
-        navigate(ruta);  
+        navigate(ruta);
       });
     } catch (error) {
-      console.error('Error al iniciar sesión:', error); 
-      setErrorMessage(error.response ? 'Correo o contraseña incorrectos' : 'Error al iniciar sesión. Inténtalo de nuevo más tarde.');
+      console.error('Error al iniciar sesión:', error);
+      setErrorMessage(
+        error.response
+          ? 'Correo o contraseña incorrectos'
+          : 'Error al iniciar sesión. Inténtalo de nuevo más tarde.'
+      );
       setOpenSnackbar(true);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
-  };
+  };  
 
   // Cambiar la visibilidad de la contraseña
   const handleClickShowPassword = () => setShowPassword((prev) => !prev);
