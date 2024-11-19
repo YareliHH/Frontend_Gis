@@ -185,7 +185,7 @@ const Politicas = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialogo para editar política */}
+      {/* Diálogo para editar política */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Política</DialogTitle>
         <DialogContent>
