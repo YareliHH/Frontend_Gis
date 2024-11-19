@@ -81,25 +81,24 @@ const PerfilEmpresa = () => {
   };
 
   return (
-    <Container maxWidth="xs"> {/* Se reduce el tamaño máximo del contenedor */}
+    <Container maxWidth="md"> {/* Tamaño extendido */}
       <Box
         sx={{
-          padding: 3,
+          padding: 5,
           backgroundColor: "#f9f9f9",
           borderRadius: 2,
           boxShadow: 3,
           marginTop: 4,
         }}
       >
-        <Typography variant="h5" align="center" gutterBottom>
+        <Typography variant="h4" align="center" gutterBottom>
           Perfil de Empresa
         </Typography>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            {/* Nombre de Empresa y Logo */}
+          <Grid container spacing={3}>
+            {/* Nombre de Empresa */}
             <Grid item xs={12} sm={6}>
               <TextField
-                size="small"
                 fullWidth
                 label="Nombre de Empresa"
                 name="nombre_empresa"
@@ -108,27 +107,10 @@ const PerfilEmpresa = () => {
                 required
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <InputLabel sx={{ fontSize: "0.8rem" }}>Logo</InputLabel>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-                style={{ fontSize: "0.9rem" }}
-              />
-              {perfil.logo && (
-                <Avatar
-                  src={perfil.logo}
-                  alt="Logo"
-                  sx={{ width: 50, height: 50, marginTop: 1 }}
-                />
-              )}
-            </Grid>
 
-            {/* Dirección y Teléfono */}
+            {/* Dirección */}
             <Grid item xs={12} sm={6}>
               <TextField
-                size="small"
                 fullWidth
                 label="Dirección"
                 name="direccion"
@@ -136,9 +118,10 @@ const PerfilEmpresa = () => {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Teléfono */}
             <Grid item xs={12} sm={6}>
               <TextField
-                size="small"
                 fullWidth
                 label="Teléfono"
                 name="telefono"
@@ -155,9 +138,8 @@ const PerfilEmpresa = () => {
             </Grid>
 
             {/* Correo Electrónico */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
-                size="small"
                 fullWidth
                 label="Correo Electrónico"
                 name="correo_electronico"
@@ -168,10 +150,9 @@ const PerfilEmpresa = () => {
               />
             </Grid>
 
-            {/* Slogan y Título de Página */}
+            {/* Slogan */}
             <Grid item xs={12} sm={6}>
               <TextField
-                size="small"
                 fullWidth
                 label="Slogan"
                 name="slogan"
@@ -179,9 +160,10 @@ const PerfilEmpresa = () => {
                 onChange={handleChange}
               />
             </Grid>
+
+            {/* Título de Página */}
             <Grid item xs={12} sm={6}>
               <TextField
-                size="small"
                 fullWidth
                 label="Título de Página"
                 name="titulo_pagina"
@@ -193,28 +175,43 @@ const PerfilEmpresa = () => {
             {/* Descripción */}
             <Grid item xs={12}>
               <TextField
-                size="small"
                 fullWidth
                 label="Descripción"
                 name="descripcion"
                 value={perfil.descripcion}
                 onChange={handleChange}
                 multiline
-                rows={3}
+                rows={4}
               />
+            </Grid>
+
+            {/* Logo */}
+            <Grid item xs={12} sm={6}>
+              <InputLabel>Logo</InputLabel>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+              />
+              {perfil.logo && (
+                <Avatar
+                  src={perfil.logo}
+                  alt="Logo"
+                  sx={{ width: 70, height: 70, marginTop: 2 }}
+                />
+              )}
             </Grid>
           </Grid>
 
           {/* Botón Guardar */}
-          <Box mt={3}>
+          <Box mt={4}>
             <Button
               type="submit"
               variant="contained"
               color="primary"
               fullWidth
-              size="small"
             >
-              Guardar
+              Guardar Perfil
             </Button>
           </Box>
         </form>
