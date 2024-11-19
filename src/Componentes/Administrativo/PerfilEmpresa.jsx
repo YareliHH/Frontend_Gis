@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {Container,Box,Typography,Grid,TextField,Button,InputAdornment,Avatar,InputLabel,Snackbar,Alert,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,} from "@mui/material";
 import { Phone } from "@mui/icons-material";
-import { Edit, Delete } from '@mui/icons-material';
 import axios from "axios";
 
 const PerfilEmpresa = () => {
@@ -328,7 +327,6 @@ const PerfilEmpresa = () => {
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Descripción</TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Logo</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -344,12 +342,6 @@ const PerfilEmpresa = () => {
                 <TableCell>
                   <Avatar src={item.logo} alt="Logo" sx={{ width: 50, height: 50 }} />
                 </TableCell>
-                <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeletePolitica(item.id)}>
-                    <Delete />
-                  </IconButton>
               </TableRow>
             ))}
           </TableBody>
