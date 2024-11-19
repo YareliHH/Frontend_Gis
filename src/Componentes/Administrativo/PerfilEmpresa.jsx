@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Container,
   Box,
@@ -81,46 +81,25 @@ const PerfilEmpresa = () => {
   };
 
   return (
-    <Container maxWidth="sm">
+    <Container maxWidth="xs"> {/* Se reduce el tamaño máximo del contenedor */}
       <Box
         sx={{
-          padding: 4,
+          padding: 3,
           backgroundColor: "#f9f9f9",
           borderRadius: 2,
           boxShadow: 3,
           marginTop: 4,
         }}
       >
-        <Typography variant="h4" align="center" gutterBottom>
+        <Typography variant="h5" align="center" gutterBottom>
           Perfil de Empresa
         </Typography>
         <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            </Grid>
+          <Grid container spacing={2}>
+            {/* Nombre de Empresa y Logo */}
             <Grid item xs={12} sm={6}>
-              <InputLabel>Logo de la Empresa</InputLabel>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-              />
-              {perfil.logo && (
-                <Avatar
-                  src={perfil.logo}
-                  alt="Logo de la Empresa"
-                  sx={{
-                    width: 100,
-                    height: 100,
-                    marginTop: 2,
-                    marginLeft: "auto",
-                    marginRight: "auto",
-                  }}
-                />
-              )}
-            </Grid>
-              {/* Nombre de Empresa y Logo */}
-              <Grid item xs={12} sm={6}>
               <TextField
+                size="small"
                 fullWidth
                 label="Nombre de Empresa"
                 name="nombre_empresa"
@@ -128,9 +107,28 @@ const PerfilEmpresa = () => {
                 onChange={handleChange}
                 required
               />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputLabel sx={{ fontSize: "0.8rem" }}>Logo</InputLabel>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleLogoChange}
+                style={{ fontSize: "0.9rem" }}
+              />
+              {perfil.logo && (
+                <Avatar
+                  src={perfil.logo}
+                  alt="Logo"
+                  sx={{ width: 50, height: 50, marginTop: 1 }}
+                />
+              )}
+            </Grid>
+
             {/* Dirección y Teléfono */}
             <Grid item xs={12} sm={6}>
               <TextField
+                size="small"
                 fullWidth
                 label="Dirección"
                 name="direccion"
@@ -140,6 +138,7 @@ const PerfilEmpresa = () => {
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
+                size="small"
                 fullWidth
                 label="Teléfono"
                 name="telefono"
@@ -158,6 +157,7 @@ const PerfilEmpresa = () => {
             {/* Correo Electrónico */}
             <Grid item xs={12}>
               <TextField
+                size="small"
                 fullWidth
                 label="Correo Electrónico"
                 name="correo_electronico"
@@ -166,52 +166,55 @@ const PerfilEmpresa = () => {
                 type="email"
                 required
               />
+            </Grid>
 
-              {/* Dirección y Teléfono */}
-              <Grid item xs={12} sm={6}>
+            {/* Slogan y Título de Página */}
+            <Grid item xs={12} sm={6}>
               <TextField
-                  fullWidth
-                  label="Slogan"
-                  name="slogan"
-                  value={perfil.slogan}
-                  onChange={handleChange}
+                size="small"
+                fullWidth
+                label="Slogan"
+                name="slogan"
+                value={perfil.slogan}
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
+                size="small"
                 fullWidth
                 label="Título de Página"
                 name="titulo_pagina"
                 value={perfil.titulo_pagina}
                 onChange={handleChange}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Phone />
-                    </InputAdornment>
-                  ),
-                }}
               />
             </Grid>
 
-
-
-          {/* Descripción */}
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              label="Descripción"
-              name="descripcion"
-              value={perfil.descripcion}
-              onChange={handleChange}
-              multiline
-              rows={4}
-            />
+            {/* Descripción */}
+            <Grid item xs={12}>
+              <TextField
+                size="small"
+                fullWidth
+                label="Descripción"
+                name="descripcion"
+                value={perfil.descripcion}
+                onChange={handleChange}
+                multiline
+                rows={3}
+              />
+            </Grid>
           </Grid>
+
           {/* Botón Guardar */}
-          <Box mt={4}>
-            <Button type="submit" variant="contained" color="primary" fullWidth>
-              Guardar Perfil
+          <Box mt={3}>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              size="small"
+            >
+              Guardar
             </Button>
           </Box>
         </form>
