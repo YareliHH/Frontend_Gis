@@ -156,35 +156,134 @@ const PerfilEmpresa = () => {
     }
 
     return (
-        <Container maxWidth="sm">
-            <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
-                <Typography variant="h4" align="center" gutterBottom>
-                    Perfil de Empresa
-                </Typography>
-                <form onSubmit={handleSubmit}>
-                    <Grid container spacing={3}>
-                        {/* Campos del formulario */}
-                    </Grid>
-                    <Box mt={4}>
-                        <Button type="submit" variant="contained" color="primary" fullWidth>
-                            Guardar Perfil
-                        </Button>
-                    </Box>
-                </form>
-
-                {/* Snackbar para notificaciones */}
-                <Snackbar
-                    open={openSnackbar}
-                    autoHideDuration={6000}
-                    onClose={() => setOpenSnackbar(false)}
-                >
-                    <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
-                        {snackbarMessage}
-                    </Alert>
-                </Snackbar>
+      <Container maxWidth="sm">
+        <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
+          <Typography variant="h4" align="center" gutterBottom>
+            Perfil de Empresa
+          </Typography>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Nombre de Empresa"
+                  name="nombre_empresa"
+                  value={perfil.nombre_empresa}
+                  onChange={handleChange}
+                  required
+                  error={!!formError}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Dirección"
+                  name="direccion"
+                  value={perfil.direccion}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Teléfono"
+                  name="telefono"
+                  value={perfil.telefono}
+                  onChange={handleChange}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <Phone />
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Correo Electrónico"
+                  name="correo_electronico"
+                  value={perfil.correo_electronico}
+                  onChange={handleChange}
+                  type="email"
+                  required
+                  error={!!formError}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Descripción"
+                  name="descripcion"
+                  value={perfil.descripcion}
+                  onChange={handleChange}
+                  multiline
+                  rows={4}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Slogan"
+                  name="slogan"
+                  value={perfil.slogan}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Título de Página"
+                  name="titulo_pagina"
+                  value={perfil.titulo_pagina}
+                  onChange={handleChange}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <InputLabel>Selecciona un archivo de imagen</InputLabel>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                />
+              </Grid>
+              {perfil.logo && (
+                <Grid item xs={12}>
+                  <Typography>Logo Actual</Typography>
+                  <Avatar
+                    src={perfil.logo}
+                    alt="Logo de la Empresa"
+                    style={{ width: '150px', height: 'auto', margin: '10px auto' }}
+                  />
+                </Grid>
+              )}
+            </Grid>
+            <Box mt={4}>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
+                Guardar Perfil
+              </Button>
             </Box>
-        </Container>
-    );
+          </form>
+
+          {/* Snackbar for notifications */}
+          <Snackbar
+            open={openSnackbar}
+            autoHideDuration={6000}
+            onClose={() => setOpenSnackbar(false)}
+          >
+            <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
+        </Box>
+      </Container>
+  );
 };
 
-export default PerfilEmpresa;
+export default PerfilEmpresa; 
