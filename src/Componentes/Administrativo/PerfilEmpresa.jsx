@@ -96,16 +96,6 @@ const PerfilEmpresa = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
-            {/* Nombre de Empresa y Logo */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Nombre de Empresa"
-                name="nombre_empresa"
-                value={perfil.nombre_empresa}
-                onChange={handleChange}
-                required
-              />
             </Grid>
             <Grid item xs={12} sm={6}>
               <InputLabel>Logo de la Empresa</InputLabel>
@@ -128,7 +118,16 @@ const PerfilEmpresa = () => {
                 />
               )}
             </Grid>
-
+              {/* Nombre de Empresa y Logo */}
+              <Grid item xs={12} sm={6}>
+              <TextField
+                fullWidth
+                label="Nombre de Empresa"
+                name="nombre_empresa"
+                value={perfil.nombre_empresa}
+                onChange={handleChange}
+                required
+              />
             {/* Dirección y Teléfono */}
             <Grid item xs={12} sm={6}>
               <TextField
@@ -167,44 +166,48 @@ const PerfilEmpresa = () => {
                 type="email"
                 required
               />
-            </Grid>
 
-            {/* Descripción */}
-            <Grid item xs={12}>
+              {/* Dirección y Teléfono */}
+              <Grid item xs={12} sm={6}>
               <TextField
-                fullWidth
-                label="Descripción"
-                name="descripcion"
-                value={perfil.descripcion}
-                onChange={handleChange}
-                multiline
-                rows={4}
+                  fullWidth
+                  label="Slogan"
+                  name="slogan"
+                  value={perfil.slogan}
+                  onChange={handleChange}
               />
             </Grid>
-
-            {/* Slogan */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Slogan"
-                name="slogan"
-                value={perfil.slogan}
-                onChange={handleChange}
-              />
-            </Grid>
-
-            {/* Título de Página */}
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
                 label="Título de Página"
                 name="titulo_pagina"
                 value={perfil.titulo_pagina}
                 onChange={handleChange}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Phone />
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
-          </Grid>
 
+
+
+          {/* Descripción */}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label="Descripción"
+              name="descripcion"
+              value={perfil.descripcion}
+              onChange={handleChange}
+              multiline
+              rows={4}
+            />
+          </Grid>
           {/* Botón Guardar */}
           <Box mt={4}>
             <Button type="submit" variant="contained" color="primary" fullWidth>
