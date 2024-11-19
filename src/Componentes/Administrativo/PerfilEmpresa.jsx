@@ -11,6 +11,13 @@ import {
   InputLabel,
   Snackbar,
   Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
 } from "@mui/material";
 import { Phone } from "@mui/icons-material";
 import axios from "axios";
@@ -32,10 +39,11 @@ const PerfilEmpresa = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [savedData, setSavedData] = useState([]); // Para almacenar los datos guardados
 
+  // Validaciones de cada campo
   const validateField = (name, value) => {
     let error = "";
-
     switch (name) {
       case "nombre_empresa":
         if (!value) {
@@ -92,10 +100,10 @@ const PerfilEmpresa = () => {
       default:
         break;
     }
-
     return error;
   };
 
+  // Manejo del cambio en los campos
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -109,6 +117,7 @@ const PerfilEmpresa = () => {
     }));
   };
 
+  // Manejo del cambio de logo
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file && file.size > 2 * 1024 * 1024) {
@@ -129,6 +138,7 @@ const PerfilEmpresa = () => {
     }
   };
 
+  // Enviar formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -146,6 +156,7 @@ const PerfilEmpresa = () => {
 
     if (!formValid) return;
 
+    // Crear FormData para el envío de los datos
     const formData = new FormData();
     for (const key in perfil) {
       formData.append(key, perfil[key]);
@@ -166,6 +177,10 @@ const PerfilEmpresa = () => {
       );
       setSnackbarMessage("Perfil de empresa guardado con éxito");
       setSnackbarSeverity("success");
+      setSavedData((prevData) => [
+        ...prevData,
+        { ...perfil, logo: perfil.logo || "Logo no cargado" },
+      ]);
     } catch (error) {
       console.error("Error al guardar el perfil de la empresa:", error);
       setSnackbarMessage("Error al guardar el perfil de la empresa.");
@@ -191,6 +206,7 @@ const PerfilEmpresa = () => {
         </Typography>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
+            {/* Nombre de la Empresa */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -203,6 +219,8 @@ const PerfilEmpresa = () => {
                 required
               />
             </Grid>
+
+            {/* Dirección */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -214,6 +232,8 @@ const PerfilEmpresa = () => {
                 helperText={errors.direccion}
               />
             </Grid>
+
+            {/* Teléfono */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -232,6 +252,8 @@ const PerfilEmpresa = () => {
                 }}
               />
             </Grid>
+
+            {/* Correo Electrónico */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -245,6 +267,8 @@ const PerfilEmpresa = () => {
                 required
               />
             </Grid>
+
+            {/* Slogan */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -256,6 +280,8 @@ const PerfilEmpresa = () => {
                 helperText={errors.slogan}
               />
             </Grid>
+
+            {/* Título de Página */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -267,6 +293,8 @@ const PerfilEmpresa = () => {
                 helperText={errors.titulo_pagina}
               />
             </Grid>
+
+            {/* Descripción */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -280,6 +308,8 @@ const PerfilEmpresa = () => {
                 helperText={errors.descripcion}
               />
             </Grid>
+
+            {/* Logo */}
             <Grid item xs={12} sm={6}>
               <InputLabel>Logo</InputLabel>
               <input
@@ -292,39 +322,57 @@ const PerfilEmpresa = () => {
                   {errors.logo}
                 </Typography>
               )}
-              {perfil.logo && (
-                <Avatar
-                  src={perfil.logo}
-                  alt="Logo"
-                  sx={{ width: 70, height: 70, marginTop: 2 }}
-                />
-              )}
+            </Grid>
+
+            <Grid item xs={12}>
+              <Button type="submit" variant="contained" color="primary">
+                Guardar Perfil
+              </Button>
             </Grid>
           </Grid>
-          <Box mt={4}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-            >
-              Guardar Perfil
-            </Button>
-          </Box>
         </form>
-        <Snackbar
-          open={openSnackbar}
-          autoHideDuration={6000}
-          onClose={() => setOpenSnackbar(false)}
-        >
-          <Alert
-            onClose={() => setOpenSnackbar(false)}
-            severity={snackbarSeverity}
-          >
-            {snackbarMessage}
-          </Alert>
-        </Snackbar>
       </Box>
+
+      {/* Tabla de datos guardados */}
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+        <Table aria-label="tabla de perfil de empresa">
+          <TableHead>
+            <TableRow>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Nombre</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Dirección</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Teléfono</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Correo</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Slogan</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Descripción</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Logo</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {savedData.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>{item.nombre_empresa}</TableCell>
+                <TableCell>{item.direccion}</TableCell>
+                <TableCell>{item.telefono}</TableCell>
+                <TableCell>{item.correo_electronico}</TableCell>
+                <TableCell>{item.slogan}</TableCell>
+                <TableCell>{item.titulo_pagina}</TableCell>
+                <TableCell>{item.descripcion}</TableCell>
+                <TableCell>
+                  <Avatar src={item.logo} alt="Logo" sx={{ width: 50, height: 50 }} />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+
+      {/* Snackbar de Confirmación */}
+      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
+        <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
