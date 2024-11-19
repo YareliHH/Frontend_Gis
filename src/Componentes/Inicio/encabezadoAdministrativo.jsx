@@ -1,10 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box, Button } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+  Box,
+  Button,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import StoreIcon from '@mui/icons-material/Store';
 import InfoIcon from '@mui/icons-material/Info';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'; // Icono para categorías
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
@@ -33,6 +43,7 @@ const theme = createTheme({
 
 const EncabezadoAdministrativo = () => {
   const [anchorEl, setAnchorEl] = useState(null);
+  const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú para categorías
   const [active, setActive] = useState('inicio');
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -43,6 +54,14 @@ const EncabezadoAdministrativo = () => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleCategoryMenuOpen = (event) => {
+    setAnchorCategoryEl(event.currentTarget);
+  };
+
+  const handleCategoryMenuClose = () => {
+    setAnchorCategoryEl(null);
   };
 
   const handleClick = (option) => {
@@ -93,41 +112,20 @@ const EncabezadoAdministrativo = () => {
       <AppBar position="static">
         <Toolbar>
           <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
-          <img
-          src={logo}
-          alt="Gislive Boutique Clínica"
-          style={{
-            width: 50, // Tamaño más pequeño
-            height: 50, // Tamaño más pequeño
-            borderRadius: '50%', // Hace que el logo sea redondo
-            marginRight: 16,
-          }}/>
+            <img
+              src={logo}
+              alt="Gislive Boutique Clínica"
+              style={{
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                marginRight: 16,
+              }}
+            />
             <Typography variant="h6">Gislive Boutique Clínica</Typography>
           </Box>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button
-              color="inherit"
-              startIcon={<StoreIcon />}
-              onClick={() => {
-                handleClick('politicas');
-                handleMenuClick('politicas');
-              }}
-              sx={{ color: active === 'politicas' ? '#B0C4DE' : '#FFFFFF' }}
-            >
-              Políticas
-            </Button>
-            <Button
-              color="inherit"
-              startIcon={<InfoIcon />}
-              onClick={() => {
-                handleClick('terminos');
-                handleMenuClick('terminos');
-              }}
-              sx={{ color: active === 'terminos' ? '#B0C4DE' : '#FFFFFF' }}
-            >
-              Términos
-            </Button>
             <Button
               color="inherit"
               startIcon={<AccountCircleIcon />}
@@ -137,29 +135,15 @@ const EncabezadoAdministrativo = () => {
               }}
               sx={{ color: active === 'perfil' ? '#B0C4DE' : '#FFFFFF' }}
             >
-              Perfil de empresa
+              Perfil de Empresa
             </Button>
             <Button
               color="inherit"
-              startIcon={<AccountCircleIcon />}
-              onClick={() => {
-                handleClick('deslinde');
-                handleMenuClick('deslinde');
-              }}
-              sx={{ color: active === 'deslinde' ? '#B0C4DE' : '#FFFFFF' }}
+              startIcon={<MoreHorizIcon />}
+              onClick={handleCategoryMenuOpen} // Abrir menú de categorías
+              sx={{ color: '#FFFFFF' }}
             >
-              Deslinde Legal
-            </Button>
-            <Button
-              color="inherit"
-              startIcon={<AccountCircleIcon />}
-              onClick={() => {
-                handleClick('redesSociales');
-                handleMenuClick('redesSociales');
-              }}
-              sx={{ color: active === 'redesSociales' ? '#B0C4DE' : '#FFFFFF' }}
-            >
-              Redes Sociales
+              Categorías
             </Button>
             <Button
               color="inherit"
@@ -173,6 +157,54 @@ const EncabezadoAdministrativo = () => {
               Cerrar sesión
             </Button>
           </Box>
+
+          {/* Menú de Categorías */}
+          <Menu
+            id="menu-category"
+            anchorEl={anchorCategoryEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={Boolean(anchorCategoryEl)}
+            onClose={handleCategoryMenuClose}
+          >
+            <MenuItem
+              onClick={() => {
+                handleClick('politicas');
+                handleMenuClick('politicas');
+                handleCategoryMenuClose();
+              }}
+            >
+              <StoreIcon sx={{ marginRight: 1 }} /> Políticas
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClick('terminos');
+                handleMenuClick('terminos');
+                handleCategoryMenuClose();
+              }}
+            >
+              <InfoIcon sx={{ marginRight: 1 }} /> Términos
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClick('deslinde');
+                handleMenuClick('deslinde');
+                handleCategoryMenuClose();
+              }}
+            >
+              <AccountCircleIcon sx={{ marginRight: 1 }} /> Deslinde Legal
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClick('redesSociales');
+                handleMenuClick('redesSociales');
+                handleCategoryMenuClose();
+              }}
+            >
+              <InfoIcon sx={{ marginRight: 1 }} /> Redes Sociales
+            </MenuItem>
+          </Menu>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton color="inherit" onClick={handleMenuOpen}>
@@ -189,16 +221,20 @@ const EncabezadoAdministrativo = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem onClick={() => { handleClick('politicas'); handleMenuClick('politicas'); }}>
-              <StoreIcon sx={{ marginRight: 1 }} /> Políticas
-            </MenuItem>
-            <MenuItem onClick={() => { handleClick('terminos'); handleMenuClick('terminos'); }}>
-              <InfoIcon sx={{ marginRight: 1 }} /> Términos
-            </MenuItem>
-            <MenuItem onClick={() => { handleClick('perfil'); handleMenuClick('perfil'); }}>
+            <MenuItem
+              onClick={() => {
+                handleClick('perfil');
+                handleMenuClick('perfil');
+              }}
+            >
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
             </MenuItem>
-            <MenuItem onClick={() => { handleClick('cerrarSesion'); handleMenuClick('cerrarSesion'); }}>
+            <MenuItem
+              onClick={() => {
+                handleClick('cerrarSesion');
+                handleMenuClick('cerrarSesion');
+              }}
+            >
               <LogoutIcon sx={{ marginRight: 1 }} /> Cerrar sesión
             </MenuItem>
           </Menu>
