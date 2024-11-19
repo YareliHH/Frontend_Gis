@@ -111,14 +111,20 @@ const Politicas = () => {
         fullWidth
         margin="normal"
       />
-      <TextField 
-        label="Contenido de la nueva política" 
-        variant="outlined" 
-        value={newContenido} 
-        onChange={(e) => setNewContenido(e.target.value)} 
-        fullWidth
-        margin="normal"
-      />
+        <TextareaAutosize
+      placeholder="Contenido de la nueva política"
+      minRows={5}
+      style={{
+        width: '100%',
+        marginBottom: '20px',
+        padding: '10px',
+        fontSize: '16px',
+        borderRadius: '4px',
+        border: '1px solid #ccc',
+      }}
+      value={newContenido}
+      onChange={(e) => setNewContenido(e.target.value)}
+    />
       <Button 
         variant="contained" 
         color="primary" 
