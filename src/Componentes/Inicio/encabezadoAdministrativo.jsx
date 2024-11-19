@@ -1,14 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Typography,
-  Menu,
-  MenuItem,
-  Box,
-  Button,
-} from '@mui/material';
+import {AppBar,Toolbar,IconButton,Typography,Menu,MenuItem,Box,Button,} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import GavelIcon from '@mui/icons-material/Gavel'; // Ícono para términos y condiciones
 import PolicyIcon from '@mui/icons-material/Policy'; // Ícono para políticas
