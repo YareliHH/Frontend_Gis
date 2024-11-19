@@ -15,7 +15,8 @@ import {
   TableCell,
   TableBody,
   Paper,
-  IconButton
+  IconButton,
+  Typography,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
@@ -34,7 +35,7 @@ const Politicas = () => {
       const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
       setPoliticas(response.data);
     } catch (error) {
-      console.error("Error al obtener las políticas", error);
+      console.error('Error al obtener las políticas', error);
     }
   };
 
@@ -49,7 +50,7 @@ const Politicas = () => {
       setNewContenido('');
       fetchPoliticas();
     } catch (error) {
-      console.error("Error al crear la política", error);
+      console.error('Error al crear la política', error);
     }
   };
 
@@ -66,7 +67,7 @@ const Politicas = () => {
       setOpen(false); // Cerrar el diálogo después de guardar
       fetchPoliticas();
     } catch (error) {
-      console.error("Error al actualizar la política", error);
+      console.error('Error al actualizar la política', error);
     }
   };
 
@@ -76,7 +77,7 @@ const Politicas = () => {
       await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
       fetchPoliticas();
     } catch (error) {
-      console.error("Error al eliminar la política", error);
+      console.error('Error al eliminar la política', error);
     }
   };
 
@@ -103,31 +104,27 @@ const Politicas = () => {
     <Container>
       <h1>Gestión de Políticas de Privacidad</h1>
 
-      <TextField 
-        label="Título de la nueva política" 
-        variant="outlined" 
-        value={newTitulo} 
-        onChange={(e) => setNewTitulo(e.target.value)} 
+      <TextField
+        label="Título de la nueva política"
+        variant="outlined"
+        value={newTitulo}
+        onChange={(e) => setNewTitulo(e.target.value)}
         fullWidth
         margin="normal"
       />
-        <TextareaAutosize
-      placeholder="Contenido de la nueva política"
-      minRows={5}
-      style={{
-        width: '100%',
-        marginBottom: '20px',
-        padding: '10px',
-        fontSize: '16px',
-        borderRadius: '4px',
-        border: '1px solid #ccc',
-      }}
-      value={newContenido}
-      onChange={(e) => setNewContenido(e.target.value)}
-    />
-      <Button 
-        variant="contained" 
-        color="primary" 
+      <TextField
+        label="Contenido de la nueva política"
+        variant="outlined"
+        value={newContenido}
+        onChange={(e) => setNewContenido(e.target.value)}
+        fullWidth
+        multiline
+        rows={4}
+        margin="normal"
+      />
+      <Button
+        variant="contained"
+        color="primary"
         onClick={handleCreatePolitica}
         style={{ marginBottom: '20px' }}
       >
@@ -162,10 +159,14 @@ const Politicas = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-          {politicas.map((item) => (
+            {politicas.map((item) => (
               <TableRow key={item.id}>
                 <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+                    {item.contenido}
+                  </Typography>
+                </TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
@@ -202,6 +203,8 @@ const Politicas = () => {
             label="Contenido de la política"
             type="text"
             fullWidth
+            multiline
+            rows={4}
             value={editContenido}
             onChange={(e) => setEditContenido(e.target.value)}
           />
