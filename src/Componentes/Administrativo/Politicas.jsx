@@ -54,47 +54,51 @@ const Politicas = () => {
     }
   };
 
-  // Actualizar una política
-  const handleUpdatePolitica = async (id) => {
-    try {
-      await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
-        titulo: editTitulo,
-        contenido: editContenido,
-      });
-      setEditId(null);
-      setEditTitulo('');
-      setEditContenido('');
-      setOpen(false); // Cerrar el diálogo después de guardar
-      fetchPoliticas();
-    } catch (error) {
-      console.error('Error al actualizar la política', error);
-    }
-  };
-
-  // Eliminar una política (lógicamente)
-  const handleDeletePolitica = async (id) => {
-    try {
-      await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
-      fetchPoliticas();
-    } catch (error) {
-      console.error('Error al eliminar la política', error);
-    }
-  };
-
-  // Manejar el diálogo de edición
-  const handleClickOpen = (politica) => {
-    setEditId(politica.id);
-    setEditTitulo(politica.titulo);
-    setEditContenido(politica.contenido);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
+// Función para editar política
+const handleUpdatePolitica = async (id) => {
+  try {
+    // Solicitud para actualizar política
+    await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
+      titulo: editTitulo,
+      contenido: editContenido,
+    });
+    // Limpia los datos del formulario
+    setEditId(null);
     setEditTitulo('');
     setEditContenido('');
-    setEditId(null);
-  };
+    setOpen(false); // Cierra el diálogo
+    fetchPoliticas(); // Refresca la lista
+  } catch (error) {
+    console.error('Error al actualizar la política:', error);
+  }
+};
+
+// Función para eliminar política (lógica)
+const handleDeletePolitica = async (id) => {
+  try {
+    // Solicitud para eliminar (desactivar) política
+    await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
+    fetchPoliticas(); // Refresca la lista
+  } catch (error) {
+    console.error('Error al eliminar la política:', error);
+  }
+};
+
+// Abrir el diálogo de edición
+const handleClickOpen = (politica) => {
+  setEditId(politica.id); // ID de la política a editar
+  setEditTitulo(politica.titulo); // Cargar título actual
+  setEditContenido(politica.contenido); // Cargar contenido actual
+  setOpen(true); // Abre el cuadro de diálogo
+};
+
+// Cerrar el diálogo de edición
+const handleClose = () => {
+  setOpen(false); // Cierra el cuadro de diálogo
+  setEditTitulo('');
+  setEditContenido('');
+  setEditId(null);
+};
 
   useEffect(() => {
     fetchPoliticas();
