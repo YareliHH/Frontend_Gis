@@ -315,7 +315,7 @@ const PerfilEmpresa = () => {
       </Box>
 
       {/* Tabla de datos guardados */}
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px', padding: '10px' }}>
         <Table aria-label="tabla de perfil de empresa">
           <TableHead>
             <TableRow>
