@@ -137,6 +137,7 @@ const EncabezadoAdministrativo = () => {
         >
           <PolicyIcon sx={{ marginRight: 1 }} /> Reportes
         </MenuItem>
+
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               color="inherit"
@@ -224,6 +225,28 @@ const EncabezadoAdministrativo = () => {
             </IconButton>
           </Box>
 
+
+            {/* Menú de Configuración */}
+            <Menu
+            id="menu-category"
+            anchorEl={anchorCategoryEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={Boolean(anchorCategoryEl)}
+            onClose={handleCategoryMenuClose}
+          >
+            <MenuItem
+              onClick={() => {
+                handleClick('reportes');
+                handleMenuClick('reportes');
+                handleCategoryMenuClose();
+              }}
+            >
+              <PolicyIcon sx={{ marginRight: 1 }} /> Incidencia
+            </MenuItem>
+            </Menu>
+
           <Menu
             id="menu-appbar"
             anchorEl={anchorEl}
@@ -241,9 +264,6 @@ const EncabezadoAdministrativo = () => {
             >
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
             </MenuItem>
-
-
-
     
             <MenuItem
               onClick={() => {
