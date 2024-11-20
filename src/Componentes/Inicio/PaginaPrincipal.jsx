@@ -130,18 +130,16 @@ const PaginaPrincipal = () => {
                     },
                   }}
                 >
-                <CardMedia
-                component="img"
-                alt={product.title}
-                image={product.img}
-                sx={{
-                  height: 150, // Reducir la altura de la imagen
-                  width: 'auto', // Ajustar el ancho automáticamente
-                  objectFit: 'contain', // Mantener las proporciones de la imagen
-                  margin: '0 auto', // Centrar la imagen dentro del contenedor
-                  padding: 2, // Añadir espacio alrededor de la imagen
-                }}
-              />
+                  <CardMedia
+                    component="img"
+                    alt={product.title}
+                    image={product.img}
+                    sx={{
+                      height: 200, 
+                      width: '100%',
+                      objectFit: 'cover',
+                    }}
+                  />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography
                       variant="h5"
