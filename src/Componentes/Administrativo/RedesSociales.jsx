@@ -22,7 +22,6 @@ import Notificaciones from '../Compartidos/Notificaciones';
 const availableSocials = [
   { label: 'Facebook', name: 'facebook', type: 'url' },
   { label: 'Twitter', name: 'twitter', type: 'url' },
-  { label: 'LinkedIn', name: 'linkedin', type: 'url' },
   { label: 'Instagram', name: 'instagram', type: 'url' },
   { label: 'WhatsApp', name: 'whatsapp', type: 'phone' },
 ];
@@ -142,7 +141,7 @@ const RedesSociales = () => {
   const handleEdit = (social) => {
     setIsEditing(socialData[social]?.id);
     setSelectedSocial(social);
-    setUrl(socialData[social]?.url.replace('+52', '')); // Remover prefijo para edición
+    setUrl(socialData[social]?.url.replace('+52', '')); 
   };
 
   return (
