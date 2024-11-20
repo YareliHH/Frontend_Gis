@@ -117,6 +117,8 @@ const Politicas = () => {
         value={newContenido} 
         onChange={(e) => setNewContenido(e.target.value)} 
         fullWidth
+        multiline
+        rows={4}
         margin="normal"
       />
       <Button 
@@ -196,6 +198,8 @@ const Politicas = () => {
             label="Contenido de la política"
             type="text"
             fullWidth
+            multiline
+            rows={4}
             value={editContenido}
             onChange={(e) => setEditContenido(e.target.value)}
           />

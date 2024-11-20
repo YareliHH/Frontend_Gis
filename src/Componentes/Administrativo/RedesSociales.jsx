@@ -198,14 +198,19 @@ const RedesSociales = () => {
           </Button>
         </Grid>
       </Grid>
-
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd' }}>
-        <Table>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+        <Table aria-label="tabla de redes">
           <TableHead>
             <TableRow>
-              <TableCell>Red Social</TableCell>
-              <TableCell>Enlace / Número</TableCell>
-              <TableCell align="right">Acciones</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Red social
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Enlace
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
