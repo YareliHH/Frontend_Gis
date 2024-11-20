@@ -245,27 +245,6 @@ const EncabezadoAdministrativo = () => {
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
             </MenuItem>
 
-                {/* Menú de Configuración */}
-                <Menu
-            id="menu-category"
-            anchorEl={anchorCategoryEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={Boolean(anchorCategoryEl)}
-            onClose={handleCategoryMenuClose}
-          >
-            <MenuItem
-              onClick={() => {
-                handleClick('reportes');
-                handleMenuClick('reportes');
-                handleCategoryMenuClose();
-              }}
-            >
-              <PolicyIcon sx={{ marginRight: 1 }} /> Incidencia
-            </MenuItem>
-            </Menu>
-
     
             <MenuItem
               onClick={() => {
