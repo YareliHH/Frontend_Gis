@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import GavelIcon from '@mui/icons-material/Gavel';
-import PolicyIcon from '@mui/icons-material/Policy';
+import GavelIcon from '@mui/icons-material/Gavel'; // Ícono para términos y condiciones
+import PolicyIcon from '@mui/icons-material/Policy'; // Ícono para políticas
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import ShareIcon from '@mui/icons-material/Share';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'; 
-import ReportIcon from '@mui/icons-material/Assessment'; // Ícono para Reportes
+import ShareIcon from '@mui/icons-material/Share'; // Ícono para Redes Sociales
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'; // Ícono para configuración
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
@@ -16,18 +15,18 @@ import logo from '../imagenes/LogoGL.jpg';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1E90FF', 
+      main: '#1E90FF', // Azul primario
     },
     secondary: {
-      main: '#4682B4', 
+      main: '#4682B4', // Azul intermedio (para resaltar)
     },
   },
   components: {
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(45deg, #1E90FF 30%, #4682B4 90%)',
-          boxShadow: '0 3px 5px 2px rgba(30, 144, 255, .3)', 
+          background: 'linear-gradient(45deg, #1E90FF 30%, #4682B4 90%)', // Degradado azul
+          boxShadow: '0 3px 5px 2px rgba(30, 144, 255, .3)', // Sombra ligera
         },
       },
     },
@@ -36,8 +35,7 @@ const theme = createTheme({
 
 const EncabezadoAdministrativo = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú de configuración
-  const [anchorReportsEl, setAnchorReportsEl] = useState(null); // Menú de Reportes
+  const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú para configuración
   const [active, setActive] = useState('inicio');
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -56,14 +54,6 @@ const EncabezadoAdministrativo = () => {
 
   const handleCategoryMenuClose = () => {
     setAnchorCategoryEl(null);
-  };
-
-  const handleReportsMenuOpen = (event) => {
-    setAnchorReportsEl(event.currentTarget);
-  };
-
-  const handleReportsMenuClose = () => {
-    setAnchorReportsEl(null);
   };
 
   const handleClick = (option) => {
@@ -88,8 +78,8 @@ const EncabezadoAdministrativo = () => {
       case 'redesSociales':
         navigate('/admin/redesSociales');
         break;
-      case 'reportes': // Nueva acción para Reportes
-        navigate('/admin/reportes');
+      case 'reportes':
+        navigate('/admin/reportes'); // Agregar ruta de reportes
         break;
       case 'cerrarSesion':
         console.log('Cerrando sesión...');
@@ -133,19 +123,22 @@ const EncabezadoAdministrativo = () => {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               color="inherit"
+              startIcon={<AccountCircleIcon />}
+              onClick={() => {
+                handleClick('perfil');
+                handleMenuClick('perfil');
+              }}
+              sx={{ color: active === 'perfil' ? '#B0C4DE' : '#FFFFFF' }}
+            >
+              Perfil de Empresa
+            </Button>
+            <Button
+              color="inherit"
               startIcon={<MoreHorizIcon />}
               onClick={handleCategoryMenuOpen} // Abrir menú de configuración
               sx={{ color: '#FFFFFF' }}
             >
               Configuración
-            </Button>
-            <Button
-              color="inherit"
-              startIcon={<ReportIcon />} // Ícono para Reportes
-              onClick={handleReportsMenuOpen} // Abrir menú de Reportes
-              sx={{ color: '#FFFFFF' }}
-            >
-              Reportes
             </Button>
             <Button
               color="inherit"
@@ -159,27 +152,6 @@ const EncabezadoAdministrativo = () => {
               Cerrar sesión
             </Button>
           </Box>
-
-          {/* Menú de Reportes */}
-          <Menu
-            id="menu-reports"
-            anchorEl={anchorReportsEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={Boolean(anchorReportsEl)}
-            onClose={handleReportsMenuClose}
-          >
-            <MenuItem
-              onClick={() => {
-                handleClick('reportes');
-                handleMenuClick('reportes'); // Asegúrate de que la navegación sea correcta
-                handleReportsMenuClose();
-              }}
-            >
-              Reporte de incidencias
-            </MenuItem>
-          </Menu>
 
           {/* Menú de Configuración */}
           <Menu
@@ -227,6 +199,15 @@ const EncabezadoAdministrativo = () => {
             >
               <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
             </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClick('reportes');
+                handleMenuClick('reportes'); // Menú para Reportes
+                handleCategoryMenuClose();
+              }}
+            >
+              <MoreHorizIcon sx={{ marginRight: 1 }} /> Reportes de Incidencia
+            </MenuItem>
           </Menu>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -244,6 +225,14 @@ const EncabezadoAdministrativo = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
+            <MenuItem
+              onClick={() => {
+                handleClick('perfil');
+                handleMenuClick('perfil');
+              }}
+            >
+              <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
+            </MenuItem>
             <MenuItem
               onClick={() => {
                 handleClick('cerrarSesion');
