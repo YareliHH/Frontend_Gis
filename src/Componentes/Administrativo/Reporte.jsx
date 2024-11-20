@@ -53,7 +53,7 @@ const LogsReport = () => {
                   <TableCell>ID</TableCell>
                   <TableCell>Nivel</TableCell>
                   <TableCell>Mensaje</TableCell>
-                  <TableCell>Timestamp</TableCell>
+                  <TableCell>Tiempo</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

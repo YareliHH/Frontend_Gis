@@ -45,11 +45,11 @@ const PaginaPrincipal = () => {
         padding: 0,
       }}
     >
-      <Container maxWidth="lg" sx={{ py: 10 }} disableGutters>
+      <Container maxWidth="lg" sx={{ py: 8 }} disableGutters>
         {/* Encabezado principal */}
-        <Box sx={{ textAlign: 'center', mb: 8 }}>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography
-            variant="h3"
+            variant="h5" // Tamaño más pequeño
             component="h1"
             sx={{
               fontWeight: 'bold',
@@ -62,21 +62,21 @@ const PaginaPrincipal = () => {
         </Box>
 
         {/* Sección de productos */}
-        <Box component="section" sx={{ mb: 12 }}>
+        <Box component="section" sx={{ mb: 10 }}>
           <Typography
-            variant="h4"
+            variant="h6" // Tamaño más pequeño
             sx={{
               color: colors.primaryText,
               fontWeight: 'bold',
               textAlign: 'center',
-              mb: 6,
+              mb: 4,
               fontFamily: 'Montserrat, sans-serif',
             }}
           >
             Las mejores prendas de Gislive Boutique
           </Typography>
-          <Grid container spacing={4} justifyContent="center">
-            {[ 
+          <Grid container spacing={2} justifyContent="center">
+            {[
               {
                 title: 'Uniforme Médico Mujer',
                 img: img1,
@@ -135,18 +135,18 @@ const PaginaPrincipal = () => {
                     alt={product.title}
                     image={product.img}
                     sx={{
-                      height: 200, 
+                      height: 150, // Imagen más pequeña
                       width: '100%',
                       objectFit: 'cover',
                     }}
                   />
                   <CardContent sx={{ flexGrow: 1 }}>
                     <Typography
-                      variant="h5"
+                      variant="subtitle1" // Títulos más pequeños
                       sx={{
                         fontWeight: 'bold',
                         color: colors.secondaryText,
-                        mb: 2,
+                        mb: 1,
                         fontFamily: 'Montserrat, sans-serif',
                       }}
                     >
@@ -156,11 +156,11 @@ const PaginaPrincipal = () => {
                       {product.description}
                     </Typography>
                     <Typography
-                      variant="h6"
+                      variant="body1" // Precio con tamaño más pequeño
                       sx={{
                         fontWeight: 'bold',
                         color: colors.primaryText,
-                        mt: 2,
+                        mt: 1,
                       }}
                     >
                       {product.price}
