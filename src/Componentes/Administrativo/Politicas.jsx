@@ -83,14 +83,18 @@ const Politicas = () => {
 
   // Eliminar una política (lógicamente)
   const handleDeletePolitica = async (id) => {
+    const confirmDelete = window.confirm(
+      '¿Está seguro de que desea eliminar esta política? Esta acción es reversible.'
+    );
+    if (!confirmDelete) return;
+
     try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivatepolitica/${id}`);
-      fetchTerminos();
+      fetchPoliticas();
     } catch (error) {
-      console.error('Error al eliminar el término', error);
+      console.error('Error al eliminar la política', error);
     }
   };
-
 
   // Manejar el diálogo de edición
   const handleClickOpen = (politica) => {
@@ -161,7 +165,7 @@ const Politicas = () => {
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
                 Fecha de Creación
               </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                  <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
                 Fecha de Actualización
               </TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
