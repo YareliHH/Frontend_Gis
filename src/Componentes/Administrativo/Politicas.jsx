@@ -83,18 +83,14 @@ const Politicas = () => {
 
   // Eliminar una política (lógicamente)
   const handleDeletePolitica = async (id) => {
-    const confirmDelete = window.confirm(
-      '¿Está seguro de que desea eliminar esta política? Esta acción es reversible.'
-    );
-    if (!confirmDelete) return;
-
     try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivatepolitica/${id}`);
-      fetchPoliticas();
+      fetchTerminos();
     } catch (error) {
-      console.error('Error al eliminar la política', error);
+      console.error('Error al eliminar el término', error);
     }
   };
+
 
   // Manejar el diálogo de edición
   const handleClickOpen = (politica) => {
