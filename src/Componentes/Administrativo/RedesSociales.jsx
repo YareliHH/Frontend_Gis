@@ -34,22 +34,24 @@ const RedesSociales = () => {
   const [url, setUrl] = useState('');
   const [isEditing, setIsEditing] = useState(null);
   
+  // Estado para manejar notificaciones
   const [notification, setNotification] = useState({
     open: false,
     message: '',
-    type: 'success',  
+    type: 'success',  // success, error, warning, info
   });
 
+  // Manejar el cierre de la notificación
   const handleCloseNotification = () => {
     setNotification({ ...notification, open: false });
   };
 
-  // Cargar redes sociales desde el backend
+  // Cargar las redes sociales de la base de datos
   useEffect(() => {
     const fetchSocials = async () => {
       try {
         const response = await axios.get('https://backendgislive.onrender.com/api/redesSociales/get');
-        setSocialData(response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {}));
+        setSocialData(response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})); // Guardamos el objeto completo
       } catch (error) {
         console.error('Error al obtener las redes sociales:', error);
       }
@@ -58,9 +60,9 @@ const RedesSociales = () => {
     fetchSocials();
   }, []);
 
-  // Controlar el cambio de la URL o número
   const handleInputChange = (e) => {
     if (selectedSocial === 'whatsapp') {
+      // Solo permitir números y hasta 10 dígitos
       const value = e.target.value.replace(/\D/g, '').slice(0, 10);
       setUrl(value);
     } else {
@@ -68,18 +70,17 @@ const RedesSociales = () => {
     }
   };
 
-  // Seleccionar una red social
   const handleSocialSelect = (e) => {
     setSelectedSocial(e.target.value);
-    setUrl(''); 
+    setUrl(''); // Limpiar el campo de URL al seleccionar una nueva red social
   };
 
-  // Validación del input antes de guardar
+  // Validación simplificada: solo se valida que el campo no esté vacío y que no se duplique
   const validateInput = () => {
     if (!url) {
       setNotification({
         open: true,
-        message: 'Por favor, ingresa un enlace',
+        message: 'Por favor, ingresa un enlace o número.',
         type: 'error',
       });
       return false;
@@ -97,42 +98,37 @@ const RedesSociales = () => {
     return true;
   };
 
-  // Guardar o actualizar la red social
+  // Guardar red social (añadir o editar)
   const handleSave = async () => {
     if (validateInput()) {
       try {
-        const urlWithPrefix = selectedSocial === 'whatsapp' ? `+52${url}` : url;
-
         if (isEditing !== null) {
+          // Editar la red social
           await axios.put(`https://backendgislive.onrender.com/api/redesSociales/editar/${isEditing}`, {
             nombre_red: selectedSocial,
-            url: urlWithPrefix,
+            url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
           });
-          setSocialData({
-            ...socialData,
-            [selectedSocial]: { ...socialData[selectedSocial], url: urlWithPrefix },
-          });
+          setSocialData({ ...socialData, [selectedSocial]: { ...socialData[selectedSocial], url: `+52${url}` } });
           setIsEditing(null);
           setNotification({
             open: true,
-            message: 'Red social actualizada.',
+            message: 'Red social actualizada con éxito.',
             type: 'success',
           });
         } else {
+          // Añadir nueva red social
           const response = await axios.post('https://backendgislive.onrender.com/api/redesSociales/nuevo', {
             nombre_red: selectedSocial,
-            url: urlWithPrefix,
+            url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
           });
           const newSocial = response.data;
           setSocialData({ ...socialData, [selectedSocial]: newSocial });
           setNotification({
             open: true,
-            message: 'Red social agregada.',
+            message: 'Red social agregada con éxito.',
             type: 'success',
           });
         }
-
-        // Limpiar los campos
         setSelectedSocial('');
         setUrl('');
       } catch (error) {
@@ -156,7 +152,7 @@ const RedesSociales = () => {
       setSocialData(updatedData);
       setNotification({
         open: true,
-        message: 'Red social eliminada.',
+        message: 'Red social eliminada con éxito.',
         type: 'success',
       });
     } catch (error) {
@@ -169,81 +165,93 @@ const RedesSociales = () => {
     }
   };
 
-  // Editar una red social
+  // Editar red social
   const handleEdit = (social) => {
     setIsEditing(socialData[social].id);
     setSelectedSocial(social);
-    setUrl(socialData[social].url.replace('+52', '')); 
+    setUrl(socialData[social].url.replace('+52', '')); // Quitar +52 si es WhatsApp
   };
 
   return (
-    <Box sx={{ mt: 4, backgroundColor: '#fff', p: 3, borderRadius: '10px', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)' }}>
-      <Typography variant="h5" align="center" gutterBottom>
+    <Box
+      sx={{
+        mt: 4,
+        backgroundColor: '#fff',
+        p: 3,
+        borderRadius: '10px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Typography variant="h5" gutterBottom>
         Redes Sociales
       </Typography>
 
-      <Grid container justifyContent="center" spacing={2} sx={{ mb: 2 }}>
-        <Grid item xs={12} md={5}>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        <Grid item xs={6}>
           <TextField
             select
-            label="Seleccionar Red Social"
-            fullWidth
+            label="Selecciona una red social"
             value={selectedSocial}
             onChange={handleSocialSelect}
-            sx={{ backgroundColor: '#fff' }}
+            fullWidth
           >
-            {availableSocials.map((social) => (
-              <MenuItem key={social.name} value={social.name}>
-                {social.label}
+            {availableSocials.map((option) => (
+              <MenuItem key={option.name} value={option.name}>
+                {option.label}
               </MenuItem>
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={12} md={5}>
+
+        <Grid item xs={6}>
           <TextField
-            label="URL o Número"
             fullWidth
+            label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Enlace'}
             value={url}
             onChange={handleInputChange}
-            sx={{ backgroundColor: '#fff' }}
+            InputProps={{
+              startAdornment: selectedSocial === 'whatsapp' && <Typography sx={{ color: 'gray' }}>+52</Typography>, // Visualmente +52
+            }}
+            helperText={
+              selectedSocial === 'whatsapp'
+                ? 'Ingresa los 10 dígitos restantes, ej: 1234567890'
+                : 'Ingresa el enlace de la red social'
+            }
           />
         </Grid>
-      </Grid>
 
-      {/* Botón de agregar abajo */}
-      <Grid container justifyContent="center" sx={{ mb: 2 }}>
-        <Grid item xs={12} md={2}>
+        <Grid item xs={12}>
           <Button
             variant="contained"
             color="primary"
-            fullWidth
-            onClick={handleSave}
             startIcon={<SaveIcon />}
+            onClick={handleSave}
+            disabled={!selectedSocial || !url}
           >
-            {isEditing ? 'Actualizar' : 'Agregar'}
+            Guardar
           </Button>
         </Grid>
       </Grid>
 
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', borderRadius: '8px' }}>
+      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd' }}>
         <Table aria-label="tabla de redes sociales">
           <TableHead>
             <TableRow>
-              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Red Social</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Enlace</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff' }}>Acciones</TableCell>
+              <TableCell>Red Social</TableCell>
+              <TableCell>Enlace / Número</TableCell>
+              <TableCell align="right">Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {Object.keys(socialData).map((social) => (
               <TableRow key={social}>
-                <TableCell align="center">{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
-                <TableCell align="center">{socialData[social]?.url}</TableCell>
-                <TableCell align="center">
-                  <IconButton aria-label="edit" onClick={() => handleEdit(social)}>
+                <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
+                <TableCell>{socialData[social]?.url}</TableCell>
+                <TableCell align="right">
+                  <IconButton edge="end" aria-label="edit" onClick={() => handleEdit(social)}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton aria-label="delete" onClick={() => handleDelete(social)}>
+                  <IconButton edge="end" aria-label="delete" onClick={() => handleDelete(social)}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>
