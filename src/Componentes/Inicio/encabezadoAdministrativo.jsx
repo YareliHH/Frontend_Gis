@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box, Button } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Menu, MenuItem, Box, Button, Typography } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import GavelIcon from '@mui/icons-material/Gavel'; // Ícono para términos y condiciones
 import PolicyIcon from '@mui/icons-material/Policy'; // Ícono para políticas
@@ -79,7 +79,7 @@ const EncabezadoAdministrativo = () => {
         navigate('/admin/redesSociales');
         break;
       case 'reportes':
-        navigate('/admin/reportes'); // Agregar ruta de reportes
+        navigate('/admin/reportes');  // Ajuste aquí a la ruta correcta
         break;
       case 'cerrarSesion':
         console.log('Cerrando sesión...');
@@ -142,6 +142,14 @@ const EncabezadoAdministrativo = () => {
             </Button>
             <Button
               color="inherit"
+              startIcon={<MoreHorizIcon />}
+              onClick={handleCategoryMenuOpen} // Abrir menú de reportes
+              sx={{ color: '#FFFFFF' }}
+            >
+              Reportes
+            </Button>
+            <Button
+              color="inherit"
               startIcon={<LogoutIcon />}
               onClick={() => {
                 handleClick('cerrarSesion');
@@ -153,7 +161,7 @@ const EncabezadoAdministrativo = () => {
             </Button>
           </Box>
 
-          {/* Menú de Configuración */}
+          {/* Menú de Configuración y Reportes */}
           <Menu
             id="menu-category"
             anchorEl={anchorCategoryEl}
@@ -202,11 +210,11 @@ const EncabezadoAdministrativo = () => {
             <MenuItem
               onClick={() => {
                 handleClick('reportes');
-                handleMenuClick('reportes'); // Menú para Reportes
+                handleMenuClick('reportes');
                 handleCategoryMenuClose();
               }}
             >
-              <MoreHorizIcon sx={{ marginRight: 1 }} /> Reportes de Incidencia
+              <PolicyIcon sx={{ marginRight: 1 }} /> Reportes de incidencia
             </MenuItem>
           </Menu>
 
@@ -216,6 +224,7 @@ const EncabezadoAdministrativo = () => {
             </IconButton>
           </Box>
 
+          {/* Menú de Opciones */}
           <Menu
             id="menu-appbar"
             anchorEl={anchorEl}
