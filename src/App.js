@@ -21,7 +21,7 @@ import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa';
 import Politicas from './Componentes/Administrativo/Politicas'; 
 import TerminosCondiciones from './Componentes/Administrativo/Terminos'; 
 import RedesSociales from './Componentes/Administrativo/RedesSociales'; 
-import Reportes from './Componentes/Administrativo/Reporte'; 
+import Reportes from './Componentes/Administrativo/Reporte.jsx'; 
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
