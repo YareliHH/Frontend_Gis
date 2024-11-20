@@ -103,7 +103,7 @@ const Deslindes = () => {
 
   return (
     <Container>
-      <h1>Gestión de Deslindes de Responsabilidad</h1>
+      <h1>Gestión de Deslindes</h1>
 
       <TextField
         label="Título del nuevo deslinde"
