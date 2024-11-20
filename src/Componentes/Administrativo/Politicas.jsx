@@ -18,7 +18,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import { Typography } from '@mui/material';
+
 
 const Politicas = () => {
   const [politicas, setPoliticas] = useState([]);
@@ -35,19 +35,15 @@ const Politicas = () => {
       const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
       setPoliticas(response.data);
     } catch (error) {
-      console.error('Error al obtener las políticas', error);
+      console.error('Error al obtener los politicas:', error.response ? error.response.data : error.message);
+      // Si el error tiene una respuesta, imprime el detalle de la respuesta
     }
-  };
+};
 
-  // Crear una nueva política
-  const handleCreatePolitica = async () => {
-    if (!newTitulo || !newContenido) {
-      alert('Por favor, complete todos los campos para crear una política.');
-      return;
-    }
-
+   // Crear un nuevo deslinde
+   const handleCreatePolitica = async () => {
     try {
-      await axios.post('https://backendgislive.onrender.com/api/insert', {
+      await axios.post('https://backendgislive.onrender.com/api/terminos', {
         titulo: newTitulo,
         contenido: newContenido,
       });
@@ -55,17 +51,13 @@ const Politicas = () => {
       setNewContenido('');
       fetchPoliticas();
     } catch (error) {
-      console.error('Error al crear la política', error);
+      console.error('Error al crear el politicas', error);
     }
   };
 
+   
   // Actualizar una política
   const handleUpdatePolitica = async (id) => {
-    if (!editTitulo || !editContenido) {
-      alert('Por favor, complete todos los campos para actualizar la política.');
-      return;
-    }
-
     try {
       await axios.put(`https://backendgislive.onrender.com/api/updatepolitica/${id}`, {
         titulo: editTitulo,
@@ -81,14 +73,9 @@ const Politicas = () => {
     }
   };
 
-  // Eliminar una política (lógicamente)
-  const handleDeletePolitica = async (id) => {
-    const confirmDelete = window.confirm(
-      '¿Está seguro de que desea eliminar esta política? Esta acción es reversible.'
-    );
-    if (!confirmDelete) return;
-
-    try {
+ // Eliminar un deslinde (lógicamente)
+ const handleDeletePolitica = async (id) => {
+  try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivatepolitica/${id}`);
       fetchPoliticas();
     } catch (error) {
@@ -183,7 +170,7 @@ const Politicas = () => {
                   </Typography>
                 </TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.estado}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_actualizacion).toLocaleDateString()}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>

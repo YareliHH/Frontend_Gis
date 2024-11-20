@@ -40,7 +40,6 @@ const Deslindes = () => {
     }
 };
 
-
   // Crear un nuevo deslinde
   const handleCreateDeslinde = async () => {
     try {
