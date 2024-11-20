@@ -166,6 +166,9 @@ const Politicas = () => {
                 Fecha de Creación
               </TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Fecha de Actualización
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
                 Acciones
               </TableCell>
             </TableRow>
