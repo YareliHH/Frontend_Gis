@@ -73,8 +73,8 @@ const PerfilEmpresa = () => {
       case "titulo_pagina":
         if (!value) {
           error = "El título de la página es obligatorio.";
-        } else if (value.length < 5 || value.length > 100) {
-          error = "El título debe tener entre 5 y 100 caracteres.";
+        } else if (value.length < 2 || value.length > 100) {
+          error = "El título debe tener entre 2 a 10 caracteres.";
         }
         break;
 

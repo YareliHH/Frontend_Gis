@@ -87,6 +87,9 @@ const EncabezadoAdministrativo = () => {
       case 'redesSociales':
         navigate('/admin/redesSociales');
         break;
+      case 'reportes':
+        navigate('/admin/redesreportes');
+        break;
       case 'cerrarSesion':
         console.log('Cerrando sesión...');
         navigate('/');
@@ -125,7 +128,15 @@ const EncabezadoAdministrativo = () => {
             />
             <Typography variant="h6">Gislive Boutique Clínica</Typography>
           </Box>
-
+          <MenuItem
+          onClick={() => {
+            handleClick('reportes');
+            handleMenuClick('reportes');
+            handleCategoryMenuClose();
+          }}
+        >
+          <PolicyIcon sx={{ marginRight: 1 }} /> Reportes
+        </MenuItem>
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               color="inherit"
@@ -197,14 +208,14 @@ const EncabezadoAdministrativo = () => {
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Deslinde Legal
             </MenuItem>
             <MenuItem
-          onClick={() => {
-            handleClick('redesSociales');
-            handleMenuClick('redesSociales');
-            handleCategoryMenuClose();
-          }}
-        >
-          <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
-        </MenuItem>
+        onClick={() => {
+          handleClick('redesSociales');
+          handleMenuClick('redesSociales');
+          handleCategoryMenuClose();
+        }}
+      >
+        <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
+      </MenuItem>
           </Menu>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -230,6 +241,10 @@ const EncabezadoAdministrativo = () => {
             >
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
             </MenuItem>
+
+
+
+    
             <MenuItem
               onClick={() => {
                 handleClick('cerrarSesion');
