@@ -128,15 +128,17 @@ const EncabezadoAdministrativo = () => {
             />
             <Typography variant="h6">Gislive Boutique Clínica</Typography>
           </Box>
-          <MenuItem
-          onClick={() => {
-            handleClick('reportes');
-            handleMenuClick('reportes');
-            handleCategoryMenuClose();
-          }}
-        >
-          <PolicyIcon sx={{ marginRight: 1 }} /> Reportes
-        </MenuItem>
+          <Button
+              color="inherit"
+              startIcon={<AccountCircleIcon />}
+              onClick={() => {
+                handleClick('reportes');
+                handleMenuClick('reportes');
+              }}
+              sx={{ color: active === 'reportes' ? '#B0C4DE' : '#FFFFFF' }}
+            >
+              Reportes
+            </Button>
 
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
@@ -225,9 +227,26 @@ const EncabezadoAdministrativo = () => {
             </IconButton>
           </Box>
 
+          <Menu
+            id="menu-appbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem
+              onClick={() => {
+                handleClick('perfil');
+                handleMenuClick('perfil');
+              }}
+            >
+              <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
+            </MenuItem>
 
-            {/* Menú de Configuración */}
-            <Menu
+                {/* Menú de Configuración */}
+                <Menu
             id="menu-category"
             anchorEl={anchorCategoryEl}
             anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -247,23 +266,6 @@ const EncabezadoAdministrativo = () => {
             </MenuItem>
             </Menu>
 
-          <Menu
-            id="menu-appbar"
-            anchorEl={anchorEl}
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            keepMounted
-            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-          >
-            <MenuItem
-              onClick={() => {
-                handleClick('perfil');
-                handleMenuClick('perfil');
-              }}
-            >
-              <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
-            </MenuItem>
     
             <MenuItem
               onClick={() => {
@@ -271,6 +273,7 @@ const EncabezadoAdministrativo = () => {
                 handleMenuClick('cerrarSesion');
               }}
             >
+          
               <LogoutIcon sx={{ marginRight: 1 }} /> Cerrar sesión
             </MenuItem>
           </Menu>
