@@ -35,9 +35,11 @@ const Deslindes = () => {
       const response = await axios.get('https://backendgislive.onrender.com/api/getdeslinde');
       setDeslindes(response.data);
     } catch (error) {
-      console.error('Error al obtener los deslindes', error);
+      console.error('Error al obtener los deslindes:', error.response ? error.response.data : error.message);
+      // Si el error tiene una respuesta, imprime el detalle de la respuesta
     }
-  };
+};
+
 
   // Crear un nuevo deslinde
   const handleCreateDeslinde = async () => {
