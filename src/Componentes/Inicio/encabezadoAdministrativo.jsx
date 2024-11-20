@@ -88,7 +88,7 @@ const EncabezadoAdministrativo = () => {
         navigate('/admin/redesSociales');
         break;
       case 'reportes':
-        navigate('/admin/redesreportes');
+        navigate('/admin/reportes');
         break;
       case 'cerrarSesion':
         console.log('Cerrando sesión...');
