@@ -207,23 +207,22 @@ const EncabezadoAdministrativo = () => {
             >
               <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
             </MenuItem>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-            <IconButton color="inherit" onClick={handleMenuOpen}>
-              <MenuIcon />
-            </IconButton>
-          </Box>
-
-           {/* Menú de reportes */}
-          <MenuItem
+            <MenuItem
               onClick={() => {
                 handleClick('reportes');
                 handleMenuClick('reportes');
                 handleCategoryMenuClose();
               }}
             >
-              <PolicyIcon sx={{ marginRight: 1 }} /> Reportes de incidencia
+              <PolicyIcon sx={{ marginRight: 1 }} /> Reportes 
             </MenuItem>
           </Menu>
+
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <IconButton color="inherit" onClick={handleMenuOpen}>
+              <MenuIcon />
+            </IconButton>
+          </Box>
 
           {/* Menú de Opciones */}
           <Menu
