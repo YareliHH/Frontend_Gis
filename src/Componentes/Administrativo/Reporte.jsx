@@ -10,7 +10,7 @@ const LogsReport = () => {
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await fetch('https://backendodontologia.onrender.com/api/reportes/logs', {
+        const response = await fetch('https://backendgislive.onrender.com/api/reportes/logs', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ const LogsReport = () => {
         <Typography color="error">{error}</Typography>
       ) : (
         <>
-          <Typography variant="h5" sx={{ marginBottom: 2 }}>Historial del Sistema</Typography>
+          <Typography variant="h5" sx={{ marginBottom: 2 }}>Incidencia</Typography>
           <TableContainer component={Paper}>
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>

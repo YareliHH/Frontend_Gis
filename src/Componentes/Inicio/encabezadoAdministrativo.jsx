@@ -37,6 +37,7 @@ const theme = createTheme({
 const EncabezadoAdministrativo = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú de configuración
+  const [anchorReportsEl, setAnchorReportsEl] = useState(null); // Menú de Reportes
   const [active, setActive] = useState('inicio');
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -55,6 +56,14 @@ const EncabezadoAdministrativo = () => {
 
   const handleCategoryMenuClose = () => {
     setAnchorCategoryEl(null);
+  };
+
+  const handleReportsMenuOpen = (event) => {
+    setAnchorReportsEl(event.currentTarget);
+  };
+
+  const handleReportsMenuClose = () => {
+    setAnchorReportsEl(null);
   };
 
   const handleClick = (option) => {
@@ -124,22 +133,19 @@ const EncabezadoAdministrativo = () => {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button
               color="inherit"
-              startIcon={<AccountCircleIcon />}
-              onClick={() => {
-                handleClick('perfil');
-                handleMenuClick('perfil');
-              }}
-              sx={{ color: active === 'perfil' ? '#B0C4DE' : '#FFFFFF' }}
-            >
-              Perfil de Empresa
-            </Button>
-            <Button
-              color="inherit"
               startIcon={<MoreHorizIcon />}
               onClick={handleCategoryMenuOpen} // Abrir menú de configuración
               sx={{ color: '#FFFFFF' }}
             >
               Configuración
+            </Button>
+            <Button
+              color="inherit"
+              startIcon={<ReportIcon />} // Ícono para Reportes
+              onClick={handleReportsMenuOpen} // Abrir menú de Reportes
+              sx={{ color: '#FFFFFF' }}
+            >
+              Reportes
             </Button>
             <Button
               color="inherit"
@@ -153,6 +159,27 @@ const EncabezadoAdministrativo = () => {
               Cerrar sesión
             </Button>
           </Box>
+
+          {/* Menú de Reportes */}
+          <Menu
+            id="menu-reports"
+            anchorEl={anchorReportsEl}
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            keepMounted
+            transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+            open={Boolean(anchorReportsEl)}
+            onClose={handleReportsMenuClose}
+          >
+            <MenuItem
+              onClick={() => {
+                handleClick('reportes');
+                handleMenuClick('reportes'); // Asegúrate de que la navegación sea correcta
+                handleReportsMenuClose();
+              }}
+            >
+              Reporte de incidencias
+            </MenuItem>
+          </Menu>
 
           {/* Menú de Configuración */}
           <Menu
@@ -200,15 +227,6 @@ const EncabezadoAdministrativo = () => {
             >
               <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
             </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClick('reportes');
-                handleMenuClick('reportes');
-                handleCategoryMenuClose();
-              }}
-            >
-              <ReportIcon sx={{ marginRight: 1 }} /> Reportes
-            </MenuItem>
           </Menu>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -226,14 +244,6 @@ const EncabezadoAdministrativo = () => {
             open={Boolean(anchorEl)}
             onClose={handleMenuClose}
           >
-            <MenuItem
-              onClick={() => {
-                handleClick('perfil');
-                handleMenuClick('perfil');
-              }}
-            >
-              <AccountCircleIcon sx={{ marginRight: 1 }} /> Perfil
-            </MenuItem>
             <MenuItem
               onClick={() => {
                 handleClick('cerrarSesion');
