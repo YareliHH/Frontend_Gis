@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import {AppBar,Toolbar,IconButton,Typography,Menu,MenuItem,Box,Button,} from '@mui/material';
+import { AppBar, Toolbar, IconButton, Typography, Menu, MenuItem, Box, Button } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import GavelIcon from '@mui/icons-material/Gavel'; // Ícono para términos y condiciones
-import PolicyIcon from '@mui/icons-material/Policy'; // Ícono para políticas
+import GavelIcon from '@mui/icons-material/Gavel';
+import PolicyIcon from '@mui/icons-material/Policy';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
-import ShareIcon from '@mui/icons-material/Share'; // Ícono para Redes Sociales
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'; // Ícono para configuración
+import ShareIcon from '@mui/icons-material/Share';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz'; 
+import ReportIcon from '@mui/icons-material/Assessment'; // Ícono para Reportes
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
@@ -15,18 +16,18 @@ import logo from '../imagenes/LogoGL.jpg';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#1E90FF', // Azul primario
+      main: '#1E90FF', 
     },
     secondary: {
-      main: '#4682B4', // Azul intermedio (para resaltar)
+      main: '#4682B4', 
     },
   },
   components: {
     MuiAppBar: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(45deg, #1E90FF 30%, #4682B4 90%)', // Degradado azul
-          boxShadow: '0 3px 5px 2px rgba(30, 144, 255, .3)', // Sombra ligera
+          background: 'linear-gradient(45deg, #1E90FF 30%, #4682B4 90%)',
+          boxShadow: '0 3px 5px 2px rgba(30, 144, 255, .3)', 
         },
       },
     },
@@ -35,7 +36,7 @@ const theme = createTheme({
 
 const EncabezadoAdministrativo = () => {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú para configuración
+  const [anchorCategoryEl, setAnchorCategoryEl] = useState(null); // Menú de configuración
   const [active, setActive] = useState('inicio');
   const navigate = useNavigate();
   const menuRef = useRef(null);
@@ -77,6 +78,9 @@ const EncabezadoAdministrativo = () => {
         break;
       case 'redesSociales':
         navigate('/admin/redesSociales');
+        break;
+      case 'reportes': // Nueva acción para Reportes
+        navigate('/admin/reportes');
         break;
       case 'cerrarSesion':
         console.log('Cerrando sesión...');
@@ -188,14 +192,23 @@ const EncabezadoAdministrativo = () => {
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Deslinde Legal
             </MenuItem>
             <MenuItem
-            onClick={() => {
-              handleClick('redesSociales');
-              handleMenuClick('redesSociales');
-              handleCategoryMenuClose();
-            }}
-          >
-            <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
-          </MenuItem>
+              onClick={() => {
+                handleClick('redesSociales');
+                handleMenuClick('redesSociales');
+                handleCategoryMenuClose();
+              }}
+            >
+              <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                handleClick('reportes');
+                handleMenuClick('reportes');
+                handleCategoryMenuClose();
+              }}
+            >
+              <ReportIcon sx={{ marginRight: 1 }} /> Reportes
+            </MenuItem>
           </Menu>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>

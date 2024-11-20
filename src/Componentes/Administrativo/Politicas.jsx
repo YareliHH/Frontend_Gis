@@ -15,7 +15,7 @@ import {
   TableCell,
   TableBody,
   Paper,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
@@ -34,12 +34,17 @@ const Politicas = () => {
       const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
       setPoliticas(response.data);
     } catch (error) {
-      console.error("Error al obtener las políticas", error);
+      console.error('Error al obtener las políticas', error);
     }
   };
 
   // Crear una nueva política
   const handleCreatePolitica = async () => {
+    if (!newTitulo || !newContenido) {
+      alert('Por favor, complete todos los campos para crear una política.');
+      return;
+    }
+
     try {
       await axios.post('https://backendgislive.onrender.com/api/insert', {
         titulo: newTitulo,
@@ -49,12 +54,17 @@ const Politicas = () => {
       setNewContenido('');
       fetchPoliticas();
     } catch (error) {
-      console.error("Error al crear la política", error);
+      console.error('Error al crear la política', error);
     }
   };
 
   // Actualizar una política
   const handleUpdatePolitica = async (id) => {
+    if (!editTitulo || !editContenido) {
+      alert('Por favor, complete todos los campos para actualizar la política.');
+      return;
+    }
+
     try {
       await axios.put(`https://backendgislive.onrender.com/api/updatepolitica/${id}`, {
         titulo: editTitulo,
@@ -66,17 +76,22 @@ const Politicas = () => {
       setOpen(false); // Cerrar el diálogo después de guardar
       fetchPoliticas();
     } catch (error) {
-      console.error("Error al actualizar la política", error);
+      console.error('Error al actualizar la política', error);
     }
   };
 
   // Eliminar una política (lógicamente)
   const handleDeletePolitica = async (id) => {
+    const confirmDelete = window.confirm(
+      '¿Está seguro de que desea eliminar esta política? Esta acción es reversible.'
+    );
+    if (!confirmDelete) return;
+
     try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivatepolitica/${id}`);
       fetchPoliticas();
     } catch (error) {
-      console.error("Error al eliminar la política", error);
+      console.error('Error al eliminar la política', error);
     }
   };
 
@@ -103,27 +118,27 @@ const Politicas = () => {
     <Container>
       <h1>Gestión de Políticas de Privacidad</h1>
 
-      <TextField 
-        label="Título de la nueva política" 
-        variant="outlined" 
-        value={newTitulo} 
-        onChange={(e) => setNewTitulo(e.target.value)} 
+      <TextField
+        label="Título de la nueva política"
+        variant="outlined"
+        value={newTitulo}
+        onChange={(e) => setNewTitulo(e.target.value)}
         fullWidth
         margin="normal"
       />
-      <TextField 
-        label="Contenido de la nueva política" 
-        variant="outlined" 
-        value={newContenido} 
-        onChange={(e) => setNewContenido(e.target.value)} 
+      <TextField
+        label="Contenido de la nueva política"
+        variant="outlined"
+        value={newContenido}
+        onChange={(e) => setNewContenido(e.target.value)}
         fullWidth
         multiline
         rows={4}
         margin="normal"
       />
-      <Button 
-        variant="contained" 
-        color="primary" 
+      <Button
+        variant="contained"
+        color="primary"
         onClick={handleCreatePolitica}
         style={{ marginBottom: '20px' }}
       >
@@ -131,7 +146,7 @@ const Politicas = () => {
       </Button>
 
       <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
-        <Table aria-label="tabla de politicas">
+        <Table aria-label="tabla de políticas">
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
@@ -150,18 +165,19 @@ const Politicas = () => {
                 Fecha de Creación
               </TableCell>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Actualización
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
                 Acciones
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-          {politicas.map((item) => (
+            {politicas.map((item) => (
               <TableRow key={item.id}>
-                <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                       <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+                    {item.contenido}
+                  </Typography>
+                </TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
@@ -180,7 +196,7 @@ const Politicas = () => {
         </Table>
       </TableContainer>
 
-      {/* Dialogo para editar política */}
+      {/* Diálogo para editar política */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Política</DialogTitle>
         <DialogContent>
@@ -208,7 +224,13 @@ const Politicas = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => { handleUpdatePolitica(editId); handleClose(); }} color="primary">
+          <Button
+            onClick={() => {
+              handleUpdatePolitica(editId);
+              handleClose();
+            }}
+            color="primary"
+          >
             Guardar
           </Button>
         </DialogActions>

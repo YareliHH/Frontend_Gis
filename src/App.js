@@ -21,6 +21,7 @@ import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa';
 import Politicas from './Componentes/Administrativo/Politicas'; 
 import TerminosCondiciones from './Componentes/Administrativo/Terminos'; 
 import RedesSociales from './Componentes/Administrativo/RedesSociales'; 
+import Reportes from './Componentes/Administrativo/Reporte'; 
 
 //inicio
 import Registro from './Componentes/Inicio/registo.jsx';
@@ -43,6 +44,7 @@ const App = () => {
         <Route path="/admin/politicas" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin/terminos" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
         <Route path="/admin/redesSociales" element={<LayoutEncabezadoAdmin><RedesSociales/></LayoutEncabezadoAdmin>} /> 
+        <Route path="/admin/reportes" element={<LayoutEncabezadoAdmin><Reportes/></LayoutEncabezadoAdmin>} /> 
         <Route path="/recuperar_password" element={<RecuperarContraseña/>} />
         <Route path="/resetear_contrasena" element={<CambiarContra/>} />
 

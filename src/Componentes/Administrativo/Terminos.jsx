@@ -54,9 +54,9 @@ const TerminosYCondiciones = () => {
   };
 
   // Actualizar un término
-  const handleUpdateTermino = async (id) => {
+  const handleUpdateTermino = async () => {
     try {
-      await axios.put(`https://backendgislive.onrender.com/api/updatetermino/${id}`, {
+      await axios.put(`https://backendgislive.onrender.com/api/updatetermino/${editId}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
@@ -134,27 +134,13 @@ const TerminosYCondiciones = () => {
         <Table aria-label="tabla de términos y condiciones">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Título
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Contenido
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Versión
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Estado
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Creación
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Actualización
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Acciones
-              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Contenido</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Versión</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Estado</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Creación</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Actualización</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -212,13 +198,7 @@ const TerminosYCondiciones = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button
-            onClick={() => {
-              handleUpdateTermino(editId);
-              handleClose();
-            }}
-            color="primary"
-          >
+          <Button onClick={handleUpdateTermino} color="primary">
             Guardar
           </Button>
         </DialogActions>
