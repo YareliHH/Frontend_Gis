@@ -170,7 +170,7 @@ const Deslindes = () => {
                   </Typography>
                 </TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.estado }</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_actualizacion).toLocaleDateString()}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>
