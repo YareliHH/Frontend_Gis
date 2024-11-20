@@ -15,12 +15,13 @@ import {
   TableCell,
   TableBody,
   Paper,
-  IconButton
+  IconButton,
+  Typography,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
-const Deslinde = () => {
-  const [deslinde, setDeslinde] = useState([]);
+const Deslindes = () => {
+  const [deslindes, setDeslindes] = useState([]);
   const [newTitulo, setNewTitulo] = useState('');
   const [newContenido, setNewContenido] = useState('');
   const [editId, setEditId] = useState(null);
@@ -29,12 +30,12 @@ const Deslinde = () => {
   const [open, setOpen] = useState(false);
 
   // Obtener todos los deslindes
-  const fetchDeslinde = async () => {
+  const fetchDeslindes = async () => {
     try {
       const response = await axios.get('https://backendgislive.onrender.com/api/getdeslinde');
-      setDeslinde(response.data);
+      setDeslindes(response.data);
     } catch (error) {
-      console.error("Error al obtener el deslinde", error);
+      console.error('Error al obtener los deslindes', error);
     }
   };
 
@@ -47,16 +48,16 @@ const Deslinde = () => {
       });
       setNewTitulo('');
       setNewContenido('');
-      fetchDeslinde();
+      fetchDeslindes();
     } catch (error) {
-      console.error("Error al crear el deslinde", error);
+      console.error('Error al crear el deslinde', error);
     }
   };
 
   // Actualizar un deslinde
   const handleUpdateDeslinde = async (id) => {
     try {
-      await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
+      await axios.put(`https://backendgislive.onrender.com/api/updatedeslinde/${id}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
@@ -64,19 +65,19 @@ const Deslinde = () => {
       setEditTitulo('');
       setEditContenido('');
       setOpen(false); // Cerrar el diálogo después de guardar
-      fetchDeslinde(); // Refrescar la lista de deslindes para reflejar los cambios
+      fetchDeslindes();
     } catch (error) {
-      console.error("Error al actualizar el deslinde", error);
+      console.error('Error al actualizar el deslinde', error);
     }
   };
 
-  // Eliminar un deslinde (lógicamente) y actualizar el estado local
+  // Eliminar un deslinde (lógicamente)
   const handleDeleteDeslinde = async (id) => {
     try {
-      await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
-      setDeslinde(prevDeslinde => prevDeslinde.filter(item => item.id !== id));
+      await axios.put(`https://backendgislive.onrender.com/api/deactivatedeslinde/${id}`);
+      fetchDeslindes();
     } catch (error) {
-      console.error("Error al eliminar el deslinde", error);
+      console.error('Error al eliminar el deslinde', error);
     }
   };
 
@@ -96,32 +97,34 @@ const Deslinde = () => {
   };
 
   useEffect(() => {
-    fetchDeslinde();
+    fetchDeslindes();
   }, []);
 
   return (
     <Container>
-      <h1>Gestión de Deslinde Legal</h1>
+      <h1>Gestión de Deslindes de Responsabilidad</h1>
 
-      <TextField 
-        label="Título de la nueva deslinde" 
-        variant="outlined" 
-        value={newTitulo} 
-        onChange={(e) => setNewTitulo(e.target.value)} 
+      <TextField
+        label="Título del nuevo deslinde"
+        variant="outlined"
+        value={newTitulo}
+        onChange={(e) => setNewTitulo(e.target.value)}
         fullWidth
         margin="normal"
       />
-      <TextField 
-        label="Contenido de la nueva deslinde" 
-        variant="outlined" 
-        value={newContenido} 
-        onChange={(e) => setNewContenido(e.target.value)} 
+      <TextField
+        label="Contenido del nuevo deslinde"
+        variant="outlined"
+        value={newContenido}
+        onChange={(e) => setNewContenido(e.target.value)}
         fullWidth
+        multiline
+        rows={4}
         margin="normal"
       />
-      <Button 
-        variant="contained" 
-        color="primary" 
+      <Button
+        variant="contained"
+        color="primary"
         onClick={handleCreateDeslinde}
         style={{ marginBottom: '20px' }}
       >
@@ -129,7 +132,7 @@ const Deslinde = () => {
       </Button>
 
       <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
-        <Table aria-label="tabla de deslinde">
+        <Table aria-label="tabla de deslindes">
           <TableHead>
             <TableRow>
               <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
@@ -156,10 +159,14 @@ const Deslinde = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {deslinde.map((item) => (
+            {deslindes.map((item) => (
               <TableRow key={item.id}>
                 <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+                    {item.contenido}
+                  </Typography>
+                </TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
@@ -185,7 +192,7 @@ const Deslinde = () => {
           <TextField
             autoFocus
             margin="dense"
-            label="Título de la Deslinde"
+            label="Título del deslinde"
             type="text"
             fullWidth
             value={editTitulo}
@@ -193,9 +200,11 @@ const Deslinde = () => {
           />
           <TextField
             margin="dense"
-            label="Contenido de la Deslinde"
+            label="Contenido del deslinde"
             type="text"
             fullWidth
+            multiline
+            rows={4}
             value={editContenido}
             onChange={(e) => setEditContenido(e.target.value)}
           />
@@ -204,7 +213,7 @@ const Deslinde = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => handleUpdateDeslinde(editId)} color="primary">
+          <Button onClick={() => { handleUpdateDeslinde(editId); handleClose(); }} color="primary">
             Guardar
           </Button>
         </DialogActions>
@@ -213,4 +222,4 @@ const Deslinde = () => {
   );
 };
 
-export default Deslinde;
+export default Deslindes;
