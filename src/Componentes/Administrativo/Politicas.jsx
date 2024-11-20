@@ -15,8 +15,7 @@ import {
   TableCell,
   TableBody,
   Paper,
-  IconButton,
-  Typography,
+  IconButton
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
 
@@ -35,7 +34,7 @@ const Politicas = () => {
       const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
       setPoliticas(response.data);
     } catch (error) {
-      console.error('Error al obtener las políticas', error);
+      console.error("Error al obtener las políticas", error);
     }
   };
 
@@ -50,11 +49,11 @@ const Politicas = () => {
       setNewContenido('');
       fetchPoliticas();
     } catch (error) {
-      console.error('Error al crear la política', error);
+      console.error("Error al crear la política", error);
     }
   };
 
-  // Función para actualizar una política
+  // Actualizar una política
   const handleUpdatePolitica = async (id) => {
     try {
       await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
@@ -64,98 +63,103 @@ const Politicas = () => {
       setEditId(null);
       setEditTitulo('');
       setEditContenido('');
-      setOpen(false); // Cierra el diálogo
-      fetchPoliticas(); // Refresca la lista
+      setOpen(false); // Cerrar el diálogo después de guardar
+      fetchPoliticas();
     } catch (error) {
-      console.error('Error al actualizar la política:', error);
+      console.error("Error al actualizar la política", error);
     }
   };
 
-  // Función para eliminar (desactivar) una política
+  // Eliminar una política (lógicamente)
   const handleDeletePolitica = async (id) => {
     try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivate/${id}`);
-      fetchPoliticas(); // Refresca la lista
+      fetchPoliticas();
     } catch (error) {
-      console.error('Error al eliminar la política:', error);
+      console.error("Error al eliminar la política", error);
     }
   };
 
-  // Abrir el diálogo de edición
+  // Manejar el diálogo de edición
   const handleClickOpen = (politica) => {
-    setEditId(politica.id); // Establece el ID de la política a editar
-    setEditTitulo(politica.titulo); // Carga el título
-    setEditContenido(politica.contenido); // Carga el contenido
-    setOpen(true); // Abre el cuadro de diálogo
+    setEditId(politica.id);
+    setEditTitulo(politica.titulo);
+    setEditContenido(politica.contenido);
+    setOpen(true);
   };
 
-  // Cerrar el cuadro de diálogo de edición
   const handleClose = () => {
-    setOpen(false); // Cierra el diálogo
+    setOpen(false);
     setEditTitulo('');
     setEditContenido('');
     setEditId(null);
   };
 
   useEffect(() => {
-    fetchPoliticas(); // Cargar las políticas al cargar el componente
+    fetchPoliticas();
   }, []);
 
   return (
     <Container>
       <h1>Gestión de Políticas de Privacidad</h1>
 
-      {/* Formulario para crear una nueva política */}
-      <TextField
-        label="Título de la nueva política"
-        variant="outlined"
-        value={newTitulo}
-        onChange={(e) => setNewTitulo(e.target.value)}
+      <TextField 
+        label="Título de la nueva política" 
+        variant="outlined" 
+        value={newTitulo} 
+        onChange={(e) => setNewTitulo(e.target.value)} 
         fullWidth
         margin="normal"
       />
-      <TextField
-        label="Contenido de la nueva política"
-        variant="outlined"
-        value={newContenido}
-        onChange={(e) => setNewContenido(e.target.value)}
+      <TextField 
+        label="Contenido de la nueva política" 
+        variant="outlined" 
+        value={newContenido} 
+        onChange={(e) => setNewContenido(e.target.value)} 
         fullWidth
-        multiline
-        rows={4}
         margin="normal"
       />
-      <Button
-        variant="contained"
-        color="primary"
+      <Button 
+        variant="contained" 
+        color="primary" 
         onClick={handleCreatePolitica}
         style={{ marginBottom: '20px' }}
       >
         Agregar Política
       </Button>
 
-      {/* Tabla para mostrar políticas */}
       <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
         <Table aria-label="tabla de politicas">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Contenido</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Versión</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Estado</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Creación</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Fecha de Actualización</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Acciones</TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Título
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Contenido
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Versión
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Estado
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Fecha de Creación
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Fecha de Actualización
+              </TableCell>
+              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
+                Acciones
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {politicas.map((item) => (
+          {politicas.map((item) => (
               <TableRow key={item.id}>
                 <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>
-                  <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
-                    {item.contenido}
-                  </Typography>
-                </TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
@@ -174,7 +178,7 @@ const Politicas = () => {
         </Table>
       </TableContainer>
 
-      {/* Diálogo para editar política */}
+      {/* Dialogo para editar política */}
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Editar Política</DialogTitle>
         <DialogContent>
@@ -192,8 +196,6 @@ const Politicas = () => {
             label="Contenido de la política"
             type="text"
             fullWidth
-            multiline
-            rows={4}
             value={editContenido}
             onChange={(e) => setEditContenido(e.target.value)}
           />
