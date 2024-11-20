@@ -1,5 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Menu, MenuItem, Box, Button, Typography } from '@mui/material';
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuItem,
+  Box,
+  Button,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import GavelIcon from '@mui/icons-material/Gavel'; // Ícono para términos y condiciones
 import PolicyIcon from '@mui/icons-material/Policy'; // Ícono para políticas
@@ -78,9 +87,6 @@ const EncabezadoAdministrativo = () => {
       case 'redesSociales':
         navigate('/admin/redesSociales');
         break;
-      case 'reportes':
-        navigate('/admin/reportes');  // Ajuste aquí a la ruta correcta
-        break;
       case 'cerrarSesion':
         console.log('Cerrando sesión...');
         navigate('/');
@@ -142,14 +148,6 @@ const EncabezadoAdministrativo = () => {
             </Button>
             <Button
               color="inherit"
-              startIcon={<MoreHorizIcon />}
-              onClick={handleCategoryMenuOpen} // Abrir menú de reportes
-              sx={{ color: '#FFFFFF' }}
-            >
-              Reportes
-            </Button>
-            <Button
-              color="inherit"
               startIcon={<LogoutIcon />}
               onClick={() => {
                 handleClick('cerrarSesion');
@@ -161,7 +159,7 @@ const EncabezadoAdministrativo = () => {
             </Button>
           </Box>
 
-          {/* Menú de Configuración y Reportes */}
+          {/* Menú de Configuración */}
           <Menu
             id="menu-category"
             anchorEl={anchorCategoryEl}
@@ -199,23 +197,14 @@ const EncabezadoAdministrativo = () => {
               <AccountCircleIcon sx={{ marginRight: 1 }} /> Deslinde Legal
             </MenuItem>
             <MenuItem
-              onClick={() => {
-                handleClick('redesSociales');
-                handleMenuClick('redesSociales');
-                handleCategoryMenuClose();
-              }}
-            >
-              <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
-            </MenuItem>
-            <MenuItem
-              onClick={() => {
-                handleClick('reportes');
-                handleMenuClick('reportes');
-                handleCategoryMenuClose();
-              }}
-            >
-              <PolicyIcon sx={{ marginRight: 1 }} /> Reportes 
-            </MenuItem>
+          onClick={() => {
+            handleClick('redesSociales');
+            handleMenuClick('redesSociales');
+            handleCategoryMenuClose();
+          }}
+        >
+          <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
+        </MenuItem>
           </Menu>
 
           <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
@@ -224,7 +213,6 @@ const EncabezadoAdministrativo = () => {
             </IconButton>
           </Box>
 
-          {/* Menú de Opciones */}
           <Menu
             id="menu-appbar"
             anchorEl={anchorEl}
