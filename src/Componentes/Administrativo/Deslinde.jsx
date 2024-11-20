@@ -57,27 +57,44 @@ const Deslindes = () => {
   // Actualizar un deslinde
   const handleUpdateDeslinde = async (id) => {
     try {
-      await axios.put(`https://backendgislive.onrender.com/api/updatedeslinde/${id}`, {
+      const response = await axios.put(`https://backendgislive.onrender.com/api/updatedeslinde/${id}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
-      setEditId(null);
-      setEditTitulo('');
-      setEditContenido('');
-      setOpen(false); // Cerrar el diálogo después de guardar
-      fetchDeslindes();
+
+      if (response.status === 200) {
+        setEditId(null);
+        setEditTitulo('');
+        setEditContenido('');
+        setOpen(false);
+        fetchDeslindes();
+      } else {
+        console.error('Error al actualizar el deslinde:', response.data.message);
+      }
     } catch (error) {
-      console.error('Error al actualizar el deslinde', error);
+      console.error('Error al actualizar el deslinde:', error.response?.data?.message || error.message);
     }
   };
 
   // Eliminar un deslinde (lógicamente)
   const handleDeleteDeslinde = async (id) => {
     try {
-      await axios.put(`https://backendgislive.onrender.com/api/deactivatedeslinde/${id}`);
-      fetchDeslindes();
+      const response = await axios.put(`https://backendgislive.onrender.com/api/deactivatedeslinde/${id}`);
+
+      if (response.status === 200) {
+        fetchDeslindes();
+      } else {
+        console.error('Error al eliminar el deslinde:', response.data.message);
+      }
     } catch (error) {
-      console.error('Error al eliminar el deslinde', error);
+      console.error('Error al eliminar el deslinde:', error.response?.data?.message || error.message);
+    }
+  };
+
+  // Confirmar eliminación
+  const handleDeleteConfirm = (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este deslinde?')) {
+      handleDeleteDeslinde(id);
     }
   };
 
@@ -135,27 +152,14 @@ const Deslindes = () => {
         <Table aria-label="tabla de deslindes">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Título
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Contenido
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Versión
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Estado
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Creación
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Actualización
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Acciones
-              </TableCell>
+              {['Título', 'Contenido', 'Versión', 'Estado', 'Creación', 'Actualización', 'Acciones'].map((header) => (
+                <TableCell
+                  key={header}
+                  sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}
+                >
+                  {header}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -175,7 +179,7 @@ const Deslindes = () => {
                   <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
                     <Edit />
                   </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteDeslinde(item.id)}>
+                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteConfirm(item.id)}>
                     <Delete />
                   </IconButton>
                 </TableCell>
@@ -213,7 +217,7 @@ const Deslindes = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={() => { handleUpdateDeslinde(editId); handleClose(); }} color="primary">
+          <Button onClick={() => handleUpdateDeslinde(editId)} color="primary">
             Guardar
           </Button>
         </DialogActions>
