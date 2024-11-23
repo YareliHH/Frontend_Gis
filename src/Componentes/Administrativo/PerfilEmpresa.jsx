@@ -36,7 +36,7 @@ const PerfilEmpresa = () => {
 
       case "direccion":
         if (value && value.length > 100) {
-          error = "La dirección no puede exceder los 100 caracteres.";
+          error = "La dirección debe ser obligatorio";
         }
         break;
 
@@ -60,13 +60,13 @@ const PerfilEmpresa = () => {
 
       case "descripcion":
         if (value && value.length > 500) {
-          error = "La descripción no puede exceder los 500 caracteres.";
+          error = "La descripción debe ser obligatoria";
         }
         break;
 
       case "slogan":
         if (value && value.length > 50) {
-          error = "El slogan no puede exceder los 50 caracteres.";
+          error = "El slogan es obligatoria.";
         }
         break;
 
@@ -74,7 +74,7 @@ const PerfilEmpresa = () => {
         if (!value) {
           error = "El título de la página es obligatorio.";
         } else if (value.length < 2 || value.length > 100) {
-          error = "El título debe tener entre 2 a 10 caracteres.";
+          error = "El título es obligatoria";
         }
         break;
 
