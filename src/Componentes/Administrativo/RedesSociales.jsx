@@ -42,20 +42,15 @@ const RedesSociales = () => {
     setNotification({ ...notification, open: false });
   };
 
-  // Obtener datos al cargar el componente
   useEffect(() => {
     const fetchSocials = async () => {
       try {
         const response = await axios.get('https://backendgislive.onrender.com/api/redesSociales/get');
-        const data = response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {});
-        setSocialData(data);
+        setSocialData(
+          response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})
+        );
       } catch (error) {
         console.error('Error al obtener las redes sociales:', error);
-        setNotification({
-          open: true,
-          message: 'Error al obtener las redes sociales.',
-          type: 'error',
-        });
       }
     };
 
@@ -65,7 +60,7 @@ const RedesSociales = () => {
   const handleInputChange = (e) => {
     const value = e.target.value;
     if (selectedSocial === 'whatsapp') {
-      setUrl(value.replace(/\D/g, '').slice(0, 10)); // Solo dígitos y máximo 10 caracteres
+      setUrl(value.replace(/\D/g, '').slice(0, 10)); // Solo dígitos y 10 caracteres
     } else {
       setUrl(value);
     }
@@ -100,7 +95,7 @@ const RedesSociales = () => {
     if (validateInput()) {
       try {
         if (isEditing) {
-          // Actualizar red social
+          // Actualizar
           await axios.put(`https://backendgislive.onrender.com/api/redesSociales/editar/${isEditing}`, {
             nombre_red: selectedSocial,
             url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
@@ -111,7 +106,7 @@ const RedesSociales = () => {
           });
           setNotification({ open: true, message: 'Red social actualizada.', type: 'success' });
         } else {
-          // Crear nueva red social
+          // Agregar
           const response = await axios.post('https://backendgislive.onrender.com/api/redesSociales/nuevo', {
             nombre_red: selectedSocial,
             url: selectedSocial === 'whatsapp' ? `+52${url}` : url,
@@ -124,7 +119,7 @@ const RedesSociales = () => {
         setIsEditing(null);
       } catch (error) {
         console.error('Error al guardar la red social:', error);
-        setNotification({ open: true, message: 'Error al guardar la red social.', type: 'error' });
+        setNotification({ open: true, message: 'Error al guardar.', type: 'error' });
       }
     }
   };
@@ -139,14 +134,14 @@ const RedesSociales = () => {
       setNotification({ open: true, message: 'Red social eliminada.', type: 'success' });
     } catch (error) {
       console.error('Error al eliminar la red social:', error);
-      setNotification({ open: true, message: 'Error al eliminar la red social.', type: 'error' });
+      setNotification({ open: true, message: 'Error al eliminar.', type: 'error' });
     }
   };
 
   const handleEdit = (social) => {
     setIsEditing(socialData[social]?.id);
     setSelectedSocial(social);
-    setUrl(socialData[social]?.url.replace('+52', ''));
+    setUrl(socialData[social]?.url.replace('+52', '')); 
   };
 
   return (
@@ -186,7 +181,7 @@ const RedesSociales = () => {
             onChange={handleInputChange}
             InputProps={{
               startAdornment: selectedSocial === 'whatsapp' && (
-                <Typography sx={{ color: 'gray', mr: 1 }}>+52</Typography>
+                <Typography sx={{ color: 'gray' }}>+52</Typography>
               ),
             }}
           />
@@ -223,7 +218,7 @@ const RedesSociales = () => {
               <TableRow key={social}>
                 <TableCell>{availableSocials.find((s) => s.name === social)?.label || social}</TableCell>
                 <TableCell>{socialData[social]?.url}</TableCell>
-                <TableCell align="center">
+                <TableCell align="right">
                   <IconButton onClick={() => handleEdit(social)}>
                     <EditIcon />
                   </IconButton>
