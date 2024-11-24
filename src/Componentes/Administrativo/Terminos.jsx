@@ -146,16 +146,16 @@ const TerminosYCondiciones = () => {
           <TableBody>
             {terminos.map((item) => (
               <TableRow key={item.id}>
-                <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.contenido}</TableCell>
+                 <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>
+                  <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
+                    {item.contenido}
+                  </Typography>
+                </TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.estado ? 'Activo' : 'Inactivo'}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>
-                  {new Date(item.fecha_creacion).toLocaleDateString()}
-                </TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>
-                  {new Date(item.fecha_actualizacion).toLocaleDateString()}
-                </TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{item.estado }</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
+                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_actualizacion).toLocaleDateString()}</TableCell>
                 <TableCell sx={{ textAlign: 'center' }}>
                   <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
                     <Edit />
@@ -198,7 +198,7 @@ const TerminosYCondiciones = () => {
           <Button onClick={handleClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={handleUpdateTermino} color="primary">
+          <Button onClick={() => { handleUpdateTermino(editId); handleClose(); }} color="primary">
             Guardar
           </Button>
         </DialogActions>
