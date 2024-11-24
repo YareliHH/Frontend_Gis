@@ -44,7 +44,7 @@ const Politicas = () => {
    // Crear un nuevo deslinde
    const handleCreatePolitica = async () => {
     try {
-      await axios.post('https://backendgislive.onrender.com/api/terminos', {
+      await axios.post('https://backendgislive.onrender.com/api/politica', {
         titulo: newTitulo,
         contenido: newContenido,
       });
