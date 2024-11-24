@@ -18,6 +18,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
+import Typography from '@mui/material/Typography';
 
 const TerminosYCondiciones = () => {
   const [terminos, setTerminos] = useState([]);
