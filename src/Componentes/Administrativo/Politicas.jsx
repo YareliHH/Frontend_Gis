@@ -65,6 +65,11 @@ const Politicas = () => {
    
   // Actualizar una política
   const handleUpdatePolitica = async (id) => {
+    if (!editTitulo.trim() || !editContenido.trim()) {
+      alert('Por favor, complete todos los campos antes de actualizar.');
+      return;
+    }
+  
     try {
       await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
         titulo: editTitulo,
@@ -79,7 +84,6 @@ const Politicas = () => {
       console.error('Error al actualizar la política', error);
     }
   };
-
  // Eliminar politica (lógicamente)
  const handleDeletePolitica = async (id) => {
   try {
