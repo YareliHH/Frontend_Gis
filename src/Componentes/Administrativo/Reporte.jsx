@@ -27,9 +27,10 @@ const Actividades = () => {
             'Content-Type': 'application/json',
           },
         });
-
+        
         if (!response.ok) {
-          throw new Error('Error al obtener las actividades');
+          const errorDetails = await response.json();
+          throw new Error(errorDetails.message || 'Error al obtener las actividades');
         }
 
         const data = await response.json();
@@ -66,14 +67,20 @@ const Actividades = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {actividades.map((actividad) => (
+                {actividades.length > 0 ? (
+                actividades.map((actividad) => (
                   <TableRow key={actividad.id}>
                     <TableCell>{actividad.id}</TableCell>
                     <TableCell>{actividad.usuario}</TableCell>
                     <TableCell>{actividad.actividad}</TableCell>
                     <TableCell>{format(new Date(actividad.fecha), 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                   </TableRow>
-                ))}
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={4}>No hay actividades registradas</TableCell>
+              </TableRow>
+              )}
               </TableBody>
             </Table>
           </TableContainer>
