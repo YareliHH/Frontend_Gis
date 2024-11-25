@@ -41,7 +41,7 @@ const Politicas = () => {
     }
 };
 
-   // Crear un nuevo deslinde
+   // Crear una nueva politica 
    const handleCreatePolitica = async () => {
     try {
       await axios.post('https://backendgislive.onrender.com/api/politica', {
@@ -74,7 +74,7 @@ const Politicas = () => {
     }
   };
 
- // Eliminar un deslinde (lógicamente)
+ // Eliminar politica (lógicamente)
  const handleDeletePolitica = async (id) => {
   try {
       await axios.put(`https://backendgislive.onrender.com/api/deactivatepolitica/${id}`);
