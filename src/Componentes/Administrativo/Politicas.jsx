@@ -45,7 +45,7 @@ const Politicas = () => {
    const handleCreatePolitica = async () => {
 
     if (!newTitulo.trim() || !newContenido.trim()) {
-      alert('Por favor, complete todos los campos.');
+      alert('Por favor, complete todos los campos .');
       return; 
     }
   
