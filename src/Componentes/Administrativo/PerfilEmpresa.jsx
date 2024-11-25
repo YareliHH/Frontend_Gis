@@ -351,12 +351,13 @@ const PerfilEmpresa = () => {
                 <TableCell>{item.titulo_pagina}</TableCell>
                 <TableCell>{item.descripcion}</TableCell>
                 <TableCell>
-  <img
-    src={item.logo} // La URL completa de la imagen desde la base de datos
-    alt={item.nombre_empresa || "Logo"} // Texto alternativo para accesibilidad
-    style={{ width: 50, height: 50, objectFit: "cover" }} // Ajuste del tamaño y estilo
-  />
-</TableCell>
+                <img
+                  src={item.logo} // Imagen genérica en caso de error
+                  alt={`${item.nombre_empresa} Logo`}
+                  style={{ width: 50, height: 50, objectFit: "cover", borderRadius: "8px" }}
+                />
+
+                </TableCell>
 
               </TableRow>
             ))}
