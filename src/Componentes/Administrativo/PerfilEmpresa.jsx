@@ -30,11 +30,7 @@ const PerfilEmpresa = () => {
       console.error("Error al obtener los datos del perfil de empresa:", error);
     }
   };
-
-  // useEffect para cargar los datos al montar el componente
-  useEffect(() => {
     fetchData();
-  }, []);
 
 
   // Validaciones de cada campo
