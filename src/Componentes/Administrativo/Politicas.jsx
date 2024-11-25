@@ -43,6 +43,12 @@ const Politicas = () => {
 
    // Crear una nueva politica 
    const handleCreatePolitica = async () => {
+
+    if (!newTitulo.trim() || !newContenido.trim()) {
+      alert('Por favor, complete todos los campos antes de enviar.');
+      return; 
+    }
+  
     try {
       await axios.post('https://backendgislive.onrender.com/api/politica', {
         titulo: newTitulo,
