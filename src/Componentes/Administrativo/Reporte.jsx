@@ -27,7 +27,7 @@ const Actividades = () => {
             'Content-Type': 'application/json',
           },
         });
-        
+
         if (!response.ok) {
           const errorDetails = await response.json();
           throw new Error(errorDetails.message || 'Error al obtener las actividades');
@@ -60,7 +60,6 @@ const Actividades = () => {
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
-                  <TableCell>ID</TableCell>
                   <TableCell>Usuario</TableCell>
                   <TableCell>Actividad</TableCell>
                   <TableCell>Fecha</TableCell>
@@ -70,7 +69,6 @@ const Actividades = () => {
                 {actividades.length > 0 ? (
                 actividades.map((actividad) => (
                   <TableRow key={actividad.id}>
-                    <TableCell>{actividad.id}</TableCell>
                     <TableCell>{actividad.usuario}</TableCell>
                     <TableCell>{actividad.actividad}</TableCell>
                     <TableCell>{format(new Date(actividad.fecha), 'dd/MM/yyyy HH:mm:ss')}</TableCell>
