@@ -42,6 +42,12 @@ const Deslindes = () => {
 
   // Crear un nuevo deslinde
   const handleCreateDeslinde = async () => {
+
+    if (!newTitulo.trim() || !newContenido.trim()) {
+      alert('Por favor, complete todos los campos .');
+      return; 
+    }
+  
     try {
       await axios.post('https://backendgislive.onrender.com/api/deslinde', {
         titulo: newTitulo,
@@ -57,6 +63,11 @@ const Deslindes = () => {
 
   // Actualizar un deslinde
   const handleUpdateDeslinde = async (id) => {
+
+    if (!editTitulo.trim() || !editContenido.trim()) {
+      alert('Por favor, complete todos los campos antes de actualizar.');
+      return;
+    }
     try {
       await axios.put(`https://backendgislive.onrender.com/api/updatedeslinde/${id}`, {
         titulo: editTitulo,

@@ -41,6 +41,11 @@ const TerminosYCondiciones = () => {
 
   // Crear un nuevo término
   const handleCreateTermino = async () => {
+    if (!newTitulo.trim() || !newContenido.trim()) {
+      alert('Por favor, complete todos los campos .');
+      return; 
+    }
+  
     try {
       await axios.post('https://backendgislive.onrender.com/api/terminos', {
         titulo: newTitulo,
@@ -56,6 +61,10 @@ const TerminosYCondiciones = () => {
 
   // Actualizar un término
   const handleUpdateTermino = async () => {
+    if (!editTitulo.trim() || !editContenido.trim()) {
+      alert('Por favor, complete todos los campos antes de actualizar.');
+      return;
+    }
     try {
       await axios.put(`https://backendgislive.onrender.com/api/updatetermino/${editId}`, {
         titulo: editTitulo,
