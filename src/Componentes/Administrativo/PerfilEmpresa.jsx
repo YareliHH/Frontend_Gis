@@ -32,6 +32,8 @@ const PerfilEmpresa = () => {
       }
     };
 
+    
+
   // Validaciones de cada campo
   const validateField = (name, value) => {
     let error = "";
