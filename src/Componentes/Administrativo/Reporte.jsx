@@ -1,16 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box, CircularProgress } from '@mui/material';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  Box,
+  CircularProgress,
+} from '@mui/material';
 import { format } from 'date-fns';
 
-const LogsReport = () => {
-  const [logs, setLogs] = useState([]);
+const Actividades = () => {
+  const [actividades, setActividades] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Estado de carga
 
   useEffect(() => {
-    const fetchLogs = async () => {
+    const fetchActividades = async () => {
       try {
-        const response = await fetch('https://backendgislive.onrender.com/api/reportes/logs', {
+        const response = await fetch('https://backendgislive.onrender.com/api/reportes/actividades', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -18,13 +29,11 @@ const LogsReport = () => {
         });
 
         if (!response.ok) {
-          throw new Error('Error al obtener los logs');
+          throw new Error('Error al obtener las actividades');
         }
 
         const data = await response.json();
-        // Ordenar los logs para mostrar los más recientes primero
-        const sortedLogs = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        setLogs(sortedLogs);
+        setActividades(data); // Guardar los datos recibidos
       } catch (err) {
         setError(err.message);
       } finally {
@@ -32,7 +41,7 @@ const LogsReport = () => {
       }
     };
 
-    fetchLogs();
+    fetchActividades();
   }, []);
 
   return (
@@ -45,24 +54,24 @@ const LogsReport = () => {
         <Typography color="error">{error}</Typography>
       ) : (
         <>
-          <Typography variant="h5" sx={{ marginBottom: 2 }}>Incidencia</Typography>
+          <Typography variant="h5" sx={{ marginBottom: 2 }}>Actividades Registradas</Typography>
           <TableContainer component={Paper}>
             <Table>
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
                 <TableRow>
                   <TableCell>ID</TableCell>
-                  <TableCell>Nivel</TableCell>
-                  <TableCell>Mensaje</TableCell>
-                  <TableCell>Tiempo</TableCell>
+                  <TableCell>Usuario</TableCell>
+                  <TableCell>Actividad</TableCell>
+                  <TableCell>Fecha</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {logs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell>{log.id}</TableCell>
-                    <TableCell>{log.level}</TableCell>
-                    <TableCell>{log.message}</TableCell>
-                    <TableCell>{format(new Date(log.timestamp), 'dd/MM/yyyy HH:mm:ss')}</TableCell>
+                {actividades.map((actividad) => (
+                  <TableRow key={actividad.id}>
+                    <TableCell>{actividad.id}</TableCell>
+                    <TableCell>{actividad.usuario}</TableCell>
+                    <TableCell>{actividad.actividad}</TableCell>
+                    <TableCell>{format(new Date(actividad.fecha), 'dd/MM/yyyy HH:mm:ss')}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -74,4 +83,4 @@ const LogsReport = () => {
   );
 };
 
-export default LogsReport;
+export default Actividades;
