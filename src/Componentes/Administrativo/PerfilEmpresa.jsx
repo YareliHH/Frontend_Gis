@@ -6,7 +6,7 @@ import axios from "axios";
 const PerfilEmpresa = () => {
   const [perfil, setPerfil] = useState({
     nombre_empresa: "",
-    logo: null,
+    logo: "",
     direccion: "",
     telefono: "",
     correo_electronico: "",
