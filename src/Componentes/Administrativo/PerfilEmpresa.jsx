@@ -352,7 +352,7 @@ const PerfilEmpresa = () => {
                 <TableCell>{item.descripcion}</TableCell>
                 <TableCell>
                 <img
-                  src={item.logo} // Imagen genérica en caso de error
+                  src="https://res.cloudinary.com/dytchcrpf/image/upload/v1732008306/logos_empresas/kqxv4lwtsbc47fvk5zny.jpg" // Imagen genérica en caso de error
                   alt={`${item.nombre_empresa} Logo`}
                   style={{ width: 50, height: 50, objectFit: "cover", borderRadius: "8px" }}
                 />
