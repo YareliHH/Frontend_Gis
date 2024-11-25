@@ -71,7 +71,7 @@ const Politicas = () => {
     }
   
     try {
-      await axios.put(`https://backendgislive.onrender.com/api/update/${id}`, {
+      await axios.put(`https://backendgislive.onrender.com/api/updatepolitica/${id}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
