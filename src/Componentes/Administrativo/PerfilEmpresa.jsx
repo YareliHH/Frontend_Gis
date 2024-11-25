@@ -351,8 +351,13 @@ const PerfilEmpresa = () => {
                 <TableCell>{item.titulo_pagina}</TableCell>
                 <TableCell>{item.descripcion}</TableCell>
                 <TableCell>
-                  <Avatar src={item.logo} alt="Logo" sx={{ width: 50, height: 50 }} />
-                </TableCell>
+  <img
+    src={item.logo} // La URL completa de la imagen desde la base de datos
+    alt={item.nombre_empresa || "Logo"} // Texto alternativo para accesibilidad
+    style={{ width: 50, height: 50, objectFit: "cover" }} // Ajuste del tamaño y estilo
+  />
+</TableCell>
+
               </TableRow>
             ))}
           </TableBody>
