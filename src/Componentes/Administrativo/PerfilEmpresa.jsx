@@ -22,6 +22,22 @@ const PerfilEmpresa = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [savedData, setSavedData] = useState([]); // Para almacenar los datos guardados
 
+    // Función para obtener los datos del backend
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("https://backendgislive.onrender.com/api/perfil_empresa/get");
+        setSavedData(response.data); // Guarda los datos en el estado
+      } catch (error) {
+        console.error("Error al obtener los datos del perfil de empresa:", error);
+      }
+    };
+  
+    // useEffect para cargar los datos al montar el componente
+    useEffect(() => {
+      fetchData();
+    }, []);
+  
+
   // Validaciones de cada campo
   const validateField = (name, value) => {
     let error = "";
