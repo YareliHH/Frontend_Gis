@@ -6,7 +6,7 @@ import axios from "axios";
 const PerfilEmpresa = () => {
   const [perfil, setPerfil] = useState({
     nombre_empresa: "",
-    logo: "",
+    logo: null,
     direccion: "",
     telefono: "",
     correo_electronico: "",
@@ -21,17 +21,6 @@ const PerfilEmpresa = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [savedData, setSavedData] = useState([]); // Para almacenar los datos guardados
-  // Función para obtener los datos del backend
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("https://backendgislive.onrender.com/api/perfil_empresa/get");
-      setSavedData(response.data); // Guarda los datos en el estado
-    } catch (error) {
-      console.error("Error al obtener los datos del perfil de empresa:", error);
-    }
-  };
-    fetchData();
-
 
   // Validaciones de cada campo
   const validateField = (name, value) => {
@@ -351,11 +340,7 @@ const PerfilEmpresa = () => {
                 <TableCell>{item.titulo_pagina}</TableCell>
                 <TableCell>{item.descripcion}</TableCell>
                 <TableCell>
-                <img
-                  src="https://res.cloudinary.com/dytchcrpf/image/upload/v1732008306/logos_empresas/kqxv4lwtsbc47fvk5zny.jpg" // Imagen genérica en caso de error
-                  alt={`${item.nombre_empresa} Logo`}
-                  style={{ width: 50, height: 50, objectFit: "cover", borderRadius: "8px" }}
-                />
+                  <Avatar src={item.logo} alt="Logo" sx={{ width: 50, height: 50 }} />
                 </TableCell>
               </TableRow>
             ))}

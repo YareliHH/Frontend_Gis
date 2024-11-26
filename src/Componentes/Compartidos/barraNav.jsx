@@ -144,7 +144,7 @@ const BarraNav = () => {
                 handleMenuClick('login');
               }}
             >
-              <LoginIcon sx={{ marginRight: 1 }} /> Iniciar sesión
+              <LoginIcon sx={{ marginRight: 1 }} /> Cerrar sesión
             </MenuItem>
           </Menu>
         </Toolbar>
