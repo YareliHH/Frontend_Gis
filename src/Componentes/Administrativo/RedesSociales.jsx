@@ -1,4 +1,3 @@
-// RedesSociales.jsx
 import React, { useState, useEffect } from 'react';
 import {
   TextField,
@@ -149,13 +148,15 @@ const RedesSociales = () => {
         borderRadius: 2,
         backgroundColor: '#fff',
         boxShadow: 3,
+        maxWidth: 600, // Limita el ancho máximo
+        mx: 'auto', // Centra horizontalmente
       }}
     >
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h5" align="center" gutterBottom>
         Redes Sociales
       </Typography>
       <Grid container spacing={2}>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             select
             label="Selecciona una red social"
@@ -170,7 +171,7 @@ const RedesSociales = () => {
             ))}
           </TextField>
         </Grid>
-        <Grid item xs={12} md={6}>
+        <Grid item xs={12} sm={6}>
           <TextField
             fullWidth
             label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Enlace'}
