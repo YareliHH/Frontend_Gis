@@ -58,7 +58,7 @@ const Actividades = () => {
           <Typography variant="h5" sx={{ marginBottom: 2 }}>Actividades Registradas</Typography>
           <TableContainer component={Paper}>
             <Table>
-              <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableHead sx={{ backgroundColor: '#e3f2fd' }}>
                 <TableRow>
                   <TableCell>Usuario</TableCell>
                   <TableCell>Actividad</TableCell>

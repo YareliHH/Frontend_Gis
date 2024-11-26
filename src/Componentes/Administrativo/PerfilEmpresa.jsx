@@ -356,7 +356,6 @@ const PerfilEmpresa = () => {
                   alt={`${item.nombre_empresa} Logo`}
                   style={{ width: 50, height: 50, objectFit: "cover", borderRadius: "8px" }}
                 />
-
                 </TableCell>
               </TableRow>
             ))}
