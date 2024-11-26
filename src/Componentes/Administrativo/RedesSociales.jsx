@@ -21,7 +21,6 @@ import Notificaciones from '../Compartidos/Notificaciones';
 
 const availableSocials = [
   { label: 'Facebook', name: 'facebook', type: 'url' },
-  { label: 'Twitter', name: 'twitter', type: 'url' },
   { label: 'Instagram', name: 'instagram', type: 'url' },
   { label: 'WhatsApp', name: 'whatsapp', type: 'phone' },
 ];
