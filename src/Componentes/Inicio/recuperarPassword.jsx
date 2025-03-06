@@ -3,6 +3,7 @@ import { Container, TextField, Button, Typography, Box, Snackbar, Alert, Circula
 import { Email, Lock } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import fondo from '../imagenes/FONDO.jpeg.jpeg';
 
 const RecuperarContrasena = () => {
   const [email, setEmail] = useState('');
@@ -42,7 +43,7 @@ const RecuperarContrasena = () => {
     setIsLoading(true);
     try {
       // Enviar la solicitud al backend
-      const response = await axios.post('https://backendgislive.onrender.com/api/recuperacion_contra', { correo: email });
+      const response = await axios.post('http://localhost:3001/api/recuperacion_contra', { correo: email });
       console.log("Respuesta del backend:", response.data);
 
       setSnackbar({
@@ -82,7 +83,7 @@ const RecuperarContrasena = () => {
     setIsLoading(true);
     try {
       // Enviar el token para verificar al backend
-      const response = await axios.post('https://backendgislive.onrender.com/api/verify-tokene', { correo: email, token });
+      const response = await axios.post('http://localhost:3001/api/verify-tokene', { correo: email, token });
       if (response.status === 200) {
         setSnackbar({
           open: true,
@@ -109,6 +110,18 @@ const RecuperarContrasena = () => {
   const handleCloseSnackbar = () => setSnackbar({ ...snackbar, open: false });
 
   return (
+    <Box
+          sx={{
+            position: 'relative',
+            minHeight: '100vh',
+            backgroundImage: `url(${fondo})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
     <Container
       maxWidth="xs"
       sx={{
@@ -193,6 +206,7 @@ const RecuperarContrasena = () => {
         </Alert>
       </Snackbar>
     </Container>
+    </Box>
   );
 };
 

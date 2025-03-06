@@ -6,6 +6,7 @@ import axios from 'axios';
 import Notificaciones from '../Compartidos/Notificaciones';
 import zxcvbn from 'zxcvbn';
 
+
 const Registro = () => {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -121,7 +122,7 @@ const Registro = () => {
   const handleVerifyEmail = async () => {
     setIsVerifying(true);
     try {
-      const response = await axios.post('https://backendgislive.onrender.com/api/verificar-correo', { correo: formData.correo });
+      const response = await axios.post('http://localhost:3001/api/verificar-correo', { correo: formData.correo });
       if (response.data.exists) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -145,7 +146,7 @@ const Registro = () => {
 
   const handleVerifyToken = async () => {
     try {
-      const response = await axios.post('https://backendgislive.onrender.com/api/verify-token', { correo: formData.correo, token: formData.token });
+      const response = await axios.post('http://localhost:3001/api/verify-token', { correo: formData.correo, token: formData.token });
       if (response.data.valid) {
         setTokenVerified(true);
         setSnackbarMessage('Token verificado exitosamente.');
@@ -176,7 +177,7 @@ const Registro = () => {
     setIsLoading(true);
 
     try {
-      await axios.post('https://backendgislive.onrender.com/api/registro', formData);
+      await axios.post('http://localhost:3001/api/registro', formData);
       setSnackbarMessage('Usuario registrado exitosamente');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
@@ -200,6 +201,9 @@ const Registro = () => {
   };
 
   return (
+<Box
+      
+    >
     <Container maxWidth="sm">
       <Box sx={{ padding: 4, backgroundColor: '#f9f9f9', borderRadius: 2, boxShadow: 3, marginTop: 4 }}>
         <Typography variant="h4" align="center" gutterBottom>
@@ -422,7 +426,9 @@ const Registro = () => {
         />
       </Box>
     </Container>
+    </Box>
   );
+  
 };
 
 export default Registro;

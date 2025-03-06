@@ -1,10 +1,30 @@
-import React, { useState } from "react";
-import {Container,Box,Typography,Grid,TextField,Button,InputAdornment,Avatar,InputLabel,Snackbar,Alert,Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper,} from "@mui/material";
-import { Phone } from "@mui/icons-material";
+import React, { useState, useEffect } from "react";
+import {
+  Container,
+  Box,
+  Typography,
+  Grid,
+  TextField,
+  Button,
+  InputAdornment,
+  Snackbar,
+  Alert,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Avatar,
+  IconButton,
+} from "@mui/material";
+import { Phone, AddPhotoAlternate, Person, Edit } from "@mui/icons-material"; // Importa el ícono de edición
 import axios from "axios";
 
 const PerfilEmpresa = () => {
   const [perfil, setPerfil] = useState({
+    id: null,
     nombre_empresa: "",
     logo: null,
     direccion: "",
@@ -12,7 +32,6 @@ const PerfilEmpresa = () => {
     correo_electronico: "",
     descripcion: "",
     slogan: "",
-    titulo_pagina: "",
   });
 
   const [file, setFile] = useState(null);
@@ -20,7 +39,28 @@ const PerfilEmpresa = () => {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
-  const [savedData, setSavedData] = useState([]); // Para almacenar los datos guardados
+  const [savedData, setSavedData] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+
+  // Cargar datos existentes al montar el componente
+  useEffect(() => {
+    const fetchPerfil = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/api/perfil");
+        if (response.data.length > 0) {
+          const perfilExistente = response.data[0];
+          setPerfil({
+            ...perfilExistente,
+            logo: perfilExistente.logo || null,
+          });
+          setIsEditing(true);
+        }
+      } catch (error) {
+        console.error("Error al cargar el perfil:", error);
+      }
+    };
+    fetchPerfil();
+  }, []);
 
   // Validaciones de cada campo
   const validateField = (name, value) => {
@@ -35,8 +75,10 @@ const PerfilEmpresa = () => {
         break;
 
       case "direccion":
-        if (value && value.length > 100) {
-          error = "La dirección debe ser obligatorio";
+        if (!value) {
+          error = "La dirección es obligatoria.";
+        } else if (value.length > 100) {
+          error = "La dirección no puede exceder los 100 caracteres.";
         }
         break;
 
@@ -60,24 +102,15 @@ const PerfilEmpresa = () => {
 
       case "descripcion":
         if (value && value.length > 500) {
-          error = "La descripción debe ser obligatoria";
+          error = "La descripción no puede exceder los 500 caracteres.";
         }
         break;
 
       case "slogan":
         if (value && value.length > 50) {
-          error = "El slogan es obligatoria.";
+          error = "El slogan no puede exceder los 50 caracteres.";
         }
         break;
-
-      case "titulo_pagina":
-        if (!value) {
-          error = "El título de la página es obligatorio.";
-        } else if (value.length < 2 || value.length > 100) {
-          error = "El título es obligatoria";
-        }
-        break;
-
       default:
         break;
     }
@@ -87,11 +120,8 @@ const PerfilEmpresa = () => {
   // Manejo del cambio en los campos
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Validar el campo actual
     const error = validateField(name, value);
     setErrors((prevErrors) => ({ ...prevErrors, [name]: error }));
-
     setPerfil((prevPerfil) => ({
       ...prevPerfil,
       [name]: value,
@@ -119,7 +149,7 @@ const PerfilEmpresa = () => {
     }
   };
 
-  // Enviar formulario
+  // Enviar formulario (crear o actualizar)
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -147,21 +177,25 @@ const PerfilEmpresa = () => {
     }
 
     try {
-      await axios.post(
-        "https://backendgislive.onrender.com/api/perfil",
-        formData,
-        {
+      if (isEditing) {
+        // Actualizar perfil existente
+        await axios.put(`http://localhost:3001/api/perfil/${perfil.id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
-      );
-      setSnackbarMessage("Perfil de empresa guardado con éxito");
+        });
+        setSnackbarMessage("Perfil de empresa actualizado con éxito");
+      } else {
+        // Crear nuevo perfil
+        await axios.post("http://localhost:3001/api/perfil", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        setSnackbarMessage("Perfil de empresa guardado con éxito");
+      }
       setSnackbarSeverity("success");
-      setSavedData((prevData) => [
-        ...prevData,
-        { ...perfil, logo: perfil.logo || "Logo no cargado" },
-      ]);
+      setSavedData([perfil]);
     } catch (error) {
       console.error("Error al guardar el perfil de la empresa:", error);
       setSnackbarMessage("Error al guardar el perfil de la empresa.");
@@ -173,21 +207,82 @@ const PerfilEmpresa = () => {
 
   return (
     <Container maxWidth="md">
-      <Box
-        sx={{
-          padding: 5,
-          backgroundColor: "#f9f9f9",
-          borderRadius: 2,
-          boxShadow: 3,
-          marginTop: 4,
-        }}
-      >
-        <Typography variant="h4" align="center" gutterBottom>
-          Perfil de Empresa
-        </Typography>
-        <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit}>
+        <Box
+          sx={{
+            padding: 5,
+            backgroundColor: "#f9f9f9",
+            borderRadius: 2,
+            boxShadow: 3,
+            marginTop: 4,
+            textAlign: "center",
+          }}
+        >
+          <Typography variant="h4" align="center" gutterBottom>
+            Perfil de Empresa
+          </Typography>
+
+          {/* Logo de la Empresa */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginBottom: 4,
+              position: "relative",
+            }}
+          >
+            {perfil.logo ? (
+              <>
+                <Avatar
+                  src={perfil.logo}
+                  alt="Logo de la Empresa"
+                  sx={{ width: 200, height: 200 }}
+                />
+                <IconButton
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    backgroundColor: "rgba(255, 255, 255, 0.8)",
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 255, 255, 1)",
+                    },
+                  }}
+                  component="label"
+                >
+                  <Edit fontSize="small" />
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                  />
+                </IconButton>
+              </>
+            ) : (
+              <IconButton
+                sx={{
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  "&:hover": {
+                    backgroundColor: "rgba(0, 0, 0, 0.2)",
+                  },
+                }}
+                component="label"
+              >
+                <AddPhotoAlternate fontSize="large" />
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                />
+              </IconButton>
+            )}
+          </Box>
+
+          {/* Resto del formulario */}
           <Grid container spacing={3}>
-            {/* Nombre de la Empresa */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -201,7 +296,6 @@ const PerfilEmpresa = () => {
               />
             </Grid>
 
-            {/* Dirección */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -211,10 +305,10 @@ const PerfilEmpresa = () => {
                 onChange={handleChange}
                 error={!!errors.direccion}
                 helperText={errors.direccion}
+                required
               />
             </Grid>
 
-            {/* Teléfono */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -231,10 +325,10 @@ const PerfilEmpresa = () => {
                     </InputAdornment>
                   ),
                 }}
+                required
               />
             </Grid>
 
-            {/* Correo Electrónico */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -249,7 +343,6 @@ const PerfilEmpresa = () => {
               />
             </Grid>
 
-            {/* Slogan */}
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
@@ -262,20 +355,6 @@ const PerfilEmpresa = () => {
               />
             </Grid>
 
-            {/* Título de Página */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Título de Página"
-                name="titulo_pagina"
-                value={perfil.titulo_pagina}
-                onChange={handleChange}
-                error={!!errors.titulo_pagina}
-                helperText={errors.titulo_pagina}
-              />
-            </Grid>
-
-            {/* Descripción */}
             <Grid item xs={12}>
               <TextField
                 fullWidth
@@ -290,43 +369,26 @@ const PerfilEmpresa = () => {
               />
             </Grid>
 
-            {/* Logo */}
-            <Grid item xs={12} sm={6}>
-              <InputLabel>Logo</InputLabel>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleLogoChange}
-              />
-              {errors.logo && (
-                <Typography color="error" variant="body2">
-                  {errors.logo}
-                </Typography>
-              )}
-            </Grid>
-
             <Grid item xs={12}>
               <Button type="submit" variant="contained" color="primary">
-                Guardar Perfil
+                {isEditing ? "Actualizar Perfil" : "Guardar Perfil"}
               </Button>
             </Grid>
           </Grid>
-        </form>
-      </Box>
+        </Box>
+      </form>
 
       {/* Tabla de datos guardados */}
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
+      <TableContainer component={Paper} sx={{ marginTop: 4 }}>
         <Table aria-label="tabla de perfil de empresa">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Nombre</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Dirección</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Teléfono</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Correo</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Slogan</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Título</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Descripción</TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>Logo</TableCell>
+              <TableCell>Nombre</TableCell>
+              <TableCell>Dirección</TableCell>
+              <TableCell>Teléfono</TableCell>
+              <TableCell>Correo</TableCell>
+              <TableCell>Slogan</TableCell>
+              <TableCell>Descripción</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -337,11 +399,7 @@ const PerfilEmpresa = () => {
                 <TableCell>{item.telefono}</TableCell>
                 <TableCell>{item.correo_electronico}</TableCell>
                 <TableCell>{item.slogan}</TableCell>
-                <TableCell>{item.titulo_pagina}</TableCell>
                 <TableCell>{item.descripcion}</TableCell>
-                <TableCell>
-                  <Avatar src={item.logo} alt="Logo" sx={{ width: 50, height: 50 }} />
-                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -349,8 +407,15 @@ const PerfilEmpresa = () => {
       </TableContainer>
 
       {/* Snackbar de Confirmación */}
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
-        <Alert onClose={() => setOpenSnackbar(false)} severity={snackbarSeverity}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>

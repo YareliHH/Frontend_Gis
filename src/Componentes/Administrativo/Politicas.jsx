@@ -16,10 +16,13 @@ import {
   TableBody,
   Paper,
   IconButton,
+  Typography,
+  Box,
+  Tooltip,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import { Edit, Delete } from '@mui/icons-material';
-import Typography from '@mui/material/Typography';
-
 
 const Politicas = () => {
   const [politicas, setPoliticas] = useState([]);
@@ -29,68 +32,94 @@ const Politicas = () => {
   const [editTitulo, setEditTitulo] = useState('');
   const [editContenido, setEditContenido] = useState('');
   const [open, setOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Para manejar éxito o error
 
   // Obtener todas las políticas
   const fetchPoliticas = async () => {
     try {
-      const response = await axios.get('https://backendgislive.onrender.com/api/getpolitica');
+      const response = await axios.get('http://localhost:3001/api/getpolitica');
       setPoliticas(response.data);
     } catch (error) {
-      console.error('Error al obtener los politicas:', error.response ? error.response.data : error.message);
-      // Si el error tiene una respuesta, imprime el detalle de la respuesta
+      console.error('Error al obtener las políticas:', error.response ? error.response.data : error.message);
+      setSnackbarMessage('Error al cargar las políticas');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
-};
+  };
 
-   // Crear una nueva politica 
-   const handleCreatePolitica = async () => {
-
+  // Crear una nueva política
+  const handleCreatePolitica = async () => {
     if (!newTitulo.trim() || !newContenido.trim()) {
-      alert('Por favor, complete todos los campos .');
-      return; 
+      setSnackbarMessage('Por favor, complete todos los campos.');
+      setSnackbarSeverity('warning');
+      setSnackbarOpen(true);
+      return;
     }
-  
+
     try {
-      await axios.post('https://backendgislive.onrender.com/api/politica', {
+      await axios.post('http://localhost:3001/api/politica', {
         titulo: newTitulo,
         contenido: newContenido,
       });
       setNewTitulo('');
       setNewContenido('');
       fetchPoliticas();
+      setSnackbarMessage('Política creada con éxito');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
     } catch (error) {
-      console.error('Error al crear el politicas', error);
+      console.error('Error al crear la política:', error);
+      setSnackbarMessage('Error al crear la política');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
-   
   // Actualizar una política
-  const handleUpdatePolitica = async (id) => {
+  const handleUpdatePolitica = async () => {
     if (!editTitulo.trim() || !editContenido.trim()) {
-      alert('Por favor, complete todos los campos antes de actualizar.');
+      setSnackbarMessage('Por favor, complete todos los campos.');
+      setSnackbarSeverity('warning');
+      setSnackbarOpen(true);
       return;
     }
-  
+
     try {
-      await axios.put(`https://backendgislive.onrender.com/api/updatepolitica/${id}`, {
+      await axios.put(`http://localhost:3001/api/updatepolitica/${editId}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
       setEditId(null);
       setEditTitulo('');
       setEditContenido('');
-      setOpen(false); // Cerrar el diálogo después de guardar
+      setOpen(false);
       fetchPoliticas();
+      setSnackbarMessage('Política actualizada con éxito');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
     } catch (error) {
-      console.error('Error al actualizar la política', error);
+      console.error('Error al actualizar la política:', error);
+      setSnackbarMessage('Error al actualizar la política');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
- // Eliminar politica (lógicamente)
- const handleDeletePolitica = async (id) => {
-  try {
-      await axios.put(`https://backendgislive.onrender.com/api/deactivatepolitica/${id}`);
+
+  // Eliminar política (lógicamente)
+  const handleDeletePolitica = async (id) => {
+    try {
+      await axios.put(`http://localhost:3001/api/deactivatepolitica/${id}`);
       fetchPoliticas();
+      setSnackbarMessage('Política desactivada con éxito');
+      setSnackbarSeverity('success');
+      setSnackbarOpen(true);
     } catch (error) {
-      console.error('Error al eliminar la política', error);
+      console.error('Error al desactivar la política:', error);
+      setSnackbarMessage('Error al desactivar la política');
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
     }
   };
 
@@ -104,9 +133,14 @@ const Politicas = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setEditId(null);
     setEditTitulo('');
     setEditContenido('');
-    setEditId(null);
+  };
+
+  // Cerrar el Snackbar
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
   };
 
   useEffect(() => {
@@ -114,93 +148,218 @@ const Politicas = () => {
   }, []);
 
   return (
-    <Container>
-      <h1>Gestión de Políticas de Privacidad</h1>
-
-      <TextField
-        label="Título de la nueva política"
-        variant="outlined"
-        value={newTitulo}
-        onChange={(e) => setNewTitulo(e.target.value)}
-        fullWidth
-        margin="normal"
-      />
-      <TextField
-        label="Contenido de la nueva política"
-        variant="outlined"
-        value={newContenido}
-        onChange={(e) => setNewContenido(e.target.value)}
-        fullWidth
-        multiline
-        rows={4}
-        margin="normal"
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleCreatePolitica}
-        style={{ marginBottom: '20px' }}
+    <Container
+      maxWidth="lg"
+      sx={{
+        padding: '40px 20px',
+        background: 'linear-gradient(135deg, #f5f7fa 0%,)',
+        minHeight: '100vh',
+      }}
+    >
+      {/* Formulario */}
+      <Box
+        sx={{
+          backgroundColor: '#ffffff',
+          padding: '30px',
+          borderRadius: '16px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          marginBottom: '40px',
+          transition: 'transform 0.3s ease',
+          '&:hover': { transform: 'translateY(-5px)' },
+        }}
       >
-        Agregar Política
-      </Button>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: '700',
+            color: '#00050a',
+            textAlign: 'center',
+            letterSpacing: '1px',
+          }}
+        >
+          Gestión de Políticas
+        </Typography>
+        <TextField
+          label="Título de la nueva política"
+          variant="outlined"
+          value={newTitulo}
+          onChange={(e) => setNewTitulo(e.target.value)}
+          fullWidth
+          margin="normal"
+          sx={{
+            backgroundColor: '#fafafa',
+            borderRadius: '8px',
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: '#c4c4c4' },
+              '&:hover fieldset': { borderColor: '#1976d2' },
+              '&.Mui-focused fieldset': { borderColor: '#1976d2' },
+            },
+          }}
+        />
+        <TextField
+          label="Contenido de la nueva política"
+          variant="outlined"
+          value={newContenido}
+          onChange={(e) => setNewContenido(e.target.value)}
+          fullWidth
+          multiline
+          rows={4}
+          margin="normal"
+          sx={{
+            backgroundColor: '#fafafa',
+            borderRadius: '8px',
+            '& .MuiOutlinedInput-root': {
+              '& fieldset': { borderColor: '#c4c4c4' },
+              '&:hover fieldset': { borderColor: '#1976d2' },
+              '&.Mui-focused fieldset': { borderColor: '#1976d2' },
+            },
+          }}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCreatePolitica}
+          sx={{
+            marginTop: '20px',
+            padding: '12px 30px',
+            fontWeight: '600',
+            borderRadius: '12px',
+            backgroundColor: '#1976d2',
+            textTransform: 'none',
+            '&:hover': { backgroundColor: '#1565c0', transform: 'scale(1.05)' },
+            transition: 'all 0.3s ease',
+          }}
+        >
+          Agregar Política
+        </Button>
+      </Box>
 
-      <TableContainer component={Paper} sx={{ backgroundColor: '#e3f2fd', marginTop: '20px' }}>
-        <Table aria-label="tabla de políticas">
+      {/* Tabla */}
+      <TableContainer
+        component={Paper}
+        sx={{
+          borderRadius: '16px',
+          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          overflow: 'hidden',
+          backgroundColor: '#ffffff',
+        }}
+      >
+        <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Título
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Contenido
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Versión
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Estado
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Creación
-              </TableCell>
-                  <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Fecha de Actualización
-              </TableCell>
-              <TableCell sx={{ fontWeight: 'bold', backgroundColor: '#1976d2', color: '#fff', textAlign: 'center' }}>
-                Acciones
-              </TableCell>
+              {['Título', 'Contenido', 'Versión', 'Estado', 'Fecha de Creación', 'Acciones'].map((header) => (
+                <TableCell
+                  key={header}
+                  sx={{
+                    fontWeight: '700',
+                    backgroundColor: '#1976d2',
+                    color: '#fff',
+                    textAlign: 'center',
+                    padding: '16px',
+                    fontSize: '1.1rem',
+                    letterSpacing: '0.5px',
+                  }}
+                >
+                  {header}
+                </TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {politicas.map((item) => (
-              <TableRow key={item.id}>
-                       <TableCell sx={{ textAlign: 'center' }}>{item.titulo}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>
-                  <Typography variant="body2" sx={{ whiteSpace: 'pre-line' }}>
-                    {item.contenido}
-                  </Typography>
-                </TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.version}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{item.estado}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_creacion).toLocaleDateString()}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>{new Date(item.fecha_actualizacion).toLocaleDateString()}</TableCell>
-                <TableCell sx={{ textAlign: 'center' }}>
-                  <IconButton edge="end" aria-label="edit" onClick={() => handleClickOpen(item)}>
-                    <Edit />
-                  </IconButton>
-                  <IconButton edge="end" aria-label="delete" onClick={() => handleDeletePolitica(item.id)}>
-                    <Delete />
-                  </IconButton>
+            {politicas.length > 0 ? (
+              politicas.map((item) => (
+                <TableRow
+                  key={item.id}
+                  sx={{
+                    '&:hover': { backgroundColor: '#f5f7fa' },
+                    transition: 'background-color 0.3s ease',
+                  }}
+                >
+                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                    {item.titulo}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ maxWidth: '300px', wordWrap: 'break-word', color: '#424242' }}
+                    >
+                      {item.contenido}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                    {item.version || '1.0'} {/* Valor por defecto si no hay versión */}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontWeight: '600',
+                        color: item.estado === 'Activo' ? '#388e3c' : '#d32f2f',
+                        backgroundColor: item.estado === 'Activo' ? '#e8f5e9' : '#ffebee',
+                        borderRadius: '20px',
+                        padding: '6px 14px',
+                        display: 'inline-block',
+                      }}
+                    >
+                      {item.estado || 'Activo'} {/* Valor por defecto si no hay estado */}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                    {new Date(item.fecha_creacion).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
+                  </TableCell>
+                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
+                    <Tooltip title="Editar">
+                      <IconButton
+                        onClick={() => handleClickOpen(item)}
+                        sx={{
+                          color: '#3f51b5',
+                          '&:hover': { color: '#303f9f', backgroundColor: '#e8eaf6' },
+                        }}
+                      >
+                        <Edit />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Desactivar">
+                      <IconButton
+                        onClick={() => handleDeletePolitica(item.id)}
+                        sx={{
+                          color: '#d32f2f',
+                          '&:hover': { color: '#b71c1c', backgroundColor: '#ffebee' },
+                        }}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} sx={{ textAlign: 'center', padding: '20px', color: '#757575' }}>
+                  No hay políticas disponibles
                 </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
 
-      {/* Diálogo para editar política */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Editar Política</DialogTitle>
+      {/* Diálogo de edición */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        PaperProps={{
+          sx: { borderRadius: '16px', padding: '20px', backgroundColor: '#fafafa' },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: '700', color: '#1a237e', textAlign: 'center' }}>
+          Editar Política
+        </DialogTitle>
         <DialogContent>
           <TextField
             autoFocus
@@ -210,6 +369,15 @@ const Politicas = () => {
             fullWidth
             value={editTitulo}
             onChange={(e) => setEditTitulo(e.target.value)}
+            sx={{
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#c4c4c4' },
+                '&:hover fieldset': { borderColor: '#3f51b5' },
+                '&.Mui-focused fieldset': { borderColor: '#3f51b5' },
+              },
+            }}
           />
           <TextField
             margin="dense"
@@ -220,23 +388,65 @@ const Politicas = () => {
             rows={4}
             value={editContenido}
             onChange={(e) => setEditContenido(e.target.value)}
+            sx={{
+              backgroundColor: '#ffffff',
+              borderRadius: '8px',
+              '& .MuiOutlinedInput-root': {
+                '& fieldset': { borderColor: '#c4c4c4' },
+                '&:hover fieldset': { borderColor: '#3f51b5' },
+                '&.Mui-focused fieldset': { borderColor: '#3f51b5' },
+              },
+            }}
           />
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
+        <DialogActions sx={{ justifyContent: 'center', paddingBottom: '20px' }}>
+          <Button
+            onClick={handleClose}
+            sx={{
+              color: '#757575',
+              fontWeight: '600',
+              '&:hover': { backgroundColor: '#e0e0e0' },
+            }}
+          >
             Cancelar
           </Button>
           <Button
-            onClick={() => {
-              handleUpdatePolitica(editId);
-              handleClose();
-            }}
+            onClick={handleUpdatePolitica}
+            variant="contained"
             color="primary"
+            sx={{
+              fontWeight: '600',
+              borderRadius: '12px',
+              padding: '8px 20px',
+              backgroundColor: '#3f51b5',
+              '&:hover': { backgroundColor: '#303f9f' },
+            }}
           >
             Guardar
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Snackbar */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={snackbarSeverity}
+          sx={{
+            backgroundColor: snackbarSeverity === 'success' ? '#388e3c' : '#d32f2f',
+            color: '#fff',
+            borderRadius: '8px',
+            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
+          }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

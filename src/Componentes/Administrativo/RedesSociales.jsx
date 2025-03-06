@@ -42,7 +42,7 @@ const RedesSociales = () => {
   useEffect(() => {
     const fetchSocials = async () => {
       try {
-        const response = await axios.get('https://backendgislive.onrender.com/api/obtenerredes');
+        const response = await axios.get('http://localhost:3001/api/obtenerredes');
         setSocialData(
           response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})
         );
@@ -94,7 +94,7 @@ const RedesSociales = () => {
     try {
       const formattedUrl = selectedSocial === 'whatsapp' ? `+52${url}` : url;
       if (isEditing) {
-        await axios.put(`https://backendgislive.onrender.com/api/editars/${isEditing}`, {
+        await axios.put(`http://localhost:3001/api/editars/${isEditing}`, {
           nombre_red: selectedSocial,
           url: formattedUrl,
         });
@@ -104,7 +104,7 @@ const RedesSociales = () => {
         });
         setNotification({ open: true, message: 'Red social actualizada.', type: 'success' });
       } else {
-        const response = await axios.post('https://backendgislive.onrender.com/api/nuevo_social', {
+        const response = await axios.post('http://localhost:3001/api/nuevo_social', {
           nombre_red: selectedSocial,
           url: formattedUrl,
         });
@@ -123,7 +123,7 @@ const RedesSociales = () => {
   const handleDelete = async (social) => {
     try {
       const id = socialData[social]?.id;
-      await axios.delete(`https://backendgislive.onrender.com/api/eliminars/${id}`);
+      await axios.delete(`http://localhost:3001/api/eliminars/${id}`);
       const updatedData = { ...socialData };
       delete updatedData[social];
       setSocialData(updatedData);
@@ -145,17 +145,18 @@ const RedesSociales = () => {
       sx={{
         mt: 4,
         p: 3,
-        borderRadius: 2,
-        backgroundColor: '#fff',
-        boxShadow: 3,
-        maxWidth: 600, // Limita el ancho máximo
-        mx: 'auto', // Centra horizontalmente
+        borderRadius: 4,
+        backgroundColor: 'background.paper',
+        boxShadow: 6,
+        maxWidth: 800,
+        mx: 'auto',
+        background: 'linear-gradient(145deg, #ffffff, #f0f0f0)',
       }}
     >
-      <Typography variant="h5" align="center" gutterBottom>
+      <Typography variant="h4" align="center" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
         Redes Sociales
       </Typography>
-      <Grid container spacing={2}>
+      <Grid container spacing={3}>
         <Grid item xs={12} sm={6}>
           <TextField
             select
@@ -163,6 +164,8 @@ const RedesSociales = () => {
             value={selectedSocial}
             onChange={handleSocialSelect}
             fullWidth
+            variant="outlined"
+            sx={{ backgroundColor: 'background.paper' }}
           >
             {availableSocials.map((option) => (
               <MenuItem key={option.name} value={option.name}>
@@ -177,47 +180,62 @@ const RedesSociales = () => {
             label={selectedSocial === 'whatsapp' ? 'Número de WhatsApp' : 'Enlace'}
             value={url}
             onChange={handleInputChange}
+            variant="outlined"
             InputProps={{
               startAdornment: selectedSocial === 'whatsapp' && (
-                <Typography sx={{ color: 'gray', mr: 1 }}>+52</Typography>
+                <Typography sx={{ color: 'text.secondary', mr: 1 }}>+52</Typography>
               ),
             }}
+            sx={{ backgroundColor: 'background.paper' }}
           />
         </Grid>
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<SaveIcon />}
-            onClick={handleSave}
-            disabled={!selectedSocial || !url}
-            fullWidth
-          >
-            Guardar
-          </Button>
+        <Button
+        variant="contained"
+        color="primary"
+        startIcon={<SaveIcon />}
+        onClick={handleSave}
+        disabled={!selectedSocial || !url}
+        sx={{
+          py: 0.75, // Padding vertical reducido
+          px: 2, // Padding horizontal reducido
+          fontSize: '0.8125rem', // Tamaño de fuente más pequeño
+          fontWeight: 'bold',
+          boxShadow: 2,
+          borderRadius: 2, // Bordes redondeados
+          textTransform: 'none', // Evitar que el texto se transforme a mayúsculas
+          '&:hover': {
+            boxShadow: 4,
+            transform: 'scale(1.05)', // Efecto de escala al hacer hover
+          },
+          transition: 'all 0.2s ease-in-out', // Transición suave
+        }}
+      >
+        Guardar
+      </Button>
         </Grid>
       </Grid>
-      <TableContainer component={Paper} sx={{ mt: 4 }}>
+      <TableContainer component={Paper} sx={{ mt: 4, borderRadius: 4, boxShadow: 3 }}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell align="center">Red social</TableCell>
-              <TableCell align="center">Enlace</TableCell>
-              <TableCell align="center">Acciones</TableCell>
+            <TableRow sx={{ backgroundColor: 'primary.main' }}>
+              <TableCell align="center" sx={{ color: 'common.white', fontWeight: 'bold' }}>Red social</TableCell>
+              <TableCell align="center" sx={{ color: 'common.white', fontWeight: 'bold' }}>Enlace</TableCell>
+              <TableCell align="center" sx={{ color: 'common.white', fontWeight: 'bold' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {Object.keys(socialData).map((social) => (
-              <TableRow key={social}>
+              <TableRow key={social} sx={{ '&:nth-of-type(odd)': { backgroundColor: 'action.hover' } }}>
                 <TableCell align="center">
                   {availableSocials.find((s) => s.name === social)?.label || social}
                 </TableCell>
                 <TableCell align="center">{socialData[social]?.url}</TableCell>
                 <TableCell align="center">
-                  <IconButton onClick={() => handleEdit(social)}>
+                  <IconButton onClick={() => handleEdit(social)} sx={{ '&:hover': { color: 'primary.main' } }}>
                     <EditIcon />
                   </IconButton>
-                  <IconButton onClick={() => handleDelete(social)}>
+                  <IconButton onClick={() => handleDelete(social)} sx={{ '&:hover': { color: 'error.main' } }}>
                     <DeleteIcon />
                   </IconButton>
                 </TableCell>

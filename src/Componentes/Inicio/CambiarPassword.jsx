@@ -64,7 +64,7 @@ const CambiarContrasena = () => {
             const prefix = hashedPassword.slice(0, 5);
             const suffix = hashedPassword.slice(5);
 
-            const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
+            const response = await axios.get(`http://api.pwnedpasswords.com/range/${prefix}`);
             const hashes = response.data.split('\n').map(line => line.split(':')[0]);
 
             if (hashes.includes(suffix.toUpperCase())) {
@@ -111,7 +111,7 @@ const CambiarContrasena = () => {
 
         try {
             setIsLoading(true);
-            const response = await axios.post('https://backendgislive.onrender.com/api/resetPassword', { token, newPassword });
+            const response = await axios.post('http://localhost:3001/api/resetPassword', { token, newPassword });
             if (response.status === 200) {
                 setNotificationMessage('Contraseña actualizada correctamente.');
                 setNotificationType('success');

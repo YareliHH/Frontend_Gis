@@ -1,22 +1,22 @@
 // LayoutConEncabezado.js
 import React from 'react';
-import Encabezado from '../Inicio/encabezadoAdministrativo.jsx';
-import PieDePagina from './Footer.jsx';
+import BarraNavCliente from './barraNavCliente.jsx';
+import PieDePaginaCliente from './FooterCliente.jsx';
 
-const LayoutConEncabezadoAdmin = ({ children }) => {
+const EncabezadoCliente = ({ children }) => {
   return (
     <div className="layout">
       <header>
-        <Encabezado />
+        <BarraNavCliente />
       </header>
       <main className="main-content">
         {children}
       </main>
       <footer>
-        <PieDePagina />
+        <PieDePaginaCliente />
       </footer>
     </div>
   );
 }
 
-export default LayoutConEncabezadoAdmin;
+export default EncabezadoCliente;
