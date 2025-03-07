@@ -118,4 +118,4 @@ const App = () => {
 };
 
 export default App;
-//yare pitsotl
+//yare pitsot
