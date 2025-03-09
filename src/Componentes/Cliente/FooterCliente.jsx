@@ -329,35 +329,7 @@ const FooterCliente = () => {
                   ))}
                 </Box>
                 
-                <Paper 
-                  elevation={2} 
-                  sx={{ 
-                    p: 3, 
-                    mt: 4, 
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    backdropFilter: 'blur(10px)'
-                  }}
-                >
-                  <Typography variant="body2" sx={{ mb: 2 }}>
-                    ¿Quieres mantenerte informado de nuestras novedades?
-                  </Typography>
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    onClick={() => navigate('/contacto')}
-                    sx={{
-                      backgroundColor: '#0097a7',
-                      '&:hover': { 
-                        backgroundColor: '#00796b',
-                        transform: 'translateY(-2px)',
-                      },
-                      transition: 'all 0.3s ease',
-                      py: 1
-                    }}
-                  >
-                    Suscríbete
-                  </Button>
-                </Paper>
+         
               </Box>
             </Grid>
           </Grid>

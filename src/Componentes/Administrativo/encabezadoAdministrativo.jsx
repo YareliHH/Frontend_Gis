@@ -66,7 +66,7 @@ const EncabezadoAdministrativo = () => {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <Button color="inherit" onClick={() => handleMenuClick('/admin/reportes')}>Reportes</Button>
             <Button color="inherit" onClick={() => handleMenuClick('/admin/contactanosadmin')}>Contáctanos</Button>
-            <Button color="inherit" onClick={() => handleMenuClick('/admin/Productosadmin')}>Gestion d productos</Button>
+            <Button color="inherit" onClick={() => handleMenuClick('/admin/Productosadmin')}>Gestion de productos</Button>
             <Button color="inherit" onClick={() => handleMenuClick('/admin/perfil')}>Perfil</Button>
             <Button color="inherit" onClick={handleMenuOpen}>Documentos</Button>
             <Button color="secondary" variant="contained" onClick={() => handleMenuClick('/')}
