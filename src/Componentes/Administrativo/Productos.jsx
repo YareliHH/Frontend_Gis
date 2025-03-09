@@ -26,8 +26,14 @@ import {
   Card,
   CardContent,
   CardActions,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+  Stack,
+  Chip,
 } from '@mui/material';
-import { Edit, Delete, Add } from '@mui/icons-material';
+import { Edit, Delete, Add, Close } from '@mui/icons-material';
 
 const Productos = () => {
   const [productos, setProductos] = useState([]);
@@ -40,7 +46,8 @@ const Productos = () => {
     stock: '',
     categoria_id: '',
   });
-  const [imagenes, setImagenes] = useState([]);
+  const [imagenes, setImagenes] = useState([]); // Array de archivos seleccionados
+  const [imagePreviews, setImagePreviews] = useState([]); // Array de URLs para previsualización
   const [editId, setEditId] = useState(null);
   const [editProducto, setEditProducto] = useState({});
   const [open, setOpen] = useState(false);
@@ -49,12 +56,12 @@ const Productos = () => {
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   // Opciones de tallas predefinidas
-const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+  const tallas = ['XS', 'S', 'M', 'L', 'XL'];
 
   // Obtener todos los productos
   const fetchProductos = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/productos/');
+      const response = await axios.get('http://localhost:3001/api/productosid');
       setProductos(response.data);
     } catch (error) {
       console.error('Error al obtener productos:', error);
@@ -72,7 +79,18 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
 
   // Manejar la carga de imágenes
   const handleImageChange = (e) => {
-    setImagenes(e.target.files);
+    const files = Array.from(e.target.files);
+    setImagenes((prev) => [...prev, ...files]); // Agregar nuevos archivos a los existentes
+
+    // Crear URLs para previsualización
+    const previews = files.map((file) => URL.createObjectURL(file));
+    setImagePreviews((prev) => [...prev, ...previews]);
+  };
+
+  // Eliminar una imagen de la lista
+  const handleRemoveImage = (index) => {
+    setImagenes((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Crear un nuevo producto
@@ -94,12 +112,12 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
     Object.keys(newProducto).forEach((key) => {
       formData.append(key, newProducto[key]);
     });
-    for (let i = 0; i < imagenes.length; i++) {
-      formData.append('imagenes', imagenes[i]);
-    }
+    imagenes.forEach((imagen) => {
+      formData.append('imagenes', imagen);
+    });
 
     try {
-      await axios.post('http://localhost:3001/api/productos/agregar', formData, {
+      await axios.post('http://localhost:3001/api/agregar', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setNewProducto({
@@ -112,6 +130,7 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
         categoria_id: '',
       });
       setImagenes([]);
+      setImagePreviews([]);
       fetchProductos();
       setSnackbarMessage('Producto creado con éxito');
       setSnackbarSeverity('success');
@@ -140,7 +159,7 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
     }
 
     try {
-      await axios.put(`http://localhost:3001/api/productos/actualizarproducto/${editId}`, editProducto);
+      await axios.put(`http://localhost:3001/api/actualizarproducto/${editId}`, editProducto);
       setEditId(null);
       setEditProducto({});
       setOpen(false);
@@ -159,7 +178,7 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
   // Eliminar un producto
   const handleDeleteProducto = async (id) => {
     try {
-      await axios.delete(`http://localhost:3001/api/productos/eliminarproducto/${id}`);
+      await axios.delete(`http://localhost:3001/api/eliminarproducto/${id}`);
       fetchProductos();
       setSnackbarMessage('Producto eliminado con éxito');
       setSnackbarSeverity('success');
@@ -255,15 +274,23 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
               />
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                label="Talla"
-                name="talla"
-                value={newProducto.talla}
-                onChange={handleInputChange}
-                fullWidth
-                margin="normal"
-                sx={{ backgroundColor: '#fafafa' }}
-              />
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="talla-label">Talla</InputLabel>
+                <Select
+                  labelId="talla-label"
+                  name="talla"
+                  value={newProducto.talla}
+                  onChange={handleInputChange}
+                  label="Talla"
+                  sx={{ backgroundColor: '#fafafa' }}
+                >
+                  {tallas.map((talla) => (
+                    <MenuItem key={talla} value={talla}>
+                      {talla}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
@@ -301,12 +328,57 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
               />
             </Grid>
             <Grid item xs={12}>
-              <input
-                type="file"
-                multiple
-                onChange={handleImageChange}
-                style={{ marginTop: '20px', display: 'block' }}
-              />
+              <Box sx={{ marginTop: '20px' }}>
+                <Button
+                  variant="outlined"
+                  component="label"
+                  startIcon={<Add />}
+                  sx={{
+                    borderColor: '#1976d2',
+                    color: '#1976d2',
+                    '&:hover': { borderColor: '#115293', color: '#115293' },
+                    textTransform: 'none',
+                    padding: '10px 20px',
+                  }}
+                >
+                  Seleccionar Imágenes
+                  <input
+                    type="file"
+                    multiple
+                    hidden
+                    onChange={handleImageChange}
+                    accept="image/*"
+                  />
+                </Button>
+                {imagePreviews.length > 0 && (
+                  <Stack direction="row" spacing={2} sx={{ marginTop: '20px', flexWrap: 'wrap', gap: '10px' }}>
+                    {imagePreviews.map((preview, index) => (
+                      <Box key={index} sx={{ position: 'relative' }}>
+                        <Avatar
+                          src={preview}
+                          alt={`Previsualización ${index + 1}`}
+                          sx={{ width: 60, height: 60, borderRadius: '8px' }}
+                          variant="square"
+                        />
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveImage(index)}
+                          sx={{
+                            position: 'absolute',
+                            top: '-10px',
+                            right: '-10px',
+                            backgroundColor: '#d32f2f',
+                            color: '#fff',
+                            '&:hover': { backgroundColor: '#b71c1c' },
+                          }}
+                        >
+                          <Close fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    ))}
+                  </Stack>
+                )}
+              </Box>
             </Grid>
           </Grid>
         </CardContent>
@@ -372,9 +444,6 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={8} sx={{ textAlign: 'center', padding: '20px' }}>
-                    No hay productos disponibles
-                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
@@ -413,14 +482,25 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
             fullWidth
             margin="normal"
           />
-          <TextField
-            label="Talla"
-            name="talla"
-            value={editProducto.talla || ''}
-            onChange={(e) => setEditProducto({ ...editProducto, talla: e.target.value })}
-            fullWidth
-            margin="normal"
-          />
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="edit-talla-label">Talla</InputLabel>
+            <Select
+              labelId="edit-talla-label"
+              name="talla"
+              value={editProducto.talla || ''}
+              onChange={(e) => setEditProducto({ ...editProducto, talla: e.target.value })}
+              label="Talla"
+            >
+              <MenuItem value="">
+                <em>Ninguna</em>
+              </MenuItem>
+              {tallas.map((talla) => (
+                <MenuItem key={talla} value={talla}>
+                  {talla}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             label="Color"
             name="color"
@@ -457,7 +537,7 @@ const tallas = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
       </Dialog>
 
       {/* Snackbar */}
-      <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
+      <Snackbar open={snackbarOpen} autoHideDuration={3001} onClose={handleSnackbarClose}>
         <Alert
           onClose={handleSnackbarClose}
           severity={snackbarSeverity}

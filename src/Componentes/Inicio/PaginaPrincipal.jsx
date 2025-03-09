@@ -1,14 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Typography,
   Container,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
   Grid,
   Button,
-  TextField,
   Paper,
   Card,
   CardMedia,
@@ -16,48 +12,41 @@ import {
   CardActions,
   Divider,
   IconButton,
-  Badge,
   useMediaQuery,
   Drawer,
   List,
   ListItem,
   ListItemText,
-  AppBar,
-  Toolbar,
-  Chip,
   Rating,
   Avatar,
   useTheme,
+  Chip,
+  TextField,
 } from '@mui/material';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
 // Icons
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import SearchIcon from '@mui/icons-material/Search';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import MenuIcon from '@mui/icons-material/Menu';
-import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
 
 // Importar las imágenes locales de los productos y el fondo
 import img1 from '../imagenes/img1.jpg';
-import img4 from '../imagenes/img4.jpg';
 import img2 from '../imagenes/img2.jpg';
-import img5 from '../imagenes/img5.jpg';
 import img3 from '../imagenes/img3.jpg';
+import img4 from '../imagenes/img4.jpg';
+import img5 from '../imagenes/img5.jpg';
 import img6 from '../imagenes/img6.jpg';
-import img14 from '../imagenes/img14.jpg';
 import img10 from '../imagenes/img10.jpg';
 import img11 from '../imagenes/img11.jpg';
-import img20 from '../imagenes/img20.jpg';
+import img14 from '../imagenes/img14.jpg';
+import img16 from '../imagenes/img16.jpg';
 import img17h from '../imagenes/img17h.jpg';
 import img18 from '../imagenes/img18.jpg';
-import img16 from '../imagenes/img16.jpg';
+import img20 from '../imagenes/img20.jpg';
 import img23 from '../imagenes/img23.jpg';
 import LogoGL from '../imagenes/LogoGL.jpg';
 
@@ -66,7 +55,6 @@ const PaginaPrincipal = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
 
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState([
     { text: '¡Hola! ¿En qué puedo ayudarte hoy?', sender: 'bot' },
@@ -74,8 +62,6 @@ const PaginaPrincipal = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartItems, setCartItems] = useState(0);
-  const [filterType, setFilterType] = useState('Todos');
-  const [searchTerm, setSearchTerm] = useState('');
 
   const toggleChat = () => {
     setChatOpen(!chatOpen);
@@ -107,25 +93,9 @@ const PaginaPrincipal = () => {
     }
   };
 
-  // Add to cart functionality
   const addToCart = () => {
     setCartItems(cartItems + 1);
   };
-
-  useEffect(() => {
-    const matchDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDarkMode(matchDarkTheme.matches);
-
-    const handleThemeChange = (e) => {
-      setIsDarkMode(e.matches);
-    };
-
-    matchDarkTheme.addEventListener('change', handleThemeChange);
-
-    return () => {
-      matchDarkTheme.removeEventListener('change', handleThemeChange);
-    };
-  }, []);
 
   const colors = {
     background: '#FFFFFF',
@@ -162,26 +132,20 @@ const PaginaPrincipal = () => {
   };
 
   const products = [
-    { image: img10, name: 'Uniforme Clínico', price: '$50', type: 'Clínico', rating: 4.8, reviews: 24 },
-    { image: img11, name: 'Batas Quirúrgicas', price: '$80', type: 'Quirúrgico', rating: 4.9, reviews: 36 },
-    { image: img20, name: 'Camisón Médico', price: '$45', type: 'Clínico', rating: 4.7, reviews: 18 },
-    { image: img14, name: 'Mascarilla Quirúrgica', price: '$15', type: 'Quirúrgico', rating: 4.6, reviews: 42 },
+    { image: img10, name: 'Uniforme Clínico', price: '$50', type: 'Clínico' },
+    { image: img11, name: 'Batas Quirúrgicas', price: '$80', type: 'Quirúrgico' },
+    { image: img20, name: 'Camisón Médico', price: '$45', type: 'Clínico' },
+    { image: img14, name: 'Mascarilla Quirúrgica', price: '$15', type: 'Quirúrgico' },
   ];
 
   const newProducts = [
-    { image: img17h, name: 'Gorro Quirúrgico', price: '$12', type: 'Quirúrgico', rating: 4.8, reviews: 12, isNew: true },
-    { image: img18, name: 'Guantes Clínicos', price: '$20', type: 'Clínico', rating: 4.9, reviews: 8, isNew: true },
-    { image: img16, name: 'Bata Estéril', price: '$70', type: 'Quirúrgico', rating: 4.7, reviews: 15, isNew: true },
-    { image: img23, name: 'Zapatillas Médicas', price: '$30', type: 'Clínico', rating: 4.5, reviews: 10, isNew: true },
+    { image: img17h, name: 'Gorro Quirúrgico', price: '$12', type: 'Quirúrgico', isNew: true },
+    { image: img18, name: 'Guantes Clínicos', price: '$20', type: 'Clínico', isNew: true },
+    { image: img16, name: 'Bata Estéril', price: '$70', type: 'Quirúrgico', isNew: true },
+    { image: img23, name: 'Zapatillas Médicas', price: '$30', type: 'Clínico', isNew: true },
   ];
 
   const allProducts = [...products, ...newProducts];
-
-  const filteredProducts = allProducts.filter((product) => {
-    const matchesType = filterType === 'Todos' || product.type === filterType;
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesType && matchesSearch;
-  });
 
   const testimonials = [
     {
@@ -260,9 +224,8 @@ const PaginaPrincipal = () => {
                     alt={`Imagen ${index + 1}`}
                     style={{
                       width: '100%',
-                      height: 'auto',
-                      maxHeight: '650px',
-                      objectFit: 'cover',
+                      height: isMobile ? '300px' : '600px', // Ajusta la altura aquí
+                      objectFit: 'cover', // Asegura que la imagen cubra el área sin distorsión
                     }}
                   />
                 </Box>
@@ -279,7 +242,7 @@ const PaginaPrincipal = () => {
               color: colors.primaryText,
               fontWeight: 'bold',
               fontFamily: 'Montserrat, sans-serif',
-              fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' },
+              fontSize: isMobile ? '1.5rem' : '2.5rem',
             }}
           >
             Las mejores prendas de GisLive Boutique
@@ -288,8 +251,8 @@ const PaginaPrincipal = () => {
 
         {/* Product Grid */}
         <Grid container spacing={3} justifyContent="center">
-          {filteredProducts.map((product, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
+          {allProducts.map((product, index) => (
+            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
               <Card
                 sx={{
                   height: '100%',
@@ -338,22 +301,6 @@ const PaginaPrincipal = () => {
                   >
                     {product.name}
                   </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Rating value={product.rating} precision={0.1} size="small" readOnly />
-                    <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
-                      ({product.reviews})
-                    </Typography>
-                  </Box>
-                  <Chip
-                    label={product.type}
-                    size="small"
-                    sx={{
-                      mb: 1,
-                      bgcolor: product.type === 'Clínico' ? 'rgba(64, 224, 208, 0.2)' : 'rgba(255, 107, 107, 0.2)',
-                      color: product.type === 'Clínico' ? colors.button : colors.accent,
-                      fontFamily: 'Montserrat, sans-serif',
-                    }}
-                  />
                   <Typography
                     variant="h6"
                     color="text.primary"
@@ -471,47 +418,6 @@ const PaginaPrincipal = () => {
               </Grid>
             ))}
           </Grid>
-        </Box>
-
-        {/* Verification badge */}
-        <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            mb: 6,
-          }}
-        >
-          <Paper
-            elevation={1}
-            sx={{
-              p: 2,
-              display: 'flex',
-              alignItems: 'center',
-              borderRadius: '30px',
-            }}
-          >
-            <Typography
-              variant="body2"
-              sx={{
-                color: colors.primaryText,
-                fontFamily: 'Montserrat, sans-serif',
-                mr: 1,
-              }}
-            >
-              Verificado por:
-            </Typography>
-            <Box
-              component="img"
-              src={LogoGL}
-              alt="Logo Verificado"
-              sx={{
-                width: 30,
-                height: 30,
-                borderRadius: '50%',
-              }}
-            />
-          </Paper>
         </Box>
       </Container>
 

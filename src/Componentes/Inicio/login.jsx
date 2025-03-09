@@ -20,7 +20,9 @@ import {
   useMediaQuery,
   useTheme,
   Divider,
-  Fade
+  Fade,
+  FormControlLabel,
+  Checkbox
 } from '@mui/material';
 import { 
   Email as EmailIcon, 
@@ -47,6 +49,7 @@ function Login() {
   const theme = useTheme();
   const navigate = useNavigate();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   // Estados
   const [correo, setCorreo] = useState('');
@@ -113,13 +116,15 @@ function Login() {
   ];
 
   return (
-          <Box
+    <Box
       sx={{
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        py: 4
+        backgroundColor: '#f8f9fa',
+        py: 4,
+        px: { xs: 2, md: 4 }
       }}
     >
       <Fade in={true} timeout={800}>
@@ -129,11 +134,53 @@ function Login() {
             width: '100%',
             maxWidth: '1100px',
             borderRadius: 3,
-            overflow: 'hidden',
-            mx: 2
+            overflow: 'hidden'
           }}
         >
           <Grid container>
+            {/* Logo mobile visible solo en dispositivos pequeños */}
+            {isMobile && (
+              <Grid item xs={12}>
+                <Box 
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    py: 3,
+                    backgroundColor: 'white'
+                  }}
+                >
+                  <Box 
+                    sx={{
+                      backgroundColor: accentColor,
+                      borderRadius: '50%',
+                      p: 1,
+                      display: 'flex',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    <HealthAndSafety 
+                      sx={{ 
+                        fontSize: 40, 
+                        color: primaryColor 
+                      }} 
+                    />
+                  </Box>
+                  <Typography 
+                    variant="h5" 
+                    sx={{ 
+                      ml: 2, 
+                      fontWeight: 700, 
+                      color: '#333',
+                      letterSpacing: '-0.5px'
+                    }}
+                  >
+                    GisLive
+                  </Typography>
+                </Box>
+              </Grid>
+            )}
+            
             {/* Sección de carrusel */}
             <Grid 
               item 
@@ -181,7 +228,8 @@ function Login() {
                         alt={img.alt} 
                         style={{ 
                           width: '100%',
-                          objectFit: 'contain'
+                          objectFit: 'cover',
+                          height: '550px'
                         }} 
                       />
                       <div className="legend" style={{ 
@@ -201,21 +249,30 @@ function Login() {
                     top: 20,
                     left: 20,
                     zIndex: 1,
-                    backgroundColor: 'rgba(255,255,255,0.85)',
-                    borderRadius: '50%',
-                    width: 60,
-                    height: 60,
+                    backgroundColor: 'rgba(255,255,255,0.9)',
+                    borderRadius: 2,
+                    p: 1.5,
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center'
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}
                 >
                   <HealthAndSafety 
                     sx={{ 
-                      fontSize: 35, 
+                      fontSize: 30, 
                       color: primaryColor 
                     }} 
                   />
+                  <Typography 
+                    variant="h6" 
+                    sx={{ 
+                      ml: 1, 
+                      fontWeight: 700, 
+                      color: '#333' 
+                    }}
+                  >
+                    GisLive
+                  </Typography>
                 </Box>
               </Box>
             </Grid>
@@ -333,51 +390,26 @@ function Login() {
                     }}
                   />
                   
-                  {/* Captcha */}
-                  <Box 
-                    sx={{ 
-                      my: 2, 
-                      display: 'flex', 
-                      justifyContent: 'center',
-                      transform: isMobile ? 'scale(0.85)' : 'scale(1)',
-                      transformOrigin: 'center'
-                    }}
-                  >
-                    <ReCAPTCHA 
-                      sitekey="6LcKwWEqAAAAAMe2IRU4TukPaY92LJnE6c8pZtSo" 
-                      onChange={(value) => setCaptchaValue(value)} 
-                    />
-                  </Box>
-                  
-                  {/* Botón login */}
-                  <Button 
-                    type="submit" 
-                    variant="contained" 
-                    fullWidth 
-                    disabled={loading}
-                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LoginOutlined />}
-                    sx={{ 
-                      py: 1.5,
-                      mt: 1,
-                      mb: 2,
-                      backgroundColor: primaryColor,
-                      color: 'white',
-                      fontWeight: 600,
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontSize: '1rem',
-                      boxShadow: '0 4px 12px rgba(30, 136, 229, 0.2)',
-                      '&:hover': {
-                        backgroundColor: '#1565C0',
-                        boxShadow: '0 6px 15px rgba(30, 136, 229, 0.3)'
-                      }
-                    }}
-                  >
-                    {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
-                  </Button>
-                  
                   {/* Enlaces y opciones adicionales */}
-                  <Box sx={{ textAlign: 'center', mt: 2 }}>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center', 
+                    width: '100%',
+                    flexDirection: isSmallMobile ? 'column' : 'row',
+                    gap: isSmallMobile ? 1 : 0
+                  }}>
+                    <FormControlLabel
+                      control={<Checkbox sx={{ color: primaryColor }} />}
+                      label={
+                        <Typography 
+                          variant="body2" 
+                          sx={{ fontWeight: 500 }}
+                        >
+                          Recuérdame
+                        </Typography>
+                      }
+                    />
                     <Link 
                       to="/recuperar_password" 
                       style={{ textDecoration: 'none' }}
@@ -395,54 +427,68 @@ function Login() {
                         ¿Olvidaste tu contraseña?
                       </Typography>
                     </Link>
-                    
-                    <Box 
+                  </Box>
+
+                  {/* Captcha */}
+                  <Box 
+                    sx={{ 
+                      my: 2, 
+                      display: 'flex', 
+                      justifyContent: 'center',
+                      transform: isMobile ? 'scale(0.85)' : 'scale(1)',
+                      transformOrigin: 'center'
+                    }}
+                  >
+                    <ReCAPTCHA 
+                      sitekey="6LcKwWEqAAAAAMe2IRU4TukPaY92LJnE6c8pZtSo" 
+                      onChange={(value) => setCaptchaValue(value)} 
+                    />
+                  </Box>
+                  
+                  {/* Botón login */}
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                    <Button 
+                      type="submit" 
+                      variant="contained" 
+                      disabled={loading}
+                      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LoginOutlined />}
                       sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
-                        justifyContent: 'center',
-                        my: 2
+                        py: 1.5,
+                        px: 4,
+                        backgroundColor: primaryColor,
+                        color: 'white',
+                        fontWeight: 600,
+                        borderRadius: 2,
+                        textTransform: 'none',
+                        fontSize: '1rem',
+                        boxShadow: '0 4px 12px rgba(30, 136, 229, 0.2)',
+                        '&:hover': {
+                          backgroundColor: '#1565C0',
+                          boxShadow: '0 6px 15px rgba(30, 136, 229, 0.3)'
+                        }
                       }}
                     >
-                      <Divider sx={{ flexGrow: 1 }} />
-                      <Typography 
-                        variant="body2" 
-                        sx={{ 
-                          mx: 2, 
-                          color: 'text.secondary' 
-                        }}
-                      >
-                        ó
-                      </Typography>
-                      <Divider sx={{ flexGrow: 1 }} />
-                    </Box>
-                    
-                    <Link 
-                      to="/registro" 
-                      style={{ textDecoration: 'none' }}
-                    >
-                      <Button
-                        variant="outlined"
-                        fullWidth
+                      {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
+                    </Button>
+                  </Box>
+                  
+                  {/* Enlace de registro */}
+                  <Box sx={{ textAlign: 'center', mt: 3 }}>
+                    <Link to="/registro" style={{ textDecoration: 'none' }}>
+                      <Typography
+                        variant="body2"
                         sx={{
-                          mb: 2,
-                          borderColor: primaryColor,
                           color: primaryColor,
-                          borderRadius: 2,
-                          textTransform: 'none',
                           fontWeight: 600,
-                          py: 1.2,
+                          cursor: 'pointer',
                           '&:hover': {
-                            backgroundColor: 'rgba(30, 136, 229, 0.04)',
-                            borderColor: primaryColor
+                            textDecoration: 'underline',
                           }
                         }}
                       >
-                        Crear una cuenta nueva
-                      </Button>
+                        ¿Aún no tienes cuenta? Regístrate
+                      </Typography>
                     </Link>
-                    
-
                   </Box>
                 </form>
               </Box>
@@ -466,8 +512,6 @@ function Login() {
           {errorMessage}
         </Alert>
       </Snackbar>
-      
-
     </Box>
   );
 }
