@@ -880,3 +880,5 @@ const Registro = () => {
 };
 
 export default Registro;
+
+//nose que hacer pitsotl
