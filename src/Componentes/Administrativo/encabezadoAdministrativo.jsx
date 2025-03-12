@@ -4,26 +4,48 @@ import {
   Toolbar,
   IconButton,
   Typography,
-  Menu,
-  MenuItem,
   Box,
-  Button
+  Drawer,
+  List,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  Button,
+  useMediaQuery,
+  ListItemButton,
+  Avatar,
+  Collapse
 } from '@mui/material';
+import { styled, useTheme } from '@mui/material/styles';
+
+// Iconos
 import MenuIcon from '@mui/icons-material/Menu';
+import ExpandLess from '@mui/icons-material/ExpandLess';
+import ExpandMore from '@mui/icons-material/ExpandMore';
+import HomeIcon from '@mui/icons-material/Home';
 import GavelIcon from '@mui/icons-material/Gavel';
 import PolicyIcon from '@mui/icons-material/Policy';
-import SecurityIcon from '@mui/icons-material/Security'; // Para Deslinde Legal
-import BusinessIcon from '@mui/icons-material/Business'; // Para Perfil de Empresa
+import SecurityIcon from '@mui/icons-material/Security';
+import BusinessIcon from '@mui/icons-material/Business';
 import ShareIcon from '@mui/icons-material/Share';
 import InventoryIcon from '@mui/icons-material/Inventory';
-import CategoryIcon from '@mui/icons-material/Category'; // Para Categorías
+import CategoryIcon from '@mui/icons-material/Category';
 import ContactMailIcon from '@mui/icons-material/ContactMail';
-import HelpOutlineIcon from '@mui/icons-material/HelpOutline'; // Para Preguntas Frecuentes
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import LogoutIcon from '@mui/icons-material/Logout';
+import PersonIcon from '@mui/icons-material/Person';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+// Importar logo
+// Asegúrate de que la ruta sea correcta
 import logo from '../imagenes/LogoGL.jpg';
 
+// Ancho del drawer
+const drawerWidth = 280;
+
+// Tema personalizado
 const theme = createTheme({
   palette: {
     primary: { main: '#1E90FF' },
@@ -43,103 +65,331 @@ const theme = createTheme({
           }
         }
       }
+    },
+    MuiListItemButton: {
+      styleOverrides: {
+        root: {
+          '&:hover': {
+            backgroundColor: 'rgba(30, 144, 255, 0.1)'
+          }
+        }
+      }
+    },
+    MuiDrawer: {
+      styleOverrides: {
+        paper: {
+          backgroundColor: '#f8f9fa',
+          borderRight: '1px solid rgba(0, 0, 0, 0.12)'
+        }
+      }
     }
   }
 });
 
+/**
+ * Componente de encabezado administrativo con navegación lateral
+ * Implementa un panel lateral permanente en escritorio y desplegable en móvil
+ * Solo permite tener un menú expandido a la vez
+ */
 const EncabezadoAdministrativo = () => {
-  const [anchorElDocs, setAnchorElDocs] = useState(null); // Menú de Documentos
-  const [anchorElProducts, setAnchorElProducts] = useState(null); // Menú de Productos
-  const [anchorElContact, setAnchorElContact] = useState(null); // Menú de Soporte
+  // Estados para control de navegación
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [activeMenu, setActiveMenu] = useState(null);
+  
   const navigate = useNavigate();
+  const themeInstance = useTheme();
+  const isMobile = useMediaQuery(themeInstance.breakpoints.down('md'));
 
-  const handleMenuOpenDocs = (event) => setAnchorElDocs(event.currentTarget);
-  const handleMenuCloseDocs = () => setAnchorElDocs(null);
-
-  const handleMenuOpenProducts = (event) => setAnchorElProducts(event.currentTarget);
-  const handleMenuCloseProducts = () => setAnchorElProducts(null);
-
-  const handleMenuOpenContact = (event) => setAnchorElContact(event.currentTarget);
-  const handleMenuCloseContact = () => setAnchorElContact(null);
+  // Manejadores de eventos
+  const handleDrawerToggle = () => {
+    setDrawerOpen(!drawerOpen);
+  };
 
   const handleMenuClick = (route) => {
     navigate(route);
-    handleMenuCloseDocs();
-    handleMenuCloseProducts();
-    handleMenuCloseContact();
+    if (isMobile) {
+      setDrawerOpen(false);
+    }
   };
+
+  const handleMenuExpand = (menuId) => {
+    // Si el menú ya está activo, lo cerramos
+    if (activeMenu === menuId) {
+      setActiveMenu(null);
+    } else {
+      // Si no, activamos este y cerramos los demás
+      setActiveMenu(menuId);
+    }
+  };
+
+  // Configuración de los menús
+  const menuGroups = [
+    {
+      id: 'documents',
+      title: 'Documentos',
+      icon: BusinessIcon,
+      items: [
+        { icon: PolicyIcon, text: 'Políticas', path: '/admin/politicas' },
+        { icon: GavelIcon, text: 'Términos y Condiciones', path: '/admin/terminos' },
+        { icon: SecurityIcon, text: 'Deslinde Legal', path: '/admin/deslinde' },
+        { icon: BusinessIcon, text: 'Perfil de Empresa', path: '/admin/perfil' },
+        { icon: ShareIcon, text: 'Redes Sociales', path: '/admin/redesSociales' }
+      ]
+    },
+    {
+      id: 'products',
+      title: 'Gestión de productos',
+      icon: InventoryIcon,
+      items: [
+        { icon: InventoryIcon, text: 'Productos', path: '/admin/Productosadmin' },
+        { icon: CategoryIcon, text: 'Categorías', path: '/admin/categorias' },
+        { icon: CategoryIcon, text: 'Colores', path: '/admin/colores' },
+        { icon: CategoryIcon, text: 'Tallas', path: '/admin/tallas' },
+        { icon: CategoryIcon, text: 'Géneros', path: '/admin/generos' }
+      ]
+    },
+    {
+      id: 'support',
+      title: 'Soporte',
+      icon: ContactMailIcon,
+      items: [
+        { icon: ContactMailIcon, text: 'Contáctanos', path: '/admin/contactanosadmin' },
+        { icon: HelpOutlineIcon, text: 'Preguntas Frecuentes', path: '/admin/faqsadmin' }
+      ]
+    }
+  ];
+
+  // Contenido del drawer
+  const drawerContent = (
+    <Box sx={{ 
+      height: '100%', 
+      display: 'flex', 
+      flexDirection: 'column'
+    }}>
+      {/* Icono y título del panel */}
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          py: 3,
+          bgcolor: 'background.paper'
+        }}
+      >
+        <Avatar
+          sx={{
+            width: 70,
+            height: 70,
+            bgcolor: 'primary.main',
+            mb: 1
+          }}
+        >
+          <PersonIcon sx={{ fontSize: 35 }} />
+        </Avatar>
+        <Typography variant="subtitle1" fontWeight="medium" align="center">
+          Panel Administrativo
+        </Typography>
+      </Box>
+      
+      <Divider />
+
+      {/* Enlace a reportes */}
+      <List>
+        <ListItemButton 
+          onClick={() => handleMenuClick('/admin/reportes')}
+          sx={{ 
+            py: 1.5,
+            borderRadius: '0 20px 20px 0', 
+            mr: 1,
+            '&:hover': { bgcolor: 'rgba(30, 144, 255, 0.1)' }
+          }}
+        >
+          <ListItemIcon>
+            <AssessmentIcon color="primary" />
+          </ListItemIcon>
+          <ListItemText primary="Reportes" />
+        </ListItemButton>
+      </List>
+
+      <Divider />
+
+      {/* Menús agrupados */}
+      <Box sx={{ overflow: 'auto', flexGrow: 1 }}>
+        <List>
+          {menuGroups.map((group) => (
+            <React.Fragment key={group.id}>
+              <ListItemButton 
+                onClick={() => handleMenuExpand(group.id)}
+                sx={{ 
+                  py: 1.5,
+                  borderRadius: '0 20px 20px 0', 
+                  mr: 1,
+                  bgcolor: activeMenu === group.id ? 'rgba(30, 144, 255, 0.1)' : 'transparent'
+                }}
+              >
+                <ListItemIcon>
+                  <group.icon color="primary" />
+                </ListItemIcon>
+                <ListItemText 
+                  primary={group.title} 
+                  primaryTypographyProps={{ fontWeight: 'medium' }} 
+                />
+                {activeMenu === group.id ? <ExpandLess /> : <ExpandMore />}
+              </ListItemButton>
+              
+              <Collapse in={activeMenu === group.id} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {group.items.map((item, index) => (
+                    <ListItemButton 
+                      key={index} 
+                      onClick={() => handleMenuClick(item.path)}
+                      sx={{ 
+                        pl: 4,
+                        py: 1,
+                        borderRadius: '0 20px 20px 0', 
+                        mr: 1,
+                        ml: 1 
+                      }}
+                    >
+                      <ListItemIcon>
+                        <item.icon color="action" />
+                      </ListItemIcon>
+                      <ListItemText 
+                        primary={item.text} 
+                        primaryTypographyProps={{ fontSize: '0.9rem' }}
+                      />
+                    </ListItemButton>
+                  ))}
+                </List>
+              </Collapse>
+              
+              <Divider sx={{ my: 1 }} />
+            </React.Fragment>
+          ))}
+        </List>
+      </Box>
+
+      {/* Botón de cerrar sesión en la parte inferior */}
+      <Box 
+        sx={{ 
+          p: 2, 
+          borderTop: '1px solid rgba(0, 0, 0, 0.12)',
+          mt: 'auto'
+        }}
+      >
+        <Button 
+          fullWidth 
+          variant="contained" 
+          color="secondary" 
+          startIcon={<LogoutIcon />}
+          onClick={() => handleMenuClick('/')}
+          sx={{ py: 1 }}
+        >
+          Cerrar Sesión
+        </Button>
+      </Box>
+    </Box>
+  );
 
   return (
     <ThemeProvider theme={theme}>
-      <AppBar position="static" sx={{ padding: '8px 16px' }}>
-        <Toolbar>
-          <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
-            <img src={logo} alt="Gislive" style={{ width: 50, height: 50, borderRadius: '50%', marginRight: 16 }} />
-            <Typography variant="h6">Gislive Boutique Clínica</Typography>
-          </Box>
-          
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <Button color="inherit" onClick={() => handleMenuClick('/admin/reportes')}>Reportes</Button>
-            <Button color="inherit" onClick={handleMenuOpenContact}>Soporte</Button>
-            <Button color="inherit" onClick={handleMenuOpenProducts}>Gestión de productos</Button>
-            <Button color="inherit" onClick={handleMenuOpenDocs}>Documentos</Button>
-            <Button color="secondary" variant="contained" onClick={() => handleMenuClick('/')}
-              startIcon={<LogoutIcon />} sx={{ marginLeft: 2 }}>Cerrar Sesión</Button>
-          </Box>
-          
-          <IconButton color="inherit" sx={{ display: { xs: 'flex', md: 'none' } }} onClick={handleMenuOpenDocs}>
-            <MenuIcon />
-          </IconButton>
+      <Box sx={{ display: 'flex', height: '100%' }}>
+        {/* AppBar - siempre visible y ocupa todo el ancho */}
+        <AppBar 
+          position="fixed" 
+          sx={{ 
+            width: '100%',
+            boxShadow: 1,
+            zIndex: (theme) => theme.zIndex.drawer + 1
+          }}
+        >
+          <Toolbar sx={{ px: { xs: 1, sm: 2 } }}>
+            {/* Botón de menú móvil */}
+            {isMobile && (
+              <IconButton
+                color="inherit"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 1 }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+            
+            {/* Logo y nombre de la aplicación */}
+            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+              <Avatar 
+                src={logo} 
+                alt="Gislive" 
+                sx={{ 
+                  width: 40, 
+                  height: 40, 
+                  mr: 1.5,
+                  border: '2px solid rgba(255, 255, 255, 0.6)'
+                }} 
+              />
+              <Typography variant="h6" component="div" fontWeight="500">
+                Gislive Boutique
+              </Typography>
+            </Box>
+            
+            {/* Icono de inicio a la derecha */}
+            <IconButton
+              color="inherit"
+              onClick={() => handleMenuClick('/admin')}
+              sx={{ 
+                borderRadius: '50%',
+                '&:hover': { 
+                  bgcolor: 'rgba(255, 255, 255, 0.2)' 
+                } 
+              }}
+            >
+              <HomeIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
 
-          {/* Menú de Documentos */}
-          <Menu anchorEl={anchorElDocs} open={Boolean(anchorElDocs)} onClose={handleMenuCloseDocs}>
-            <MenuItem onClick={() => handleMenuClick('/admin/politicas')}>
-              <PolicyIcon sx={{ marginRight: 1 }} /> Políticas
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/terminos')}>
-              <GavelIcon sx={{ marginRight: 1 }} /> Términos y Condiciones
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/deslinde')}>
-              <SecurityIcon sx={{ marginRight: 1 }} /> Deslinde Legal
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/perfil')}>
-              <BusinessIcon sx={{ marginRight: 1 }} /> Perfil de Empresa
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/redesSociales')}>
-              <ShareIcon sx={{ marginRight: 1 }} /> Redes Sociales
-            </MenuItem>
-          </Menu>
+        {/* Drawer - Permanente en escritorio, Temporal en móvil */}
+        <Drawer
+          variant={isMobile ? "temporary" : "permanent"}
+          open={isMobile ? drawerOpen : true}
+          onClose={isMobile ? handleDrawerToggle : undefined}
+          ModalProps={{
+            keepMounted: true // Mejor rendimiento en móviles
+          }}
+          sx={{
+            width: drawerWidth,
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              mt: '64px', // Altura del AppBar
+              pt: 0, // Sin padding en el top
+              height: 'calc(100% - 64px)', // Altura total menos el AppBar
+              borderRight: '1px solid rgba(0,0,0,0.12)'
+            }
+          }}
+        >
+          {drawerContent}
+        </Drawer>
 
-          {/* Menú de Gestión de Productos */}
-          <Menu anchorEl={anchorElProducts} open={Boolean(anchorElProducts)} onClose={handleMenuCloseProducts}>
-            <MenuItem onClick={() => handleMenuClick('/admin/Productosadmin')}>
-              <InventoryIcon sx={{ marginRight: 1 }} /> Productos
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/categorias')}>
-              <CategoryIcon sx={{ marginRight: 1 }} /> Categorías
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/colores')}>
-              <CategoryIcon sx={{ marginRight: 1 }} /> Colores
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/tallas')}>
-              <CategoryIcon sx={{ marginRight: 1 }} /> Tallas
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/generos')}>
-              <CategoryIcon sx={{ marginRight: 1 }} /> Generos
-            </MenuItem>
-          </Menu>
-
-          {/* Menú de Soporte */}
-          <Menu anchorEl={anchorElContact} open={Boolean(anchorElContact)} onClose={handleMenuCloseContact}>
-            <MenuItem onClick={() => handleMenuClick('/admin/contactanosadmin')}>
-              <ContactMailIcon sx={{ marginRight: 1 }} /> Contáctanos
-            </MenuItem>
-            <MenuItem onClick={() => handleMenuClick('/admin/faqsadmin')}>
-              <HelpOutlineIcon sx={{ marginRight: 1 }} /> Preguntas Frecuentes
-            </MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
+        {/* Contenido principal */}
+        <Box
+          component="main"
+          sx={{
+            flexGrow: 1,
+            width: { xs: '100%', md: `calc(100% - ${drawerWidth}px)` },
+            marginLeft: { xs: 0, md: `${drawerWidth}px` },
+            marginTop: '64px', // Altura del AppBar
+            transition: theme.transitions.create(['margin', 'width'], {
+              easing: theme.transitions.easing.sharp,
+              duration: theme.transitions.duration.leavingScreen
+            })
+          }}
+        >
+          {/* El contenido de la página se renderizará aquí */}
+        </Box>
+      </Box>
     </ThemeProvider>
   );
 };
