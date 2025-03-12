@@ -2,7 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Importar el componente de protección de rutas
-import PrivateRoute from './Componentes/Autenticacion/protectedRoute.jsx';
+import { AuthProvider } from './Componentes/Autenticacion/AuthContext.jsx';
+import ProtectedRoute from './Componentes/Autenticacion/protectedRoute.jsx';
 
 // Estilos globales para react-slick (carrusel)
 import "slick-carousel/slick/slick.css"; 
@@ -55,6 +56,9 @@ import Contactanosadmin from './Componentes/Administrativo/Contactanosadmi.jsx';
 import AcercaDe from './Componentes/Inicio/AcercaDe.jsx';
 import ProductosAdmin from './Componentes/Administrativo/Productos.jsx';
 import Categorias from './Componentes/Administrativo/Categorias.jsx';
+import Colores from './Componentes/Administrativo/Colores.jsx';
+import Tallas from './Componentes/Administrativo/Tallas.jsx';
+import Generos from './Componentes/Administrativo/Generos.jsx';
 import FaqsAdmin from './Componentes/Administrativo/Faqsadmin.jsx';
 
 //ERRORES
@@ -114,6 +118,9 @@ const App = () => {
           <Route path="/admin/contactanosadmin" element={<LayoutEncabezadoAdmin><Contactanosadmin/></LayoutEncabezadoAdmin>} /> 
           <Route path="/admin/Productosadmin" element={<LayoutEncabezadoAdmin><ProductosAdmin/></LayoutEncabezadoAdmin>} />
           <Route path="/admin/categorias" element={<LayoutEncabezadoAdmin><Categorias/></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/colores" element={<LayoutEncabezadoAdmin><Colores/></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/tallas" element={<LayoutEncabezadoAdmin><Tallas/></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/generos" element={<LayoutEncabezadoAdmin><Generos/></LayoutEncabezadoAdmin>} />
           <Route path="/admin/faqsadmin" element={<LayoutEncabezadoAdmin><FaqsAdmin/></LayoutEncabezadoAdmin>} />
         
         </Routes>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -17,12 +17,15 @@ import {
   List,
   ListItem,
   ListItemText,
-  Rating,
-  Avatar,
   useTheme,
   Chip,
   TextField,
+  Fade,
+  Zoom,
+  Slide,
+  Avatar,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -32,6 +35,8 @@ import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
+import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 // Importar las imágenes locales de los productos y el fondo
 import img1 from '../imagenes/img1.jpg';
@@ -62,6 +67,12 @@ const PaginaPrincipal = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartItems, setCartItems] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+
+  // Efecto para iniciar animaciones al cargar la página
+  useEffect(() => {
+    setLoaded(true);
+  }, []);
 
   const toggleChat = () => {
     setChatOpen(!chatOpen);
@@ -74,15 +85,12 @@ const PaginaPrincipal = () => {
   const sendMessage = () => {
     if (inputMessage.trim() !== '') {
       setMessages([...messages, { text: inputMessage, sender: 'user' }]);
-
-      // Simulated bot response after a short delay
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
           { text: 'Gracias por contactarnos. Un agente se comunicará contigo pronto.', sender: 'bot' },
         ]);
       }, 1000);
-
       setInputMessage('');
     }
   };
@@ -106,28 +114,36 @@ const PaginaPrincipal = () => {
     accent: '#FF6B6B',
     light: '#F5F5F5',
     dark: '#333333',
+    gradientStart: '#40E0D0',
+    gradientEnd: '#4ECDC4',
   };
 
   const images = [img1, img2, img3, img4, img5, img6];
 
+  // Configuración mejorada del slider
   const sliderSettings = {
     dots: true,
     infinite: true,
-    speed: 300,
+    speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 3000,
+    autoplaySpeed: 5000,
     pauseOnHover: true,
     arrows: !isMobile,
+    fade: true,
+    cssEase: 'cubic-bezier(0.7, 0, 0.3, 1)',
+    dotsClass: 'slick-dots custom-dots',
+    appendDots: dots => (
+      <div style={{ bottom: '25px', padding: '0' }}>
+        <ul style={{ margin: '0' }}>{dots}</ul>
+      </div>
+    ),
+    customPaging: i => (
+      <div style={{ width: '12px', height: '12px', background: 'rgba(255, 255, 255, 0.7)', borderRadius: '50%', transition: 'all 0.3s ease' }} />
+    ),
     responsive: [
-      {
-        breakpoint: 600,
-        settings: {
-          dots: false,
-          arrows: false,
-        },
-      },
+      { breakpoint: 600, settings: { dots: true, arrows: false } },
     ],
   };
 
@@ -147,25 +163,17 @@ const PaginaPrincipal = () => {
 
   const allProducts = [...products, ...newProducts];
 
-  const testimonials = [
-    {
-      text: 'Excelente!! excelente, 100% recomendable, son muy cómodos los uniformes Quirúrgicos',
-      author: 'María G.',
-      rating: 5,
-    },
-    {
-      text: 'La mejor calidad, los uniformes son perfectos y muy resistentes para el trabajo.',
-      author: 'Carlos R.',
-      rating: 5,
-    },
-    {
-      text: 'Muy contenta con mi compra, la atención al cliente fue excelente y la entrega rápida.',
-      author: 'Ana L.',
-      rating: 5,
-    },
-  ];
-
   const menuItems = ['Inicio', 'Productos', 'Clínicos', 'Quirúrgicos', 'Ofertas', 'Contacto'];
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100, damping: 12 } },
+  };
 
   return (
     <Box
@@ -179,17 +187,14 @@ const PaginaPrincipal = () => {
       }}
     >
       {/* Mobile menu drawer */}
-      <Drawer anchor="left" open={menuOpen} onClose={toggleMenu}>
+      <Drawer anchor="left" open={menuOpen} onClose={toggleMenu} TransitionComponent={Slide} TransitionProps={{ direction: 'right' }}>
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu}>
           <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box
               component="img"
               src={LogoGL}
               alt="GisLive Boutique"
-              sx={{
-                height: 40,
-                borderRadius: '50%',
-              }}
+              sx={{ height: 40, borderRadius: '50%', transition: 'transform 0.3s ease', '&:hover': { transform: 'scale(1.1)' } }}
             />
             <Typography variant="h6" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
               GisLive Boutique
@@ -198,14 +203,11 @@ const PaginaPrincipal = () => {
           <Divider />
           <List>
             {menuItems.map((text, index) => (
-              <ListItem button key={text}>
-                <ListItemText
-                  primary={text}
-                  primaryTypographyProps={{
-                    fontFamily: 'Montserrat, sans-serif',
-                  }}
-                />
-              </ListItem>
+              <Fade in={menuOpen} style={{ transitionDelay: `${index * 50}ms` }} key={text}>
+                <ListItem button>
+                  <ListItemText primary={text} primaryTypographyProps={{ fontFamily: 'Montserrat, sans-serif' }} />
+                </ListItem>
+              </Fade>
             ))}
           </List>
         </Box>
@@ -213,208 +215,185 @@ const PaginaPrincipal = () => {
 
       {/* Main content */}
       <Container maxWidth="lg" sx={{ py: 4, flexGrow: 1 }}>
-        {/* Hero section with slider */}
-        <Box sx={{ maxWidth: '100%', margin: '0 auto', mb: 6 }}>
-          <Paper elevation={3} sx={{ borderRadius: '12px', overflow: 'hidden' }}>
-            <Slider {...sliderSettings}>
-              {images.map((img, index) => (
-                <Box key={index}>
-                  <img
-                    src={img}
-                    alt={`Imagen ${index + 1}`}
-                    style={{
-                      width: '100%',
-                      height: isMobile ? '300px' : '600px', // Ajusta la altura aquí
-                      objectFit: 'cover', // Asegura que la imagen cubra el área sin distorsión
-                    }}
-                  />
-                </Box>
-              ))}
-            </Slider>
-          </Paper>
-        </Box>
+        {/* Hero section with slider - Ajustado para imágenes completas */}
+        <Zoom in={loaded} timeout={800}>
+          <Box sx={{ maxWidth: '100%', margin: '0 auto', mb: 6 }}>
+            <Paper
+              elevation={5}
+              sx={{
+                borderRadius: '16px',
+                overflow: 'hidden',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+              }}
+            >
+              <Slider {...sliderSettings}>
+                {images.map((img, index) => (
+                  <Box key={index} sx={{ position: 'relative', width: '100%' }}>
+                    <img
+                      src={img}
+                      alt={`Imagen ${index + 1}`}
+                      style={{
+                        width: '100%',
+                        height: isMobile ? 'auto' : 'auto', // Altura automática para respetar proporciones
+                        maxHeight: isMobile ? '400px' : '600px', // Límite máximo para no exceder pantalla
+                        objectFit: 'contain', // Mostrar imagen completa
+                        display: 'block',
+                        margin: '0 auto', // Centrar la imagen horizontalmente
+                      }}
+                    />
+                  </Box>
+                ))}
+              </Slider>
+            </Paper>
+          </Box>
+        </Zoom>
 
         {/* Título principal */}
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Typography
-            variant="h4"
-            sx={{
-              color: colors.primaryText,
-              fontWeight: 'bold',
-              fontFamily: 'Montserrat, sans-serif',
-              fontSize: isMobile ? '1.5rem' : '2.5rem',
-            }}
-          >
-            Las mejores prendas de GisLive Boutique
-          </Typography>
-        </Box>
+        <Fade in={loaded} timeout={1000}>
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography
+              variant="h3"
+              component="h1"
+              sx={{
+                color: colors.primaryText,
+                fontWeight: 'bold',
+                fontFamily: 'Montserrat, sans-serif',
+                fontSize: isMobile ? '1.8rem' : '2.5rem',
+                position: 'relative',
+                display: 'inline-block',
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  bottom: '-10px',
+                  left: '50%',
+                  width: '80px',
+                  height: '3px',
+                  backgroundColor: colors.button,
+                  transform: 'translateX(-50%)',
+                  borderRadius: '2px',
+                },
+              }}
+            >
+              Las mejores prendas de GisLive Boutique
+            </Typography>
+          </Box>
+        </Fade>
 
         {/* Product Grid */}
-        <Grid container spacing={3} justifyContent="center">
-          {allProducts.map((product, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-              <Card
-                sx={{
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  transition: 'transform 0.3s, box-shadow 0.3s',
-                  '&:hover': {
-                    transform: 'translateY(-5px)',
-                    boxShadow: '0 10px 20px rgba(0,0,0,0.1)',
-                  },
-                  position: 'relative',
-                }}
-              >
-                {product.isNew && (
-                  <Chip
-                    icon={<NewReleasesIcon />}
-                    label="Nuevo"
-                    color="error"
-                    size="small"
+        <Box component={motion.div} variants={containerVariants} initial="hidden" animate="visible" sx={{ mb: 8 }}>
+          <Grid container spacing={3} justifyContent="center">
+            {allProducts.map((product, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <Box component={motion.div} variants={itemVariants} whileHover={{ y: -10, transition: { duration: 0.3 } }}>
+                  <Card
                     sx={{
-                      position: 'absolute',
-                      top: 10,
-                      right: 10,
-                      zIndex: 1,
-                    }}
-                  />
-                )}
-                <CardMedia
-                  component="img"
-                  image={product.image}
-                  alt={product.name}
-                  sx={{
-                    height: 200,
-                    objectFit: 'cover',
-                  }}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography
-                    gutterBottom
-                    variant="h6"
-                    component="div"
-                    sx={{
-                      fontFamily: 'Montserrat, sans-serif',
-                      fontWeight: 'bold',
+                      height: '100%',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      borderRadius: '16px',
+                      overflow: 'hidden',
+                      boxShadow: '0 5px 15px rgba(0,0,0,0.08)',
+                      transition: 'box-shadow 0.3s ease',
+                      '&:hover': { boxShadow: '0 12px 30px rgba(0,0,0,0.15)' },
+                      position: 'relative',
                     }}
                   >
-                    {product.name}
-                  </Typography>
-                  <Typography
-                    variant="h6"
-                    color="text.primary"
-                    sx={{
-                      fontWeight: 'bold',
-                      fontFamily: 'Montserrat, sans-serif',
-                    }}
-                  >
-                    {product.price}
-                  </Typography>
-                </CardContent>
-                <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
-                  <Button
-                    variant="contained"
-                    size="small"
-                    sx={{
-                      backgroundColor: colors.button,
-                      fontFamily: 'Montserrat, sans-serif',
-                      '&:hover': {
-                        backgroundColor: colors.buttonHover,
-                      },
-                    }}
-                    onClick={addToCart}
-                  >
-                    Añadir
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      borderColor: colors.button,
-                      color: colors.button,
-                      fontFamily: 'Montserrat, sans-serif',
-                      '&:hover': {
-                        borderColor: colors.buttonHover,
-                        backgroundColor: 'rgba(64, 224, 208, 0.1)',
-                      },
-                    }}
-                  >
-                    Detalles
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-
-        {/* Testimonials Section */}
-        <Box sx={{ mt: 8, mb: 4 }}>
-          <Typography
-            variant="h5"
-            sx={{
-              color: colors.primaryText,
-              fontWeight: 'bold',
-              fontFamily: 'Montserrat, sans-serif',
-              textAlign: 'center',
-              mb: 4,
-            }}
-          >
-            Deja que los clientes hablen por nosotros
-          </Typography>
-
-          <Grid container spacing={3}>
-            {testimonials.map((testimonial, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Paper
-                  elevation={2}
-                  sx={{
-                    p: 3,
-                    height: '100%',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    borderRadius: '12px',
-                    transition: 'transform 0.3s',
-                    '&:hover': {
-                      transform: 'translateY(-5px)',
-                    },
-                  }}
-                >
-                  <Rating value={testimonial.rating} readOnly sx={{ mb: 2 }} />
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: colors.primaryText,
-                      fontFamily: 'Montserrat, sans-serif',
-                      fontStyle: 'italic',
-                      mb: 2,
-                      flexGrow: 1,
-                    }}
-                  >
-                    "{testimonial.text}"
-                  </Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Avatar
-                      sx={{
-                        bgcolor: colors.button,
-                        width: 32,
-                        height: 32,
-                        mr: 1,
-                      }}
-                    >
-                      {testimonial.author.charAt(0)}
-                    </Avatar>
-                    <Typography
-                      variant="subtitle2"
-                      sx={{
-                        fontFamily: 'Montserrat, sans-serif',
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      {testimonial.author}
-                    </Typography>
-                  </Box>
-                </Paper>
+                    {product.isNew && (
+                      <Chip
+                        icon={<NewReleasesIcon />}
+                        label="Nuevo"
+                        color="error"
+                        size="small"
+                        sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1, fontWeight: 'bold', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
+                      />
+                    )}
+                    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
+                      <CardMedia
+                        component="img"
+                        image={product.image}
+                        alt={product.name}
+                        sx={{
+                          height: 240,
+                          objectFit: 'cover',
+                          transition: 'transform 0.6s ease',
+                          '&:hover': { transform: 'scale(1.05)' },
+                        }}
+                      />
+                      <Box
+                        sx={{
+                          position: 'absolute',
+                          bottom: 0,
+                          left: 0,
+                          width: '100%',
+                          height: '60px',
+                          background: 'linear-gradient(0deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%)',
+                        }}
+                      />
+                    </Box>
+                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                      <Typography
+                        gutterBottom
+                        variant="h6"
+                        component="div"
+                        sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 'bold', fontSize: '1.1rem' }}
+                      >
+                        {product.name}
+                      </Typography>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+                        <Chip
+                          label={product.type}
+                          size="small"
+                          sx={{
+                            backgroundColor: product.type === 'Clínico' ? '#E0F7FA' : '#FFF3E0',
+                            color: product.type === 'Clínico' ? '#00838F' : '#E65100',
+                            fontWeight: 'medium',
+                          }}
+                        />
+                        <Typography
+                          variant="h6"
+                          color="text.primary"
+                          sx={{ fontWeight: 'bold', fontFamily: 'Montserrat, sans-serif', color: colors.dark }}
+                        >
+                          {product.price}
+                        </Typography>
+                      </Box>
+                    </CardContent>
+                    <CardActions sx={{ justifyContent: 'space-between', px: 3, pb: 3 }}>
+                      <Button
+                        variant="contained"
+                        startIcon={<AddShoppingCartIcon />}
+                        sx={{
+                          background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
+                          color: 'white',
+                          fontFamily: 'Montserrat, sans-serif',
+                          fontWeight: 'medium',
+                          borderRadius: '8px',
+                          textTransform: 'none',
+                          boxShadow: '0 4px 10px rgba(64, 224, 208, 0.3)',
+                          '&:hover': { boxShadow: '0 6px 15px rgba(64, 224, 208, 0.4)' },
+                          transition: 'all 0.3s ease',
+                        }}
+                        onClick={addToCart}
+                      >
+                        Añadir
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<InfoOutlinedIcon />}
+                        sx={{
+                          borderColor: colors.button,
+                          color: colors.button,
+                          fontFamily: 'Montserrat, sans-serif',
+                          borderRadius: '8px',
+                          textTransform: 'none',
+                          '&:hover': { borderColor: colors.buttonHover, backgroundColor: 'rgba(64, 224, 208, 0.1)' },
+                        }}
+                      >
+                        Detalles
+                      </Button>
+                    </CardActions>
+                  </Card>
+                </Box>
               </Grid>
             ))}
           </Grid>
@@ -422,118 +401,127 @@ const PaginaPrincipal = () => {
       </Container>
 
       {/* Chat Section */}
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: 20,
-          right: 20,
-          zIndex: 1000,
-        }}
-      >
+      <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}>
         {chatOpen ? (
-          <Paper
-            elevation={3}
-            sx={{
-              width: 300,
-              height: 400,
-              display: 'flex',
-              flexDirection: 'column',
-              borderRadius: '12px',
-              overflow: 'hidden',
-            }}
-          >
-            <Box
+          <Zoom in={chatOpen} timeout={300}>
+            <Paper
+              elevation={6}
               sx={{
-                p: 2,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                backgroundColor: colors.button,
-                color: 'white',
-              }}
-            >
-              <Typography variant="h6" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
-                Chat con GisLive
-              </Typography>
-              <IconButton size="small" onClick={toggleChat} sx={{ color: 'white' }}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-
-            <Box
-              sx={{
-                flexGrow: 1,
-                overflow: 'auto',
-                p: 2,
+                width: 320,
+                height: 450,
                 display: 'flex',
                 flexDirection: 'column',
+                borderRadius: '16px',
+                overflow: 'hidden',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
               }}
             >
-              {messages.map((msg, index) => (
-                <Box
-                  key={index}
-                  sx={{
-                    maxWidth: '80%',
-                    p: 1.5,
-                    borderRadius: '10px',
-                    mb: 1,
-                    backgroundColor: msg.sender === 'user' ? colors.button : colors.light,
-                    color: msg.sender === 'user' ? 'white' : 'black',
-                    alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                  }}
-                >
-                  <Typography variant="body2" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    {msg.text}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-
-            <Box sx={{ p: 2, display: 'flex', borderTop: '1px solid #eee' }}>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Escribe tu mensaje..."
-                variant="outlined"
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                sx={{ mr: 1 }}
-              />
-              <Button
-                variant="contained"
-                onClick={sendMessage}
+              <Box
                 sx={{
-                  backgroundColor: colors.button,
-                  '&:hover': {
-                    backgroundColor: colors.buttonHover,
-                  },
+                  p: 2,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
+                  color: 'white',
                 }}
               >
-                Enviar
-              </Button>
-            </Box>
-          </Paper>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Avatar src={LogoGL} sx={{ width: 32, height: 32, border: '2px solid white' }} />
+                  <Typography variant="h6" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
+                    Chat con GisLive
+                  </Typography>
+                </Box>
+                <IconButton size="small" onClick={toggleChat} sx={{ color: 'white' }}>
+                  <CloseIcon />
+                </IconButton>
+              </Box>
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  overflow: 'auto',
+                  p: 2,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  backgroundImage: 'linear-gradient(rgba(240, 250, 250, 0.6), rgba(240, 250, 250, 0.6)), url("data:image/svg+xml,%3Csvg width="20" height="20" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 0h20v20H0z" fill="%2340E0D0" fill-opacity=".05"/%3E%3C/svg%3E")',
+                }}
+              >
+                {messages.map((msg, index) => (
+                  <Fade in={true} key={index} timeout={(index + 1) * 300}>
+                    <Box
+                      sx={{
+                        maxWidth: '80%',
+                        p: 2,
+                        borderRadius: msg.sender === 'user' ? '12px 12px 0 12px' : '12px 12px 12px 0',
+                        mb: 1.5,
+                        backgroundColor: msg.sender === 'user' ? colors.button : 'white',
+                        color: msg.sender === 'user' ? 'white' : 'black',
+                        alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
+                        border: msg.sender === 'user' ? 'none' : '1px solid #e0e0e0',
+                      }}
+                    >
+                      <Typography variant="body2" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
+                        {msg.text}
+                      </Typography>
+                    </Box>
+                  </Fade>
+                ))}
+              </Box>
+              <Box sx={{ p: 2, display: 'flex', borderTop: '1px solid #eee', backgroundColor: '#f9f9f9' }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Escribe tu mensaje..."
+                  variant="outlined"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  sx={{
+                    mr: 1,
+                    '& .MuiOutlinedInput-root': {
+                      borderRadius: '20px',
+                      '& fieldset': { borderColor: '#e0e0e0' },
+                      '&:hover fieldset': { borderColor: colors.button },
+                      '&.Mui-focused fieldset': { borderColor: colors.button },
+                    },
+                  }}
+                />
+                <Button
+                  variant="contained"
+                  onClick={sendMessage}
+                  sx={{
+                    background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
+                    borderRadius: '20px',
+                    boxShadow: '0 3px 5px rgba(64, 224, 208, 0.3)',
+                    '&:hover': { boxShadow: '0 5px 10px rgba(64, 224, 208, 0.4)' },
+                  }}
+                >
+                  Enviar
+                </Button>
+              </Box>
+            </Paper>
+          </Zoom>
         ) : (
-          <Button
-            variant="contained"
-            startIcon={<ChatIcon />}
-            onClick={toggleChat}
-            sx={{
-              backgroundColor: colors.button,
-              borderRadius: '50%',
-              minWidth: '56px',
-              height: '56px',
-              padding: 0,
-              '& .MuiButton-startIcon': {
-                margin: 0,
-              },
-              '&:hover': {
-                backgroundColor: colors.buttonHover,
-              },
-            }}
-            aria-label="Chat"
-          />
+          <Zoom in={!chatOpen} timeout={300}>
+            <Button
+              variant="contained"
+              startIcon={<ChatIcon />}
+              onClick={toggleChat}
+              sx={{
+                background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
+                borderRadius: '50%',
+                minWidth: '60px',
+                height: '60px',
+                padding: '16px',
+                boxShadow: '0 4px 20px rgba(64, 224, 208, 0.4)',
+                '& .MuiButton-startIcon': { margin: 0 },
+                '&:hover': { transform: 'scale(1.1)', boxShadow: '0 6px 25px rgba(64, 224, 208, 0.5)' },
+                transition: 'all 0.3s ease',
+              }}
+              aria-label="Chat"
+            />
+          </Zoom>
         )}
       </Box>
     </Box>

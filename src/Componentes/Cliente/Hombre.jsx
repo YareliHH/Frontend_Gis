@@ -95,19 +95,19 @@ const Hombre = () => {
               />
               {/* Nombre del producto como enlace */}
               <Typography
-  variant="h6"
-  component="a"
-  onClick={() => handleProductClick(product)}  // Asegúrate de que el manejador de clic esté configurado
-  sx={{
-    color: colors.primaryText,
-    mt: 2,
-    fontFamily: 'Montserrat, sans-serif',
-    textAlign: 'center',
-    textDecoration: 'underline',
-    cursor: 'pointer',
-    '&:hover': { color: 'blue' }
-  }}
->
+              variant="h6"
+              component="a"
+              onClick={() => handleProductClick(product)}  // Asegúrate de que el manejador de clic esté configurado
+              sx={{
+                color: colors.primaryText,
+                mt: 2,
+                fontFamily: 'Montserrat, sans-serif',
+                textAlign: 'center',
+                textDecoration: 'underline',
+                cursor: 'pointer',
+                '&:hover': { color: 'blue' }
+              }}
+              >
                 {product.name}
               </Typography>
               {/* Precio y tipo */}

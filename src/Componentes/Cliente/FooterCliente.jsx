@@ -1,60 +1,72 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Container, 
-  Grid, 
-  Typography, 
-  IconButton, 
-  Box, 
-  Modal, 
-  Button, 
-  Divider, 
+import {
+  Container,
+  Grid,
+  Typography,
+  IconButton,
+  Box,
+  Modal,
+  Button,
+  Divider,
   Paper,
   useMediaQuery,
   useTheme,
   Link,
   Fade,
   Slide,
-  Tooltip
+  Tooltip,
 } from '@mui/material';
-import { 
-  Facebook, 
-  Twitter, 
-  Instagram, 
-  WhatsApp, 
-  Phone, 
-  Email, 
+import {
+  Facebook,
+  Twitter,
+  Instagram,
+  WhatsApp,
+  Phone,
+  Email,
   LocationOn,
   Security,
   Gavel,
   AssignmentLate,
   QuestionAnswer,
   ContactSupport,
-  KeyboardArrowUp
+  KeyboardArrowUp,
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const availableSocials = [
-  { 
-    label: 'Facebook', 
-    name: 'facebook', 
-    link: 'https://www.facebook.com/profile.php?id=100063876570345&mibextid=ZbWKwL', 
+  {
+    label: 'Facebook',
+    name: 'facebook',
+    link: 'https://www.facebook.com/profile.php?id=100063876570345&mibextid=ZbWKwL',
     icon: <Facebook />,
-    color: '#1877F2'
+    color: '#1877F2',
   },
-  { 
-    label: 'Instagram', 
-    name: 'instagram', 
-    link: 'https://www.instagram.com/gislive17?igsh=MzJtbTM4enkyOG9x', 
+  {
+    label: 'Instagram',
+    name: 'instagram',
+    link: 'https://www.instagram.com/gislive17?igsh=MzJtbTM4enkyOG9x',
     icon: <Instagram />,
-    color: '#E4405F'
+    color: '#E4405F',
   },
-  { 
-    label: 'WhatsApp', 
-    name: 'whatsapp', 
-    link: 'https://api.whatsapp.com/send?phone=%2B522223308869&context=ARA-7mGivUJFUEhTCJcUvVw3isMybJ0cvNB5ZQJpr7_W2YbIu0lW2PaTd_6IRTf4t7Omu86WIcnSurSelQlBtkOmPkfDYdALFw7CMcZSUaAJIEtmWXmkdjBluOf1kTuLe4PKmIqGwvI-TdP3jh22YRk7YQ&source=FB_Page&app=facebook&entry_point=page_cta', 
+  {
+    label: 'WhatsApp',
+    name: 'whatsapp',
+    link: 'https://api.whatsapp.com/send?phone=%2B522223308869&context=ARA-7mGivUJFUEhTCJcUvVw3isMybJ0cvNB5ZQJpr7_W2YbIu0lW2PaTd_6IRTf4t7Omu86WIcnSurSelQlBtkOmPkfDYdALFw7CMcZSUaAJIEtmWXmkdjBluOf1kTuLe4PKmIqGwvI-TdP3jh22YRk7YQ&source=FB_Page&app=facebook&entry_point=page_cta',
     icon: <WhatsApp />,
-    color: '#25D366'
+    color: '#25D366',
+  },
+];
+
+// Payment methods with static images (replace URLs with local imports if needed)
+const paymentMethods = [
+  {
+    label: 'MasterCard',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
+  },
+  {
+    label: 'PayPal',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg',
   },
 ];
 
@@ -67,7 +79,7 @@ const FooterCliente = () => {
   const [modalTitle, setModalTitle] = useState('');
   const [showScrollTop, setShowScrollTop] = useState(false);
   const navigate = useNavigate();
-  
+
   // Theme y breakpoints para diseño responsivo
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -111,7 +123,6 @@ const FooterCliente = () => {
         );
         const activeDisclaimer = disclaimerResponse.data.filter((disclaimer) => disclaimer.estado === 'activo');
         setDisclaimer(activeDisclaimer);
-        
       } catch (error) {
         console.error('Error al obtener los datos del footer:', error);
       }
@@ -135,7 +146,7 @@ const FooterCliente = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
@@ -143,7 +154,7 @@ const FooterCliente = () => {
     <Box sx={{ position: 'relative' }}>
       {/* Botón de volver arriba */}
       <Fade in={showScrollTop}>
-        <IconButton 
+        <IconButton
           onClick={scrollToTop}
           sx={{
             position: 'fixed',
@@ -156,7 +167,7 @@ const FooterCliente = () => {
             '&:hover': {
               backgroundColor: '#00796b',
               transform: 'translateY(-3px)',
-              boxShadow: '0 6px 12px rgba(0,0,0,0.3)'
+              boxShadow: '0 6px 12px rgba(0,0,0,0.3)',
             },
             transition: 'all 0.3s ease',
           }}
@@ -211,76 +222,76 @@ const FooterCliente = () => {
                   Enlaces Rápidos
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                  <Link 
-                    component="button" 
-                    variant="body2" 
+                  <Link
+                    component="button"
+                    variant="body2"
                     color="inherit"
                     underline="hover"
                     onClick={() => navigate('/preguntasF')}
-                    sx={{ 
-                      display: 'flex', 
+                    sx={{
+                      display: 'flex',
                       alignItems: 'center',
-                      justifyContent: { xs: 'center', sm: 'flex-start' }
+                      justifyContent: { xs: 'center', sm: 'flex-start' },
                     }}
                   >
                     <QuestionAnswer sx={{ mr: 1, fontSize: '1rem' }} />
                     Preguntas Frecuentes
                   </Link>
-                  <Link 
-                    component="button" 
-                    variant="body2" 
+                  <Link
+                    component="button"
+                    variant="body2"
                     color="inherit"
                     underline="hover"
                     onClick={() => navigate('/contacto')}
-                    sx={{ 
-                      display: 'flex', 
+                    sx={{
+                      display: 'flex',
                       alignItems: 'center',
-                      justifyContent: { xs: 'center', sm: 'flex-start' }
+                      justifyContent: { xs: 'center', sm: 'flex-start' },
                     }}
                   >
                     <ContactSupport sx={{ mr: 1, fontSize: '1rem' }} />
                     Contáctanos
                   </Link>
-                  <Link 
-                    component="button" 
-                    variant="body2" 
+                  <Link
+                    component="button"
+                    variant="body2"
                     color="inherit"
                     underline="hover"
                     onClick={() => handleOpenModal('Política de Privacidad', privacyPolicy[0]?.contenido || 'Contenido no disponible')}
-                    sx={{ 
-                      display: 'flex', 
+                    sx={{
+                      display: 'flex',
                       alignItems: 'center',
-                      justifyContent: { xs: 'center', sm: 'flex-start' }
+                      justifyContent: { xs: 'center', sm: 'flex-start' },
                     }}
                   >
                     <Security sx={{ mr: 1, fontSize: '1rem' }} />
                     Política de Privacidad
                   </Link>
-                  <Link 
-                    component="button" 
-                    variant="body2" 
+                  <Link
+                    component="button"
+                    variant="body2"
                     color="inherit"
                     underline="hover"
                     onClick={() => handleOpenModal('Términos y Condiciones', termsConditions[0]?.contenido || 'Contenido no disponible')}
-                    sx={{ 
-                      display: 'flex', 
+                    sx={{
+                      display: 'flex',
                       alignItems: 'center',
-                      justifyContent: { xs: 'center', sm: 'flex-start' }
+                      justifyContent: { xs: 'center', sm: 'flex-start' },
                     }}
                   >
                     <Gavel sx={{ mr: 1, fontSize: '1rem' }} />
                     Términos y Condiciones
                   </Link>
-                  <Link 
-                    component="button" 
-                    variant="body2" 
+                  <Link
+                    component="button"
+                    variant="body2"
                     color="inherit"
                     underline="hover"
                     onClick={() => handleOpenModal('Deslinde Legal', disclaimer[0]?.contenido || 'Contenido no disponible')}
-                    sx={{ 
-                      display: 'flex', 
+                    sx={{
+                      display: 'flex',
                       alignItems: 'center',
-                      justifyContent: { xs: 'center', sm: 'flex-start' }
+                      justifyContent: { xs: 'center', sm: 'flex-start' },
                     }}
                   >
                     <AssignmentLate sx={{ mr: 1, fontSize: '1rem' }} />
@@ -290,18 +301,19 @@ const FooterCliente = () => {
               </Box>
             </Grid>
 
-            {/* Columna 3: Síguenos en redes sociales */}
+            {/* Columna 3: Síguenos en redes sociales y Métodos de Pago */}
             <Grid item xs={12} md={4}>
               <Box sx={{ textAlign: 'center' }}>
+                {/* Redes Sociales */}
                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
                   Síguenos en Redes Sociales
                 </Typography>
-                <Box 
-                  sx={{ 
-                    display: 'flex', 
-                    justifyContent: 'center', 
+                <Box
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
                     gap: 2,
-                    mt: 2
+                    mt: 2,
                   }}
                 >
                   {availableSocials.map((social) => (
@@ -314,13 +326,13 @@ const FooterCliente = () => {
                           backgroundColor: social.color,
                           width: { xs: 40, sm: 48 },
                           height: { xs: 40, sm: 48 },
-                          '&:hover': { 
+                          '&:hover': {
                             backgroundColor: social.color,
                             opacity: 0.9,
                             transform: 'translateY(-5px)',
-                            boxShadow: '0 5px 15px rgba(0,0,0,0.2)'
+                            boxShadow: '0 5px 15px rgba(0,0,0,0.2)',
                           },
-                          transition: 'all 0.3s ease'
+                          transition: 'all 0.3s ease',
                         }}
                       >
                         {social.icon}
@@ -328,14 +340,50 @@ const FooterCliente = () => {
                     </Tooltip>
                   ))}
                 </Box>
-                
-         
+
+                {/* Métodos de Pago (imágenes estáticas) */}
+                <Box sx={{ mt: 4 }}>
+                  <Typography variant="h6" component="div" sx={{ fontWeight: 'bold', mb: 2 }}>
+                    Aceptamos
+                  </Typography>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      gap: 2,
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    {paymentMethods.map((method) => (
+                      <Box
+                        key={method.label}
+                        sx={{
+                          width: { xs: 60, sm: 80 },
+                          height: { xs: 40, sm: 48 },
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                        }}
+                      >
+                        <img
+                          src={method.image}
+                          alt={method.label}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'contain',
+                          }}
+                        />
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
               </Box>
             </Grid>
           </Grid>
-          
+
           <Divider sx={{ my: 4, backgroundColor: 'rgba(255, 255, 255, 0.3)' }} />
-          
+
           <Box sx={{ textAlign: 'center' }}>
             <Typography variant="body2" sx={{ opacity: 0.8 }}>
               © {new Date().getFullYear()} GisLive Boutique Clínica. Todos los derechos reservados.
@@ -345,11 +393,7 @@ const FooterCliente = () => {
       </Box>
 
       {/* Modal mejorado para mostrar contenido */}
-      <Modal 
-        open={modalOpen} 
-        onClose={handleCloseModal}
-        closeAfterTransition
-      >
+      <Modal open={modalOpen} onClose={handleCloseModal} closeAfterTransition>
         <Fade in={modalOpen}>
           <Box
             sx={{
@@ -364,7 +408,7 @@ const FooterCliente = () => {
               boxShadow: 24,
               p: { xs: 3, sm: 4 },
               outline: 'none',
-              overflow: 'auto'
+              overflow: 'auto',
             }}
           >
             <Typography variant="h5" component="h2" sx={{ mb: 2, fontWeight: 'bold' }}>
@@ -375,10 +419,10 @@ const FooterCliente = () => {
               {modalContent}
             </Typography>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button 
-                variant="contained" 
-                onClick={handleCloseModal} 
-                sx={{ 
+              <Button
+                variant="contained"
+                onClick={handleCloseModal}
+                sx={{
                   backgroundColor: '#0097a7',
                   '&:hover': { backgroundColor: '#00796b' },
                 }}

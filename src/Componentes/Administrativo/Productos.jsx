@@ -19,44 +19,40 @@ import {
   TableCell,
   TableBody,
   IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Snackbar,
   Alert,
   Tooltip,
 } from "@mui/material";
-import { Edit, Delete, Add, CloudUpload, Check, Close } from "@mui/icons-material";
+import { Edit, Delete, Add, CloudUpload } from "@mui/icons-material";
 
 const ProductoForm = () => {
+  // Estado del producto para creación/edición
   const [producto, setProducto] = useState({
-    id: "",
+    id: null,
     nombre_producto: "",
     descripcion: "",
     precio: "",
-    talla: "",
-    color: "",
     stock: "",
     id_categoria: "",
-    genero: "",
+    id_color: "",
+    id_talla: "",
+    id_genero: "",
     imagen: null,
   });
 
   const [productos, setProductos] = useState([]);
-  const [openDialog, setOpenDialog] = useState(false);
+  const [categorias, setCategorias] = useState([]);
+  const [colores, setColores] = useState([]);
+  const [tallas, setTallas] = useState([]);
+  const [generos, setGeneros] = useState([]);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
-  const categorias = ["Camisetas", "Pantalones", "Zapatos", "Accesorios"];
-  const generos = ["Hombre", "Mujer", "Unisex"];
-  const tallas = ["S", "M", "L", "XL"];
-  const colores = ["Rojo", "Azul", "Verde", "Negro"];
-
+  // Obtener productos
   const fetchProductos = async () => {
     try {
-      const response = await axios.get("http://localhost:3001/api/productosid");
+      const response = await axios.get("http://localhost:3001/api/obtener");
       setProductos(response.data);
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -66,11 +62,51 @@ const ProductoForm = () => {
     }
   };
 
+  // Obtener categorías desde la BD
+  const fetchCategorias = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/obtenercat");
+      setCategorias(response.data);
+    } catch (error) {
+      console.error("Error al obtener categorías:", error);
+    }
+  };
+
+  // Obtener tallas desde la BD
+  const fetchTallas = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/tallas");
+      setTallas(response.data);
+    } catch (error) {
+      console.error("Error al obtener tallas:", error);
+    }
+  };
+
+  // Obtener colores desde la BD
+  const fetchColores = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/colores");
+      setColores(response.data);
+    } catch (error) {
+      console.error("Error al obtener colores:", error);
+    }
+  };
+
+  // Obtener géneros desde la BD
+  const fetchGeneros = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/generos");
+      setGeneros(response.data);
+    } catch (error) {
+      console.error("Error al obtener géneros:", error);
+    }
+  };
+
+  // Obtener un producto por su ID para edición
   const fetchProductoById = async (id) => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/obtenerproducto/${id}`);
-      setProducto(response.data);
-      setOpenDialog(true);
+      const response = await axios.get(`http://localhost:3001/api/obtener/${id}`);
+      setProducto(response.data); // Se asume que la respuesta incluye el "id" y la URL de la imagen
     } catch (error) {
       console.error("Error al obtener producto:", error);
       setSnackbarMessage("Error al cargar el producto");
@@ -79,68 +115,10 @@ const ProductoForm = () => {
     }
   };
 
-  const handleAgregarProducto = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("nombre_producto", producto.nombre_producto);
-    formData.append("descripcion", producto.descripcion);
-    formData.append("precio", producto.precio);
-    formData.append("talla", producto.talla);
-    formData.append("color", producto.color);
-    formData.append("stock", producto.stock);
-    formData.append("categoria_id", producto.id_categoria);
-    formData.append("genero", producto.genero);
-    if (producto.imagen) {
-      formData.append("imagenes", producto.imagen);
-    }
-    try {
-      const response = await axios.post("http://localhost:3001/api/agregar", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      setSnackbarMessage("Producto creado con éxito");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-      fetchProductos();
-      console.log("Respuesta del backend:", response.data);
-      setProducto({
-        id: "",
-        nombre_producto: "",
-        descripcion: "",
-        precio: "",
-        talla: "",
-        color: "",
-        stock: "",
-        id_categoria: "",
-        genero: "",
-        imagen: null,
-      });
-    } catch (error) {
-      console.error("Error al crear producto:", error);
-      setSnackbarMessage("Error al crear el producto");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
-  };
-
-  const handleActualizarProducto = async () => {
-    try {
-      await axios.put(`http://localhost:3001/api/actualizarproducto/${producto.id}`, producto);
-      setSnackbarMessage("Producto actualizado con éxito");
-      setSnackbarSeverity("success");
-      setSnackbarOpen(true);
-      fetchProductos();
-      setOpenDialog(false);
-    } catch (error) {
-      console.error("Error al actualizar producto:", error);
-      setSnackbarMessage("Error al actualizar el producto");
-      setSnackbarSeverity("error");
-      setSnackbarOpen(true);
-    }
-  };
-
+  // Eliminar un producto
   const handleEliminarProducto = async (id) => {
     try {
-      await axios.delete(`http://localhost:3001/api/eliminarproducto/${id}`);
+      await axios.delete(`http://localhost:3001/api/eliminar/${id}`);
       setSnackbarMessage("Producto eliminado con éxito");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -153,34 +131,119 @@ const ProductoForm = () => {
     }
   };
 
+  // Manejar el submit: crea o actualiza según el modo
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (producto.id) {
+        // Modo edición
+        // Si se seleccionó una nueva imagen, se envía FormData
+        if (producto.imagen instanceof File) {
+          const formData = new FormData();
+          formData.append("nombre_producto", producto.nombre_producto);
+          formData.append("descripcion", producto.descripcion);
+          formData.append("precio", producto.precio);
+          formData.append("stock", producto.stock);
+          formData.append("id_categoria", producto.id_categoria);
+          formData.append("id_color", producto.id_color);
+          formData.append("id_talla", producto.id_talla);
+          formData.append("id_genero", producto.id_genero);
+          formData.append("imagenes", producto.imagen);
+
+          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        } else {
+          // Si no se seleccionó nueva imagen, se envían solo los datos de texto
+          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, {
+            nombre_producto: producto.nombre_producto,
+            descripcion: producto.descripcion,
+            precio: producto.precio,
+            stock: producto.stock,
+            id_categoria: producto.id_categoria,
+            id_color: producto.id_color,
+            id_talla: producto.id_talla,
+            id_genero: producto.id_genero,
+          });
+        }
+        setSnackbarMessage("Producto actualizado con éxito");
+      } else {
+        // Modo creación: enviar FormData
+        const formData = new FormData();
+        formData.append("nombre_producto", producto.nombre_producto);
+        formData.append("descripcion", producto.descripcion);
+        formData.append("precio", producto.precio);
+        formData.append("stock", producto.stock);
+        formData.append("id_categoria", producto.id_categoria);
+        formData.append("id_color", producto.id_color);
+        formData.append("id_talla", producto.id_talla);
+        formData.append("id_genero", producto.id_genero);
+        if (producto.imagen) {
+          formData.append("imagenes", producto.imagen);
+        }
+        await axios.post("http://localhost:3001/api/agregarproducto", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        setSnackbarMessage("Producto creado con éxito");
+      }
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      fetchProductos();
+      setProducto({
+        id: null,
+        nombre_producto: "",
+        descripcion: "",
+        precio: "",
+        stock: "",
+        id_categoria: "",
+        id_color: "",
+        id_talla: "",
+        id_genero: "",
+        imagen: null,
+      });
+    } catch (error) {
+      console.error("Error al guardar producto:", error);
+      setSnackbarMessage("Error al guardar el producto");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+    }
+  };
+
+  // Manejar cambios en el formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProducto({ ...producto, [name]: value });
   };
 
+  // Manejar cambio en la imagen
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setProducto({ ...producto, imagen: file });
   };
 
+  // Cerrar Snackbar
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
   useEffect(() => {
     fetchProductos();
+    fetchCategorias();
+    fetchTallas();
+    fetchColores();
+    fetchGeneros();
   }, []);
 
   return (
     <Container maxWidth="md" sx={{ padding: "40px 20px" }}>
+      {/* Formulario para agregar/editar */}
       <Card sx={{ borderRadius: "12px", boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)", marginBottom: "40px" }}>
         <CardContent>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: "700", color: "#0277bd", textAlign: "center" }}>
             Gestión de Productos
           </Typography>
-
-          {/* Formulario para agregar producto */}
-          <form onSubmit={handleAgregarProducto}>
+          <form onSubmit={handleSubmit}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <TextField
@@ -219,30 +282,6 @@ const ProductoForm = () => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth variant="outlined" required>
-                  <InputLabel>Talla</InputLabel>
-                  <Select label="Talla" name="talla" value={producto.talla} onChange={handleChange}>
-                    {tallas.map((talla) => (
-                      <MenuItem key={talla} value={talla}>
-                        {talla}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
-                <FormControl fullWidth variant="outlined" required>
-                  <InputLabel>Color</InputLabel>
-                  <Select label="Color" name="color" value={producto.color} onChange={handleChange}>
-                    {colores.map((color) => (
-                      <MenuItem key={color} value={color}>
-                        {color}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              </Grid>
-              <Grid item xs={12} sm={6}>
                 <TextField
                   label="Stock"
                   name="stock"
@@ -259,8 +298,32 @@ const ProductoForm = () => {
                   <InputLabel>Categoría</InputLabel>
                   <Select label="Categoría" name="id_categoria" value={producto.id_categoria} onChange={handleChange}>
                     {categorias.map((categoria) => (
-                      <MenuItem key={categoria} value={categoria}>
-                        {categoria}
+                      <MenuItem key={categoria.id_categoria} value={categoria.id_categoria}>
+                        {categoria.nombre}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth variant="outlined" required>
+                  <InputLabel>Color</InputLabel>
+                  <Select label="Color" name="id_color" value={producto.id_color} onChange={handleChange}>
+                    {colores.map((color) => (
+                      <MenuItem key={color.id} value={color.id}>
+                        {color.color}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth variant="outlined" required>
+                  <InputLabel>Talla</InputLabel>
+                  <Select label="Talla" name="id_talla" value={producto.id_talla} onChange={handleChange}>
+                    {tallas.map((talla) => (
+                      <MenuItem key={talla.id} value={talla.id}>
+                        {talla.talla}
                       </MenuItem>
                     ))}
                   </Select>
@@ -269,17 +332,23 @@ const ProductoForm = () => {
               <Grid item xs={12} sm={6}>
                 <FormControl fullWidth variant="outlined" required>
                   <InputLabel>Género</InputLabel>
-                  <Select label="Género" name="genero" value={producto.genero} onChange={handleChange}>
+                  <Select label="Género" name="id_genero" value={producto.id_genero} onChange={handleChange}>
                     {generos.map((genero) => (
-                      <MenuItem key={genero} value={genero}>
-                        {genero}
+                      <MenuItem key={genero.id} value={genero.id}>
+                        {genero.genero}
                       </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: "none" }} id="imagen-producto" />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  style={{ display: "none" }}
+                  id="imagen-producto"
+                />
                 <label htmlFor="imagen-producto">
                   <Tooltip title="Seleccionar una imagen para el producto">
                     <Button
@@ -305,13 +374,20 @@ const ProductoForm = () => {
                       Imagen del producto
                     </Typography>
                     <img
-                      src={URL.createObjectURL(producto.imagen)}
+                      src={producto.imagen instanceof File ? URL.createObjectURL(producto.imagen) : producto.imagen}
                       alt="Vista previa de la imagen"
-                      style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "8px", marginBottom: "8px" }}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "200px",
+                        borderRadius: "8px",
+                        marginBottom: "8px",
+                      }}
                     />
-                    <Typography variant="body2" sx={{ color: "#757575" }}>
-                      Archivo seleccionado: {producto.imagen.name}
-                    </Typography>
+                    {producto.imagen instanceof File && (
+                      <Typography variant="body2" sx={{ color: "#757575" }}>
+                        Archivo seleccionado: {producto.imagen.name}
+                      </Typography>
+                    )}
                   </div>
                 )}
               </Grid>
@@ -329,7 +405,7 @@ const ProductoForm = () => {
                     transition: "all 0.3s ease",
                   }}
                 >
-                  Agregar Producto
+                  {producto.id ? "Actualizar Producto" : "Agregar Producto"}
                 </Button>
               </Grid>
             </Grid>
@@ -357,17 +433,17 @@ const ProductoForm = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {productos.map((producto) => (
-                <TableRow key={producto.id}>
-                  <TableCell>{producto.id}</TableCell>
-                  <TableCell>{producto.nombre_producto}</TableCell>
-                  <TableCell>{producto.descripcion}</TableCell>
-                  <TableCell>{producto.precio}</TableCell>
+              {productos.map((prod) => (
+                <TableRow key={prod.id}>
+                  <TableCell>{prod.id}</TableCell>
+                  <TableCell>{prod.nombre_producto}</TableCell>
+                  <TableCell>{prod.descripcion}</TableCell>
+                  <TableCell>{prod.precio}</TableCell>
                   <TableCell>
-                    {producto.imagen ? (
+                    {prod.imagen ? (
                       <img
-                        src={producto.imagen} // Asume que producto.imagen es una URL
-                        alt={producto.nombre_producto}
+                        src={prod.imagen}
+                        alt={prod.nombre_producto}
                         style={{
                           width: "50px",
                           height: "50px",
@@ -381,32 +457,24 @@ const ProductoForm = () => {
                       </Typography>
                     )}
                   </TableCell>
-                  <TableCell>{producto.talla || "N/A"}</TableCell>
-                  <TableCell>{producto.color || "N/A"}</TableCell>
-                  <TableCell>{producto.stock || "N/A"}</TableCell>
-                  <TableCell>{producto.id_categoria || "N/A"}</TableCell>
-                  <TableCell>{producto.genero || "N/A"}</TableCell>
+                  <TableCell>{prod.talla}</TableCell>
+                  <TableCell>{prod.color}</TableCell>
+                  <TableCell>{prod.stock}</TableCell>
+                  <TableCell>{prod.categoria}</TableCell>
+                  <TableCell>{prod.genero}</TableCell>
                   <TableCell>
                     <Tooltip title="Editar producto">
                       <IconButton
-                        onClick={() => fetchProductoById(producto.id)}
-                        sx={{
-                          color: "#0277bd",
-                          transition: "all 0.3s ease",
-                          "&:hover": { backgroundColor: "rgba(2, 119, 189, 0.1)", transform: "scale(1.1)" },
-                        }}
+                        onClick={() => fetchProductoById(prod.id)}
+                        sx={{ color: "#0277bd", "&:hover": { backgroundColor: "rgba(2, 119, 189, 0.1)" } }}
                       >
                         <Edit />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Eliminar producto">
                       <IconButton
-                        onClick={() => handleEliminarProducto(producto.id)}
-                        sx={{
-                          color: "#d32f2f",
-                          transition: "all 0.3s ease",
-                          "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)", transform: "scale(1.1)" },
-                        }}
+                        onClick={() => handleEliminarProducto(prod.id)}
+                        sx={{ color: "#d32f2f", "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" } }}
                       >
                         <Delete />
                       </IconButton>
@@ -418,114 +486,6 @@ const ProductoForm = () => {
           </Table>
         </TableContainer>
       </Card>
-
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Editar Producto</DialogTitle>
-        <DialogContent>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <TextField
-                label="Nombre del producto"
-                name="nombre_producto"
-                value={producto.nombre_producto}
-                onChange={handleChange}
-                fullWidth
-                variant="outlined"
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Descripción"
-                name="descripcion"
-                value={producto.descripcion}
-                onChange={handleChange}
-                fullWidth
-                variant="outlined"
-                multiline
-                rows={4}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Precio"
-                name="precio"
-                value={producto.precio}
-                onChange={handleChange}
-                fullWidth
-                variant="outlined"
-                type="number"
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Stock"
-                name="stock"
-                value={producto.stock}
-                onChange={handleChange}
-                fullWidth
-                variant="outlined"
-                type="number"
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth variant="outlined" required>
-                <InputLabel>Categoría</InputLabel>
-                <Select label="Categoría" name="id_categoria" value={producto.id_categoria} onChange={handleChange}>
-                  {categorias.map((categoria) => (
-                    <MenuItem key={categoria} value={categoria}>
-                      {categoria}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth variant="outlined" required>
-                <InputLabel>Género</InputLabel>
-                <Select label="Género" name="genero" value={producto.genero} onChange={handleChange}>
-                  {generos.map((genero) => (
-                    <MenuItem key={genero} value={genero}>
-                      {genero}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setOpenDialog(false)}
-            startIcon={<Close />}
-            sx={{
-              color: "#757575",
-              transition: "all 0.3s ease",
-              "&:hover": { backgroundColor: "rgba(0, 0, 0, 0.05)" },
-            }}
-          >
-            Cancelar
-          </Button>
-          <Button
-            onClick={handleActualizarProducto}
-            variant="contained"
-            startIcon={<Check />}
-            sx={{
-              backgroundColor: "#0277bd",
-              "&:hover": { backgroundColor: "#01579b" },
-              padding: "8px 16px",
-              fontWeight: "600",
-              borderRadius: "8px",
-              transition: "all 0.3s ease",
-            }}
-          >
-            Guardar
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>
         <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>

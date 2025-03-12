@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Grid } from '@mui/material';
+import { Box, Typography, Grid, Container, Card, CardContent, CardMedia, CardActionArea, Chip, Button, Badge, Divider, Stack } from '@mui/material';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import MedicalServicesIcon from '@mui/icons-material/MedicalServices';
 import { useNavigate } from 'react-router-dom';
 
 // Importar imágenes
@@ -14,21 +17,25 @@ import img22 from '../imagenes/img22.jpg';
 import img4 from '../imagenes/img4.jpg';
 
 const OfertasCliente = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const matchDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
-    setIsDarkMode(matchDarkTheme.matches);
-    const handleThemeChange = (e) => setIsDarkMode(e.matches);
-    matchDarkTheme.addEventListener('change', handleThemeChange);
-    return () => matchDarkTheme.removeEventListener('change', handleThemeChange);
-  }, []);
-
   const colors = {
-    background: isDarkMode ? '#121212' : '#FFFFFF',
-    primaryText: '#000000',
+    background: '#ffffff',  // Cambiado a blanco
+    card: '#f9f9f9',  // Un gris muy claro
+    primaryText: '#333333',
+    secondaryText: '#666666',
+    accent: '#5e35b1', // Púrpura elegante
+    accent2: '#00bcd4', // Turquesa complementario
+    clinical: '#8BC34A',
+    surgical: '#42A5F5',
+    discount: '#f44336',
+    stock: {
+      available: '#4CAF50',
+      low: '#FF9800',
+      outOfStock: '#f44336'
+    }
   };
+  
 
   const products = [
     { image: img9, name: "Uniforme Clínico", price: "$50", discount: "10%", type: "Clínico", stock: "En Stock" },
@@ -45,90 +52,234 @@ const OfertasCliente = () => {
     navigate('/detalles-ofertas', { state: { product } });
   };
 
+  const getStockColor = (stockStatus) => {
+    switch (stockStatus) {
+      case 'En Stock': return colors.stock.available;
+      case 'Últimas piezas': return colors.stock.low;
+      case 'Agotado': return colors.stock.outOfStock;
+      default: return colors.stock.available;
+    }
+  };
+
+  const getStockIcon = (stockStatus) => {
+    return <InventoryIcon fontSize="small" sx={{ mr: 0.5 }} />;
+  };
+
   return (
-    <Box sx={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <Typography variant="h4" sx={{ color: colors.primaryText, fontWeight: 'bold', fontFamily: 'Montserrat, sans-serif' }}>
-          Hay una promoción especial para clientes nuevos
-        </Typography>
-      </Box>
-      <Box sx={{ textAlign: 'center', mb: 5 }}>
+    <Box sx={{ 
+      backgroundColor: colors.background,
+      minHeight: '100vh',
+      py: 6
+    }}>
+      <Container maxWidth="lg">
+        {/* Header con efecto de gradiente */}
+        <Box sx={{ 
+          textAlign: 'center', 
+          mb: 8,
+          p: 6,
+          borderRadius: '16px',
+          background: `linear-gradient(135deg, ${colors.accent}, ${colors.accent2})`,
+          boxShadow: '0 10px 30px rgba(0,0,0,0.15)'
+        }}>
+          <Typography variant="h3" sx={{ 
+            color: '#ffffff', 
+            fontWeight: 800, 
+            fontFamily: 'Montserrat, sans-serif',
+            textShadow: '0 2px 4px rgba(0,0,0,0.2)'
+          }}>
+            OFERTAS EXCLUSIVAS
+          </Typography>
+          <Typography variant="h5" sx={{ 
+            color: '#ffffff', 
+            fontFamily: 'Roboto, sans-serif',
+            mt: 2,
+            opacity: 0.95,
+            maxWidth: '700px',
+            mx: 'auto'
+          }}>
+            Promociones especiales para clientes nuevos
+          </Typography>
+          <Chip 
+            icon={<LocalOfferIcon />} 
+            label="DESCUENTOS DE HASTA UN 20%" 
+            sx={{ 
+              mt: 3, 
+              backgroundColor: 'rgba(255, 255, 255, 0.9)', 
+              color: colors.accent,
+              fontWeight: 'bold',
+              fontSize: '0.9rem',
+              py: 2.5,
+              boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+            }} 
+          />
+        </Box>
 
-      </Box>
-      <Grid container spacing={4} justifyContent="center">
-        {products.map((product, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Box sx={{ textAlign: 'center', position: 'relative' }}>
-              {/* Etiqueta de descuento en la parte superior */}
-              {product.discount && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    top: 10,
-                    right: 10,
-                    backgroundColor: 'blue',
-                    color: 'white',
-                    padding: '5px 10px',
-                    borderRadius: '5px',
-                    fontSize: '12px',
-                  }}
-                >
-                  {`Descuento ${product.discount}`}
+        {/* Productos */}
+        <Grid container spacing={3}>
+          {products.map((product, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index}>
+              <Card 
+                elevation={2}
+                sx={{ 
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  borderRadius: '16px',
+                  overflow: 'hidden',
+                  transition: 'all 0.3s ease',
+                  backgroundColor: colors.card,
+                  '&:hover': {
+                    transform: 'translateY(-8px)',
+                    boxShadow: '0 16px 30px rgba(0,0,0,0.15)',
+                  }
+                }}
+              >
+                <Box sx={{ position: 'relative' }}>
+                  <CardMedia
+                    component="img"
+                    height="180"
+                    image={product.image}
+                    alt={product.name}
+                    sx={{ objectFit: 'cover' }}
+                  />
+                  
+                  {/* Stock badge */}
+                  <Chip
+                    icon={getStockIcon(product.stock)}
+                    label={product.stock}
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      bottom: 10,
+                      left: 10,
+                      backgroundColor: getStockColor(product.stock),
+                      color: '#fff',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}
+                  />
+                  
+                  {/* Discount badge */}
+                  {product.discount && (
+                    <Chip
+                      icon={<LocalOfferIcon />}
+                      label={`-${product.discount}`}
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        top: 10,
+                        right: 10,
+                        backgroundColor: colors.discount,
+                        color: '#fff',
+                        fontSize: '0.8rem',
+                        fontWeight: 700,
+                        boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                      }}
+                    />
+                  )}
+                  
+                  {/* Type badge */}
+                  <Chip
+                    label={product.type}
+                    size="small"
+                    sx={{
+                      position: 'absolute',
+                      top: 10,
+                      left: 10,
+                      backgroundColor: product.type === "Clínico" ? colors.clinical : colors.surgical,
+                      color: '#fff',
+                      fontSize: '0.7rem',
+                      fontWeight: 600,
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                    }}
+                  />
                 </Box>
-              )}
 
-              <img
-                src={product.image}
-                alt={product.name}
-                style={{ width: '80%', height: 'auto', borderRadius: '10px', margin: '0 auto', display: 'block' }}
-              />
-
-              {/* Etiqueta de stock en la parte inferior */}
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: 130,
-                  left: 20,
-                  backgroundColor: product.stock === "En Stock" ? 'green' : product.stock === "Últimas piezas" ? 'orange' : 'red',
-                  color: 'white',
-                  padding: '5px 10px',
-                  borderRadius: '5px',
-                  fontSize: '12px',
-                }}
-              >
-                {product.stock}
-              </Box>
-
-              <Typography
-                variant="h6"
-                component="a"
-                onClick={() => handleProductClick(product)}
-                sx={{
-                  color: colors.primaryText,
-                  mt: 2,
-                  fontFamily: 'Roboto Serif, serif',
-                  textAlign: 'center',
-                  textDecoration: 'underline',
-                  cursor: 'pointer',
-                  '&:hover': { color: 'blue' }
-                }}
-              >
-                {product.name}
-              </Typography>
-              <Typography variant="body2" sx={{ color: colors.primaryText, fontWeight: 'bold', fontFamily: 'Montserrat, sans-serif', textAlign: 'center' }}>
-                {product.price}
-              </Typography>
-              <Typography variant="body2" sx={{ color: colors.primaryText, fontFamily: 'Montserrat, sans-serif', textAlign: 'center' }}>
-                Tipo: {product.type}
-              </Typography>
-              <ShoppingCartIcon sx={{ mt: 1, color: 'gray', cursor: 'pointer', '&:hover': { color: 'black' } }} />
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
+                <CardContent sx={{ 
+                  flexGrow: 1, 
+                  display: 'flex', 
+                  flexDirection: 'column',
+                  p: 3
+                }}>
+                  <Typography 
+                    variant="h6" 
+                    component="div"
+                    onClick={() => handleProductClick(product)}
+                    sx={{
+                      fontFamily: 'Montserrat, sans-serif',
+                      fontWeight: 600,
+                      color: colors.primaryText,
+                      cursor: 'pointer',
+                      '&:hover': {
+                        color: colors.accent
+                      }
+                    }}
+                  >
+                    {product.name}
+                  </Typography>
+                  
+                  <Box sx={{ mt: 'auto', pt: 2 }}>
+                    <Typography 
+                      variant="h5" 
+                      component="div"
+                      sx={{
+                        fontFamily: 'Roboto, sans-serif',
+                        fontWeight: 700,
+                        color: colors.accent
+                      }}
+                    >
+                      {product.price}
+                    </Typography>
+                    
+                    <Box sx={{ 
+                      display: 'flex', 
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      mt: 2
+                    }}>
+                      <Button 
+                        variant="contained"
+                        startIcon={<ShoppingCartIcon />}
+                        disabled={product.stock === "Agotado"}
+                        sx={{
+                          backgroundColor: colors.accent,
+                          textTransform: 'none',
+                          fontWeight: 600,
+                          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+                          '&:hover': {
+                            backgroundColor: colors.accent2
+                          }
+                        }}
+                      >
+                        Añadir
+                      </Button>
+                      
+                      <Button 
+                        variant="outlined"
+                        onClick={() => handleProductClick(product)}
+                        sx={{
+                          borderColor: colors.accent,
+                          color: colors.accent,
+                          textTransform: 'none',
+                          '&:hover': {
+                            borderColor: colors.accent2,
+                            color: colors.accent2
+                          }
+                        }}
+                      >
+                        Detalles
+                      </Button>
+                    </Box>
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
     </Box>
   );
 };
 
-export default OfertasCliente;
-
+export default OfertasCliente

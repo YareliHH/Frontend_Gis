@@ -118,6 +118,15 @@ const EncabezadoAdministrativo = () => {
             <MenuItem onClick={() => handleMenuClick('/admin/categorias')}>
               <CategoryIcon sx={{ marginRight: 1 }} /> Categorías
             </MenuItem>
+            <MenuItem onClick={() => handleMenuClick('/admin/colores')}>
+              <CategoryIcon sx={{ marginRight: 1 }} /> Colores
+            </MenuItem>
+            <MenuItem onClick={() => handleMenuClick('/admin/tallas')}>
+              <CategoryIcon sx={{ marginRight: 1 }} /> Tallas
+            </MenuItem>
+            <MenuItem onClick={() => handleMenuClick('/admin/generos')}>
+              <CategoryIcon sx={{ marginRight: 1 }} /> Generos
+            </MenuItem>
           </Menu>
 
           {/* Menú de Soporte */}

@@ -25,13 +25,11 @@ import {
 import { Add, Edit, Delete } from '@mui/icons-material';
 import axios from 'axios';
 
-const Categorias = () => {
-  const [categorias, setCategorias] = useState([]);
-  const [newCategoria, setNewCategoria] = useState('');
-  const [newDescripcion, setNewDescripcion] = useState('');
+const Colores = () => {
+  const [colores, setColores] = useState([]);
+  const [newColor, setNewColor] = useState('');
   const [editId, setEditId] = useState(null);
   const [editNombre, setEditNombre] = useState('');
-  const [editDescripcion, setEditDescripcion] = useState('');
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -39,52 +37,49 @@ const Categorias = () => {
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
-  // Obtener categorías desde la base de datos
-  const fetchCategorias = async () => {
+  // Obtener colores desde la base de datos
+  const fetchColores = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/obtenercat');
-      setCategorias(response.data);
+      const response = await axios.get('http://localhost:3001/api/colores');
+      setColores(response.data);
     } catch (error) {
-      console.error('Error al obtener categorías:', error);
+      console.error('Error al obtener colores:', error);
     }
   };
 
   useEffect(() => {
-    fetchCategorias();
+    fetchColores();
   }, []);
 
-  // Insertar una nueva categoría en la base de datos
-  const handleCreateCategoria = async () => {
-    if (newCategoria.trim() === '' || newDescripcion.trim() === '') {
+  // Insertar un nuevo color en la base de datos
+  const handleCreateColor = async () => {
+    if (newColor.trim() === '') {
       setSnackbarSeverity('error');
-      setSnackbarMessage('Nombre y descripción son requeridos');
+      setSnackbarMessage('El nombre del color es requerido');
       setSnackbarOpen(true);
       return;
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/insertarcat', {
-        nombre: newCategoria,
-        descripcion: newDescripcion,
+      const response = await axios.post('http://localhost:3001/api/agregarcolor', {
+        color: newColor,
       });
 
-      setCategorias([...categorias, response.data]);
-      setNewCategoria('');
-      setNewDescripcion('');
+      setColores([...colores, response.data]);
+      setNewColor('');
       setSnackbarSeverity('success');
-      setSnackbarMessage('Categoría agregada correctamente');
+      setSnackbarMessage('Color agregado correctamente');
       setSnackbarOpen(true);
-      fetchCategorias();
+      fetchColores();
     } catch (error) {
-      console.error('Error al agregar categoría:', error);
+      console.error('Error al agregar color:', error);
     }
   };
 
   // Abrir modal de edición
-  const handleClickOpen = (categoria) => {
-    setEditId(categoria.id_categoria);
-    setEditNombre(categoria.nombre);
-    setEditDescripcion(categoria.descripcion);
+  const handleClickOpen = (color) => {
+    setEditId(color.id);
+    setEditNombre(color.color);
     setOpen(true);
   };
 
@@ -104,62 +99,51 @@ const Categorias = () => {
     setDeleteOpen(false);
   };
 
-// Actualizar una categoría
-const handleUpdateCategoria = async () => {
-  try {
-    // Enviar la solicitud PUT para actualizar la categoría
-    await axios.put(`http://localhost:3001/api/editar/${editId}`, {
-      nombre: editNombre,
-      descripcion: editDescripcion,
-    });
+  // Actualizar un color
+  const handleUpdateColor = async () => {
+    try {
+      await axios.put(`http://localhost:3001/api/editarcolor/${editId}`, {
+        color: editNombre,
+      });
 
-    // Actualizar la lista de categorías en el estado
-    setCategorias((prevCategorias) =>
-      prevCategorias.map((item) =>
-        item.id_categoria === editId ? { ...item, nombre: editNombre, descripcion: editDescripcion } : item
-      )
-    );
+      setColores((prevColores) =>
+        prevColores.map((item) =>
+          item.id === editId ? { ...item, color: editNombre } : item
+        )
+      );
 
-    // Mostrar el mensaje de éxito
-    setSnackbarSeverity('success');
-    setSnackbarMessage('Categoría actualizada correctamente');
-    setSnackbarOpen(true);
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Color actualizado correctamente');
+      setSnackbarOpen(true);
 
-    // Cerrar el modal o formulario
-    handleClose();
-  } catch (error) {
-    console.error('Error al actualizar categoría:', error);
-    setSnackbarSeverity('error');
-    setSnackbarMessage('Hubo un error al actualizar la categoría');
-    setSnackbarOpen(true);
-  }
-};
+      handleClose();
+    } catch (error) {
+      console.error('Error al actualizar color:', error);
+      setSnackbarSeverity('error');
+      setSnackbarMessage('Hubo un error al actualizar el color');
+      setSnackbarOpen(true);
+    }
+  };
 
+  // Eliminar un color
+  const handleDeleteColor = async () => {
+    try {
+      await axios.delete(`http://localhost:3001/api/eliminarcolor/${deleteId}`);
 
-  // Eliminar una categoría
-const handleDeleteCategoria = async () => {
-  try {
-    // Enviar la solicitud DELETE para eliminar la categoría
-    await axios.delete(`http://localhost:3001/api/eliminar/${deleteId}`);
+      setColores((prevColores) => prevColores.filter((item) => item.id !== deleteId));
 
-    // Actualizar la lista de categorías en el estado
-    setCategorias((prevCategorias) => prevCategorias.filter((item) => item.id_categoria !== deleteId));
+      setSnackbarSeverity('success');
+      setSnackbarMessage('Color eliminado correctamente');
+      setSnackbarOpen(true);
 
-    // Mostrar el mensaje de éxito
-    setSnackbarSeverity('success');
-    setSnackbarMessage('Categoría eliminada correctamente');
-    setSnackbarOpen(true);
-
-    // Cerrar el modal o formulario de eliminación
-    handleDeleteClose();
-  } catch (error) {
-    console.error('Error al eliminar categoría:', error);
-    setSnackbarSeverity('error');
-    setSnackbarMessage('Hubo un error al eliminar la categoría');
-    setSnackbarOpen(true);
-  }
-};
-
+      handleDeleteClose();
+    } catch (error) {
+      console.error('Error al eliminar color:', error);
+      setSnackbarSeverity('error');
+      setSnackbarMessage('Hubo un error al eliminar el color');
+      setSnackbarOpen(true);
+    }
+  };
 
   // Cerrar Snackbar
   const handleSnackbarClose = () => {
@@ -171,29 +155,14 @@ const handleDeleteCategoria = async () => {
       <Card sx={{ padding: '30px', marginBottom: '40px', borderRadius: '16px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)' }}>
         <CardContent>
           <Typography variant="h4" gutterBottom align="center" sx={{ color: '#0277bd', fontWeight: '700' }}>
-            Gestión de Categorías
+            Gestión de Colores
           </Typography>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Nombre de la categoría"
-                value={newCategoria}
-                onChange={(e) => setNewCategoria(e.target.value)}
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    '& fieldset': { borderColor: '#3f51b5' },
-                    '&:hover fieldset': { borderColor: '#303f9f' },
-                    '&.Mui-focused fieldset': { borderColor: '#1a237e' },
-                  },
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Descripción"
-                value={newDescripcion}
-                onChange={(e) => setNewDescripcion(e.target.value)}
+                label="Nombre del color"
+                value={newColor}
+                onChange={(e) => setNewColor(e.target.value)}
                 fullWidth
                 sx={{
                   '& .MuiOutlinedInput-root': {
@@ -208,7 +177,7 @@ const handleDeleteCategoria = async () => {
               <Button
                 variant="contained"
                 color="primary"
-                onClick={handleCreateCategoria}
+                onClick={handleCreateColor}
                 startIcon={<Add />}
                 sx={{
                   backgroundColor: '#0277bd',
@@ -232,17 +201,15 @@ const handleDeleteCategoria = async () => {
               <TableRow sx={{ backgroundColor: '#0277bd' }}>
                 <TableCell sx={{ color: '#ffffff', fontWeight: '700' }}>Id</TableCell>
                 <TableCell sx={{ color: '#ffffff', fontWeight: '700' }}>Nombre</TableCell>
-                <TableCell sx={{ color: '#ffffff', fontWeight: '700' }}>Descripción</TableCell>
                 <TableCell sx={{ color: '#ffffff', fontWeight: '700' }}>Acciones</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {categorias.length > 0 ? (
-                categorias.map((item) => (
-                  <TableRow key={item.id_categoria} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f5f5f5' } }}>
-                    <TableCell>{item.id_categoria}</TableCell>
-                    <TableCell>{item.nombre}</TableCell>
-                    <TableCell>{item.descripcion}</TableCell>
+              {colores.length > 0 ? (
+                colores.map((item) => (
+                  <TableRow key={item.id} sx={{ '&:nth-of-type(odd)': { backgroundColor: '#f5f5f5' } }}>
+                    <TableCell>{item.id}</TableCell>
+                    <TableCell>{item.color}</TableCell>
                     <TableCell>
                       <Tooltip title="Editar">
                         <IconButton onClick={() => handleClickOpen(item)}>
@@ -250,7 +217,7 @@ const handleDeleteCategoria = async () => {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Eliminar">
-                        <IconButton onClick={() => handleDeleteClickOpen(item.id_categoria)}>
+                        <IconButton onClick={() => handleDeleteClickOpen(item.id)}>
                           <Delete sx={{ color: '#d32f2f' }} />
                         </IconButton>
                       </Tooltip>
@@ -259,8 +226,8 @@ const handleDeleteCategoria = async () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No hay categorías disponibles
+                  <TableCell colSpan={3} align="center">
+                    No hay colores disponibles
                   </TableCell>
                 </TableRow>
               )}
@@ -284,30 +251,11 @@ const handleDeleteCategoria = async () => {
           <TextField
             autoFocus
             margin="dense"
-            label="Nombre de la categoría"
+            label="Nombre del color"
             type="text"
             fullWidth
             value={editNombre}
             onChange={(e) => setEditNombre(e.target.value)}
-            sx={{
-              backgroundColor: '#ffffff',
-              borderRadius: '8px',
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#c4c4c4' },
-                '&:hover fieldset': { borderColor: '#3f51b5' },
-                '&.Mui-focused fieldset': { borderColor: '#3f51b5' },
-              },
-            }}
-          />
-          <TextField
-            margin="dense"
-            label="Descripción de la categoría"
-            type="text"
-            fullWidth
-            multiline
-            rows={4}
-            value={editDescripcion}
-            onChange={(e) => setEditDescripcion(e.target.value)}
             sx={{
               backgroundColor: '#ffffff',
               borderRadius: '8px',
@@ -331,7 +279,7 @@ const handleDeleteCategoria = async () => {
             Cancelar
           </Button>
           <Button
-            onClick={handleUpdateCategoria}
+            onClick={handleUpdateColor}
             variant="contained"
             color="primary"
             sx={{
@@ -356,11 +304,11 @@ const handleDeleteCategoria = async () => {
         }}
       >
         <DialogTitle sx={{ fontWeight: '700', color: '#1a237e', textAlign: 'center' }}>
-          ¿Eliminar categoría?
+          ¿Eliminar color?
         </DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro de que deseas eliminar esta categoría? 
+            ¿Estás seguro de que deseas eliminar este color? 
           </Typography>
         </DialogContent>
         <DialogActions sx={{ justifyContent: 'center', paddingBottom: '20px' }}>
@@ -375,7 +323,7 @@ const handleDeleteCategoria = async () => {
             Cancelar
           </Button>
           <Button
-            onClick={handleDeleteCategoria}
+            onClick={handleDeleteColor}
             variant="contained"
             color="error"
             sx={{
@@ -401,4 +349,4 @@ const handleDeleteCategoria = async () => {
   );
 };
 
-export default Categorias;
+export default Colores;
