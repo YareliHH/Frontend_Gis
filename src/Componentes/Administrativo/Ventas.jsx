@@ -1,85 +1,275 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-
-const API_URL = "http://localhost:5000/ventas"; // Ajusta la URL según tu configuración
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    IconButton,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+} from '@mui/material';
+import { Edit, Delete } from '@mui/icons-material';
 
 const Ventas = () => {
     const [ventas, setVentas] = useState([]);
-    const [nuevaVenta, setNuevaVenta] = useState({
-        cantidad: "",
-        precio_unitario: "",
-        total: "",
-        fecha: "",
-        metodo_pago: ""
+    const [venta, setVenta] = useState({
+        id_producto: '',
+        cantidad: '',
+        precio_unitario: '',
+        total: '',
+        fecha: '',
+        metodo_pago: '',
     });
+    const [editing, setEditing] = useState(false);
+    const [id, setId] = useState(null);
+    const [openDialog, setOpenDialog] = useState(false);
 
-    // Obtener todas las ventas
+    // Obtener todas las ventas al cargar el componente
     useEffect(() => {
-        axios.get(API_URL)
-            .then(response => setVentas(response.data))
-            .catch(error => console.error("Error obteniendo ventas:", error));
+        fetchVentas();
     }, []);
 
+    const fetchVentas = async () => {
+        try {
+            const response = await axios.get('http://localhost:3000/ventas');
+            setVentas(response.data);
+        } catch (error) {
+            console.error('Error fetching ventas:', error);
+        }
+    };
+
     // Obtener una venta por ID
-    const obtenerVenta = (id) => {
-        axios.get(`${API_URL}/${id}`)
-            .then(response => console.log("Venta obtenida:", response.data))
-            .catch(error => console.error("Error obteniendo la venta:", error));
+    const fetchVenta = async (id) => {
+        try {
+            const response = await axios.get(`http://localhost:3000/ventas/${id}`);
+            setVenta(response.data);
+            setEditing(true);
+            setId(id);
+            setOpenDialog(true);
+        } catch (error) {
+            console.error('Error fetching venta:', error);
+        }
     };
 
     // Registrar una nueva venta
-    const registrarVenta = () => {
-        axios.post(API_URL, nuevaVenta)
-            .then(response => {
-                console.log(response.data.mensaje);
-                setVentas([...ventas, { ...nuevaVenta, id: response.data.id }]);
-                setNuevaVenta({ cantidad: "", precio_unitario: "", total: "", fecha: "", metodo_pago: "" });
-            })
-            .catch(error => console.error("Error registrando la venta:", error));
+    const createVenta = async () => {
+        try {
+            const response = await axios.post('http://localhost:3000/registrar', venta);
+            setVentas([...ventas, response.data]);
+            handleCloseDialog();
+        } catch (error) {
+            console.error('Error creating venta:', error);
+        }
     };
 
     // Actualizar una venta
-    const actualizarVenta = (id) => {
-        axios.put(`${API_URL}/${id}`, nuevaVenta)
-            .then(response => {
-                console.log(response.data.mensaje);
-                setVentas(ventas.map(v => (v.id === id ? { ...v, ...nuevaVenta } : v)));
-            })
-            .catch(error => console.error("Error actualizando la venta:", error));
+    const updateVenta = async () => {
+        try {
+            await axios.put(`http://localhost:3000/actualizar/${id}`, venta);
+            setVentas(ventas.map(v => (v.id === id ? venta : v)));
+            handleCloseDialog();
+        } catch (error) {
+            console.error('Error updating venta:', error);
+        }
     };
 
     // Eliminar una venta
-    const eliminarVenta = (id) => {
-        axios.delete(`${API_URL}/${id}`)
-            .then(response => {
-                console.log(response.data.mensaje);
-                setVentas(ventas.filter(v => v.id !== id));
-            })
-            .catch(error => console.error("Error eliminando la venta:", error));
+    const deleteVenta = async (id) => {
+        try {
+            await axios.delete(`http://localhost:3000/eliminar/${id}`);
+            setVentas(ventas.filter(v => v.id !== id));
+        } catch (error) {
+            console.error('Error deleting venta:', error);
+        }
+    };
+
+    // Manejar cambios en el formulario
+    const handleChange = (e) => {
+        setVenta({
+            ...venta,
+            [e.target.name]: e.target.value,
+        });
+    };
+
+    // Manejar envío del formulario
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        if (editing) {
+            updateVenta();
+        } else {
+            createVenta();
+        }
+    };
+
+    // Abrir el diálogo para agregar/editar
+    const handleOpenDialog = () => {
+        setOpenDialog(true);
+    };
+
+    // Cerrar el diálogo y limpiar el formulario
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        setVenta({
+            id_producto: '',
+            cantidad: '',
+            precio_unitario: '',
+            total: '',
+            fecha: '',
+            metodo_pago: '',
+        });
+        setEditing(false);
+        setId(null);
+    };
+
+    // Verificar si todos los campos están llenos
+    const isFormValid = () => {
+        return (
+            venta.id_producto.trim() !== '' &&
+            venta.cantidad.trim() !== '' &&
+            venta.precio_unitario.trim() !== '' &&
+            venta.total.trim() !== '' &&
+            venta.fecha.trim() !== '' &&
+            venta.metodo_pago.trim() !== ''
+        );
     };
 
     return (
-        <div>
-            <h1>Gestión de Ventas</h1>
-            <input type="number" placeholder="Cantidad" value={nuevaVenta.cantidad} onChange={e => setNuevaVenta({ ...nuevaVenta, cantidad: e.target.value })} />
-            <input type="number" placeholder="Precio Unitario" value={nuevaVenta.precio_unitario} onChange={e => setNuevaVenta({ ...nuevaVenta, precio_unitario: e.target.value })} />
-            <input type="number" placeholder="Total" value={nuevaVenta.total} onChange={e => setNuevaVenta({ ...nuevaVenta, total: e.target.value })} />
-            <input type="date" value={nuevaVenta.fecha} onChange={e => setNuevaVenta({ ...nuevaVenta, fecha: e.target.value })} />
-            <input type="text" placeholder="Método de Pago" value={nuevaVenta.metodo_pago} onChange={e => setNuevaVenta({ ...nuevaVenta, metodo_pago: e.target.value })} />
-            <button onClick={registrarVenta}>Registrar Venta</button>
+        <Box sx={{ padding: 3 }}>
+            <Typography variant="h4" gutterBottom>
+                Ventas
+            </Typography>
 
-            <h2>Lista de Ventas</h2>
-            <ul>
-                {ventas.map(venta => (
-                    <li key={venta.id}>
-                        {venta.cantidad} - {venta.precio_unitario} - {venta.total} - {venta.fecha} - {venta.metodo_pago}
-                        <button onClick={() => obtenerVenta(venta.id)}>Ver</button>
-                        <button onClick={() => actualizarVenta(venta.id)}>Actualizar</button>
-                        <button onClick={() => eliminarVenta(venta.id)}>Eliminar</button>
-                    </li>
-                ))}
-            </ul>
-        </div>
+            {/* Botón para abrir el diálogo de agregar venta */}
+            <Button variant="contained" color="primary" onClick={handleOpenDialog}>
+                Agregar Venta
+            </Button>
+
+            {/* Diálogo para agregar/editar venta */}
+            <Dialog open={openDialog} onClose={handleCloseDialog}>
+                <DialogTitle>{editing ? 'Editar Venta' : 'Agregar Venta'}</DialogTitle>
+                <DialogContent>
+                    <form onSubmit={handleSubmit}>
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="ID Producto"
+                            name="id_producto"
+                            value={venta.id_producto}
+                            onChange={handleChange}
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="Cantidad"
+                            name="cantidad"
+                            type="number"
+                            value={venta.cantidad}
+                            onChange={handleChange}
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="Precio Unitario"
+                            name="precio_unitario"
+                            type="number"
+                            value={venta.precio_unitario}
+                            onChange={handleChange}
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="Total"
+                            name="total"
+                            type="number"
+                            value={venta.total}
+                            onChange={handleChange}
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="Fecha"
+                            name="fecha"
+                            type="date"
+                            InputLabelProps={{ shrink: true }}
+                            value={venta.fecha}
+                            onChange={handleChange}
+                            required
+                        />
+                        <TextField
+                            fullWidth
+                            margin="normal"
+                            label="Método de Pago"
+                            name="metodo_pago"
+                            value={venta.metodo_pago}
+                            onChange={handleChange}
+                            required
+                        />
+                        <DialogActions>
+                            <Button onClick={handleCloseDialog}>Cancelar</Button>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="primary"
+                                disabled={!isFormValid()} // Deshabilitar si el formulario no es válido
+                            >
+                                {editing ? 'Actualizar' : 'Registrar'}
+                            </Button>
+                        </DialogActions>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Tabla de ventas */}
+            <TableContainer component={Paper} sx={{ marginTop: 3 }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID Producto</TableCell>
+                            <TableCell>Cantidad</TableCell>
+                            <TableCell>Precio Unitario</TableCell>
+                            <TableCell>Total</TableCell>
+                            <TableCell>Fecha</TableCell>
+                            <TableCell>Método de Pago</TableCell>
+                            <TableCell>Acciones</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {ventas.map((v) => (
+                            <TableRow key={v.id}>
+                                <TableCell>{v.id_producto}</TableCell>
+                                <TableCell>{v.cantidad}</TableCell>
+                                <TableCell>{v.precio_unitario}</TableCell>
+                                <TableCell>{v.total}</TableCell>
+                                <TableCell>{v.fecha}</TableCell>
+                                <TableCell>{v.metodo_pago}</TableCell>
+                                <TableCell>
+                                    <IconButton color="primary" onClick={() => fetchVenta(v.id)}>
+                                        <Edit />
+                                    </IconButton>
+                                    <IconButton color="error" onClick={() => deleteVenta(v.id)}>
+                                        <Delete />
+                                    </IconButton>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </Box>
     );
 };
 

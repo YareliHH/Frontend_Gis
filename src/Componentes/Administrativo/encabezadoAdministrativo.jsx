@@ -30,6 +30,9 @@ import BusinessIcon from '@mui/icons-material/Business';
 import ShareIcon from '@mui/icons-material/Share';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import CategoryIcon from '@mui/icons-material/Category';
+import ColorLensIcon from '@mui/icons-material/ColorLens'; // Ícono para Colores
+import StraightenIcon from '@mui/icons-material/Straighten'; // Ícono para Tallas
+import TransgenderIcon from '@mui/icons-material/Transgender'; // Ícono para Géneros
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AssessmentIcon from '@mui/icons-material/Assessment';
@@ -133,9 +136,9 @@ const EncabezadoAdministrativo = () => {
       items: [
         { icon: InventoryIcon, text: 'Productos', path: '/admin/Productosadmin' },
         { icon: CategoryIcon, text: 'Categorías', path: '/admin/categorias' },
-        { icon: CategoryIcon, text: 'Colores', path: '/admin/colores' },
-        { icon: CategoryIcon, text: 'Tallas', path: '/admin/tallas' },
-        { icon: CategoryIcon, text: 'Géneros', path: '/admin/generos' }
+        { icon: ColorLensIcon, text: 'Colores', path: '/admin/colores' },
+        { icon: StraightenIcon, text: 'Tallas', path: '/admin/tallas' },
+        { icon: TransgenderIcon, text: 'Géneros', path: '/admin/generos' }
       ]
     },
     {
