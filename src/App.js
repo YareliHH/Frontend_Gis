@@ -61,6 +61,7 @@ import Tallas from './Componentes/Administrativo/Tallas.jsx';
 import Generos from './Componentes/Administrativo/Generos.jsx';
 import FaqsAdmin from './Componentes/Administrativo/Faqsadmin.jsx';
 import Ventas from './Componentes/Administrativo/Ventas.jsx';
+import Carrito from './Componentes/Administrativo/Carrito.jsx';
 
 //ERRORES
 import Error500 from './Componentes/Pagina/Error500.jsx';
@@ -124,7 +125,7 @@ const App = () => {
           <Route path="/admin/generos" element={<LayoutEncabezadoAdmin><Generos/></LayoutEncabezadoAdmin>} />
           <Route path="/admin/faqsadmin" element={<LayoutEncabezadoAdmin><FaqsAdmin/></LayoutEncabezadoAdmin>} />
           <Route path="/admin/ventas" element={<LayoutEncabezadoAdmin><Ventas/></LayoutEncabezadoAdmin>} />
-
+          <Route path="/admin/carrito" element={<LayoutEncabezadoAdmin><Carrito/></LayoutEncabezadoAdmin>} />
         
         </Routes>
       </Router>

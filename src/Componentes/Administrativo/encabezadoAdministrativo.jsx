@@ -36,6 +36,7 @@ import TransgenderIcon from '@mui/icons-material/Transgender'; // Ícono para G�
 import ContactMailIcon from '@mui/icons-material/ContactMail';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -135,6 +136,7 @@ const EncabezadoAdministrativo = () => {
       icon: InventoryIcon,
       items: [
         { icon: InventoryIcon, text: 'Productos', path: '/admin/Productosadmin' },
+        { icon: ShoppingCartIcon, text: 'Carrito', path: '/admin/carrito' }, 
         { icon: CategoryIcon, text: 'Categorías', path: '/admin/categorias' },
         { icon: ColorLensIcon, text: 'Colores', path: '/admin/colores' },
         { icon: StraightenIcon, text: 'Tallas', path: '/admin/tallas' },
