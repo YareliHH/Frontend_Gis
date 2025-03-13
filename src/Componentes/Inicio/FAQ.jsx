@@ -35,7 +35,7 @@ const preguntas = [
   {
     pregunta: "👩‍⚕️ ¿Tienen uniformes para diferentes especialidades médicas?",
     respuesta:
-      "Sí, ofrecemos uniformes diseñados específicamente para distintas especialidades médicas, como cirugía, atención dental, enfermería y más.",
+      " Ofrecemos uniformes diseñados específicamente para distintas especialidades médicas, como cirugía, atención dental, enfermería y más.",
   },
 ];
 

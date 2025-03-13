@@ -161,7 +161,7 @@ const PaginaAdministrativa = () => {
             <Button 
               variant="contained" 
               fullWidth
-              onClick={() => handleNavigate('/admin/politicas')}
+              onClick={() => handleNavigate('/admin/ventas')}
               sx={{
                 bgcolor: 'rgba(255, 255, 255, 0.15)',
                 color: 'white',

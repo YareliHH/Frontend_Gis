@@ -127,18 +127,6 @@ const EncabezadoAdministrativo = () => {
   // Configuración de los menús
   const menuGroups = [
     {
-      id: 'documents',
-      title: 'Documentos',
-      icon: BusinessIcon,
-      items: [
-        { icon: PolicyIcon, text: 'Políticas', path: '/admin/politicas' },
-        { icon: GavelIcon, text: 'Términos y Condiciones', path: '/admin/terminos' },
-        { icon: SecurityIcon, text: 'Deslinde Legal', path: '/admin/deslinde' },
-        { icon: BusinessIcon, text: 'Perfil de Empresa', path: '/admin/perfil' },
-        { icon: ShareIcon, text: 'Redes Sociales', path: '/admin/redesSociales' }
-      ]
-    },
-    {
       id: 'products',
       title: 'Gestión de productos',
       icon: InventoryIcon,
@@ -166,6 +154,26 @@ const EncabezadoAdministrativo = () => {
       items: [
         { icon: ContactMailIcon, text: 'Contáctanos', path: '/admin/contactanosadmin' },
         { icon: HelpOutlineIcon, text: 'Preguntas Frecuentes', path: '/admin/faqsadmin' }
+      ]
+    },
+    {
+      id: 'documents',
+      title: 'Documentos',
+      icon: BusinessIcon,
+      items: [
+        { icon: PolicyIcon, text: 'Políticas', path: '/admin/politicas' },
+        { icon: GavelIcon, text: 'Términos y Condiciones', path: '/admin/terminos' },
+        { icon: SecurityIcon, text: 'Deslinde Legal', path: '/admin/deslinde' },
+        { icon: BusinessIcon, text: 'Perfil de Empresa', path: '/admin/perfil' },
+        { icon: ShareIcon, text: 'Redes Sociales', path: '/admin/redesSociales' }
+      ]
+    },
+    {
+      id: 'reportes',
+      title: 'Reportes',
+      icon: BusinessIcon,
+      items: [
+        { icon: AssessmentIcon, text: 'Reportes', path: '/admin/reportes' },
       ]
     },
   ];
@@ -204,23 +212,6 @@ const EncabezadoAdministrativo = () => {
       
       <Divider />
 
-      {/* Enlace a reportes */}
-      <List>
-        <ListItemButton 
-          onClick={() => handleMenuClick('/admin/reportes')}
-          sx={{ 
-            py: 1.5,
-            borderRadius: '0 20px 20px 0', 
-            mr: 1,
-            '&:hover': { bgcolor: 'rgba(30, 144, 255, 0.1)' }
-          }}
-        >
-          <ListItemIcon>
-            <AssessmentIcon color="primary" />
-          </ListItemIcon>
-          <ListItemText primary="Reportes" />
-        </ListItemButton>
-      </List>
 
       <Divider />
 
