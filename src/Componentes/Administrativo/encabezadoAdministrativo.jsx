@@ -35,6 +35,8 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -149,6 +151,15 @@ const EncabezadoAdministrativo = () => {
       ]
     },
     {
+      id: 'ventas',
+      title: 'Ventas',
+      icon: MonetizationOnIcon,
+      items: [
+        { icon: MonetizationOnIcon, text: 'Ventas', path: '/admin/ventas' },
+       
+      ]
+    },
+    {
       id: 'support',
       title: 'Soporte',
       icon: ContactMailIcon,
@@ -156,7 +167,7 @@ const EncabezadoAdministrativo = () => {
         { icon: ContactMailIcon, text: 'Contáctanos', path: '/admin/contactanosadmin' },
         { icon: HelpOutlineIcon, text: 'Preguntas Frecuentes', path: '/admin/faqsadmin' }
       ]
-    }
+    },
   ];
 
   // Contenido del drawer

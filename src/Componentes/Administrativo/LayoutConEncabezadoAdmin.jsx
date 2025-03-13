@@ -24,7 +24,6 @@ const LayoutConEncabezadoAdmin = ({ children }) => {
           p: 3, 
           marginLeft: { xs: 0, md: '280px' }, // Corresponde al ancho del drawer
           width: { xs: '100%', md: 'calc(100% - 280px)' },
-          marginTop: '64px', // Altura del AppBar
           transition: 'margin 225ms cubic-bezier(0.0, 0.0, 0.2, 1) 0ms'
         }}
       >
