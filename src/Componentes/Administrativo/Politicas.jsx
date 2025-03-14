@@ -39,7 +39,7 @@ const Politicas = () => {
   // Obtener todas las políticas
   const fetchPoliticas = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/getpolitica');
+      const response = await axios.get('https://backend-gis-1.onrender.com/api/getpolitica');
       setPoliticas(response.data);
     } catch (error) {
       console.error('Error al obtener las políticas:', error.response ? error.response.data : error.message);
@@ -59,7 +59,7 @@ const Politicas = () => {
     }
 
     try {
-      await axios.post('http://localhost:3001/api/politica', {
+      await axios.post('https://backend-gis-1.onrender.com/api/politica', {
         titulo: newTitulo,
         contenido: newContenido,
       });
@@ -87,7 +87,7 @@ const Politicas = () => {
     }
 
     try {
-      await axios.put(`http://localhost:3001/api/updatepolitica/${editId}`, {
+      await axios.put(`https://backend-gis-1.onrender.com/api/updatepolitica/${editId}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
@@ -110,7 +110,7 @@ const Politicas = () => {
   // Eliminar política (lógicamente)
   const handleDeletePolitica = async (id) => {
     try {
-      await axios.put(`http://localhost:3001/api/deactivatepolitica/${id}`);
+      await axios.put(`https://backend-gis-1.onrender.com/api/deactivatepolitica/${id}`);
       fetchPoliticas();
       setSnackbarMessage('Política desactivada con éxito');
       setSnackbarSeverity('success');

@@ -10,7 +10,7 @@ const Error404 = () => {
 
   const checkPageStatus = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/health');
+      const response = await fetch('https://backend-gis-1.onrender.com/api/health');
       if (response.ok) {
         setIsPageNotFound(false);
       } else {

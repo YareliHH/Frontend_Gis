@@ -40,7 +40,7 @@ const Colores = () => {
   // Obtener colores desde la base de datos
   const fetchColores = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/colores');
+      const response = await axios.get('https://backend-gis-1.onrender.com/api/colores');
       setColores(response.data);
     } catch (error) {
       console.error('Error al obtener colores:', error);
@@ -61,7 +61,7 @@ const Colores = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/agregarcolor', {
+      const response = await axios.post('https://backend-gis-1.onrender.com/api/agregarcolor', {
         color: newColor,
       });
 
@@ -102,7 +102,7 @@ const Colores = () => {
   // Actualizar un color
   const handleUpdateColor = async () => {
     try {
-      await axios.put(`http://localhost:3001/api/editarcolor/${editId}`, {
+      await axios.put(`https://backend-gis-1.onrender.com/api/editarcolor/${editId}`, {
         color: editNombre,
       });
 
@@ -128,7 +128,7 @@ const Colores = () => {
   // Eliminar un color
   const handleDeleteColor = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/eliminarcolor/${deleteId}`);
+      await axios.delete(`https://backend-gis-1.onrender.com/api/eliminarcolor/${deleteId}`);
 
       setColores((prevColores) => prevColores.filter((item) => item.id !== deleteId));
 

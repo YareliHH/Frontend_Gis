@@ -42,7 +42,7 @@ const RedesSociales = () => {
   useEffect(() => {
     const fetchSocials = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/obtenerredes');
+        const response = await axios.get('https://backend-gis-1.onrender.com/api/obtenerredes');
         setSocialData(
           response.data.reduce((acc, item) => ({ ...acc, [item.nombre_red]: item }), {})
         );
@@ -94,7 +94,7 @@ const RedesSociales = () => {
     try {
       const formattedUrl = selectedSocial === 'whatsapp' ? `+52${url}` : url;
       if (isEditing) {
-        await axios.put(`http://localhost:3001/api/editars/${isEditing}`, {
+        await axios.put(`https://backend-gis-1.onrender.com/api/editars/${isEditing}`, {
           nombre_red: selectedSocial,
           url: formattedUrl,
         });
@@ -104,7 +104,7 @@ const RedesSociales = () => {
         });
         setNotification({ open: true, message: 'Red social actualizada.', type: 'success' });
       } else {
-        const response = await axios.post('http://localhost:3001/api/nuevo_social', {
+        const response = await axios.post('https://backend-gis-1.onrender.com/api/nuevo_social', {
           nombre_red: selectedSocial,
           url: formattedUrl,
         });
@@ -123,7 +123,7 @@ const RedesSociales = () => {
   const handleDelete = async (social) => {
     try {
       const id = socialData[social]?.id;
-      await axios.delete(`http://localhost:3001/api/eliminars/${id}`);
+      await axios.delete(`https://backend-gis-1.onrender.com/api/eliminars/${id}`);
       const updatedData = { ...socialData };
       delete updatedData[social];
       setSocialData(updatedData);

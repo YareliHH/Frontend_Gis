@@ -37,7 +37,7 @@ const TerminosYCondiciones = () => {
 
   const fetchTerminos = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/getterminos');
+      const response = await axios.get('https://backend-gis-1.onrender.com/api/getterminos');
       setTerminos(response.data);
     } catch (error) {
       console.error('Error al obtener los términos y condiciones', error);
@@ -52,7 +52,7 @@ const TerminosYCondiciones = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:3001/api/terminos', {
+      await axios.post('https://backend-gis-1.onrender.com/api/terminos', {
         titulo: newTitulo,
         contenido: newContenido,
       });
@@ -74,7 +74,7 @@ const TerminosYCondiciones = () => {
       return;
     }
     try {
-      await axios.put(`http://localhost:3001/api/updatetermino/${editId}`, {
+      await axios.put(`https://backend-gis-1.onrender.com/api/updatetermino/${editId}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
@@ -92,7 +92,7 @@ const TerminosYCondiciones = () => {
 
   const handleDeleteTermino = async (id) => {
     try {
-      await axios.put(`http://localhost:3001/api/deactivatetermino/${id}`);
+      await axios.put(`https://backend-gis-1.onrender.com/api/deactivatetermino/${id}`);
       fetchTerminos();
       setSnackbarMessage('Término elimiminado con éxito');
       setSnackbarOpen(true);

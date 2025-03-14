@@ -21,7 +21,7 @@ const ContactanosAdmin = () => {
     // Obtener los mensajes desde el backend
     const fetchMensajes = async () => {
         try {
-            const response = await axios.get('http://localhost:3001/api/contactos');
+            const response = await axios.get('https://backend-gis-1.onrender.com/api/contactos');
             setMensajes(response.data);
         } catch (error) {
             console.error('Error al obtener los mensajes:', error.response?.data || error.message);
@@ -37,7 +37,7 @@ const ContactanosAdmin = () => {
         if (window.confirm('¿Estás seguro de eliminar este mensaje?')) {
             try {
                 // Realizar la eliminación usando axios
-                await axios.delete(`http://localhost:3001/api/contacto/${id}`);
+                await axios.delete(`https://backend-gis-1.onrender.com/api/contacto/${id}`);
                 
                 // Filtrar el mensaje eliminado de la lista y actualizar el estado
                 setMensajes(mensajes.filter(mensaje => mensaje.id !== id));

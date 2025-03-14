@@ -38,7 +38,7 @@ const FaqsAdmin = () => {
 
   const fetchFaqs = () => {
     setLoading(true);
-    axios.get('http://localhost:3001/api/faqs')
+    axios.get('https://backend-gis-1.onrender.com/api/faqs')
       .then(response => {
         setFaqs(response.data);
         setLoading(false);
@@ -65,7 +65,7 @@ const FaqsAdmin = () => {
     }
 
     setLoading(true);
-    axios.post('http://localhost:3001/api/agregar', { pregunta, respuesta })
+    axios.post('https://backend-gis-1.onrender.com/api/agregar', { pregunta, respuesta })
       .then(response => {
         setFaqs([...faqs, { id: response.data.idFaq, pregunta, respuesta }]);
         setPregunta('');
@@ -107,7 +107,7 @@ const FaqsAdmin = () => {
     }
 
     setLoading(true);
-    axios.put(`http://localhost:3001/api/actualizar/${currentFaqId}`, { pregunta, respuesta })
+    axios.put(`https://backend-gis-1.onrender.com/api/actualizar/${currentFaqId}`, { pregunta, respuesta })
       .then(response => {
         setFaqs(faqs.map(f => f.id === currentFaqId ? { id: currentFaqId, pregunta, respuesta } : f));
         setPregunta('');
@@ -135,7 +135,7 @@ const FaqsAdmin = () => {
   const handleDeleteFaq = (id) => {
     if (window.confirm('¿Estás seguro de que deseas eliminar esta pregunta frecuente?')) {
       setLoading(true);
-      axios.delete(`http://localhost:3001/api/eliminar/${id}`)
+      axios.delete(`https://backend-gis-1.onrender.com/api/eliminar/${id}`)
         .then(response => {
           setFaqs(faqs.filter(f => f.id !== id));
           setNotification({

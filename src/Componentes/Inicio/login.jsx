@@ -74,7 +74,7 @@ function Login() {
     
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/login', 
+      const response = await axios.post('https://backend-gis-1.onrender.com/api/login', 
         { correo, password, captchaValue }, 
         { withCredentials: true }
       );
