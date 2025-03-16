@@ -105,21 +105,21 @@ const FooterCliente = () => {
       try {
         // Política de privacidad
         const privacyResponse = await axios.get(
-          'https://backend-gis-1.onrender.com/api/politicas/politicas_privacidad'
+          'http://localhost:3001/api/politicas/politicas_privacidad'
         );
         const activePolicy = privacyResponse.data.filter((policy) => policy.estado === 'activo');
         setPrivacyPolicy(activePolicy);
 
         // Términos y condiciones
         const termsResponse = await axios.get(
-          'https://backend-gis-1.onrender.com/api/termiCondicion/terminos_condiciones'
+          'http://localhost:3001/api/termiCondicion/terminos_condiciones'
         );
         const activeTerms = termsResponse.data.filter((term) => term.estado === 'activo');
         setTermsConditions(activeTerms);
 
         // Deslinde legal
         const disclaimerResponse = await axios.get(
-          'https://backend-gis-1.onrender.com/api/deslinde/deslinde'
+          'http://localhost:3001/api/deslinde/deslinde'
         );
         const activeDisclaimer = disclaimerResponse.data.filter((disclaimer) => disclaimer.estado === 'activo');
         setDisclaimer(activeDisclaimer);

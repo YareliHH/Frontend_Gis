@@ -36,7 +36,7 @@ const RecuperarContrasena = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('https://backend-gis-1.onrender.com/api/recuperacion_contra', { correo: email });
+      const response = await axios.post('http://localhost:3001/api/recuperacion_contra', { correo: email });
       console.log("Respuesta del backend:", response.data);
 
       setSnackbar({
@@ -74,7 +74,7 @@ const RecuperarContrasena = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post('https://backend-gis-1.onrender.com/api/verify-tokene', { correo: email, token });
+      const response = await axios.post('http://localhost:3001/api/verify-tokene', { correo: email, token });
       if (response.status === 200) {
         setSnackbar({
           open: true,

@@ -73,7 +73,7 @@ const Contactanos = () => {
             console.log('Datos enviados:', form);
 
             // Realizar la solicitud POST al backend con Axios
-            const response = await axios.post('https://backend-gis-1.onrender.com/api/contacto', form, {
+            const response = await axios.post('http://localhost:3001/api/contacto', form, {
                 headers: {
                     'Content-Type': 'application/json'
                 }

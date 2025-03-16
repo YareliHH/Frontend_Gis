@@ -10,7 +10,7 @@ const Error400 = () => {
 
   const checkRequestStatus = async () => {
     try {
-      const response = await fetch('https://backend-gis-1.onrender.com/api/health');
+      const response = await fetch('http://localhost:3001/api/health');
       if (response.ok) {
         setIsBadRequest(false);
       } else {

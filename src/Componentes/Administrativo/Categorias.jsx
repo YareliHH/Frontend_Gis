@@ -42,7 +42,7 @@ const Categorias = () => {
   // Obtener categorías desde la base de datos
   const fetchCategorias = async () => {
     try {
-      const response = await axios.get('https://backend-gis-1.onrender.com/api/obtenercat');
+      const response = await axios.get('http://localhost:3001/api/obtenercat');
       setCategorias(response.data);
     } catch (error) {
       console.error('Error al obtener categorías:', error);
@@ -63,7 +63,7 @@ const Categorias = () => {
     }
 
     try {
-      const response = await axios.post('https://backend-gis-1.onrender.com/api/insertarcat', {
+      const response = await axios.post('http://localhost:3001/api/insertarcat', {
         nombre: newCategoria,
         descripcion: newDescripcion,
       });
@@ -108,7 +108,7 @@ const Categorias = () => {
 const handleUpdateCategoria = async () => {
   try {
     // Enviar la solicitud PUT para actualizar la categoría
-    await axios.put(`https://backend-gis-1.onrender.com/api/editar/${editId}`, {
+    await axios.put(`http://localhost:3001/api/editar/${editId}`, {
       nombre: editNombre,
       descripcion: editDescripcion,
     });
@@ -140,7 +140,7 @@ const handleUpdateCategoria = async () => {
 const handleDeleteCategoria = async () => {
   try {
     // Enviar la solicitud DELETE para eliminar la categoría
-    await axios.delete(`https://backend-gis-1.onrender.com/api/eliminar/${deleteId}`);
+    await axios.delete(`http://localhost:3001/api/eliminar/${deleteId}`);
 
     // Actualizar la lista de categorías en el estado
     setCategorias((prevCategorias) => prevCategorias.filter((item) => item.id_categoria !== deleteId));

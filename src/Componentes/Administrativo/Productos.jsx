@@ -52,7 +52,7 @@ const ProductoForm = () => {
   // Obtener productos
   const fetchProductos = async () => {
     try {
-      const response = await axios.get("https://backend-gis-1.onrender.com/api/obtener");
+      const response = await axios.get("http://localhost:3001/api/obtener");
       setProductos(response.data);
     } catch (error) {
       console.error("Error al obtener productos:", error);
@@ -65,7 +65,7 @@ const ProductoForm = () => {
   // Obtener categorías desde la BD
   const fetchCategorias = async () => {
     try {
-      const response = await axios.get("https://backend-gis-1.onrender.com/api/obtenercat");
+      const response = await axios.get("http://localhost:3001/api/obtenercat");
       setCategorias(response.data);
     } catch (error) {
       console.error("Error al obtener categorías:", error);
@@ -75,7 +75,7 @@ const ProductoForm = () => {
   // Obtener tallas desde la BD
   const fetchTallas = async () => {
     try {
-      const response = await axios.get("https://backend-gis-1.onrender.com/api/tallas");
+      const response = await axios.get("http://localhost:3001/api/tallas");
       setTallas(response.data);
     } catch (error) {
       console.error("Error al obtener tallas:", error);
@@ -85,7 +85,7 @@ const ProductoForm = () => {
   // Obtener colores desde la BD
   const fetchColores = async () => {
     try {
-      const response = await axios.get("https://backend-gis-1.onrender.com/api/colores");
+      const response = await axios.get("http://localhost:3001/api/colores");
       setColores(response.data);
     } catch (error) {
       console.error("Error al obtener colores:", error);
@@ -95,7 +95,7 @@ const ProductoForm = () => {
   // Obtener géneros desde la BD
   const fetchGeneros = async () => {
     try {
-      const response = await axios.get("https://backend-gis-1.onrender.com/api/generos");
+      const response = await axios.get("http://localhost:3001/api/generos");
       setGeneros(response.data);
     } catch (error) {
       console.error("Error al obtener géneros:", error);
@@ -105,7 +105,7 @@ const ProductoForm = () => {
   // Obtener un producto por su ID para edición
   const fetchProductoById = async (id) => {
     try {
-      const response = await axios.get(`https://backend-gis-1.onrender.com/api/obtener/${id}`);
+      const response = await axios.get(`http://localhost:3001/api/obtener/${id}`);
       setProducto(response.data); // Se asume que la respuesta incluye el "id" y la URL de la imagen
     } catch (error) {
       console.error("Error al obtener producto:", error);
@@ -118,7 +118,7 @@ const ProductoForm = () => {
   // Eliminar un producto
   const handleEliminarProducto = async (id) => {
     try {
-      await axios.delete(`https://backend-gis-1.onrender.com/api/eliminar/${id}`);
+      await axios.delete(`http://localhost:3001/api/eliminar/${id}`);
       setSnackbarMessage("Producto eliminado con éxito");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
@@ -151,12 +151,12 @@ const ProductoForm = () => {
           formData.append("id_genero", producto.id_genero);
           formData.append("imagenes", producto.imagen);
 
-          await axios.put(`https://backend-gis-1.onrender.com/api/actualizar/${producto.id}`, formData, {
+          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, formData, {
             headers: { "Content-Type": "multipart/form-data" },
           });
         } else {
           // Si no se seleccionó nueva imagen, se envían solo los datos de texto
-          await axios.put(`https://backend-gis-1.onrender.com/api/actualizar/${producto.id}`, {
+          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, {
             nombre_producto: producto.nombre_producto,
             descripcion: producto.descripcion,
             precio: producto.precio,
@@ -182,7 +182,7 @@ const ProductoForm = () => {
         if (producto.imagen) {
           formData.append("imagenes", producto.imagen);
         }
-        await axios.post("https://backend-gis-1.onrender.com/api/agregarproducto", formData, {
+        await axios.post("http://localhost:3001/api/agregarproducto", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         setSnackbarMessage("Producto creado con éxito");

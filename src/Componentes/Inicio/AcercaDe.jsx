@@ -22,7 +22,7 @@ const AcercaDe = () => {
     };
 
     useEffect(() => {
-        fetch('https://backend-gis-1.onrender.com/api/acerca_de')
+        fetch('http://localhost:3001/api/acerca_de')
             .then((response) => {
                 if (!response.ok) {
                     throw new Error('Error al obtener los datos');
