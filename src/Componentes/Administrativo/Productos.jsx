@@ -22,6 +22,11 @@ import {
   Snackbar,
   Alert,
   Tooltip,
+  Paper,
+  Divider,
+  Box,
+  Tabs,
+  Tab,
 } from "@mui/material";
 import { Edit, Delete, Add, CloudUpload } from "@mui/icons-material";
 
@@ -48,6 +53,7 @@ const ProductoForm = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [tabValue, setTabValue] = useState(0);
 
   // Obtener productos
   const fetchProductos = async () => {
@@ -227,6 +233,11 @@ const ProductoForm = () => {
     setSnackbarOpen(false);
   };
 
+  // Cambiar de pestaña
+  const handleTabChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
+
   useEffect(() => {
     fetchProductos();
     fetchCategorias();
@@ -236,7 +247,7 @@ const ProductoForm = () => {
   }, []);
 
   return (
-    <Container maxWidth="md" sx={{ padding: "40px 20px" }}>
+    <Container maxWidth="xl" sx={{ padding: "40px 20px" }}>
       {/* Formulario para agregar/editar */}
       <Card sx={{ borderRadius: "12px", boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)", marginBottom: "40px" }}>
         <CardContent>
@@ -412,79 +423,163 @@ const ProductoForm = () => {
           </form>
         </CardContent>
       </Card>
-
-      {/* Tabla de productos */}
+      {/* Tabla de productos con dos secciones */}
       <Card sx={{ borderRadius: "12px", boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)" }}>
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: "bold" }}>ID</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Nombre</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Descripción</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Precio</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Imagen</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Talla</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Color</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Stock</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Categoría</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Género</TableCell>
-                <TableCell sx={{ fontWeight: "bold" }}>Acciones</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {productos.map((prod) => (
-                <TableRow key={prod.id}>
-                  <TableCell>{prod.id}</TableCell>
-                  <TableCell>{prod.nombre_producto}</TableCell>
-                  <TableCell>{prod.descripcion}</TableCell>
-                  <TableCell>{prod.precio}</TableCell>
-                  <TableCell>
-                    {prod.imagen ? (
-                      <img
-                        src={prod.imagen}
-                        alt={prod.nombre_producto}
-                        style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                          borderRadius: "4px",
-                        }}
-                      />
-                    ) : (
-                      <Typography variant="body2" color="textSecondary">
-                        Sin imagen
-                      </Typography>
-                    )}
-                  </TableCell>
-                  <TableCell>{prod.talla}</TableCell>
-                  <TableCell>{prod.color}</TableCell>
-                  <TableCell>{prod.stock}</TableCell>
-                  <TableCell>{prod.categoria}</TableCell>
-                  <TableCell>{prod.genero}</TableCell>
-                  <TableCell>
-                    <Tooltip title="Editar producto">
-                      <IconButton
-                        onClick={() => fetchProductoById(prod.id)}
-                        sx={{ color: "#0277bd", "&:hover": { backgroundColor: "rgba(2, 119, 189, 0.1)" } }}
-                      >
-                        <Edit />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Eliminar producto">
-                      <IconButton
-                        onClick={() => handleEliminarProducto(prod.id)}
-                        sx={{ color: "#d32f2f", "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" } }}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <CardContent>
+          <Typography 
+        variant="h5" 
+        gutterBottom 
+        sx={{ 
+          fontWeight: "700", 
+          color: "#0277bd", 
+          marginBottom: "24px", 
+          textAlign: "center" 
+        }}
+      >
+        Listado de Productos
+      </Typography> 
+          <Box sx={{ borderBottom: 1, borderColor: "divider", marginBottom: "24px" }}>
+            <Tabs value={tabValue} onChange={handleTabChange} variant="fullWidth">
+              <Tab label="Información Principal" sx={{ fontWeight: "600" }} />
+              <Tab label="Características del Producto" sx={{ fontWeight: "600" }} />
+            </Tabs>
+          </Box>
+          
+          {/* Primera sección: Información básica */}
+          {tabValue === 0 && (
+            <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+              <TableContainer sx={{ maxHeight: "80vh" /* Aumentado para mostrar más filas */ }}>
+                <Table stickyHeader sx={{ minWidth: 850 /* Aumentado para más espacio horizontal */ }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>ID</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Nombre</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Descripción</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Precio</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Stock</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Imagen</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {productos.map((prod) => (
+                      <TableRow key={prod.id} hover sx={{ height: "100px" /* Aumentado para más espacio vertical por fila */ }}>
+                        <TableCell sx={{ padding: "12px" }}>{prod.id}</TableCell>
+                        <TableCell sx={{ fontWeight: "500", padding: "12px" }}>{prod.nombre_producto}</TableCell>
+                        <TableCell sx={{ maxWidth: "400px" /* Aumentado */, overflowWrap: "break-word", padding: "12px" }}>{prod.descripcion}</TableCell>
+                        <TableCell sx={{ padding: "12px" }}>${Number(prod.precio).toFixed(2)}</TableCell>
+                        <TableCell sx={{ padding: "12px" }}>{prod.stock}</TableCell>
+                        <TableCell sx={{ padding: "12px" }}>
+                          {prod.imagen ? (
+                            <img
+                              src={prod.imagen}
+                              alt={prod.nombre_producto}
+                              style={{
+                                width: "100px" /* Aumentado */,
+                                height: "100px" /* Aumentado */,
+                                objectFit: "cover",
+                                borderRadius: "8px",
+                                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                              }}
+                            />
+                          ) : (
+                            <Typography variant="body2" color="textSecondary">
+                              Sin imagen
+                            </Typography>
+                          )}
+                        </TableCell>
+                        <TableCell sx={{ padding: "12px" }}>
+                          <Tooltip title="Editar producto">
+                            <IconButton
+                              onClick={() => fetchProductoById(prod.id)}
+                              sx={{ color: "#0277bd", "&:hover": { backgroundColor: "rgba(2, 119, 189, 0.1)" } }}
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Eliminar producto">
+                            <IconButton
+                              onClick={() => handleEliminarProducto(prod.id)}
+                              sx={{ color: "#d32f2f", "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" } }}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          )}
+          
+          {/* Segunda sección: Características */}
+          {tabValue === 1 && (
+            <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
+              <TableContainer sx={{ maxHeight: "80vh" /* Aumentado para mostrar más filas */ }}>
+                <Table stickyHeader sx={{ minWidth: 850 /* Aumentado para más espacio horizontal */ }}>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>ID</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Nombre</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Talla</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Color</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Categoría</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Género</TableCell>
+                      <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {productos.map((prod) => (
+                      <TableRow key={prod.id} hover sx={{ height: "100px" /* Aumentado para más espacio vertical por fila */ }}>
+                        <TableCell sx={{ padding: "12px" }}>{prod.id}</TableCell>
+                        <TableCell sx={{ fontWeight: "500", padding: "12px" }}>{prod.nombre_producto}</TableCell>
+                        <TableCell sx={{ padding: "12px" }}>{prod.talla}</TableCell>
+                        <TableCell sx={{ padding: "12px" }}>
+                          <Box sx={{ 
+                            display: "flex", 
+                            alignItems: "center",
+                            gap: "8px" 
+                          }}>
+                            <Box sx={{ 
+                              width: "24px" /* Aumentado */,
+                              height: "24px" /* Aumentado */,
+                              backgroundColor: prod.color.toLowerCase(),
+                              border: "1px solid #ddd",
+                              borderRadius: "4px"
+                            }}></Box>
+                            {prod.color}
+                          </Box>
+                        </TableCell>
+                        <TableCell sx={{ padding: "12px" }}>{prod.categoria}</TableCell>
+                        <TableCell sx={{ padding: "12px" }}>{prod.genero}</TableCell>
+                        <TableCell sx={{ padding: "12px" }}>
+                          <Tooltip title="Editar producto">
+                            <IconButton
+                              onClick={() => fetchProductoById(prod.id)}
+                              sx={{ color: "#0277bd", "&:hover": { backgroundColor: "rgba(2, 119, 189, 0.1)" } }}
+                            >
+                              <Edit />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title="Eliminar producto">
+                            <IconButton
+                              onClick={() => handleEliminarProducto(prod.id)}
+                              sx={{ color: "#d32f2f", "&:hover": { backgroundColor: "rgba(211, 47, 47, 0.1)" } }}
+                            >
+                              <Delete />
+                            </IconButton>
+                          </Tooltip>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Paper>
+          )}
+        </CardContent>
       </Card>
 
       <Snackbar open={snackbarOpen} autoHideDuration={3000} onClose={handleSnackbarClose}>

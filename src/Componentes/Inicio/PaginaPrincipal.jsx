@@ -135,12 +135,12 @@ const PaginaPrincipal = () => {
     cssEase: 'cubic-bezier(0.7, 0, 0.3, 1)',
     dotsClass: 'slick-dots custom-dots',
     appendDots: dots => (
-      <div style={{ bottom: '25px', padding: '0' }}>
+      <div style={{ bottom: '15px', padding: '0' }}>
         <ul style={{ margin: '0' }}>{dots}</ul>
       </div>
     ),
     customPaging: i => (
-      <div style={{ width: '12px', height: '12px', background: 'rgba(255, 255, 255, 0.7)', borderRadius: '50%', transition: 'all 0.3s ease' }} />
+      <div style={{ width: '8px', height: '8px', background: 'rgba(255, 255, 255, 0.7)', borderRadius: '50%', transition: 'all 0.3s ease' }} />
     ),
     responsive: [
       { breakpoint: 600, settings: { dots: true, arrows: false } },
@@ -235,7 +235,7 @@ const PaginaPrincipal = () => {
                       style={{
                         width: '100%',
                         height: isMobile ? 'auto' : 'auto', // Altura automática para respetar proporciones
-                        maxHeight: isMobile ? '400px' : '600px', // Límite máximo para no exceder pantalla
+                        maxHeight: isMobile ? '300px' : '600px', // Límite máximo para no exceder pantalla
                         objectFit: 'contain', // Mostrar imagen completa
                         display: 'block',
                         margin: '0 auto', // Centrar la imagen horizontalmente
@@ -313,7 +313,7 @@ const PaginaPrincipal = () => {
                         image={product.image}
                         alt={product.name}
                         sx={{
-                          height: 240,
+                          height: isMobile ? 180 : 240,
                           objectFit: 'cover',
                           transition: 'transform 0.6s ease',
                           '&:hover': { transform: 'scale(1.05)' },
@@ -335,7 +335,7 @@ const PaginaPrincipal = () => {
                         gutterBottom
                         variant="h6"
                         component="div"
-                        sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 'bold', fontSize: '1.1rem' }}
+                        sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 'bold', fontSize: isMobile ? '1rem' : '1.1rem' }}
                       >
                         {product.name}
                       </Typography>
@@ -407,8 +407,8 @@ const PaginaPrincipal = () => {
             <Paper
               elevation={6}
               sx={{
-                width: 320,
-                height: 450,
+                width: isMobile ? '90vw' : 320,
+                height: isMobile ? '70vh' : 450,
                 display: 'flex',
                 flexDirection: 'column',
                 borderRadius: '16px',

@@ -34,7 +34,6 @@ const Ventas = () => {
     const [id, setId] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
 
-    // Obtener todas las ventas al cargar el componente
     useEffect(() => {
         fetchVentas();
     }, []);
@@ -48,7 +47,6 @@ const Ventas = () => {
         }
     };
 
-    // Obtener una venta por ID
     const fetchVenta = async (id) => {
         try {
             const response = await axios.get(`http://localhost:3000/ventas/${id}`);
@@ -61,7 +59,6 @@ const Ventas = () => {
         }
     };
 
-    // Registrar una nueva venta
     const createVenta = async () => {
         try {
             const response = await axios.post('http://localhost:3000/registrar', venta);
@@ -72,7 +69,6 @@ const Ventas = () => {
         }
     };
 
-    // Actualizar una venta
     const updateVenta = async () => {
         try {
             await axios.put(`http://localhost:3000/actualizar/${id}`, venta);
@@ -83,7 +79,6 @@ const Ventas = () => {
         }
     };
 
-    // Eliminar una venta
     const deleteVenta = async (id) => {
         try {
             await axios.delete(`http://localhost:3000/eliminar/${id}`);
@@ -93,7 +88,6 @@ const Ventas = () => {
         }
     };
 
-    // Manejar cambios en el formulario
     const handleChange = (e) => {
         setVenta({
             ...venta,
@@ -101,7 +95,6 @@ const Ventas = () => {
         });
     };
 
-    // Manejar envío del formulario
     const handleSubmit = (e) => {
         e.preventDefault();
         if (editing) {
@@ -111,12 +104,10 @@ const Ventas = () => {
         }
     };
 
-    // Abrir el diálogo para agregar/editar
     const handleOpenDialog = () => {
         setOpenDialog(true);
     };
 
-    // Cerrar el diálogo y limpiar el formulario
     const handleCloseDialog = () => {
         setOpenDialog(false);
         setVenta({
@@ -131,7 +122,6 @@ const Ventas = () => {
         setId(null);
     };
 
-    // Verificar si todos los campos están llenos
     const isFormValid = () => {
         return (
             venta.id_producto.trim() !== '' &&
@@ -144,18 +134,33 @@ const Ventas = () => {
     };
 
     return (
-        <Box sx={{ padding: 3 }}>
-            <Typography variant="h4" gutterBottom>
+        <Box sx={{ padding: { xs: 2, sm: 3 } /* Ajuste de padding para móviles */ }}>
+            <Typography
+                variant="h4"
+                gutterBottom
+                sx={{ fontSize: { xs: '1.5rem', sm: '2rem' } /* Tamaño de fuente responsivo */ }}
+            >
                 Ventas
             </Typography>
 
-            {/* Botón para abrir el diálogo de agregar venta */}
-            <Button variant="contained" color="primary" onClick={handleOpenDialog}>
+            {/* Botón para agregar venta */}
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleOpenDialog}
+                sx={{ mb: 2, fontSize: { xs: '0.8rem', sm: '1rem' } /* Tamaño responsivo */ }}
+            >
                 Agregar Venta
             </Button>
 
             {/* Diálogo para agregar/editar venta */}
-            <Dialog open={openDialog} onClose={handleCloseDialog}>
+            <Dialog
+                open={openDialog}
+                onClose={handleCloseDialog}
+                fullWidth
+                maxWidth="sm" /* Máximo ancho para pantallas pequeñas */
+                sx={{ '& .MuiDialog-paper': { width: { xs: '90%', sm: 'auto' } } }}
+            >
                 <DialogTitle>{editing ? 'Editar Venta' : 'Agregar Venta'}</DialogTitle>
                 <DialogContent>
                     <form onSubmit={handleSubmit}>
@@ -167,6 +172,7 @@ const Ventas = () => {
                             value={venta.id_producto}
                             onChange={handleChange}
                             required
+                            sx={{ mt: 1 }}
                         />
                         <TextField
                             fullWidth
@@ -218,13 +224,16 @@ const Ventas = () => {
                             onChange={handleChange}
                             required
                         />
-                        <DialogActions>
-                            <Button onClick={handleCloseDialog}>Cancelar</Button>
+                        <DialogActions sx={{ mt: 2 }}>
+                            <Button onClick={handleCloseDialog} size="small">
+                                Cancelar
+                            </Button>
                             <Button
                                 type="submit"
                                 variant="contained"
                                 color="primary"
-                                disabled={!isFormValid()} // Deshabilitar si el formulario no es válido
+                                disabled={!isFormValid()}
+                                size="small"
                             >
                                 {editing ? 'Actualizar' : 'Registrar'}
                             </Button>
@@ -234,8 +243,24 @@ const Ventas = () => {
             </Dialog>
 
             {/* Tabla de ventas */}
-            <TableContainer component={Paper} sx={{ marginTop: 3 }}>
-                <Table>
+            <TableContainer
+                component={Paper}
+                sx={{
+                    mt: 3,
+                    maxHeight: '70vh',
+                    overflowX: 'auto' /* Scroll horizontal en móviles */,
+                }}
+            >
+                <Table
+                    sx={{
+                        minWidth: { xs: 600, sm: 650 } /* Ancho mínimo para scroll en móviles */,
+                        '& .MuiTableCell-root': {
+                            fontSize: { xs: '0.75rem', sm: '0.875rem' } /* Tamaño de texto responsivo */,
+                            padding: { xs: '8px', sm: '16px' } /* Padding ajustado */,
+                        },
+                    }}
+                    stickyHeader
+                >
                     <TableHead>
                         <TableRow>
                             <TableCell>ID Producto</TableCell>
@@ -257,11 +282,19 @@ const Ventas = () => {
                                 <TableCell>{v.fecha}</TableCell>
                                 <TableCell>{v.metodo_pago}</TableCell>
                                 <TableCell>
-                                    <IconButton color="primary" onClick={() => fetchVenta(v.id)}>
-                                        <Edit />
+                                    <IconButton
+                                        color="primary"
+                                        onClick={() => fetchVenta(v.id)}
+                                        size="small"
+                                    >
+                                        <Edit fontSize="small" />
                                     </IconButton>
-                                    <IconButton color="error" onClick={() => deleteVenta(v.id)}>
-                                        <Delete />
+                                    <IconButton
+                                        color="error"
+                                        onClick={() => deleteVenta(v.id)}
+                                        size="small"
+                                    >
+                                        <Delete fontSize="small" />
                                     </IconButton>
                                 </TableCell>
                             </TableRow>

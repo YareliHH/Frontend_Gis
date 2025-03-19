@@ -63,6 +63,11 @@ import FaqsAdmin from './Componentes/Administrativo/Faqsadmin.jsx';
 import Ventas from './Componentes/Administrativo/Ventas.jsx';
 import Carrito from './Componentes/Administrativo/Carrito.jsx';
 
+// Componentes del Empleado
+import PaginaEmpleado from './Componentes/Empleado/PaginaEmpleado.jsx';
+import LayoutEncabezadoEmpleado from './Componentes/Empleado/LayoutEncabezadoEmpleado.jsx';
+
+
 //ERRORES
 import Error500 from './Componentes/Pagina/Error500.jsx';
 import Error404 from './Componentes/Pagina/Error404.jsx';
@@ -127,6 +132,10 @@ const App = () => {
           <Route path="/admin/ventas" element={<LayoutEncabezadoAdmin><Ventas/></LayoutEncabezadoAdmin>} />
           <Route path="/admin/carrito" element={<LayoutEncabezadoAdmin><Carrito/></LayoutEncabezadoAdmin>} />
         
+           {/* Rutas Empleado*/}
+          <Route path="/empleado" element={<LayoutEncabezadoEmpleado><PaginaEmpleado/></LayoutEncabezadoEmpleado>} />
+
+
         </Routes>
       </Router>
     </ThemeProvider>
