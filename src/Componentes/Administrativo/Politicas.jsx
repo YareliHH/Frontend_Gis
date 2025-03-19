@@ -21,10 +21,19 @@ import {
   Tooltip,
   Snackbar,
   Alert,
+  useMediaQuery,
+  Card,
+  CardContent,
+  Divider,
+  Grid,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { useTheme } from '@mui/material/styles';
+import { Edit, Delete, ExpandMore, ExpandLess } from '@mui/icons-material';
 
 const Politicas = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  
   const [politicas, setPoliticas] = useState([]);
   const [newTitulo, setNewTitulo] = useState('');
   const [newContenido, setNewContenido] = useState('');
@@ -34,7 +43,13 @@ const Politicas = () => {
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
-  const [snackbarSeverity, setSnackbarSeverity] = useState('success'); // Para manejar éxito o error
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+  const [expandedCard, setExpandedCard] = useState(null);
+
+  // Controla la expansión de las tarjetas en vista móvil
+  const handleExpandCard = (id) => {
+    setExpandedCard(expandedCard === id ? null : id);
+  };
 
   // Obtener todas las políticas
   const fetchPoliticas = async () => {
@@ -112,12 +127,12 @@ const Politicas = () => {
     try {
       await axios.put(`http://localhost:3001/api/deactivatepolitica/${id}`);
       fetchPoliticas();
-      setSnackbarMessage('Política desactivada con éxito');
+      setSnackbarMessage('Política eliminada con éxito');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);
     } catch (error) {
-      console.error('Error al desactivar la política:', error);
-      setSnackbarMessage('Error al desactivar la política');
+      console.error('Error al eliminar la política:', error);
+      setSnackbarMessage('Error al eliminar la política');
       setSnackbarSeverity('error');
       setSnackbarOpen(true);
     }
@@ -147,11 +162,131 @@ const Politicas = () => {
     fetchPoliticas();
   }, []);
 
+  // Renderiza tarjetas para vista móvil
+  const renderMobileCards = () => {
+    if (politicas.length === 0) {
+      return (
+        <Card sx={{ borderRadius: '12px', mb: 2, boxShadow: '0 4px 12px rgba(0,0,0,0.1)', p: 2 }}>
+          <Typography variant="body1" color="text.secondary" align="center">
+            No hay políticas disponibles
+          </Typography>
+        </Card>
+      );
+    }
+
+    return politicas.map((item) => (
+      <Card 
+        key={item.id} 
+        sx={{ 
+          borderRadius: '12px', 
+          mb: 2, 
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          transition: 'all 0.3s ease',
+          '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 14px rgba(0,0,0,0.15)' }
+        }}
+      >
+        <CardContent sx={{ p: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+            <Typography variant="h6" fontWeight="600" color="primary">
+              {item.titulo}
+            </Typography>
+            <Box>
+              <IconButton 
+                size="small" 
+                onClick={() => handleClickOpen(item)}
+                sx={{ color: '#3f51b5', mr: 1 }}
+              >
+                <Edit fontSize="small" />
+              </IconButton>
+              <IconButton 
+                size="small" 
+                onClick={() => handleDeletePolitica(item.id)}
+                sx={{ color: '#d32f2f' }}
+              >
+                <Delete fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+          
+          <Box 
+            sx={{ 
+              cursor: 'pointer', 
+              display: 'flex', 
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+            onClick={() => handleExpandCard(item.id)}
+          >
+            <Typography variant="body2" color="text.secondary">
+              Ver detalles
+            </Typography>
+            {expandedCard === item.id ? <ExpandLess /> : <ExpandMore />}
+          </Box>
+          
+          {expandedCard === item.id && (
+            <Box sx={{ mt: 2 }}>
+              <Divider sx={{ mb: 2 }} />
+              
+              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                Contenido:
+              </Typography>
+              <Typography variant="body2" paragraph sx={{ mb: 2, whiteSpace: 'pre-wrap' }}>
+                {item.contenido}
+              </Typography>
+              
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Versión:
+                  </Typography>
+                  <Typography variant="body2">
+                    {item.version || '1.0'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Estado:
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontWeight: '600',
+                      color: item.estado === 'Activo' ? '#388e3c' : '#d32f2f',
+                      backgroundColor: item.estado === 'Activo' ? '#e8f5e9' : '#ffebee',
+                      borderRadius: '20px',
+                      padding: '4px 10px',
+                      display: 'inline-block',
+                      fontSize: '0,75rem'
+                    }}
+                  >
+                    {item.estado || 'Activo'}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12}>
+                  <Typography variant="subtitle2" color="text.secondary">
+                    Fecha de creación:
+                  </Typography>
+                  <Typography variant="body2">
+                    {new Date(item.fecha_creacion).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    })}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          )}
+        </CardContent>
+      </Card>
+    ));
+  };
+
   return (
     <Container
       maxWidth="lg"
       sx={{
-        padding: '40px 20px',
+        padding: { xs: '20px 10px', sm: '40px 20px' },
         background: 'linear-gradient(135deg, #f5f7fa 0%,)',
         minHeight: '100vh',
       }}
@@ -160,7 +295,7 @@ const Politicas = () => {
       <Box
         sx={{
           backgroundColor: '#ffffff',
-          padding: '30px',
+          padding: { xs: '20px', sm: '30px' },
           borderRadius: '16px',
           boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
           marginBottom: '40px',
@@ -176,6 +311,7 @@ const Politicas = () => {
             color: '#00050a',
             textAlign: 'center',
             letterSpacing: '1px',
+            fontSize: { xs: '1.5rem', sm: '2rem' }
           }}
         >
           Gestión de Políticas
@@ -220,9 +356,10 @@ const Politicas = () => {
           variant="contained"
           color="primary"
           onClick={handleCreatePolitica}
+          fullWidth={isMobile}
           sx={{
             marginTop: '20px',
-            padding: '12px 30px',
+            padding: { xs: '10px 16px', sm: '12px 30px' },
             fontWeight: '600',
             borderRadius: '12px',
             backgroundColor: '#1976d2',
@@ -235,127 +372,140 @@ const Politicas = () => {
         </Button>
       </Box>
 
-      {/* Tabla */}
-      <TableContainer
-        component={Paper}
-        sx={{
-          borderRadius: '16px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
-          overflow: 'hidden',
-          backgroundColor: '#ffffff',
-        }}
-      >
-        <Table sx={{ minWidth: 650 }}>
-          <TableHead>
-            <TableRow>
-              {['Título', 'Contenido', 'Versión', 'Estado', 'Fecha de Creación', 'Acciones'].map((header) => (
-                <TableCell
-                  key={header}
-                  sx={{
-                    fontWeight: '700',
-                    backgroundColor: '#1976d2',
-                    color: '#fff',
-                    textAlign: 'center',
-                    padding: '16px',
-                    fontSize: '1.1rem',
-                    letterSpacing: '0.5px',
-                  }}
-                >
-                  {header}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {politicas.length > 0 ? (
-              politicas.map((item) => (
-                <TableRow
-                  key={item.id}
-                  sx={{
-                    '&:hover': { backgroundColor: '#f5f7fa' },
-                    transition: 'background-color 0.3s ease',
-                  }}
-                >
-                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
-                    {item.titulo}
+      {/* Vista de tabla para desktop y tarjetas para móvil */}
+      {isMobile ? (
+        <Box>
+          {renderMobileCards()}
+        </Box>
+      ) : (
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: '16px',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+            overflow: 'hidden',
+            backgroundColor: '#ffffff',
+          }}
+        >
+          <Table sx={{ minWidth: 650 }}>
+            <TableHead>
+              <TableRow>
+                {['Título', 'Contenido', 'Versión', 'Estado', 'Fecha de Creación', 'Acciones'].map((header) => (
+                  <TableCell
+                    key={header}
+                    sx={{
+                      fontWeight: '700',
+                      backgroundColor: '#1976d2',
+                      color: '#fff',
+                      textAlign: 'center',
+                      padding: '16px',
+                      fontSize: '1.1rem',
+                      letterSpacing: '0.5px',
+                    }}
+                  >
+                    {header}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ maxWidth: '300px', wordWrap: 'break-word', color: '#424242' }}
-                    >
-                      {item.contenido}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
-                    {item.version || '1.0'} {/* Valor por defecto si no hay versión */}
-                  </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontWeight: '600',
-                        color: item.estado === 'Activo' ? '#388e3c' : '#d32f2f',
-                        backgroundColor: item.estado === 'Activo' ? '#e8f5e9' : '#ffebee',
-                        borderRadius: '20px',
-                        padding: '6px 14px',
-                        display: 'inline-block',
-                      }}
-                    >
-                      {item.estado || 'Activo'} {/* Valor por defecto si no hay estado */}
-                    </Typography>
-                  </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
-                    {new Date(item.fecha_creacion).toLocaleDateString('es-ES', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
-                    })}
-                  </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
-                    <Tooltip title="Editar">
-                      <IconButton
-                        onClick={() => handleClickOpen(item)}
+                ))}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {politicas.length > 0 ? (
+                politicas.map((item) => (
+                  <TableRow
+                    key={item.id}
+                    sx={{
+                      '&:hover': { backgroundColor: '#f5f7fa' },
+                      transition: 'background-color 0.3s ease',
+                    }}
+                  >
+                    <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                      {item.titulo}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
+                      <Typography
+                        variant="body2"
+                        sx={{ maxWidth: '300px', wordWrap: 'break-word', color: '#424242' }}
+                      >
+                        {item.contenido}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                      {item.version || '1.0'}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
+                      <Typography
+                        variant="body2"
                         sx={{
-                          color: '#3f51b5',
-                          '&:hover': { color: '#303f9f', backgroundColor: '#e8eaf6' },
+                          fontWeight: '600',
+                          color: item.estado === 'Activo' ? '#388e3c' : '#d32f2f',
+                          backgroundColor: item.estado === 'Activo' ? '#e8f5e9' : '#ffebee',
+                          borderRadius: '20px',
+                          padding: '6px 14px',
+                          display: 'inline-block',
                         }}
                       >
-                        <Edit />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Desactivar">
-                      <IconButton
-                        onClick={() => handleDeletePolitica(item.id)}
-                        sx={{
-                          color: '#d32f2f',
-                          '&:hover': { color: '#b71c1c', backgroundColor: '#ffebee' },
-                        }}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Tooltip>
+                        {item.estado || 'Activo'}
+                      </Typography>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                      {new Date(item.fecha_creacion).toLocaleDateString('es-ES', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                      })}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
+                      <Tooltip title="Editar">
+                        <IconButton
+                          onClick={() => handleClickOpen(item)}
+                          sx={{
+                            color: '#3f51b5',
+                            '&:hover': { color: '#303f9f', backgroundColor: '#e8eaf6' },
+                          }}
+                        >
+                          <Edit />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Desactivar">
+                        <IconButton
+                          onClick={() => handleDeletePolitica(item.id)}
+                          sx={{
+                            color: '#d32f2f',
+                            '&:hover': { color: '#b71c1c', backgroundColor: '#ffebee' },
+                          }}
+                        >
+                          <Delete />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell colSpan={6} sx={{ textAlign: 'center', padding: '20px', color: '#757575' }}>
+                    No hay políticas disponibles
                   </TableCell>
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} sx={{ textAlign: 'center', padding: '20px', color: '#757575' }}>
-                  No hay políticas disponibles
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
 
       {/* Diálogo de edición */}
       <Dialog
         open={open}
         onClose={handleClose}
         PaperProps={{
-          sx: { borderRadius: '16px', padding: '20px', backgroundColor: '#fafafa' },
+          sx: {
+            borderRadius: '16px',
+            padding: '20px',
+            backgroundColor: '#fafafa',
+            width: isMobile ? '100%' : 'auto',
+            margin: isMobile ? '10px' : 'auto'
+          },
         }}
+        fullScreen={isMobile}
       >
         <DialogTitle sx={{ fontWeight: '700', color: '#1a237e', textAlign: 'center' }}>
           Editar Política

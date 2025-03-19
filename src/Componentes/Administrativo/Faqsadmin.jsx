@@ -266,9 +266,10 @@ const FaqsAdmin = () => {
             boxShadow: '0 4px 12px rgba(0,0,0,0.1)', 
             borderRadius: 2,
             overflow: 'hidden',
-            maxWidth: '500px', // Smaller table width
-            margin: '0 auto' // Centered table
+            maxWidth: '100%', // Más grande, ocupa el 90% del contenedor
+            margin: '0 auto' // Centrar la tabla
           }}>
+          
             <Table>
               <TableHead sx={{ bgcolor: '#1976d2' }}>
                 <TableRow>
