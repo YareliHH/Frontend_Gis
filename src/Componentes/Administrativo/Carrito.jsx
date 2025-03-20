@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+// src/components/CartManager.js
+import React, { useState, useEffect } from 'react';
 import {
-  Box,
+  Container,
   Typography,
   Button,
+  TextField,
   Table,
   TableBody,
   TableCell,
@@ -12,108 +13,202 @@ import {
   TableRow,
   Paper,
   IconButton,
-} from "@mui/material";
-import { Delete } from "@mui/icons-material";
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  Snackbar,
+  Alert
+} from '@mui/material';
+import { Delete, AddShoppingCart } from '@mui/icons-material';
+import axios from 'axios';
 
-const Carrito = () => {
-  const usuario_id = 1; // ID del usuario (simulación)
-  const [carrito, setCarrito] = useState([]);
+const CartManager = () => {
+  const [cartItems, setCartItems] = useState([]);
+  const [usuarioId, setUsuarioId] = useState('');
+  const [productoId, setProductoId] = useState('');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
-  // Obtener los productos del carrito al cargar el componente
   useEffect(() => {
-    fetchCarrito();
-  }, []);
+    if (usuarioId) {
+      fetchCart();
+    }
+  }, [usuarioId]);
 
-  const fetchCarrito = async () => {
+  const fetchCart = async () => {
     try {
-      const response = await axios.get(`http://localhost:3000/carrito/${usuario_id}`);
-      setCarrito(response.data);
+      const response = await axios.get(`/carrito/${usuarioId}`);
+      setCartItems(response.data);
     } catch (error) {
-      console.error("Error al obtener el carrito:", error);
+      console.error('Error fetching cart:', error);
+      setSnackbar({ open: true, message: 'Error al obtener el carrito', severity: 'error' });
     }
   };
 
-  // Agregar un producto al carrito
-  const agregarAlCarrito = async (producto_id) => {
+  const handleAddToCart = async () => {
+    if (!usuarioId || !productoId) {
+      setSnackbar({ open: true, message: 'Por favor, ingrese el ID del usuario y del producto', severity: 'warning' });
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:3000/carrito/agregar", {
-        usuario_id,
-        producto_id,
+      const response = await axios.post('/carrito/agregar', {
+        usuario_id: usuarioId,
+        producto_id: productoId
       });
-      fetchCarrito();
+      setSnackbar({ open: true, message: response.data.message, severity: 'success' });
+      setProductoId('');
+      fetchCart();
     } catch (error) {
-      console.error("Error al agregar producto:", error);
+      setSnackbar({ open: true, message: error.response?.data?.message || 'Error al agregar el producto', severity: 'error' });
     }
   };
 
-  // Eliminar un producto del carrito
-  const eliminarDelCarrito = async (producto_id) => {
+  const handleRemoveFromCart = async (productoId) => {
     try {
-      await axios.delete(`http://localhost:3000/eliminar/${usuario_id}/${producto_id}`);
-      fetchCarrito();
+      const response = await axios.delete(`/carrito/eliminar/${usuarioId}/${productoId}`);
+      setSnackbar({ open: true, message: response.data.message, severity: 'success' });
+      setCartItems(prevItems => prevItems.filter(item => item.producto_id !== productoId));
     } catch (error) {
-      console.error("Error al eliminar producto:", error);
+      setSnackbar({ open: true, message: 'Error al eliminar el producto', severity: 'error' });
+      fetchCart();
     }
   };
 
-  // Vaciar el carrito
-  const vaciarCarrito = async () => {
-    try {
-      await axios.delete(`http://localhost:3000/vaciar/${usuario_id}`);
-      setCarrito([]);
-    } catch (error) {
-      console.error("Error al vaciar el carrito:", error);
+  const handleClearCart = async () => {
+    if (window.confirm('¿Estás seguro de vaciar el carrito?')) {
+      try {
+        const response = await axios.delete(`/carrito/vaciar/${usuarioId}`);
+        setSnackbar({ open: true, message: response.data.message, severity: 'success' });
+        setCartItems([]);
+      } catch (error) {
+        setSnackbar({ open: true, message: 'Error al vaciar el carrito', severity: 'error' });
+        fetchCart();
+      }
     }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbar({ open: false, message: '', severity: 'success' });
   };
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Carrito de Compras
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+        Gestión del Carrito
       </Typography>
 
-      {/* Botón para vaciar el carrito */}
-      <Button variant="contained" color="error" onClick={vaciarCarrito} sx={{ marginBottom: 2 }}>
-        Vaciar Carrito
-      </Button>
+      {/* Formulario para agregar productos */}
+      <Card sx={{ mb: 4, boxShadow: 3 }}>
+        <CardContent>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={5}>
+              <TextField
+                label="ID del Usuario"
+                value={usuarioId}
+                onChange={(e) => setUsuarioId(e.target.value)}
+                variant="outlined"
+                fullWidth
+                size="small"
+                sx={{ bgcolor: '#f5f5f5' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={5}>
+              <TextField
+                label="ID del Producto"
+                value={productoId}
+                onChange={(e) => setProductoId(e.target.value)}
+                variant="outlined"
+                fullWidth
+                size="small"
+                sx={{ bgcolor: '#f5f5f5' }}
+              />
+            </Grid>
+            <Grid item xs={12} sm={2}>
+              <Button
+                variant="contained"
+                startIcon={<AddShoppingCart />}
+                onClick={handleAddToCart}
+                fullWidth
+                sx={{ bgcolor: '#1976d2', '&:hover': { bgcolor: '#1565c0' } }}
+              >
+                Agregar
+              </Button>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
 
       {/* Tabla de productos en el carrito */}
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ boxShadow: 3 }}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell>ID Producto</TableCell>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Fecha Agregado</TableCell>
-              <TableCell>Acciones</TableCell>
+            <TableRow sx={{ bgcolor: '#1976d2' }}>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>ID Producto</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Nombre</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha Creación</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha Actualización</TableCell>
+              <TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Acciones</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {carrito.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  No hay productos en el carrito
-                </TableCell>
-              </TableRow>
-            ) : (
-              carrito.map((producto) => (
-                <TableRow key={producto.producto_id}>
-                  <TableCell>{producto.producto_id}</TableCell>
-                  <TableCell>{producto.nombre}</TableCell>
-                  <TableCell>{new Date(producto.fecha_creacion).toLocaleDateString()}</TableCell>
+            {cartItems.length > 0 ? (
+              cartItems.map((item) => (
+                <TableRow key={item.producto_id} sx={{ '&:hover': { bgcolor: '#f5f5f5' } }}>
+                  <TableCell>{item.producto_id}</TableCell>
+                  <TableCell>{item.nombre}</TableCell>
+                  <TableCell>{new Date(item.fecha_creacion).toLocaleString()}</TableCell>
+                  <TableCell>{item.fecha_actualizacion ? new Date(item.fecha_actualizacion).toLocaleString() : '-'}</TableCell>
                   <TableCell>
-                    <IconButton color="error" onClick={() => eliminarDelCarrito(producto.producto_id)}>
+                    <IconButton
+                      color="error"
+                      onClick={() => handleRemoveFromCart(item.producto_id)}
+                    >
                       <Delete />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  <Typography variant="body2" color="text.secondary">
+                    El carrito está vacío
+                  </Typography>
+                </TableCell>
+              </TableRow>
             )}
           </TableBody>
         </Table>
       </TableContainer>
-    </Box>
+
+      {/* Botón para vaciar el carrito */}
+      {cartItems.length > 0 && (
+        <Box sx={{ mt: 2, textAlign: 'right' }}>
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={handleClearCart}
+            sx={{ borderRadius: '20px', textTransform: 'none' }}
+          >
+            Vaciar Carrito
+          </Button>
+        </Box>
+      )}
+
+      {/* Notificación mejorada */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleSnackbarClose} severity={snackbar.severity} sx={{ width: '100%' }}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 
-export default Carrito;
+export default CartManager;

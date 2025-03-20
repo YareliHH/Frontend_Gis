@@ -62,6 +62,7 @@ import Generos from './Componentes/Administrativo/Generos.jsx';
 import FaqsAdmin from './Componentes/Administrativo/Faqsadmin.jsx';
 import Ventas from './Componentes/Administrativo/Ventas.jsx';
 import Carrito from './Componentes/Administrativo/Carrito.jsx';
+import Banner from './Componentes/Administrativo/Banner.jsx';
 
 // Componentes del Empleado
 import PaginaEmpleado from './Componentes/Empleado/PaginaEmpleado.jsx';
@@ -131,6 +132,8 @@ const App = () => {
           <Route path="/admin/faqsadmin" element={<LayoutEncabezadoAdmin><FaqsAdmin/></LayoutEncabezadoAdmin>} />
           <Route path="/admin/ventas" element={<LayoutEncabezadoAdmin><Ventas/></LayoutEncabezadoAdmin>} />
           <Route path="/admin/carrito" element={<LayoutEncabezadoAdmin><Carrito/></LayoutEncabezadoAdmin>} />
+          <Route path="/admin/banner" element={<LayoutEncabezadoAdmin><Banner/></LayoutEncabezadoAdmin>} />
+
         
            {/* Rutas Empleado*/}
           <Route path="/empleado" element={<LayoutEncabezadoEmpleado><PaginaEmpleado/></LayoutEncabezadoEmpleado>} />

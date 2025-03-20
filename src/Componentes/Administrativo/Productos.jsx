@@ -31,7 +31,6 @@ import {
 import { Edit, Delete, Add, CloudUpload } from "@mui/icons-material";
 
 const ProductoForm = () => {
-  // Estado del producto para creación/edición
   const [producto, setProducto] = useState({
     id: null,
     nombre_producto: "",
@@ -54,8 +53,85 @@ const ProductoForm = () => {
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
   const [tabValue, setTabValue] = useState(0);
+  const [errors, setErrors] = useState({});
 
-  // Obtener productos
+  // Validación de campos
+  const validateForm = () => {
+    let tempErrors = {};
+    
+    // Nombre del producto
+    if (!producto.nombre_producto.trim()) {
+      tempErrors.nombre_producto = "El nombre del producto es requerido";
+    } else if (producto.nombre_producto.length < 2) {
+      tempErrors.nombre_producto = "El nombre debe tener al menos 2 caracteres";
+    } else if (producto.nombre_producto.length > 100) {
+      tempErrors.nombre_producto = "El nombre no puede exceder 100 caracteres";
+    }
+
+    // Descripción
+    if (!producto.descripcion.trim()) {
+      tempErrors.descripcion = "La descripción es requerida";
+    } else if (producto.descripcion.length < 10) {
+      tempErrors.descripcion = "La descripción debe tener al menos 10 caracteres";
+    } else if (producto.descripcion.length > 500) {
+      tempErrors.descripcion = "La descripción no puede exceder 500 caracteres";
+    }
+
+    // Precio
+    if (!producto.precio) {
+      tempErrors.precio = "El precio es requerido";
+    } else if (isNaN(producto.precio) || Number(producto.precio) <= 0) {
+      tempErrors.precio = "El precio debe ser un número mayor a 0";
+    } else if (Number(producto.precio) > 999999) {
+      tempErrors.precio = "El precio no puede exceder 999,999";
+    }
+
+    // Stock
+    if (!producto.stock) {
+      tempErrors.stock = "El stock es requerido";
+    } else if (!Number.isInteger(Number(producto.stock)) || Number(producto.stock) < 0) {
+      tempErrors.stock = "El stock debe ser un número entero no negativo";
+    } else if (Number(producto.stock) > 9999) {
+      tempErrors.stock = "El stock no puede exceder 9999";
+    }
+
+    // Categoría
+    if (!producto.id_categoria) {
+      tempErrors.id_categoria = "Debe seleccionar una categoría";
+    }
+
+    // Color
+    if (!producto.id_color) {
+      tempErrors.id_color = "Debe seleccionar un color";
+    }
+
+    // Talla
+    if (!producto.id_talla) {
+      tempErrors.id_talla = "Debe seleccionar una talla";
+    }
+
+    // Género
+    if (!producto.id_genero) {
+      tempErrors.id_genero = "Debe seleccionar un género";
+    }
+
+    // Imagen (solo requerida al crear)
+    if (!producto.id && !producto.imagen) {
+      tempErrors.imagen = "Debe subir una imagen";
+    } else if (producto.imagen instanceof File) {
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(producto.imagen.type)) {
+        tempErrors.imagen = "Solo se permiten imágenes JPEG, PNG o GIF";
+      } else if (producto.imagen.size > 5 * 1024 * 1024) { // 5MB
+        tempErrors.imagen = "La imagen no puede exceder 5MB";
+      }
+    }
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
+
+  // Fetch functions (sin cambios)
   const fetchProductos = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/obtener");
@@ -68,7 +144,6 @@ const ProductoForm = () => {
     }
   };
 
-  // Obtener categorías desde la BD
   const fetchCategorias = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/obtenercat");
@@ -78,7 +153,6 @@ const ProductoForm = () => {
     }
   };
 
-  // Obtener tallas desde la BD
   const fetchTallas = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/tallas");
@@ -88,7 +162,6 @@ const ProductoForm = () => {
     }
   };
 
-  // Obtener colores desde la BD
   const fetchColores = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/colores");
@@ -98,7 +171,6 @@ const ProductoForm = () => {
     }
   };
 
-  // Obtener géneros desde la BD
   const fetchGeneros = async () => {
     try {
       const response = await axios.get("http://localhost:3001/api/generos");
@@ -108,11 +180,10 @@ const ProductoForm = () => {
     }
   };
 
-  // Obtener un producto por su ID para edición
   const fetchProductoById = async (id) => {
     try {
       const response = await axios.get(`http://localhost:3001/api/obtener/${id}`);
-      setProducto(response.data); // Se asume que la respuesta incluye el "id" y la URL de la imagen
+      setProducto(response.data);
     } catch (error) {
       console.error("Error al obtener producto:", error);
       setSnackbarMessage("Error al cargar el producto");
@@ -121,7 +192,6 @@ const ProductoForm = () => {
     }
   };
 
-  // Eliminar un producto
   const handleEliminarProducto = async (id) => {
     try {
       await axios.delete(`http://localhost:3001/api/eliminar/${id}`);
@@ -137,14 +207,18 @@ const ProductoForm = () => {
     }
   };
 
-  // Manejar el submit: crea o actualiza según el modo
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!validateForm()) {
+      setSnackbarMessage("Por favor, corrija los errores en el formulario");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+
     try {
       if (producto.id) {
-        // Modo edición
-        // Si se seleccionó una nueva imagen, se envía FormData
         if (producto.imagen instanceof File) {
           const formData = new FormData();
           formData.append("nombre_producto", producto.nombre_producto);
@@ -161,7 +235,6 @@ const ProductoForm = () => {
             headers: { "Content-Type": "multipart/form-data" },
           });
         } else {
-          // Si no se seleccionó nueva imagen, se envían solo los datos de texto
           await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, {
             nombre_producto: producto.nombre_producto,
             descripcion: producto.descripcion,
@@ -175,7 +248,6 @@ const ProductoForm = () => {
         }
         setSnackbarMessage("Producto actualizado con éxito");
       } else {
-        // Modo creación: enviar FormData
         const formData = new FormData();
         formData.append("nombre_producto", producto.nombre_producto);
         formData.append("descripcion", producto.descripcion);
@@ -208,6 +280,7 @@ const ProductoForm = () => {
         id_genero: "",
         imagen: null,
       });
+      setErrors({});
     } catch (error) {
       console.error("Error al guardar producto:", error);
       setSnackbarMessage("Error al guardar el producto");
@@ -216,24 +289,73 @@ const ProductoForm = () => {
     }
   };
 
-  // Manejar cambios en el formulario
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProducto({ ...producto, [name]: value });
+    // Validación en tiempo real
+    validateField(name, value);
   };
 
-  // Manejar cambio en la imagen
+  const validateField = (name, value) => {
+    let tempErrors = { ...errors };
+    
+    switch (name) {
+      case "nombre_producto":
+        if (!value.trim()) tempErrors.nombre_producto = "El nombre del producto es requerido";
+        else if (value.length < 2) tempErrors.nombre_producto = "El nombre debe tener al menos 2 caracteres";
+        else if (value.length > 100) tempErrors.nombre_producto = "El nombre no puede exceder 100 caracteres";
+        else delete tempErrors.nombre_producto;
+        break;
+      case "descripcion":
+        if (!value.trim()) tempErrors.descripcion = "La descripción es requerida";
+        else if (value.length < 10) tempErrors.descripcion = "La descripción debe tener al menos 10 caracteres";
+        else if (value.length > 500) tempErrors.descripcion = "La descripción no puede exceder 500 caracteres";
+        else delete tempErrors.descripcion;
+        break;
+      case "precio":
+        if (!value) tempErrors.precio = "El precio es requerido";
+        else if (isNaN(value) || Number(value) <= 0) tempErrors.precio = "El precio debe ser un número mayor a 0";
+        else if (Number(value) > 999999) tempErrors.precio = "El precio no puede exceder 999,999";
+        else delete tempErrors.precio;
+        break;
+      case "stock":
+        if (!value) tempErrors.stock = "El stock es requerido";
+        else if (!Number.isInteger(Number(value)) || Number(value) < 0) tempErrors.stock = "El stock debe ser un número entero no negativo";
+        else if (Number(value) > 9999) tempErrors.stock = "El stock no puede exceder 9999";
+        else delete tempErrors.stock;
+        break;
+      case "id_categoria":
+        if (!value) tempErrors.id_categoria = "Debe seleccionar una categoría";
+        else delete tempErrors.id_categoria;
+        break;
+      case "id_color":
+        if (!value) tempErrors.id_color = "Debe seleccionar un color";
+        else delete tempErrors.id_color;
+        break;
+      case "id_talla":
+        if (!value) tempErrors.id_talla = "Debe seleccionar una talla";
+        else delete tempErrors.id_talla;
+        break;
+      case "id_genero":
+        if (!value) tempErrors.id_genero = "Debe seleccionar un género";
+        else delete tempErrors.id_genero;
+        break;
+      default:
+        break;
+    }
+    setErrors(tempErrors);
+  };
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setProducto({ ...producto, imagen: file });
+    validateField("imagen", file);
   };
 
-  // Cerrar Snackbar
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
   };
 
-  // Cambiar de pestaña
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
   };
@@ -248,7 +370,6 @@ const ProductoForm = () => {
 
   return (
     <Container maxWidth="xl" sx={{ padding: "40px 20px" }}>
-      {/* Formulario para agregar/editar */}
       <Card sx={{ borderRadius: "12px", boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)", marginBottom: "40px" }}>
         <CardContent>
           <Typography variant="h4" gutterBottom sx={{ fontWeight: "700", color: "#0277bd", textAlign: "center" }}>
@@ -265,6 +386,8 @@ const ProductoForm = () => {
                   fullWidth
                   variant="outlined"
                   required
+                  error={!!errors.nombre_producto}
+                  helperText={errors.nombre_producto}
                 />
               </Grid>
               <Grid item xs={12}>
@@ -278,6 +401,8 @@ const ProductoForm = () => {
                   multiline
                   rows={4}
                   required
+                  error={!!errors.descripcion}
+                  helperText={errors.descripcion}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -290,6 +415,9 @@ const ProductoForm = () => {
                   variant="outlined"
                   type="number"
                   required
+                  inputProps={{ min: "0.01", step: "0.01" }}
+                  error={!!errors.precio}
+                  helperText={errors.precio}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -302,10 +430,13 @@ const ProductoForm = () => {
                   variant="outlined"
                   type="number"
                   required
+                  inputProps={{ min: "0", step: "1" }}
+                  error={!!errors.stock}
+                  helperText={errors.stock}
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required error={!!errors.id_categoria}>
                   <InputLabel>Categoría</InputLabel>
                   <Select label="Categoría" name="id_categoria" value={producto.id_categoria} onChange={handleChange}>
                     {categorias.map((categoria) => (
@@ -314,10 +445,11 @@ const ProductoForm = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                  {errors.id_categoria && <Typography color="error" variant="caption">{errors.id_categoria}</Typography>}
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required error={!!errors.id_color}>
                   <InputLabel>Color</InputLabel>
                   <Select label="Color" name="id_color" value={producto.id_color} onChange={handleChange}>
                     {colores.map((color) => (
@@ -326,10 +458,11 @@ const ProductoForm = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                  {errors.id_color && <Typography color="error" variant="caption">{errors.id_color}</Typography>}
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required error={!!errors.id_talla}>
                   <InputLabel>Talla</InputLabel>
                   <Select label="Talla" name="id_talla" value={producto.id_talla} onChange={handleChange}>
                     {tallas.map((talla) => (
@@ -338,10 +471,11 @@ const ProductoForm = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                  {errors.id_talla && <Typography color="error" variant="caption">{errors.id_talla}</Typography>}
                 </FormControl>
               </Grid>
               <Grid item xs={12} sm={6}>
-                <FormControl fullWidth variant="outlined" required>
+                <FormControl fullWidth variant="outlined" required error={!!errors.id_genero}>
                   <InputLabel>Género</InputLabel>
                   <Select label="Género" name="id_genero" value={producto.id_genero} onChange={handleChange}>
                     {generos.map((genero) => (
@@ -350,6 +484,7 @@ const ProductoForm = () => {
                       </MenuItem>
                     ))}
                   </Select>
+                  {errors.id_genero && <Typography color="error" variant="caption">{errors.id_genero}</Typography>}
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
@@ -379,6 +514,11 @@ const ProductoForm = () => {
                     </Button>
                   </Tooltip>
                 </label>
+                {errors.imagen && (
+                  <Typography color="error" variant="caption" sx={{ display: "block", mt: 1 }}>
+                    {errors.imagen}
+                  </Typography>
+                )}
                 {producto.imagen && (
                   <div style={{ marginTop: "16px", textAlign: "center" }}>
                     <Typography variant="body1" sx={{ fontWeight: "600", color: "#0277bd" }}>
@@ -423,21 +563,22 @@ const ProductoForm = () => {
           </form>
         </CardContent>
       </Card>
-      {/* Tabla de productos con dos secciones */}
+
+      {/* Tabla de productos (sin cambios en esta parte) */}
       <Card sx={{ borderRadius: "12px", boxShadow: "0 8px 24px rgba(0, 0, 0, 0.15)" }}>
         <CardContent>
           <Typography 
-        variant="h5" 
-        gutterBottom 
-        sx={{ 
-          fontWeight: "700", 
-          color: "#0277bd", 
-          marginBottom: "24px", 
-          textAlign: "center" 
-        }}
-      >
-        Listado de Productos
-      </Typography> 
+            variant="h5" 
+            gutterBottom 
+            sx={{ 
+              WELfontWeight: "700", 
+              color: "#0277bd", 
+              marginBottom: "24px", 
+              textAlign: "center" 
+            }}
+          >
+            Listado de Productos
+          </Typography> 
           <Box sx={{ borderBottom: 1, borderColor: "divider", marginBottom: "24px" }}>
             <Tabs value={tabValue} onChange={handleTabChange} variant="fullWidth">
               <Tab label="Información Principal" sx={{ fontWeight: "600" }} />
@@ -445,11 +586,10 @@ const ProductoForm = () => {
             </Tabs>
           </Box>
           
-          {/* Primera sección: Información básica */}
           {tabValue === 0 && (
             <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-              <TableContainer sx={{ maxHeight: "80vh" /* Aumentado para mostrar más filas */ }}>
-                <Table stickyHeader sx={{ minWidth: 850 /* Aumentado para más espacio horizontal */ }}>
+              <TableContainer sx={{ maxHeight: "80vh" }}>
+                <Table stickyHeader sx={{ minWidth: 850 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>ID</TableCell>
@@ -463,10 +603,10 @@ const ProductoForm = () => {
                   </TableHead>
                   <TableBody>
                     {productos.map((prod) => (
-                      <TableRow key={prod.id} hover sx={{ height: "100px" /* Aumentado para más espacio vertical por fila */ }}>
+                      <TableRow key={prod.id} hover sx={{ height: "100px" }}>
                         <TableCell sx={{ padding: "12px" }}>{prod.id}</TableCell>
                         <TableCell sx={{ fontWeight: "500", padding: "12px" }}>{prod.nombre_producto}</TableCell>
-                        <TableCell sx={{ maxWidth: "400px" /* Aumentado */, overflowWrap: "break-word", padding: "12px" }}>{prod.descripcion}</TableCell>
+                        <TableCell sx={{ maxWidth: "400px", overflowWrap: "break-word", padding: "12px" }}>{prod.descripcion}</TableCell>
                         <TableCell sx={{ padding: "12px" }}>${Number(prod.precio).toFixed(2)}</TableCell>
                         <TableCell sx={{ padding: "12px" }}>{prod.stock}</TableCell>
                         <TableCell sx={{ padding: "12px" }}>
@@ -475,8 +615,8 @@ const ProductoForm = () => {
                               src={prod.imagen}
                               alt={prod.nombre_producto}
                               style={{
-                                width: "100px" /* Aumentado */,
-                                height: "100px" /* Aumentado */,
+                                width: "100px",
+                                height: "100px",
                                 objectFit: "cover",
                                 borderRadius: "8px",
                                 boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
@@ -514,11 +654,10 @@ const ProductoForm = () => {
             </Paper>
           )}
           
-          {/* Segunda sección: Características */}
           {tabValue === 1 && (
             <Paper sx={{ width: "100%", overflow: "hidden", boxShadow: "none" }}>
-              <TableContainer sx={{ maxHeight: "80vh" /* Aumentado para mostrar más filas */ }}>
-                <Table stickyHeader sx={{ minWidth: 850 /* Aumentado para más espacio horizontal */ }}>
+              <TableContainer sx={{ maxHeight: "80vh" }}>
+                <Table stickyHeader sx={{ minWidth: 850 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell sx={{ fontWeight: "bold", backgroundColor: "#e3f2fd", fontSize: "16px", padding: "12px" }}>ID</TableCell>
@@ -532,7 +671,7 @@ const ProductoForm = () => {
                   </TableHead>
                   <TableBody>
                     {productos.map((prod) => (
-                      <TableRow key={prod.id} hover sx={{ height: "100px" /* Aumentado para más espacio vertical por fila */ }}>
+                      <TableRow key={prod.id} hover sx={{ height: "100px" }}>
                         <TableCell sx={{ padding: "12px" }}>{prod.id}</TableCell>
                         <TableCell sx={{ fontWeight: "500", padding: "12px" }}>{prod.nombre_producto}</TableCell>
                         <TableCell sx={{ padding: "12px" }}>{prod.talla}</TableCell>
@@ -543,8 +682,8 @@ const ProductoForm = () => {
                             gap: "8px" 
                           }}>
                             <Box sx={{ 
-                              width: "24px" /* Aumentado */,
-                              height: "24px" /* Aumentado */,
+                              width: "24px",
+                              height: "24px",
                               backgroundColor: prod.color.toLowerCase(),
                               border: "1px solid #ddd",
                               borderRadius: "4px"

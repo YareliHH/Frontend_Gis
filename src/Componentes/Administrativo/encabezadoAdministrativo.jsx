@@ -40,6 +40,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import WebAssetIcon from "@mui/icons-material/WebAsset";
 
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -130,6 +131,14 @@ const EncabezadoAdministrativo = () => {
 
   // Configuración de los menús
   const menuGroups = [
+    {
+      id: 'banner',
+      title: 'banner',
+      icon: WebAssetIcon,
+      items: [
+        { icon: WebAssetIcon, text: 'banner', path: '/admin/banner' },
+      ]
+    },
     {
       id: 'products',
       title: 'Gestión de productos',
