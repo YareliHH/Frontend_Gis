@@ -291,10 +291,9 @@ const BarraNavCliente = () => {
             {!isMobile && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {[
-                  { label: 'Hombre', path: '/hombre', icon: <ManIcon sx={{ mr: 0.5 }} /> },
-                  { label: 'Mujer', path: '/mujer', icon: <WomanIcon sx={{ mr: 0.5 }} /> },
+                  { label: 'Hombre', path: '/hombres', icon: <ManIcon sx={{ mr: 0.5 }} /> },
+                  { label: 'Mujer', path: '/mujeres', icon: <WomanIcon sx={{ mr: 0.5 }} /> },
                   { label: 'Ofertas Especiales', path: '/ofertasCliente', icon: <LocalOfferIcon sx={{ mr: 0.5 }} /> },
-                  { label: 'Perfil', path: '/perfil', icon: <PersonIcon sx={{ mr: 0.5 }} /> },
                 ].map((item, index) => (
                   <Button
                     key={index}
@@ -436,7 +435,6 @@ const BarraNavCliente = () => {
             { label: 'Hombre', path: '/hombre', icon: <ManIcon /> },
             { label: 'Mujer', path: '/mujer', icon: <WomanIcon /> },
             { label: 'Ofertas Especiales', path: '/ofertasCliente', icon: <LocalOfferIcon /> },
-            { label: 'Mi Perfil', path: '/perfil', icon: <PersonIcon /> },
           ].map((item, index) => (
             <ListItem 
               button 

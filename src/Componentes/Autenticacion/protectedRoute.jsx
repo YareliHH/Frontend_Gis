@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
     const { user } = useAuth();
 
     // Obtener el usuario desde localStorage como respaldo
-    const storedUser = localStorage.getItem('user');
+    const storedUser = localStorage.getItem('usuario');
     const usuario = storedUser ? JSON.parse(storedUser) : null;
 
     console.log("Usuario actual (contexto):", user);

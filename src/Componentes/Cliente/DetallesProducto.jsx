@@ -1,26 +1,34 @@
-import React, { useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { Box, Typography, Grid, Divider, Button, IconButton, Chip } from '@mui/material';
 import { Add, Remove, ShoppingCart } from '@mui/icons-material';
+import axios from 'axios';  // Asegúrate de tener axios instalado para las peticiones HTTP
 
 const DetallesProducto = () => {
-  const location = useLocation();
-  const { product } = location.state || {};
-
+  const { id } = useParams();  // Usamos useParams para obtener el id del producto desde la URL
+  const [product, setProduct] = useState(null);  // Guardamos los detalles del producto en el estado
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [selectedQuantity, setSelectedQuantity] = useState(1);
 
+  // Obtener los detalles del producto cuando se carga el componente
+  useEffect(() => {
+    // Realizar la petición a la API para obtener los detalles del producto
+    axios.get(`http://localhost:3001/api/producto-detalle/${id}`)
+      .then(response => {
+        setProduct(response.data);  // Almacenar los detalles del producto en el estado
+      })
+      .catch(error => {
+        console.error("Error al obtener los detalles del producto:", error);
+      });
+  }, [id]);  // Dependemos de `id` para hacer la solicitud cuando cambia
+
   if (!product) {
-    return <Typography variant="h6" sx={{ textAlign: 'center' }}>Producto no encontrado</Typography>;
+    return <Typography variant="h6" sx={{ textAlign: 'center' }}>Cargando producto...</Typography>;
   }
 
-  // Asegúrate de que 'product.imageDescriptions' esté definido y tenga al menos un valor
-  const imageDescription = product.imageDescriptions && product.imageDescriptions[0];
-
-  const handleAddToCart = () => {
-    console.log('Producto agregado al carrito:', { product, selectedSize, selectedColor, selectedQuantity });
-  };
+  // Asegúrate de que 'product.url' esté definido (la URL de la imagen)
+  const imageUrl = product.url;
 
   // Opciones de colores
   const colorOptions = [
@@ -32,14 +40,18 @@ const DetallesProducto = () => {
     { name: 'Negro', colorCode: '#000000' },
   ];
 
+  const handleAddToCart = () => {
+    console.log('Producto agregado al carrito:', { product, selectedSize, selectedColor, selectedQuantity });
+  };
+
   return (
     <Box padding={3} sx={{ backgroundColor: '#f9f9f9' }}>
       <Grid container spacing={4} alignItems="center">
         {/* Imagen del producto a la izquierda */}
         <Grid item xs={12} md={6} sx={{ display: 'flex', justifyContent: 'center' }}>
           <img 
-            src={product.image} 
-            alt={product.name} 
+            src={imageUrl} 
+            alt={product.nombre_producto} 
             style={{
               width: '70%', 
               maxWidth: '400px', 
@@ -49,32 +61,20 @@ const DetallesProducto = () => {
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)'
             }} 
           />
-          {/* Descripción de la imagen, si existe */}
-          {imageDescription && (
-            <Typography variant="body2" sx={{ color: 'black', marginTop: '10px' }}>
-              {imageDescription}
-            </Typography>
-          )}
         </Grid>
 
         {/* Información del producto al lado derecho */}
         <Grid item xs={12} md={6}>
           <Typography variant="h4" sx={{ fontWeight: 'bold', color: 'black', marginBottom: '16px' }}>
-            {product.name}
+            {product.nombre_producto}
           </Typography>
 
-          {/* Descripción del producto (debajo del nombre) */}
+          {/* Descripción del producto */}
           <Typography variant="body2" sx={{ color: 'black', marginBottom: '20px' }}>
-            {product.description}
+            {product.descripcion}
           </Typography>
 
-          {/* Descripción adicional debajo de la descripción principal */}
-          <Typography variant="body2" sx={{ color: 'black', marginBottom: '20px' }}>
-            Tipo de tela: Algodón 100%, ideal para climas cálidos. Confortable y resistente para uso prolongado.
-            <br />
-            Otras características: Resistente al lavado frecuente, transpirable, y con acabado suave al tacto.
-          </Typography>
-
+          
           <Divider sx={{ marginBottom: '20px' }} />
 
           {/* Filtro de talla */}
@@ -170,4 +170,3 @@ const DetallesProducto = () => {
 };
 
 export default DetallesProducto;
-

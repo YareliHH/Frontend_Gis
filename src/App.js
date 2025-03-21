@@ -101,8 +101,9 @@ const App = () => {
 
            {/* Rutas de CLIENTE */}
            <Route path="/cliente" element={<EncabezadoCliente><PaginaCliente /></EncabezadoCliente>} />
-          <Route path="/hombre" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre',}]} /><Hombre /></EncabezadoCliente>} />
-          <Route path="/mujer" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer',}]} /><Mujer /></EncabezadoCliente>} />
+          <Route path="/hombres" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre',}]} /><Hombre /></EncabezadoCliente>} />
+          <Route path="/mujeres" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer',}]} /><Mujer /></EncabezadoCliente>} />
+          <Route path="/detallesp/:id" element={<EncabezadoCliente><DetallesProducto /></EncabezadoCliente>} />
           <Route path="/perfil" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Perfil',}]} /><Perfil /></EncabezadoCliente>} />
           <Route path="/ofertasCliente" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente',}]} /><OfertasCliente /></EncabezadoCliente>} />
           <Route path="/detalles-producto" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre', path: '/hombre',},{ name: 'Detalle Hombre',}]} /><DetallesProducto /></EncabezadoCliente>} />

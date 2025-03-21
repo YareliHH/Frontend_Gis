@@ -1,199 +1,111 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid } from '@mui/material';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-// Importar las imágenes locales de los productos y el fondo
-import img21 from '../imagenes/img21.jpg';
-import img10 from '../imagenes/img10.jpg';
-import img11 from '../imagenes/img11.jpg';
-import img20 from '../imagenes/img20.jpg';
-import img3 from '../imagenes/img3.jpg'; // Nueva imagen
-import img18 from '../imagenes/img18.jpg'; // Nueva imagen
-import img22 from '../imagenes/img22.jpg'; // Nueva imagen
-import img23 from '../imagenes/img23.jpg'; // Nueva imagen
-
-const Mujer = () => {
+const Hombre = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [products, setProducts] = useState([]); // Estado para los productos
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Obtener los productos del género Hombre desde la API
+    axios
+      .get('http://localhost:3001/api/Mujeres') // Usamos axios en lugar de fetch
+      .then((response) => {
+        setProducts(response.data); // Guardamos los productos en el estado
+      })
+      .catch((error) => {
+        console.error('Error al obtener productos:', error);
+      });
+
+    // Manejo del tema oscuro
     const matchDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
     setIsDarkMode(matchDarkTheme.matches);
-
-    const handleThemeChange = (e) => {
-      setIsDarkMode(e.matches);
-    };
-
+    const handleThemeChange = (e) => setIsDarkMode(e.matches);
     matchDarkTheme.addEventListener('change', handleThemeChange);
 
-    return () => {
-      matchDarkTheme.removeEventListener('change', handleThemeChange);
-    };
-  }, []);
+    return () => matchDarkTheme.removeEventListener('change', handleThemeChange);
+
+  }, []); // Solo se ejecuta una vez después del primer renderizado
 
   const colors = {
     background: isDarkMode ? '#121212' : '#FFFFFF',
-    primaryText: '#000000', // Color negro para las letras
-    button: '#40E0D0', // Turquesa
+    primaryText: '#000000',
   };
 
-  const products = [
-    { image: img10, name: "Uniforme Clínico", price: "$50", type: "Clínico" },
-    { image: img11, name: "Batas Quirúrgicas", price: "$80", type: "Quirúrgico" },
-    { image: img20, name: "Camisón Médico", price: "$45", type: "Clínico" },
-    { image: img21, name: "Mascarilla Quirúrgica", price: "$15", type: "Quirúrgico" }
-  ];
-
-  const newProducts = [
-    { image: img3, name: "Gorro Quirúrgico", price: "$12", type: "Quirúrgico" },
-    { image: img18, name: "Guantes Clínicos", price: "$20", type: "Clínico" },
-    { image: img22, name: "Bata Estéril", price: "$70", type: "Quirúrgico" },
-    { image: img23, name: "Zapatillas Médicas", price: "$30", type: "Clínico" }
-  ];
+  const handleProductClick = (product) => {
+    navigate(`/detallesp/${product.id}`); // Solo pasa el id del producto
+  };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* Fondo */}
-      <Box
-        component="div"
-        sx={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-          zIndex: -1, // Detrás del contenido
-        }}
-      />
-
-{/* Título */}
-<Box sx={{ textAlign: 'center', mb: 6 }}>
-  <Typography
-    variant="h4"
-    sx={{
-      color: colors.primaryText,
-      fontWeight: 'bold',
-      fontFamily: 'Montserrat, sans-serif',
-    }}
-  >
-    Vistiendo Profesionales
-  </Typography>
-</Box>
-
+    <Box sx={{ minHeight: '100vh', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      {/* Título */}
+      <Box sx={{ textAlign: 'center', mb: 6 }}>
+        <Typography variant="h4" sx={{ color: colors.primaryText, fontWeight: 'bold', fontFamily: 'Roboto Serif, serif' }}>
+          Vistiendo Profesionales
+        </Typography>
+      </Box>
+      {/* Subtítulo */}
+      <Box sx={{ textAlign: 'center', mb: 5 }}>
+        <Typography variant="h4" sx={{ color: colors.primaryText, fontFamily: 'Roboto', fontStyle: 'italic' }}>
+          Boutique Clínica Creamos Uniformes de alta gama, dirigida a los profesionales de la salud.
+        </Typography>
+      </Box>
 
       {/* Productos */}
       <Grid container spacing={4} justifyContent="center">
         {products.map((product, index) => (
           <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <img
-                src={product.image}
-                alt={product.name}
-                style={{
-                  width: '80%', // Aumentar el tamaño de la imagen y centrarla
-                  height: 'auto',
-                  borderRadius: '10px',
-                  margin: '0 auto', // Centrar la imagen
-                  display: 'block',
+            <Box sx={{ textAlign: 'center', position: 'relative' }}>
+              {/* Etiqueta de disponibilidad */}
+              <Box
+                sx={{
+                  position: 'absolute',
+                  top: 10,
+                  left: 10,
+                  backgroundColor: product.stock === 'En Stock' ? 'green' : product.stock === 'Últimas piezas' ? 'orange' : 'red',
+                  color: 'white',
+                  padding: '5px 10px',
+                  borderRadius: '5px',
+                  fontSize: '12px',
                 }}
+              >
+                {product.stock}
+              </Box>
+              {/* Imagen del producto */}
+              <img
+                src={product.url}
+                alt={product.nombre_producto}
+                style={{ width: '80%', height: 'auto', borderRadius: '10px', margin: '0 auto', display: 'block' }}
               />
+              {/* Nombre del producto como enlace */}
               <Typography
                 variant="h6"
+                component="a"
+                onClick={() => handleProductClick(product)}
                 sx={{
                   color: colors.primaryText,
                   mt: 2,
-                  fontFamily: 'Roboto Serif, serif',
+                  fontFamily: 'Montserrat, sans-serif',
                   textAlign: 'center',
+                  textDecoration: 'underline',
+                  cursor: 'pointer',
+                  '&:hover': { color: 'blue' },
                 }}
               >
-                {product.name}
+                {product.nombre_producto}
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.primaryText,
-                  marginBottom: 1,
-                  fontWeight: 'bold',
-                  fontFamily: 'Roboto Serif, serif',
-                  textAlign: 'center',
-                }}
-              >
-                {product.price}
+              {/* Precio y tipo */}
+              <Typography variant="body2" sx={{ color: colors.primaryText, fontWeight: 'bold', fontFamily: 'Roboto', textAlign: 'center' }}>
+                {product.precio}
               </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.primaryText,
-                  fontFamily: 'Roboto Serif, serif',
-                  textAlign: 'center',
-                }}
-              >
-                Tipo: {product.type}
+              <Typography variant="body2" sx={{ color: colors.primaryText, fontFamily: 'Montserrat, sans-serif', textAlign: 'center' }}>
+                Tipo: {product.tipo}
               </Typography>
-            </Box>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Nuevos productos */}
-      <Grid container spacing={4} justifyContent="center" sx={{ mt: 4 }}>
-        {newProducts.map((product, index) => (
-          <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Box sx={{ textAlign: 'center' }}>
-              <img
-                src={product.image}
-                alt={product.name}
-                style={{
-                  width: '80%', // Aumentar el tamaño de la imagen y centrarla
-                  height: 'auto',
-                  borderRadius: '10px',
-                  margin: '0 auto', // Centrar la imagen
-                  display: 'block',
-                }}
-              />
-              <Typography
-                variant="h6"
-                sx={{
-                  color: colors.primaryText,
-                  mt: 2,
-                  fontFamily: 'Roboto Serif, serif',
-                  textAlign: 'center',
-                }}
-              >
-                {product.name}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.primaryText,
-                  marginBottom: 1,
-                  fontWeight: 'bold',
-                  fontFamily: 'Roboto Serif, serif',
-                  textAlign: 'center',
-                }}
-              >
-                {product.price}
-              </Typography>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: colors.primaryText,
-                  fontFamily: 'Roboto Serif, serif',
-                  textAlign: 'center',
-                }}
-              >
-                Tipo: {product.type}
-              </Typography>
+              {/* Icono de carrito */}
+              <ShoppingCartIcon sx={{ mt: 1, color: 'gray', cursor: 'pointer', '&:hover': { color: 'black' } }} />
             </Box>
           </Grid>
         ))}
@@ -202,4 +114,4 @@ const Mujer = () => {
   );
 };
 
-export default Mujer;
+export default Hombre;

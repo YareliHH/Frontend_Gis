@@ -45,15 +45,9 @@ import img3 from '../imagenes/img3.jpg';
 import img4 from '../imagenes/img4.jpg';
 import img5 from '../imagenes/img5.jpg';
 import img6 from '../imagenes/img6.jpg';
-import img10 from '../imagenes/img10.jpg';
-import img11 from '../imagenes/img11.jpg';
-import img14 from '../imagenes/img14.jpg';
-import img16 from '../imagenes/img16.jpg';
-import img17h from '../imagenes/img17h.jpg';
-import img18 from '../imagenes/img18.jpg';
-import img20 from '../imagenes/img20.jpg';
-import img23 from '../imagenes/img23.jpg';
 import LogoGL from '../imagenes/LogoGL.jpg';
+
+import axios from 'axios'; // Importar axios para hacer las peticiones
 
 const PaginaPrincipal = () => {
   const theme = useTheme();
@@ -68,10 +62,19 @@ const PaginaPrincipal = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [cartItems, setCartItems] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [products, setProducts] = useState([]); // Estado para los productos
 
   // Efecto para iniciar animaciones al cargar la página
   useEffect(() => {
     setLoaded(true);
+    // Cargar productos desde la API al montar el componente
+    axios.get('http://localhost:3001/api/productos')  // URL de la API para obtener los productos
+      .then((response) => {
+        setProducts(response.data);  // Asigna los datos obtenidos de la API a los productos
+      })
+      .catch((error) => {
+        console.error('Error al obtener los productos:', error);
+      });
   }, []);
 
   const toggleChat = () => {
@@ -146,22 +149,6 @@ const PaginaPrincipal = () => {
       { breakpoint: 600, settings: { dots: true, arrows: false } },
     ],
   };
-
-  const products = [
-    { image: img10, name: 'Uniforme Clínico', price: '$50', type: 'Clínico' },
-    { image: img11, name: 'Batas Quirúrgicas', price: '$80', type: 'Quirúrgico' },
-    { image: img20, name: 'Camisón Médico', price: '$45', type: 'Clínico' },
-    { image: img14, name: 'Mascarilla Quirúrgica', price: '$15', type: 'Quirúrgico' },
-  ];
-
-  const newProducts = [
-    { image: img17h, name: 'Gorro Quirúrgico', price: '$12', type: 'Quirúrgico', isNew: true },
-    { image: img18, name: 'Guantes Clínicos', price: '$20', type: 'Clínico', isNew: true },
-    { image: img16, name: 'Bata Estéril', price: '$70', type: 'Quirúrgico', isNew: true },
-    { image: img23, name: 'Zapatillas Médicas', price: '$30', type: 'Clínico', isNew: true },
-  ];
-
-  const allProducts = [...products, ...newProducts];
 
   const menuItems = ['Inicio', 'Productos', 'Clínicos', 'Quirúrgicos', 'Ofertas', 'Contacto'];
 
@@ -282,7 +269,7 @@ const PaginaPrincipal = () => {
         {/* Product Grid */}
         <Box component={motion.div} variants={containerVariants} initial="hidden" animate="visible" sx={{ mb: 8 }}>
           <Grid container spacing={3} justifyContent="center">
-            {allProducts.map((product, index) => (
+            {products.map((product, index) => (
               <Grid item xs={12} sm={6} md={3} key={index}>
                 <Box component={motion.div} variants={itemVariants} whileHover={{ y: -10, transition: { duration: 0.3 } }}>
                   <Card
@@ -310,8 +297,8 @@ const PaginaPrincipal = () => {
                     <Box sx={{ position: 'relative', overflow: 'hidden' }}>
                       <CardMedia
                         component="img"
-                        image={product.image}
-                        alt={product.name}
+                        image={product.url}
+                        alt={product.nombre_producto}
                         sx={{
                           height: isMobile ? 180 : 240,
                           objectFit: 'cover',
@@ -335,13 +322,17 @@ const PaginaPrincipal = () => {
                         gutterBottom
                         variant="h6"
                         component="div"
-                        sx={{ fontFamily: 'Montserrat, sans-serif', fontWeight: 'bold', fontSize: isMobile ? '1rem' : '1.1rem' }}
+                        sx={{
+                          fontFamily: 'Montserrat, sans-serif',
+                          fontWeight: 'bold',
+                          fontSize: isMobile ? '1rem' : '1.1rem',
+                        }}
                       >
-                        {product.name}
+                        {product.nombre_producto}
                       </Typography>
                       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
                         <Chip
-                          label={product.type}
+                          label={product.nombre_producto}
                           size="small"
                           sx={{
                             backgroundColor: product.type === 'Clínico' ? '#E0F7FA' : '#FFF3E0',
@@ -352,9 +343,13 @@ const PaginaPrincipal = () => {
                         <Typography
                           variant="h6"
                           color="text.primary"
-                          sx={{ fontWeight: 'bold', fontFamily: 'Montserrat, sans-serif', color: colors.dark }}
+                          sx={{
+                            fontWeight: 'bold',
+                            fontFamily: 'Montserrat, sans-serif',
+                            color: colors.dark,
+                          }}
                         >
-                          {product.price}
+                          {product.precio}
                         </Typography>
                       </Box>
                     </CardContent>
@@ -399,131 +394,6 @@ const PaginaPrincipal = () => {
           </Grid>
         </Box>
       </Container>
-
-      {/* Chat Section */}
-      <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 1000 }}>
-        {chatOpen ? (
-          <Zoom in={chatOpen} timeout={300}>
-            <Paper
-              elevation={6}
-              sx={{
-                width: isMobile ? '90vw' : 320,
-                height: isMobile ? '70vh' : 450,
-                display: 'flex',
-                flexDirection: 'column',
-                borderRadius: '16px',
-                overflow: 'hidden',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.15)',
-              }}
-            >
-              <Box
-                sx={{
-                  p: 2,
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
-                  color: 'white',
-                }}
-              >
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Avatar src={LogoGL} sx={{ width: 32, height: 32, border: '2px solid white' }} />
-                  <Typography variant="h6" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
-                    Chat con GisLive
-                  </Typography>
-                </Box>
-                <IconButton size="small" onClick={toggleChat} sx={{ color: 'white' }}>
-                  <CloseIcon />
-                </IconButton>
-              </Box>
-              <Box
-                sx={{
-                  flexGrow: 1,
-                  overflow: 'auto',
-                  p: 2,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  backgroundImage: 'linear-gradient(rgba(240, 250, 250, 0.6), rgba(240, 250, 250, 0.6)), url("data:image/svg+xml,%3Csvg width="20" height="20" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0 0h20v20H0z" fill="%2340E0D0" fill-opacity=".05"/%3E%3C/svg%3E")',
-                }}
-              >
-                {messages.map((msg, index) => (
-                  <Fade in={true} key={index} timeout={(index + 1) * 300}>
-                    <Box
-                      sx={{
-                        maxWidth: '80%',
-                        p: 2,
-                        borderRadius: msg.sender === 'user' ? '12px 12px 0 12px' : '12px 12px 12px 0',
-                        mb: 1.5,
-                        backgroundColor: msg.sender === 'user' ? colors.button : 'white',
-                        color: msg.sender === 'user' ? 'white' : 'black',
-                        alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                        boxShadow: '0 1px 2px rgba(0,0,0,0.1)',
-                        border: msg.sender === 'user' ? 'none' : '1px solid #e0e0e0',
-                      }}
-                    >
-                      <Typography variant="body2" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
-                        {msg.text}
-                      </Typography>
-                    </Box>
-                  </Fade>
-                ))}
-              </Box>
-              <Box sx={{ p: 2, display: 'flex', borderTop: '1px solid #eee', backgroundColor: '#f9f9f9' }}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Escribe tu mensaje..."
-                  variant="outlined"
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  sx={{
-                    mr: 1,
-                    '& .MuiOutlinedInput-root': {
-                      borderRadius: '20px',
-                      '& fieldset': { borderColor: '#e0e0e0' },
-                      '&:hover fieldset': { borderColor: colors.button },
-                      '&.Mui-focused fieldset': { borderColor: colors.button },
-                    },
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  onClick={sendMessage}
-                  sx={{
-                    background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
-                    borderRadius: '20px',
-                    boxShadow: '0 3px 5px rgba(64, 224, 208, 0.3)',
-                    '&:hover': { boxShadow: '0 5px 10px rgba(64, 224, 208, 0.4)' },
-                  }}
-                >
-                  Enviar
-                </Button>
-              </Box>
-            </Paper>
-          </Zoom>
-        ) : (
-          <Zoom in={!chatOpen} timeout={300}>
-            <Button
-              variant="contained"
-              startIcon={<ChatIcon />}
-              onClick={toggleChat}
-              sx={{
-                background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
-                borderRadius: '50%',
-                minWidth: '60px',
-                height: '60px',
-                padding: '16px',
-                boxShadow: '0 4px 20px rgba(64, 224, 208, 0.4)',
-                '& .MuiButton-startIcon': { margin: 0 },
-                '&:hover': { transform: 'scale(1.1)', boxShadow: '0 6px 25px rgba(64, 224, 208, 0.5)' },
-                transition: 'all 0.3s ease',
-              }}
-              aria-label="Chat"
-            />
-          </Zoom>
-        )}
-      </Box>
     </Box>
   );
 };
