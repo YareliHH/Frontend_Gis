@@ -6,7 +6,7 @@ import { AuthProvider } from './Componentes/Autenticacion/AuthContext.jsx';
 import ProtectedRoute from './Componentes/Autenticacion/protectedRoute.jsx';
 
 // Estilos globales para react-slick (carrusel)
-import "slick-carousel/slick/slick.css"; 
+import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 //PAGINA DE INICIO 
@@ -14,21 +14,20 @@ import LayoutEncabezado from './Componentes/Compartidos/LayoutEncabezado';
 import { ThemeProvider } from './Componentes/Temas/themeContext';
 
 import PaginaPrincipal from './Componentes/Inicio/PaginaPrincipal';
-import VerificarCorreo from './Componentes/Inicio/verificarCorreo'; 
+import VerificarCorreo from './Componentes/Inicio/verificarCorreo';
 import RecuperarContraseña from './Componentes/Inicio/recuperarPassword';
 import CambiarContra from './Componentes/Inicio/CambiarPassword.jsx';
 import Registro from './Componentes/Inicio/registo.jsx';
 import Login from './Componentes/Inicio/login.jsx';
 import Contactanos from './Componentes/Inicio/Contactanos.jsx';
-import FAQ from'./Componentes/Inicio/FAQ.jsx';
+import FAQ from './Componentes/Inicio/FAQ.jsx';
 import Busqueda from './Componentes/Inicio/Busqueda.jsx';
 import Chat from './Componentes/Inicio/chat.jsx';
 import OfertasEspeciales from './Componentes/Inicio/OfertasEspeciales.jsx';
-
 import DetallesPrin from './Componentes/Inicio/DetallesPrin.jsx';
-
 import Breadcrumbs from './Componentes/Navegacion/Breadcrumbs.jsx';
-
+import DynamicBreadcrumbsDetector from './Componentes/Navegacion/DynamicBreadcrumbs.jsx';
+import SectionTracker from './Componentes/Navegacion/SectionTracker .jsx';
 
 //CLIENTE 
 import PaginaCliente from './Componentes/Cliente/PaginaCliente.jsx';
@@ -41,18 +40,16 @@ import DetallesProducto from './Componentes/Cliente/DetallesProducto.jsx';
 import DetallesOfertas from './Componentes/Cliente/DetallesOfertas.jsx';
 import DetallesProMujer from './Componentes/Cliente/DetallesProMujer.jsx';
 
-
-
 // Componentes administrativos
 import PaginaAdministrativa from './Componentes/Administrativo/PaginaAdministrativa.jsx';
 import LayoutEncabezadoAdmin from './Componentes/Administrativo/LayoutConEncabezadoAdmin.jsx';
-import Deslinde from './Componentes/Administrativo/Deslinde'; 
-import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa'; 
-import Politicas from './Componentes/Administrativo/Politicas'; 
-import TerminosCondiciones from './Componentes/Administrativo/Terminos'; 
-import RedesSociales from './Componentes/Administrativo/RedesSociales'; 
-import Reportes from './Componentes/Administrativo/Reporte.jsx'; 
-import Contactanosadmin from './Componentes/Administrativo/Contactanosadmi.jsx'; 
+import Deslinde from './Componentes/Administrativo/Deslinde';
+import PerfilEmpresa from './Componentes/Administrativo/PerfilEmpresa';
+import Politicas from './Componentes/Administrativo/Politicas';
+import TerminosCondiciones from './Componentes/Administrativo/Terminos';
+import RedesSociales from './Componentes/Administrativo/RedesSociales';
+import Reportes from './Componentes/Administrativo/Reporte.jsx';
+import Contactanosadmin from './Componentes/Administrativo/Contactanosadmi.jsx';
 import AcercaDe from './Componentes/Inicio/AcercaDe.jsx';
 import ProductosAdmin from './Componentes/Administrativo/Productos.jsx';
 import Categorias from './Componentes/Administrativo/Categorias.jsx';
@@ -68,79 +65,210 @@ import Banner from './Componentes/Administrativo/Banner.jsx';
 import PaginaEmpleado from './Componentes/Empleado/PaginaEmpleado.jsx';
 import LayoutEncabezadoEmpleado from './Componentes/Empleado/LayoutEncabezadoEmpleado.jsx';
 
-
 //ERRORES
 import Error500 from './Componentes/Pagina/Error500.jsx';
 import Error404 from './Componentes/Pagina/Error404.jsx';
 import Error400 from './Componentes/Pagina/Error400.jsx';
-
-
-
+import AuthError from './Componentes/Autenticacion/AuthError.jsx';
 
 const App = () => {
   return (
     <ThemeProvider>
       <Router>
-        <Routes>
-          {/* PAGINA PRINCIPAL */}
-          <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
+        <AuthProvider>
+          <Routes>
+            {/* PAGINA PRINCIPAL */}
+            <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
 
-          <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
-          <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
-          <Route path="/verificar-correo" element={<VerificarCorreo />} /> 
-          <Route path="/recuperar_password" element={<RecuperarContraseña />} />
-          <Route path="/resetear_contrasena" element={<CambiarContra />} />
-          <Route path="/Ofertasespeciales" element={<LayoutEncabezado><OfertasEspeciales /></LayoutEncabezado>} />
-          <Route path="/contacto" element={<LayoutEncabezado><Contactanos /></LayoutEncabezado>} />
-          <Route path="/acercaDe" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Acerca de' }]} /><AcercaDe /></LayoutEncabezado>} />
-          <Route path="/busqueda" element={<LayoutEncabezado><Busqueda /></LayoutEncabezado>} />
-          <Route path="/preguntasF" element={<LayoutEncabezado><FAQ/></LayoutEncabezado>} />
-          <Route path="/detalles" element={<DetallesPrin/>} />
+            <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
+            <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
+            <Route path="/verificar-correo" element={<VerificarCorreo />} />
+            <Route path="/recuperar_password" element={<RecuperarContraseña />} />
+            <Route path="/resetear_contrasena" element={<CambiarContra />} />
+            <Route path="/Ofertasespeciales" element={<LayoutEncabezado><OfertasEspeciales /></LayoutEncabezado>} />
+            <Route path="/contacto" element={<LayoutEncabezado><Contactanos /></LayoutEncabezado>} />
+            <Route path="/acercaDe" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Acerca de' }]} /><AcercaDe /></LayoutEncabezado>} />
+            <Route path="/busqueda" element={<LayoutEncabezado><Busqueda /></LayoutEncabezado>} />
+            <Route path="/preguntasF" element={<LayoutEncabezado><FAQ /></LayoutEncabezado>} />
+            <Route path="/detalles" element={<DetallesPrin />} />
 
-          
+            {/* Páginas de error */}
+            <Route path="/error-auth" element={<LayoutEncabezado><AuthError /></LayoutEncabezado>} />
+            <Route path="/error500" element={<LayoutEncabezado><Error500 /></LayoutEncabezado>} />
+            <Route path="/error400" element={<LayoutEncabezado><Error400 /></LayoutEncabezado>} />
 
-           {/* Rutas de CLIENTE */}
-           <Route path="/cliente" element={<EncabezadoCliente><PaginaCliente /></EncabezadoCliente>} />
-          <Route path="/hombres" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre',}]} /><Hombre /></EncabezadoCliente>} />
-          <Route path="/mujeres" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer',}]} /><Mujer /></EncabezadoCliente>} />
-          <Route path="/detallesp/:id" element={<EncabezadoCliente><DetallesProducto /></EncabezadoCliente>} />
-          <Route path="/perfil" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Perfil',}]} /><Perfil /></EncabezadoCliente>} />
-          <Route path="/ofertasCliente" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente',}]} /><OfertasCliente /></EncabezadoCliente>} />
-          <Route path="/detalles-producto" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre', path: '/hombre',},{ name: 'Detalle Hombre',}]} /><DetallesProducto /></EncabezadoCliente>} />
-          <Route path="/detalles-ofertas" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente', path: '/ofertasCliente',},{ name: 'Detalle Ofertas',}]} /><DetallesOfertas /></EncabezadoCliente>} />
-          <Route path="/detalles-Mujer" element={<EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer', path: '/mujer',},{ name: 'Detalle Mujer',}]} /><DetallesProMujer /></EncabezadoCliente>} />
+            {/* Rutas de CLIENTE - Protegidas */}
+            <Route path="/cliente" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente><PaginaCliente /></EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/hombres" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <SectionTracker sectionName="hombres" />
+                  <Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre' }]} />
+                  <Hombre />
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/mujeres" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <SectionTracker sectionName="mujeres" />
+                  <Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer' }]} />
+                  <Mujer />
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/detallesp/:id" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <DynamicBreadcrumbsDetector>
+                    <DetallesProducto />
+                  </DynamicBreadcrumbsDetector>
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/perfil" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Perfil' }]} />
+                  <Perfil />
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/ofertasCliente" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente' }]} />
+                  <OfertasCliente />
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/detalles-producto" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre', path: '/cliente/hombres' }, { name: 'Detalle Hombre' }]} />
+                  <DetallesProducto />
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/detalles-ofertas" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente', path: '/cliente/ofertasCliente' }, { name: 'Detalle Ofertas' }]} />
+                  <DetallesOfertas />
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
+            <Route path="/cliente/detalles-Mujer" element={
+              <ProtectedRoute requiredRole="usuario">
+                <EncabezadoCliente>
+                  <Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer', path: '/cliente/mujeres' }, { name: 'Detalle Mujer' }]} />
+                  <DetallesProMujer />
+                </EncabezadoCliente>
+              </ProtectedRoute>
+            } />
 
+            {/* Rutas administrativas - Protegidas */}
+            <Route path="/admin" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/deslinde" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Deslinde /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/perfil" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><PerfilEmpresa /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/politicas" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Politicas /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/terminos" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><TerminosCondiciones /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/redesSociales" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><RedesSociales /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/reportes" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Reportes /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/contactanosadmin" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Contactanosadmin /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/Productosadmin" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><ProductosAdmin /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/categorias" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Categorias /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/colores" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Colores /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/tallas" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Tallas /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/generos" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Generos /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/faqsadmin" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><FaqsAdmin /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/ventas" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Ventas /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/carrito" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Carrito /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/banner" element={
+              <ProtectedRoute requiredRole="admin">
+                <LayoutEncabezadoAdmin><Banner /></LayoutEncabezadoAdmin>
+              </ProtectedRoute>
+            } />
 
-         
-          <Route path="/*" element={<Error404 />} />
-          <Route path="/error500" element={<Error500 />} />
-          <Route path="/error400" element={<Error400/>} />
+            {/* Rutas Empleado - Protegidas */}
+            <Route path="/empleado" element={
+              <ProtectedRoute requiredRole="empleado">
+                <LayoutEncabezadoEmpleado><PaginaEmpleado /></LayoutEncabezadoEmpleado>
+              </ProtectedRoute>
+            } />
 
-          {/* Rutas administrativas */}
-          <Route path="/admin" element={<LayoutEncabezadoAdmin><PaginaAdministrativa/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/deslinde" element={<LayoutEncabezadoAdmin><Deslinde/></LayoutEncabezadoAdmin>} /> 
-          <Route path="/admin/perfil" element={<LayoutEncabezadoAdmin><PerfilEmpresa/></LayoutEncabezadoAdmin>} /> 
-          <Route path="/admin/politicas" element={<LayoutEncabezadoAdmin><Politicas/></LayoutEncabezadoAdmin>} /> 
-          <Route path="/admin/terminos" element={<LayoutEncabezadoAdmin><TerminosCondiciones/></LayoutEncabezadoAdmin>} /> 
-          <Route path="/admin/redesSociales" element={<LayoutEncabezadoAdmin><RedesSociales/></LayoutEncabezadoAdmin>} /> 
-          <Route path="/admin/reportes" element={<LayoutEncabezadoAdmin><Reportes/></LayoutEncabezadoAdmin>} /> 
-          <Route path="/admin/contactanosadmin" element={<LayoutEncabezadoAdmin><Contactanosadmin/></LayoutEncabezadoAdmin>} /> 
-          <Route path="/admin/Productosadmin" element={<LayoutEncabezadoAdmin><ProductosAdmin/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/categorias" element={<LayoutEncabezadoAdmin><Categorias/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/colores" element={<LayoutEncabezadoAdmin><Colores/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/tallas" element={<LayoutEncabezadoAdmin><Tallas/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/generos" element={<LayoutEncabezadoAdmin><Generos/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/faqsadmin" element={<LayoutEncabezadoAdmin><FaqsAdmin/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/ventas" element={<LayoutEncabezadoAdmin><Ventas/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/carrito" element={<LayoutEncabezadoAdmin><Carrito/></LayoutEncabezadoAdmin>} />
-          <Route path="/admin/banner" element={<LayoutEncabezadoAdmin><Banner/></LayoutEncabezadoAdmin>} />
-
-        
-           {/* Rutas Empleado*/}
-          <Route path="/empleado" element={<LayoutEncabezadoEmpleado><PaginaEmpleado/></LayoutEncabezadoEmpleado>} />
-
-
-        </Routes>
+            {/* Ruta 404 - debe ser la última */}
+            <Route path="*" element={<LayoutEncabezado><Error404 /></LayoutEncabezado>} />
+          </Routes>
+        </AuthProvider>
       </Router>
     </ThemeProvider>
   );

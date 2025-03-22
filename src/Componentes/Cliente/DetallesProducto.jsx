@@ -221,40 +221,6 @@ const DetallesProducto = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      {/* Breadcrumbs */}
-      <Box sx={{ mb: 3 }}>
-        <Breadcrumbs 
-          separator={<NavigateNext fontSize="small" sx={{ color: customColors.textSecondary }} />}
-          aria-label="breadcrumb"
-        >
-          <Link 
-            color="inherit" 
-            href="/" 
-            sx={{ 
-              textDecoration: 'none', 
-              color: customColors.textSecondary,
-              '&:hover': { color: customColors.accent }
-            }}
-          >
-            Inicio
-          </Link>
-          <Link 
-            color="inherit" 
-            href="/uniformes" 
-            sx={{ 
-              textDecoration: 'none', 
-              color: customColors.textSecondary,
-              '&:hover': { color: customColors.accent }
-            }}
-          >
-            Uniformes
-          </Link>
-          <Typography sx={{ color: customColors.accent }}>
-            {product.nombre_producto}
-          </Typography>
-        </Breadcrumbs>
-      </Box>
-
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

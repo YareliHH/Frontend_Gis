@@ -44,6 +44,7 @@ import WebAssetIcon from "@mui/icons-material/WebAsset";
 
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { useAuth } from '../Autenticacion/AuthContext';
 
 // Importar logo
 // Asegúrate de que la ruta sea correcta
@@ -99,14 +100,21 @@ const theme = createTheme({
  * Solo permite tener un menú expandido a la vez
  */
 const EncabezadoAdministrativo = () => {
-  // Estados para control de navegación
+  const { logout } = useAuth();
   const [drawerOpen, setDrawerOpen] = useState(true);
   const [activeMenu, setActiveMenu] = useState(null);
-  
+
   const navigate = useNavigate();
   const themeInstance = useTheme();
   const isMobile = useMediaQuery(themeInstance.breakpoints.down('md'));
 
+  const handleLogout = async () => {
+    try {
+      await logout(); // La función logout del contexto se encargará de redirigir
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
   // Manejadores de eventos
   const handleDrawerToggle = () => {
     setDrawerOpen(!drawerOpen);
@@ -145,7 +153,7 @@ const EncabezadoAdministrativo = () => {
       icon: InventoryIcon,
       items: [
         { icon: InventoryIcon, text: 'Productos', path: '/admin/Productosadmin' },
-        { icon: ShoppingCartIcon, text: 'Carrito', path: '/admin/carrito' }, 
+        { icon: ShoppingCartIcon, text: 'Carrito', path: '/admin/carrito' },
         { icon: CategoryIcon, text: 'Categorías', path: '/admin/categorias' },
         { icon: ColorLensIcon, text: 'Colores', path: '/admin/colores' },
         { icon: StraightenIcon, text: 'Tallas', path: '/admin/tallas' },
@@ -158,7 +166,7 @@ const EncabezadoAdministrativo = () => {
       icon: MonetizationOnIcon,
       items: [
         { icon: MonetizationOnIcon, text: 'Ventas', path: '/admin/ventas' },
-       
+
       ]
     },
     {
@@ -194,9 +202,9 @@ const EncabezadoAdministrativo = () => {
 
   // Contenido del drawer
   const drawerContent = (
-    <Box sx={{ 
-      height: '100%', 
-      display: 'flex', 
+    <Box sx={{
+      height: '100%',
+      display: 'flex',
       flexDirection: 'column'
     }}>
       {/* Icono y título del panel */}
@@ -223,7 +231,7 @@ const EncabezadoAdministrativo = () => {
           Panel Administrativo
         </Typography>
       </Box>
-      
+
       <Divider />
 
 
@@ -234,11 +242,11 @@ const EncabezadoAdministrativo = () => {
         <List>
           {menuGroups.map((group) => (
             <React.Fragment key={group.id}>
-              <ListItemButton 
+              <ListItemButton
                 onClick={() => handleMenuExpand(group.id)}
-                sx={{ 
+                sx={{
                   py: 1.5,
-                  borderRadius: '0 20px 20px 0', 
+                  borderRadius: '0 20px 20px 0',
                   mr: 1,
                   bgcolor: activeMenu === group.id ? 'rgba(30, 144, 255, 0.1)' : 'transparent'
                 }}
@@ -246,39 +254,39 @@ const EncabezadoAdministrativo = () => {
                 <ListItemIcon>
                   <group.icon color="primary" />
                 </ListItemIcon>
-                <ListItemText 
-                  primary={group.title} 
-                  primaryTypographyProps={{ fontWeight: 'medium' }} 
+                <ListItemText
+                  primary={group.title}
+                  primaryTypographyProps={{ fontWeight: 'medium' }}
                 />
                 {activeMenu === group.id ? <ExpandLess /> : <ExpandMore />}
               </ListItemButton>
-              
+
               <Collapse in={activeMenu === group.id} timeout="auto" unmountOnExit>
                 <List component="div" disablePadding>
                   {group.items.map((item, index) => (
-                    <ListItemButton 
-                      key={index} 
+                    <ListItemButton
+                      key={index}
                       onClick={() => handleMenuClick(item.path)}
-                      sx={{ 
+                      sx={{
                         pl: 4,
                         py: 1,
-                        borderRadius: '0 20px 20px 0', 
+                        borderRadius: '0 20px 20px 0',
                         mr: 1,
-                        ml: 1 
+                        ml: 1
                       }}
                     >
                       <ListItemIcon>
                         <item.icon color="action" />
                       </ListItemIcon>
-                      <ListItemText 
-                        primary={item.text} 
+                      <ListItemText
+                        primary={item.text}
                         primaryTypographyProps={{ fontSize: '0.9rem' }}
                       />
                     </ListItemButton>
                   ))}
                 </List>
               </Collapse>
-              
+
               <Divider sx={{ my: 1 }} />
             </React.Fragment>
           ))}
@@ -286,19 +294,19 @@ const EncabezadoAdministrativo = () => {
       </Box>
 
       {/* Botón de cerrar sesión en la parte inferior */}
-      <Box 
-        sx={{ 
-          p: 2, 
+      <Box
+        sx={{
+          p: 2,
           borderTop: '1px solid rgba(0, 0, 0, 0.12)',
           mt: 'auto'
         }}
       >
-        <Button 
-          fullWidth 
-          variant="contained" 
-          color="secondary" 
+        <Button
+          fullWidth
+          variant="contained"
+          color="secondary"
           startIcon={<LogoutIcon />}
-          onClick={() => handleMenuClick('/')}
+          onClick={handleLogout} // Cambiado de handleMenuClick('/') a handleLogout
           sx={{ py: 1 }}
         >
           Cerrar Sesión
@@ -311,9 +319,9 @@ const EncabezadoAdministrativo = () => {
     <ThemeProvider theme={theme}>
       <Box sx={{ display: 'flex', height: '100%' }}>
         {/* AppBar - siempre visible y ocupa todo el ancho */}
-        <AppBar 
-          position="fixed" 
-          sx={{ 
+        <AppBar
+          position="fixed"
+          sx={{
             width: '100%',
             boxShadow: 1,
             zIndex: (theme) => theme.zIndex.drawer + 1
@@ -331,33 +339,33 @@ const EncabezadoAdministrativo = () => {
                 <MenuIcon />
               </IconButton>
             )}
-            
+
             {/* Logo y nombre de la aplicación */}
             <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-              <Avatar 
-                src={logo} 
-                alt="Gislive" 
-                sx={{ 
-                  width: 40, 
-                  height: 40, 
+              <Avatar
+                src={logo}
+                alt="Gislive"
+                sx={{
+                  width: 40,
+                  height: 40,
                   mr: 1.5,
                   border: '2px solid rgba(255, 255, 255, 0.6)'
-                }} 
+                }}
               />
               <Typography variant="h6" component="div" fontWeight="500">
                 Gislive Boutique
               </Typography>
             </Box>
-            
+
             {/* Icono de inicio a la derecha */}
             <IconButton
               color="inherit"
               onClick={() => handleMenuClick('/admin')}
-              sx={{ 
+              sx={{
                 borderRadius: '50%',
-                '&:hover': { 
-                  bgcolor: 'rgba(255, 255, 255, 0.2)' 
-                } 
+                '&:hover': {
+                  bgcolor: 'rgba(255, 255, 255, 0.2)'
+                }
               }}
             >
               <HomeIcon />

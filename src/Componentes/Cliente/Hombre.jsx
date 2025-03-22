@@ -276,7 +276,7 @@ const Hombre = () => {
 
   // Función para navegar al detalle del producto
   const handleProductClick = (product) => {
-    navigate(`/detallesp/${product.id}`);
+    navigate(`/cliente/detallesp/${product.id}`);
   };
   
   // Función para resetear filtros

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  AppBar, 
-  Toolbar, 
-  IconButton, 
-  Box, 
-  Button, 
-  TextField, 
-  InputAdornment, 
+import {
+  AppBar,
+  Toolbar,
+  IconButton,
+  Box,
+  Button,
+  TextField,
+  InputAdornment,
   Typography,
   Badge,
   Drawer,
@@ -31,7 +31,7 @@ import {
   CardMedia,
   CardContent,
   alpha
-} from '@mui/material';  
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -50,6 +50,7 @@ import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
 import axios from 'axios';
+import { useAuth } from '../Autenticacion/AuthContext';
 
 // Componente personalizado para el buscador redondo y elegante
 const SearchBox = styled('div')(({ theme, darkMode }) => ({
@@ -99,10 +100,10 @@ const StyledInputBase = styled(InputBase)(({ theme, darkMode }) => ({
 // Componente para el resultado de búsqueda
 const SearchResult = ({ product, onClick, darkMode }) => {
   return (
-    <Card 
-      sx={{ 
-        display: 'flex', 
-        mb: 1, 
+    <Card
+      sx={{
+        display: 'flex',
+        mb: 1,
         cursor: 'pointer',
         boxShadow: 'none',
         borderRadius: 2,
@@ -139,30 +140,40 @@ const BarraNavCliente = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [cartCount, setCartCount] = useState(2); // Número de ejemplo para el carrito
   const navigate = useNavigate();
-  
+  const { logout } = useAuth();
+
   // Estados para el buscador
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
-  
+
   // Detectar tamaño de pantalla con Material UI
   const theme = createTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // Función para manejar el cierre de sesión
+  const handleLogout = async () => {
+    try {
+      await logout(); // La función logout del contexto se encargará de redirigir
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
   // Efecto para aplicar modo oscuro/claro
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? '#121212' : '#FFFFFF';
     document.body.style.color = darkMode ? '#FFFFFF' : '#000000';
-    
+
     // Cargar preferencia guardada
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode) {
       setDarkMode(savedMode === 'true');
     }
   }, [darkMode]);
-  
+
   // Función para buscar productos
   const searchProducts = async (query) => {
     if (!query || query.trim() === '') {
@@ -170,7 +181,7 @@ const BarraNavCliente = () => {
       setOpen(false);
       return;
     }
-    
+
     try {
       setLoading(true);
       // Llamada a la API de búsqueda
@@ -184,7 +195,7 @@ const BarraNavCliente = () => {
       setLoading(false);
     }
   };
-  
+
   // Efecto para debounce (retraso) en la búsqueda
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -192,10 +203,10 @@ const BarraNavCliente = () => {
         searchProducts(searchTerm);
       }
     }, 300); // Retraso de 300ms para no hacer llamadas API en cada keystroke
-    
+
     return () => clearTimeout(timer);
   }, [searchTerm]);
-  
+
   // Manejar clic en resultado de búsqueda
   const handleResultClick = (product) => {
     navigate(`/detallesp/${product.id}`);
@@ -233,7 +244,7 @@ const BarraNavCliente = () => {
     setDrawerOpen(false);
     handleNavigation(path);
   };
-  
+
   // Manejar cambio en el input de búsqueda
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
@@ -295,10 +306,10 @@ const BarraNavCliente = () => {
     <ThemeProvider theme={customTheme}>
       {/* Banner superior */}
       <Fade in={true} timeout={800}>
-        <Box 
-          sx={{ 
+        <Box
+          sx={{
             backgroundColor: darkMode ? '#222' : '#4285f4', // Cambiado a azul claro
-            color: 'white', 
+            color: 'white',
             padding: isSmall ? '8px' : '10px 0',
             display: 'flex',
             flexWrap: 'wrap',
@@ -310,17 +321,17 @@ const BarraNavCliente = () => {
             <PhoneIcon fontSize="small" sx={{ mr: 0.5 }} />
             <Typography variant="body2">7898964861</Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', mx: 1 }}>
             <PhoneIcon fontSize="small" sx={{ mr: 0.5 }} />
             <Typography variant="body2">2223308869</Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', mx: 1 }}>
             <EmailIcon fontSize="small" sx={{ mr: 0.5 }} />
             <Typography variant="body2">gislive17@gmail.com</Typography>
           </Box>
-          
+
           <Box sx={{ display: 'flex', alignItems: 'center', mx: 1 }}>
             <LocalShippingIcon fontSize="small" sx={{ mr: 0.5 }} />
             <Typography variant="body2">¡ENVÍOS GRATIS EN COMPRAS MAYORES A $2,500!</Typography>
@@ -330,13 +341,13 @@ const BarraNavCliente = () => {
 
       {/* Sección de Logo */}
       <Grow in={true} timeout={800}>
-        <Paper 
+        <Paper
           elevation={0}
-          sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            padding: '15px 0', 
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '15px 0',
             backgroundColor: darkMode ? '#1e1e1e' : '#f0f8ff', // Azul muy suave
             borderRadius: 0
           }}
@@ -345,8 +356,8 @@ const BarraNavCliente = () => {
             <Avatar
               src={logo}
               alt="Logo GisLive"
-              sx={{ 
-                width: isSmall ? 50 : 60, 
+              sx={{
+                width: isSmall ? 50 : 60,
                 height: isSmall ? 50 : 60,
                 mr: 2,
                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
@@ -356,9 +367,9 @@ const BarraNavCliente = () => {
                 }
               }}
             />
-            <Typography 
-              variant="h6" 
-              sx={{ 
+            <Typography
+              variant="h6"
+              sx={{
                 color: darkMode ? '#fff' : '#4285f4', // Azul claro
                 fontWeight: 'bold',
                 textShadow: darkMode ? '1px 1px 2px rgba(0,0,0,0.3)' : 'none'
@@ -371,9 +382,9 @@ const BarraNavCliente = () => {
       </Grow>
 
       {/* Barra de navegación principal */}
-      <AppBar 
-        position="sticky" 
-        sx={{ 
+      <AppBar
+        position="sticky"
+        sx={{
           backgroundColor: darkMode ? '#1e1e1e' : '#4cb5ff', // Azul más claro como en la imagen
           boxShadow: darkMode ? '0 2px 8px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(76, 181, 255, 0.3)',
           zIndex: (theme) => theme.zIndex.drawer + 1
@@ -413,13 +424,13 @@ const BarraNavCliente = () => {
                         <SearchIcon />
                       )}
                     </SearchIconWrapper>
-                    
+
                     {/* Resultados de búsqueda */}
-                    <Popper 
-                      open={open} 
-                      anchorEl={anchorEl} 
+                    <Popper
+                      open={open}
+                      anchorEl={anchorEl}
                       placement="bottom-start"
-                      style={{ 
+                      style={{
                         width: anchorEl ? anchorEl.clientWidth : undefined,
                         zIndex: 1300,
                         marginTop: '5px'
@@ -440,10 +451,10 @@ const BarraNavCliente = () => {
                         >
                           {searchResults.length > 0 ? (
                             <>
-                              <Typography 
-                                variant="subtitle2" 
-                                sx={{ 
-                                  p: 1, 
+                              <Typography
+                                variant="subtitle2"
+                                sx={{
+                                  p: 1,
                                   color: darkMode ? '#aaa' : '#666',
                                   borderBottom: '1px solid',
                                   borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
@@ -453,9 +464,9 @@ const BarraNavCliente = () => {
                               </Typography>
                               <Box sx={{ p: 1 }}>
                                 {searchResults.map((product) => (
-                                  <SearchResult 
-                                    key={product.id} 
-                                    product={product} 
+                                  <SearchResult
+                                    key={product.id}
+                                    product={product}
                                     onClick={handleResultClick}
                                     darkMode={darkMode}
                                   />
@@ -485,9 +496,9 @@ const BarraNavCliente = () => {
             {!isMobile && (
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
                 {[
-                  { label: 'Hombre', path: '/hombres', icon: <ManIcon sx={{ mr: 0.5 }} /> },
-                  { label: 'Mujer', path: '/mujeres', icon: <WomanIcon sx={{ mr: 0.5 }} /> },
-                  { label: 'Ofertas Especiales', path: '/ofertasCliente', icon: <LocalOfferIcon sx={{ mr: 0.5 }} /> },
+                  { label: 'Hombre', path: '/cliente/hombres', icon: <ManIcon sx={{ mr: 0.5 }} /> },
+                  { label: 'Mujer', path: '/cliente/mujeres', icon: <WomanIcon sx={{ mr: 0.5 }} /> },
+                  { label: 'Ofertas Especiales', path: '/cliente/ofertasCliente', icon: <LocalOfferIcon sx={{ mr: 0.5 }} /> },
                 ].map((item, index) => (
                   <Button
                     key={index}
@@ -524,7 +535,7 @@ const BarraNavCliente = () => {
 
                 <IconButton
                   color="inherit"
-                  onClick={() => handleNavigation('/carrito')}
+                  onClick={() => handleNavigation('/cliente/carrito')}
                   sx={{
                     mx: 1,
                     transition: 'all 0.3s',
@@ -554,7 +565,7 @@ const BarraNavCliente = () => {
 
                 <IconButton
                   color="inherit"
-                  onClick={() => handleNavigation('/')}
+                  onClick={handleLogout} // Cambiado de handleNavigation('/') a handleLogout
                   sx={{
                     mx: 1,
                     transition: 'all 0.3s',
@@ -601,9 +612,9 @@ const BarraNavCliente = () => {
             <CloseIcon />
           </IconButton>
         </Box>
-        
+
         <Divider />
-        
+
         <Box sx={{ p: 2 }}>
           <SearchBox darkMode={darkMode} sx={{ maxWidth: '100%' }}>
             <StyledInputBase
@@ -618,16 +629,16 @@ const BarraNavCliente = () => {
             </SearchIconWrapper>
           </SearchBox>
         </Box>
-        
+
         <List>
           {[
-            { label: 'Hombre', path: '/hombres', icon: <ManIcon /> },
-            { label: 'Mujer', path: '/mujeres', icon: <WomanIcon /> },
-            { label: 'Ofertas Especiales', path: '/ofertasCliente', icon: <LocalOfferIcon /> },
+            { label: 'Hombre', path: '/cliente/hombres', icon: <ManIcon /> },
+            { label: 'Mujer', path: '/cliente/mujeres', icon: <WomanIcon /> },
+            { label: 'Ofertas Especiales', path: '/cliente/ofertasCliente', icon: <LocalOfferIcon /> },
           ].map((item, index) => (
-            <ListItem 
-              button 
-              key={index} 
+            <ListItem
+              button
+              key={index}
               onClick={() => handleMobileNav(item.path)}
               sx={{
                 borderRadius: '8px',
@@ -646,12 +657,12 @@ const BarraNavCliente = () => {
               <ListItemText primary={item.label} />
             </ListItem>
           ))}
-          
+
           <Divider sx={{ my: 2 }} />
-          
-          <ListItem 
-            button 
-            onClick={() => handleMobileNav('/carrito')}
+
+          <ListItem
+            button
+            onClick={() => handleMobileNav('/cliente/carrito')}
             sx={{
               borderRadius: '8px',
               mx: 1,
@@ -670,9 +681,9 @@ const BarraNavCliente = () => {
             </ListItemIcon>
             <ListItemText primary="Carrito de compras" />
           </ListItem>
-          
-          <ListItem 
-            button 
+
+          <ListItem
+            button
             onClick={toggleDarkMode}
             sx={{
               borderRadius: '8px',
@@ -690,12 +701,12 @@ const BarraNavCliente = () => {
             </ListItemIcon>
             <ListItemText primary={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"} />
           </ListItem>
-          
+
           <Divider sx={{ my: 2 }} />
-          
-          <ListItem 
-            button 
-            onClick={() => handleMobileNav('/')}
+
+          <ListItem
+            button
+            onClick={handleLogout} // Cambiado de handleMobileNav('/') a handleLogout
             sx={{
               borderRadius: '8px',
               mx: 1,

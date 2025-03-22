@@ -1,6 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, IconButton, Box, Button, TextField, InputAdornment, Typography, Container, Divider } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { 
+  AppBar, 
+  Toolbar, 
+  IconButton, 
+  Box, 
+  Button, 
+  Typography, 
+  Container, 
+  Divider, 
+  useMediaQuery,
+  Menu,
+  MenuItem,
+  Badge
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -9,23 +23,31 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
 
 const BarraNav = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [darkMode, setDarkMode] = useState(false);
   const navigate = useNavigate();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? '#121212' : '#FFFFFF';
     document.body.style.color = darkMode ? '#FFFFFF' : '#000000';
   }, [darkMode]);
 
-  const handleSearch = () => {
-    if (searchTerm.trim()) {
-      navigate(`/buscar?q=${searchTerm}`);
-    }
-  };
-
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
+  };
+
+  const handleMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleMenuItemClick = (path) => {
+    navigate(path);
+    handleClose();
   };
 
   const theme = createTheme({
@@ -82,16 +104,6 @@ const BarraNav = () => {
           },
         },
       },
-      MuiTextField: {
-        styleOverrides: {
-          root: {
-            '& .MuiOutlinedInput-root': {
-              borderRadius: '25px',
-              transition: 'all 0.3s ease-in-out',
-            },
-          },
-        },
-      },
     },
   });
 
@@ -103,9 +115,11 @@ const BarraNav = () => {
     { label: 'Iniciar Sesión', path: '/login' }
   ];
 
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
     <ThemeProvider theme={theme}>
-      {/* Top Info Bar with subtle gradient */}
+      {/* Barra de información */}
       <Box sx={{
         background: darkMode 
           ? 'linear-gradient(90deg, #333333 0%, #444444 100%)' 
@@ -125,241 +139,227 @@ const BarraNav = () => {
         </Container>
       </Box>
 
-      {/* Logo and Title with improved styling */}
-      <Box sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '22px 0',
-        background: darkMode 
-          ? 'linear-gradient(to right, #0f2027, #203a43, #2c5364)' 
-          : 'linear-gradient(to right, #7F7FD5, #91EAE4)',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-      }}>
-        <Container maxWidth="lg" sx={{ display: 'flex', justifyContent: 'center' }}>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center',
-            padding: '8px 16px',
-            borderRadius: '8px',
-            backdropFilter: 'blur(5px)',
-            background: 'rgba(255,255,255,0.1)',
-          }}>
-            <img
-              src={logo}
-              alt="Logo GisLive"
-              style={{ 
-                width: '65px', 
-                height: '65px', 
-                marginRight: '16px', 
-                borderRadius: '50%',
-                border: '2px solid white',
-                padding: '2px',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.2)'
-              }}
-            />
-            <Typography variant="h6" sx={{ 
-              color: 'white', 
-              fontSize: '26px', 
-              fontWeight: '700',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.3)'
-            }}>
-              GisLive Boutique Clínica
-            </Typography>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Main Navigation Bar with refined styles */}
+      {/* Barra de navegación principal */}
       <AppBar 
         position="sticky" 
-        elevation={2}
+        elevation={3}
         sx={{ 
-          backgroundColor: theme.palette.mode === 'dark' 
-            ? 'rgba(30,30,30,0.95)' 
-            : 'rgba(255,255,255,0.95)', 
-          backdropFilter: 'blur(10px)',
+          backgroundColor: theme.palette.background.paper,
           borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
         }}
       >
         <Container maxWidth="lg">
           <Toolbar sx={{ 
+            py: 1.5,
             display: 'flex', 
-            justifyContent: 'space-between', 
+            justifyContent: 'space-between',
             alignItems: 'center',
-            padding: '8px 0',
           }}>
-            
-            {/* Search Bar with improved styling */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', flexGrow: 1 }}>
-              <TextField
-                variant="outlined"
-                placeholder="Buscar productos..."
-                size="small"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{
-                  width: { xs: '100%', sm: '420px' },
-                  backgroundColor: darkMode ? 'rgba(80,80,80,0.2)' : 'rgba(255,255,255,0.9)',
-                  borderRadius: '25px',
-                  '& .MuiOutlinedInput-root': {
-                    '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: theme.palette.primary.main,
-                      borderWidth: '1px',
-                    },
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: theme.palette.primary.main,
-                      borderWidth: '2px',
-                    },
-                  },
-                  '& .MuiInputBase-input': {
-                    color: theme.palette.text.primary,
-                    fontSize: '15px',
-                    padding: '10px 14px',
-                  },
+            {/* Logo y Nombre */}
+            <Box 
+              onClick={() => navigate('/')} 
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center',
+                cursor: 'pointer',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                  transform: 'scale(1.02)'
+                }
+              }}
+            >
+              <Box sx={{ 
+                position: 'relative',
+                width: isMobile ? 45 : 55,
+                height: isMobile ? 45 : 55,
+                mr: 2,
+                borderRadius: '50%',
+                background: darkMode 
+                  ? 'linear-gradient(45deg, #2A7F62, #3B8D99)' 
+                  : 'linear-gradient(45deg, #3B8D99, #91EAE4)',
+                p: '3px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                boxShadow: '0 3px 10px rgba(0,0,0,0.2)'
+              }}>
+                <img
+                  src={logo}
+                  alt="Logo GisLive"
+                  style={{ 
+                    width: '100%', 
+                    height: '100%', 
+                    borderRadius: '50%',
+                    border: `2px solid ${darkMode ? '#333' : 'white'}`,
+                    objectFit: 'cover'
+                  }}
+                />
+              </Box>
+              
+              <Typography 
+                variant="h6" 
+                component="div"
+                sx={{ 
+                  display: { xs: 'none', sm: 'block' },
+                  fontSize: { sm: '1.2rem', md: '1.5rem' },
+                  fontWeight: 700,
+                  color: theme.palette.text.primary,
+                  background: darkMode 
+                    ? 'linear-gradient(90deg, #2A7F62, #3B8D99)' 
+                    : 'linear-gradient(90deg, #3B8D99, #91EAE4)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  letterSpacing: '0.5px'
                 }}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton 
-                        onClick={handleSearch}
-                        sx={{ 
-                          color: theme.palette.primary.main,
-                          '&:hover': { 
-                            backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
-                          } 
-                        }}
-                      >
-                        <SearchIcon sx={{ fontSize: '22px' }} />
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-              />
+              >
+                GisLive Boutique
+              </Typography>
             </Box>
 
-            {/* Desktop Navigation Buttons with refined styling */}
+            {/* Navegación en escritorio */}
             <Box sx={{ 
               display: { xs: 'none', md: 'flex' }, 
               alignItems: 'center',
-              gap: 1.5 
+              gap: { md: 1, lg: 2 }
             }}>
-              <IconButton 
-                onClick={() => navigate('/carrito')} 
-                sx={{ 
-                  color: theme.palette.primary.main,
-                  transition: 'all 0.2s',
-                  '&:hover': { 
-                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                    transform: 'scale(1.05)'
-                  } 
-                }}
-              >
-                <ShoppingCartIcon />
-              </IconButton>
-
-              <Divider orientation="vertical" flexItem sx={{ 
-                mx: 1, 
-                height: '24px', 
-                alignSelf: 'center',
-                backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-              }} />
-
               {menuItems.map((item, index) => (
                 <Button 
                   key={index} 
                   onClick={() => navigate(item.path)} 
                   sx={{
                     color: theme.palette.text.primary,
-                    fontSize: '15px',
+                    fontSize: '0.9rem',
                     fontWeight: '600',
                     position: 'relative',
-                    padding: '6px 12px',
+                    padding: '8px 12px',
+                    overflow: 'hidden',
                     '&:hover': { 
-                      color: theme.palette.primary.main,
                       backgroundColor: 'transparent',
+                      color: theme.palette.primary.main,
                       '&::after': {
-                        width: '100%',
-                        left: '0%',
+                        transform: 'scaleX(1)',
+                        transformOrigin: 'bottom left',
                       }
                     },
                     '&::after': {
                       content: '""',
                       position: 'absolute',
-                      width: '0%',
+                      bottom: '5px',
+                      left: '8px',
+                      right: '8px',
                       height: '2px',
-                      bottom: '2px',
-                      left: '50%',
                       backgroundColor: theme.palette.primary.main,
-                      transition: 'all 0.3s ease-in-out',
+                      transform: 'scaleX(0)',
+                      transformOrigin: 'bottom right',
+                      transition: 'transform 0.3s',
                     }
                   }}
                 >
                   {item.label}
                 </Button>
               ))}
+            </Box>
 
-              <Divider orientation="vertical" flexItem sx={{ 
-                mx: 1, 
-                height: '24px', 
-                alignSelf: 'center',
-                backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'
-              }} />
+            {/* Iconos de acción */}
+            <Box sx={{ 
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1
+            }}>
+              <IconButton 
+                onClick={() => navigate('/carrito')} 
+                size="large"
+                aria-label="ver carrito"
+                sx={{ 
+                  color: theme.palette.primary.main,
+                  transition: 'all 0.2s',
+                  '&:hover': { 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: 'scale(1.05)'
+                  } 
+                }}
+              >
+                <Badge color="error" variant="dot">
+                  <ShoppingCartIcon />
+                </Badge>
+              </IconButton>
 
-              {/* Dark/Light Mode Toggle with animation */}
               <IconButton 
                 onClick={toggleDarkMode} 
+                size="large"
+                aria-label="cambiar tema"
                 sx={{ 
                   color: darkMode ? '#FFC107' : '#5C6BC0',
                   transition: 'all 0.3s ease',
-                  animation: darkMode ? 'none' : 'none',
                   transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
                   '&:hover': { 
-                    backgroundColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)',
-                    transform: darkMode ? 'rotate(180deg) scale(1.1)' : 'rotate(0deg) scale(1.1)'
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: darkMode ? 'rotate(180deg) scale(1.05)' : 'rotate(0deg) scale(1.05)'
                   }
                 }}
               >
                 {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
-            </Box>
-            
-            {/* Mobile Navigation Icons with improved styling */}
-            <Box sx={{ 
-              display: { xs: 'flex', md: 'none' },
-              gap: 1
-            }}>
-              <IconButton 
-                onClick={toggleDarkMode} 
-                sx={{ 
-                  color: darkMode ? '#FFC107' : '#5C6BC0',
-                  transition: 'transform 0.3s ease',
-                  transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
-                }}
-              >
-                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-              </IconButton>
-              <IconButton 
-                onClick={() => navigate('/carrito')} 
-                sx={{ 
-                  color: theme.palette.primary.main,
-                  position: 'relative',
-                }}
-              >
-                <ShoppingCartIcon />
-                <Box sx={{
-                  position: 'absolute',
-                  top: '0px',
-                  right: '0px',
-                  width: '10px',
-                  height: '10px',
-                  borderRadius: '50%',
-                  backgroundColor: theme.palette.error.main,
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}></Box>
-              </IconButton>
+
+              {/* Menú móvil */}
+              {isMobile && (
+                <>
+                  <IconButton
+                    aria-label="menú"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                    sx={{
+                      ml: 0.5,
+                      color: theme.palette.text.primary
+                    }}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                      vertical: 'bottom',
+                      horizontal: 'right',
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                      vertical: 'top',
+                      horizontal: 'right',
+                    }}
+                    open={open}
+                    onClose={handleClose}
+                    PaperProps={{
+                      sx: {
+                        mt: 1.5,
+                        backgroundColor: theme.palette.background.paper,
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                        minWidth: 180
+                      }
+                    }}
+                  >
+                    {menuItems.map((item, index) => (
+                      <MenuItem 
+                        key={index} 
+                        onClick={() => handleMenuItemClick(item.path)}
+                        sx={{
+                          py: 1.5,
+                          px: 3,
+                          fontWeight: 500,
+                          '&:hover': {
+                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                            color: theme.palette.primary.main
+                          }
+                        }}
+                      >
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </>
+              )}
             </Box>
           </Toolbar>
         </Container>

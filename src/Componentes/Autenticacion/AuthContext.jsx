@@ -1,54 +1,105 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+// AuthContext.jsx
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-// Crear el contexto de autenticación
+// Crear contexto
 const AuthContext = createContext();
+
+// Hook personalizado para usar el contexto
+export const useAuth = () => useContext(AuthContext);
 
 // Proveedor del contexto
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  // Comprobar si el usuario está autenticado en el localStorage
+  // Verificar autenticación al cargar
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem('user'));
-    if (storedUser) {
-      setUser(storedUser);
-    }
-
-    // Función para manejar cambios en el localStorage
-    const handleStorageChange = (event) => {
-      if (event.key === 'user') {
-        const storedUser = localStorage.getItem('user');
-        setUser(storedUser ? JSON.parse(storedUser) : null);
+    const verificarAutenticacion = async () => {
+      try {
+        const response = await axios.get('http://localhost:3001/api/verificar-auth', {
+          withCredentials: true, // Importante para enviar cookies en la solicitud
+        });
+        
+        if (response.data.autenticado) {
+          setUser({
+            correo: response.data.user,
+            tipo: response.data.tipo
+          });
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error('Error al verificar autenticación:', error);
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
     };
 
-    // Agregar el listener para cambios en el localStorage
-    window.addEventListener('storage', handleStorageChange);
+    verificarAutenticacion();
+  }, []);
 
-    // Limpiar el listener cuando el componente se desmonte
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []); // El efecto solo se ejecuta una vez al montar el componente
+  // Función de login
+  const login = async (correo, password, captchaValue) => {
+    try {
+      const response = await axios.post(
+        'http://localhost:3001/api/login',
+        { correo, password, captchaValue },
+        { withCredentials: true }
+      );
 
-  // Función para iniciar sesión
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+      setUser({
+        correo: response.data.user,
+        tipo: response.data.tipo
+      });
+
+      return { success: true, tipo: response.data.tipo };
+    } catch (error) {
+      console.error('Error de inicio de sesión:', error);
+      return { 
+        success: false, 
+        error: error.response?.data?.error || 'Error al iniciar sesión'
+      };
+    }
   };
 
-  // Función para cerrar sesión
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('user');
+  // Función de logout
+  const logout = async () => {
+    try {
+      await axios.post('http://localhost:3001/api/logout', {}, {
+        withCredentials: true
+      });
+      setUser(null);
+      navigate('/login');
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+
+  // Verificar si el usuario tiene el rol necesario
+  const hasRole = (requiredRole) => {
+    if (!user) return false;
+    return user.tipo === requiredRole;
+  };
+
+  // Valores que expondrá el contexto
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    hasRole,
+    isAuthenticated: !!user
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook personalizado para usar el contexto
-export const useAuth = () => useContext(AuthContext);
+export default AuthContext;
