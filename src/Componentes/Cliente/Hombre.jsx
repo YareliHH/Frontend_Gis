@@ -56,7 +56,7 @@ const Mujer = () => {
     const loadData = async () => {
       setLoading(true);
       const [productosResult, categoriasResult, coloresResult, tallasResult] = await Promise.all([
-        fetchData('http://localhost:3001/api/Mujeres'),
+        fetchData('http://localhost:3001/api/Hombres'),
         fetchData('http://localhost:3001/api/categorias'),
         fetchData('http://localhost:3001/api/colores'),
         fetchData('http://localhost:3001/api/tallas')
@@ -129,9 +129,8 @@ const Mujer = () => {
     }
     setFilteredProducts(result);
   }, [searchTerm, colorFilter, tallaFilter, categoriaFilter, priceRange, sortOrder, products, getCategoryName, getColorName, getSizeName]);
-
   // Función para navegar al detalle del producto
-const handleProductClick = (product) => {
+  const handleProductClick = (product) => {
     navigate(`/cliente/detallesp/${product.id}`, { 
       state: { 
         from: 'hombres', // o 'mujeres' según el componente
@@ -139,7 +138,6 @@ const handleProductClick = (product) => {
       } 
     });
   };
-
   const resetFilters = () => { setSearchTerm(''); setColorFilter(''); setTallaFilter(''); setCategoriaFilter(''); setPriceRange([0, 1000]); setSortOrder(''); setDrawerOpen(false); };
 
   const ProductCard = ({ product, loading }) => {
@@ -291,7 +289,7 @@ const handleProductClick = (product) => {
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <Box sx={{ mb: 4, textAlign: 'center' }}>
             <Typography variant="h4" sx={{ fontWeight: 700, color: customColors.textPrimary, mb: 2, background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Uniformes para Mujeres
+              Uniformes para Hombres
             </Typography>
             <Typography variant="subtitle1" sx={{ fontWeight: 400, color: customColors.textSecondary, maxWidth: '800px', mx: 'auto', lineHeight: 1.5 }}>
               Uniformes clínicos y quirúrgicos de alta calidad para profesionales de la salud

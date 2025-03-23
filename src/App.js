@@ -37,7 +37,7 @@ import EncabezadoCliente from './Componentes/Cliente/EncabezadoCliente';
 import Perfil from './Componentes/Cliente/Perfil.jsx';
 import OfertasCliente from './Componentes/Cliente/OfertasCliente.jsx';
 import DetallesProducto from './Componentes/Cliente/DetallesProducto.jsx';
-import DetallesOfertas from './Componentes/Cliente/DetallesOfertas.jsx';
+import CarritoC from './Componentes/Cliente/carrito.jsx';
 import DetallesProMujer from './Componentes/Cliente/DetallesProMujer.jsx';
 
 // Componentes administrativos
@@ -107,7 +107,7 @@ const App = () => {
             <Route path="/cliente/perfil" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Perfil' }]} /><Perfil /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/ofertasCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente' }]} /><OfertasCliente /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/detalles-producto" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre', path: '/cliente/hombres' }, { name: 'Detalle Hombre' }]} /><DetallesProducto /></EncabezadoCliente></ProtectedRoute>} />
-            <Route path="/cliente/detalles-ofertas" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente', path: '/cliente/ofertasCliente' }, { name: 'Detalle Ofertas' }]} /><DetallesOfertas /></EncabezadoCliente></ProtectedRoute>} />
+            <Route path="/cliente/carrito-compras" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Ofertas Cliente', path: '/cliente/ofertasCliente' }, { name: 'carrito compras' }]} /><CarritoC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/detalles-Mujer" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer', path: '/cliente/mujeres' }, { name: 'Detalle Mujer' }]} /><DetallesProMujer /></EncabezadoCliente></ProtectedRoute>} />
 
             {/* Rutas administrativas - Protegidas */}
