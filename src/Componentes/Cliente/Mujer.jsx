@@ -277,7 +277,12 @@ const Mujeres = () => {
 
   // Función para navegar al detalle del producto
   const handleProductClick = (product) => {
-    navigate(`/cliente/detallesp/${product.id}`);
+    navigate(`/cliente/detallesp/${product.id}`, { 
+      state: { 
+        from: 'mujeres', // o 'mujeres' según el componente
+        productName: product.nombre_producto 
+      } 
+    });
   };
   
   // Función para resetear filtros

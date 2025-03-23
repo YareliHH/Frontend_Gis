@@ -17,13 +17,13 @@ const DynamicBreadcrumbsDetector = ({ children }) => {
           case 'hombres':
             return [
               { name: 'Home', path: '/cliente' },
-              { name: 'Hombre', path: '/hombres' },
+              { name: 'Hombre', path: '/cliente/hombres' },
               { name: location.state.productName || 'Detalle Producto' }
             ];
           case 'mujeres':
             return [
               { name: 'Home', path: '/cliente' },
-              { name: 'Mujer', path: '/mujeres' },
+              { name: 'Mujer', path: '/cliente/mujeres' },
               { name: location.state.productName || 'Detalle Producto' }
             ];
           case 'ofertas':
