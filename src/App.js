@@ -58,7 +58,6 @@ import Tallas from './Componentes/Administrativo/Tallas.jsx';
 import Generos from './Componentes/Administrativo/Generos.jsx';
 import FaqsAdmin from './Componentes/Administrativo/Faqsadmin.jsx';
 import Ventas from './Componentes/Administrativo/Ventas.jsx';
-import Carrito from './Componentes/Administrativo/Carrito.jsx';
 import Banner from './Componentes/Administrativo/Banner.jsx';
 
 // Componentes del Empleado
@@ -126,7 +125,6 @@ const App = () => {
             <Route path="/admin/generos" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Generos /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/faqsadmin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><FaqsAdmin /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/ventas" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Ventas /></LayoutEncabezadoAdmin></ProtectedRoute> } />
-            <Route path="/admin/carrito" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Carrito /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/banner" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Banner /></LayoutEncabezadoAdmin></ProtectedRoute>} />
 
             {/* Rutas Empleado - Protegidas */}

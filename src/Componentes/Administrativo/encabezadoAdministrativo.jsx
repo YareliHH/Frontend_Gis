@@ -153,7 +153,6 @@ const EncabezadoAdministrativo = () => {
       icon: InventoryIcon,
       items: [
         { icon: InventoryIcon, text: 'Productos', path: '/admin/Productosadmin' },
-        { icon: ShoppingCartIcon, text: 'Carrito', path: '/admin/carrito' },
         { icon: CategoryIcon, text: 'Categorías', path: '/admin/categorias' },
         { icon: ColorLensIcon, text: 'Colores', path: '/admin/colores' },
         { icon: StraightenIcon, text: 'Tallas', path: '/admin/tallas' },
