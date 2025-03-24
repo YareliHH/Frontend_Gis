@@ -7,7 +7,6 @@ import {
   Button, 
   Typography, 
   Container, 
-  Divider, 
   useMediaQuery,
   Menu,
   MenuItem,
@@ -25,6 +24,7 @@ import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import SearchIcon from '@mui/icons-material/Search';
+import PersonIcon from '@mui/icons-material/Person'; // Ícono para Perfil
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
@@ -130,22 +130,17 @@ const BarraNavCliente = () => {
     document.body.style.backgroundColor = darkMode ? '#121212' : '#FFFFFF';
     document.body.style.color = darkMode ? '#FFFFFF' : '#000000';
     const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) {
-      setDarkMode(savedMode === 'true');
-    }
+    if (savedMode) setDarkMode(savedMode === 'true');
   }, [darkMode]);
 
-  // Búsqueda con debounce
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchTerm.trim()) {
-        searchProducts(searchTerm);
-      } else {
+      if (searchTerm.trim()) searchProducts(searchTerm);
+      else {
         setSearchResults([]);
         setOpenSearch(false);
       }
     }, 300);
-
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
@@ -167,19 +162,12 @@ const BarraNavCliente = () => {
     localStorage.setItem('darkMode', newMode.toString());
   };
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
   const handleMenuItemClick = (path) => {
     navigate(path);
     handleClose();
   };
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -187,11 +175,7 @@ const BarraNavCliente = () => {
       console.error('Error al cerrar sesión:', error);
     }
   };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-  };
-
+  const handleSearchChange = (event) => setSearchTerm(event.target.value);
   const handleSearch = () => {
     if (searchTerm.trim()) {
       navigate(`/buscar?q=${searchTerm}`);
@@ -199,7 +183,6 @@ const BarraNavCliente = () => {
       setOpenSearch(false);
     }
   };
-
   const handleResultClick = (product) => {
     navigate(`/detallesp/${product.id}`);
     setSearchTerm('');
@@ -209,48 +192,19 @@ const BarraNavCliente = () => {
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
-      primary: {
-        main: darkMode ? '#2A7F62' : '#3B8D99',
-      },
-      secondary: {
-        main: '#00695C',
-      },
-      background: {
-        default: darkMode ? '#121212' : '#F4F8FA',
-        paper: darkMode ? '#1E1E1E' : '#FFFFFF',
-      },
-      text: {
-        primary: darkMode ? '#FFFFFF' : '#333333',
-        secondary: darkMode ? '#CCCCCC' : '#555555',
-      },
-      error: {
-        main: '#FF4C4C',
-      },
+      primary: { main: darkMode ? '#2A7F62' : '#3B8D99' },
+      secondary: { main: '#00695C' },
+      background: { default: darkMode ? '#121212' : '#F4F8FA', paper: darkMode ? '#1E1E1E' : '#FFFFFF' },
+      text: { primary: darkMode ? '#FFFFFF' : '#333333', secondary: darkMode ? '#CCCCCC' : '#555555' },
+      error: { main: '#FF4C4C' },
     },
     typography: {
       fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
-      h6: {
-        fontWeight: 700,
-        fontSize: '28px',
-        letterSpacing: '0.5px',
-      },
-      button: {
-        textTransform: 'none',
-        fontWeight: '600',
-        fontSize: '16px',
-        letterSpacing: '0.3px',
-      },
+      h6: { fontWeight: 700, fontSize: '28px', letterSpacing: '0.5px' },
+      button: { textTransform: 'none', fontWeight: '600', fontSize: '16px', letterSpacing: '0.3px' },
     },
     components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            borderRadius: '4px',
-            padding: '6px 16px',
-            transition: 'all 0.3s ease-in-out',
-          },
-        },
-      },
+      MuiButton: { styleOverrides: { root: { borderRadius: '4px', padding: '6px 16px', transition: 'all 0.3s ease-in-out' } } },
     },
   });
 
@@ -285,31 +239,11 @@ const BarraNavCliente = () => {
       </Box>
 
       {/* Barra de navegación principal */}
-      <AppBar 
-        position="sticky" 
-        elevation={3}
-        sx={{ 
-          backgroundColor: theme.palette.background.paper,
-          borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
-        }}
-      >
+      <AppBar position="sticky" elevation={3} sx={{ backgroundColor: theme.palette.background.paper }}>
         <Container maxWidth="lg">
-          <Toolbar sx={{ 
-            py: 1.5,
-            display: 'flex', 
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-          }}>
-            {/* Logo, Nombre y Buscador */}
-            <Box 
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center',
-                flexGrow: 1,
-              }}
-            >
-              {/* Logo y Nombre */}
+          <Toolbar sx={{ py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Izquierda: Logo y Buscador */}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Box 
                 onClick={() => navigate('/cliente')} 
                 sx={{ 
@@ -317,16 +251,13 @@ const BarraNavCliente = () => {
                   alignItems: 'center',
                   cursor: 'pointer',
                   transition: 'transform 0.2s',
-                  '&:hover': {
-                    transform: 'scale(1.02)'
-                  }
+                  '&:hover': { transform: 'scale(1.02)' }
                 }}
               >
                 <Box sx={{ 
                   position: 'relative',
                   width: isMobile ? 45 : 55,
                   height: isMobile ? 45 : 55,
-                  mr: 2,
                   borderRadius: '50%',
                   background: darkMode 
                     ? 'linear-gradient(45deg, #2A7F62, #3B8D99)' 
@@ -349,48 +280,14 @@ const BarraNavCliente = () => {
                     }}
                   />
                 </Box>
-                
-                <Typography 
-                  variant="h6" 
-                  component="div"
-                  sx={{ 
-                    display: { xs: 'none', sm: 'block' },
-                    fontSize: { sm: '1.2rem', md: '1.5rem' },
-                    fontWeight: 700,
-                    color: theme.palette.text.primary,
-                    background: darkMode 
-                      ? 'linear-gradient(90deg, #2A7F62, #3B8D99)' 
-                      : 'linear-gradient(90deg, #3B8D99, #91EAE4)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    letterSpacing: '0.5px',
-                    mr: 2
-                  }}
-                >
-                  GisLive Boutique Clínica
-                </Typography>
               </Box>
-              
-              {/* Buscador a lado del logo/título para todos los dispositivos */}
-              <SearchBox sx={{ 
-                ml: { xs: 1, sm: 2 },
-                display: 'flex',
-                maxWidth: { xs: '100%', sm: 'auto' },
-                flexGrow: { xs: 1, md: 0 },
-              }}>
+              <SearchBox sx={{ ml: 2 }}>
                 <StyledInputBase
                   placeholder="Buscar productos..."
                   value={searchTerm}
                   onChange={handleSearchChange}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                  startAdornment={
-                    <SearchIcon sx={{ 
-                      color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)', 
-                      fontSize: '1.2rem',
-                      ml: 0.5,
-                      mr: 1
-                    }} />
-                  }
+                  startAdornment={<SearchIcon sx={{ color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)', fontSize: '1.2rem', ml: 0.5, mr: 1 }} />}
                 />
                 {openSearch && (
                   <Paper
@@ -426,16 +323,12 @@ const BarraNavCliente = () => {
               </SearchBox>
             </Box>
 
-            {/* Navegación en escritorio */}
-            <Box sx={{ 
-              display: { xs: 'none', md: 'flex' }, 
-              alignItems: 'center',
-              gap: { md: 1, lg: 2 }
-            }}>
+            {/* Centro: Menú (Hombre, Mujer, Ofertas) */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'center', flexGrow: 1, gap: 2 }}>
               {menuItems.map((item, index) => (
-                <Button 
-                  key={index} 
-                  onClick={() => navigate(item.path)} 
+                <Button
+                  key={index}
+                  onClick={() => navigate(item.path)}
                   startIcon={item.icon}
                   sx={{
                     color: theme.palette.text.primary,
@@ -447,10 +340,7 @@ const BarraNavCliente = () => {
                     '&:hover': { 
                       backgroundColor: 'transparent',
                       color: theme.palette.primary.main,
-                      '&::after': {
-                        transform: 'scaleX(1)',
-                        transformOrigin: 'bottom left',
-                      }
+                      '&::after': { transform: 'scaleX(1)', transformOrigin: 'bottom left' }
                     },
                     '&::after': {
                       content: '""',
@@ -471,15 +361,25 @@ const BarraNavCliente = () => {
               ))}
             </Box>
 
-            {/* Iconos */}
-            <Box sx={{ 
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1,
-              ml: { xs: 0, md: 2 }
-            }}>
-              <IconButton 
-                onClick={() => navigate('/cliente/carrito')} 
+            {/* Derecha: Iconos (Perfil, Carrito, Modo oscuro, Cerrar sesión) */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <IconButton
+                onClick={() => navigate('/cliente/perfil')}
+                size="large"
+                aria-label="perfil"
+                sx={{ 
+                  color: theme.palette.primary.main,
+                  transition: 'all 0.2s',
+                  '&:hover': { 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: 'scale(1.05)'
+                  } 
+                }}
+              >
+                <PersonIcon />
+              </IconButton>
+              <IconButton
+                onClick={() => navigate('/cliente/carrito-compras')}
                 size="large"
                 aria-label="ver carrito"
                 sx={{ 
@@ -495,9 +395,8 @@ const BarraNavCliente = () => {
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>
-
-              <IconButton 
-                onClick={toggleDarkMode} 
+              <IconButton
+                onClick={toggleDarkMode}
                 size="large"
                 aria-label="cambiar tema"
                 sx={{ 
@@ -512,9 +411,8 @@ const BarraNavCliente = () => {
               >
                 {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
-
-              <IconButton 
-                onClick={handleLogout} 
+              <IconButton
+                onClick={handleLogout}
                 size="large"
                 aria-label="cerrar sesión"
                 sx={{ 
@@ -538,25 +436,16 @@ const BarraNavCliente = () => {
                     aria-haspopup="true"
                     onClick={handleMenu}
                     color="inherit"
-                    sx={{
-                      ml: 0.5,
-                      color: theme.palette.text.primary
-                    }}
+                    sx={{ color: theme.palette.text.primary }}
                   >
                     <MenuIcon />
                   </IconButton>
                   <Menu
                     id="menu-appbar"
                     anchorEl={anchorEl}
-                    anchorOrigin={{
-                      vertical: 'bottom',
-                      horizontal: 'right',
-                    }}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                     keepMounted
-                    transformOrigin={{
-                      vertical: 'top',
-                      horizontal: 'right',
-                    }}
+                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                     open={open}
                     onClose={handleClose}
                     PaperProps={{
@@ -572,19 +461,17 @@ const BarraNavCliente = () => {
                       <MenuItem 
                         key={index} 
                         onClick={() => handleMenuItemClick(item.path)}
-                        sx={{
-                          py: 1.5,
-                          px: 3,
-                          fontWeight: 500,
-                          '&:hover': {
-                            backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                            color: theme.palette.primary.main
-                          }
-                        }}
+                        sx={{ py: 1.5, px: 3, fontWeight: 500 }}
                       >
                         {item.label}
                       </MenuItem>
                     ))}
+                    <MenuItem 
+                      onClick={() => handleMenuItemClick('/cliente/perfil')}
+                      sx={{ py: 1.5, px: 3, fontWeight: 500 }}
+                    >
+                      Perfil
+                    </MenuItem>
                   </Menu>
                 </>
               )}
@@ -597,3 +484,4 @@ const BarraNavCliente = () => {
 };
 
 export default BarraNavCliente;
+

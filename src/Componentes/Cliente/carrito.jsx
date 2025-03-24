@@ -7,7 +7,7 @@ export const useCarrito = () => useContext(CarritoContext);
 
 export const CarritoProvider = ({ children }) => {
     const [carrito, setCarrito] = useState([]);
-    const usuario_id = 1; // Reemplázalo con el ID del usuario autenticado
+    const usuario_id = 1; // ID del usuario autenticado (ajústalo según tu autenticación)
 
     useEffect(() => {
         obtenerCarrito();
@@ -100,20 +100,10 @@ const Producto = ({ producto }) => {
 
 // Componente Principal
 const App = () => {
-    const productos = [
-        { id: 1, nombre: "Uniforme Azul" },
-        { id: 2, nombre: "Uniforme Verde" }
-    ];
-
     return (
         <CarritoProvider>
-            <div className="container mx-auto p-6">
-                <h1 className="text-3xl font-bold mb-4">Tienda de Uniformes</h1>
-                <div className="grid grid-cols-2 gap-4">
-                    {productos.map((producto) => (
-                        <Producto key={producto.id} producto={producto} />
-                    ))}
-                </div>
+            <div className="p-6">
+                <h1 className="text-3xl font-bold mb-6">Tienda</h1>
                 <Carrito />
             </div>
         </CarritoProvider>

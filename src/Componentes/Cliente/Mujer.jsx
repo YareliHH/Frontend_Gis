@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Grid, CardMedia, CardContent, CardActions, IconButton, Chip, Container, Divider, TextField, InputAdornment, useMediaQuery, Skeleton, Fab, Drawer, Button, Stack, Alert, CircularProgress, Paper, alpha } from '@mui/material';
-import { ShoppingCart as ShoppingCartIcon, Favorite as FavoriteIcon, FavoriteBorder as FavoriteBorderIcon, Search as SearchIcon, FilterList as FilterListIcon, Close as CloseIcon, Visibility as VisibilityIcon, Category as CategoryIcon, ColorLens as ColorLensIcon, Straighten as StraightenIcon, Sort as SortIcon } from '@mui/icons-material';
+import { ShoppingCart as ShoppingCartIcon, Search as SearchIcon, FilterList as FilterListIcon, Close as CloseIcon, Visibility as VisibilityIcon, Category as CategoryIcon, ColorLens as ColorLensIcon, Straighten as StraightenIcon, Sort as SortIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
@@ -32,7 +32,6 @@ const Mujer = () => {
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [sortOrder, setSortOrder] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [favorites, setFavorites] = useState({});
 
   const navigate = useNavigate();
   const theme = useTheme();
@@ -85,9 +84,9 @@ const Mujer = () => {
     'Rojo': '#e74c3c',
     'Blanco': '#ffffff',
     'Azul': '#3a36e0',
-    'Celeste': '#81d4fa', // Añadido para celeste
+    'Celeste': '#81d4fa',
     'Amarillo': '#f1c40f',
-    'Rojo Coral': '#ff4040', // Añadido para rojo coral
+    'Rojo Coral': '#ff4040',
     'Azul Marino': '#2c3e88',
     'Negro': '#2c2c54',
     'Verde': '#2ecc71',
@@ -100,7 +99,6 @@ const Mujer = () => {
   }[color] || '#cccccc');
   const getSizeName = React.useCallback((id) => tallas.find(t => t.id === id)?.talla || 'Talla N/A', [tallas]);
   const getStockStatus = (stock) => stock > 5 ? { text: 'En Stock', color: 'success' } : stock > 0 ? { text: `Últimas ${stock} piezas`, color: 'warning' } : { text: 'Agotado', color: 'error' };
-  const toggleFavorite = (id) => setFavorites(prev => ({ ...prev, [id]: !prev[id] }));
 
   useEffect(() => {
     let result = [...products];
@@ -129,16 +127,25 @@ const Mujer = () => {
     }
     setFilteredProducts(result);
   }, [searchTerm, colorFilter, tallaFilter, categoriaFilter, priceRange, sortOrder, products, getCategoryName, getColorName, getSizeName]);
-  // Función para navegar al detalle del producto
+
   const handleProductClick = (product) => {
     navigate(`/cliente/detallesp/${product.id}`, { 
       state: { 
-        from: 'mujeres', // o 'mujeres' según el componente
+        from: 'mujeres',
         productName: product.nombre_producto 
       } 
     });
   };
-  const resetFilters = () => { setSearchTerm(''); setColorFilter(''); setTallaFilter(''); setCategoriaFilter(''); setPriceRange([0, 1000]); setSortOrder(''); setDrawerOpen(false); };
+
+  const resetFilters = () => { 
+    setSearchTerm(''); 
+    setColorFilter(''); 
+    setTallaFilter(''); 
+    setCategoriaFilter(''); 
+    setPriceRange([0, 1000]); 
+    setSortOrder(''); 
+    setDrawerOpen(false); 
+  };
 
   const ProductCard = ({ product, loading }) => {
     if (loading) return (
@@ -154,29 +161,48 @@ const Mujer = () => {
     const colorName = !catalogosLoading ? getColorName(product.id_color) : 'Cargando...';
     const categoryName = !catalogosLoading ? getCategoryName(product.id_categoria) : 'Cargando...';
     const colorCode = getColorCode(colorName);
-    const isFavorite = favorites[product.id] || false;
 
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} whileHover={{ y: -10 }}>
         <Paper elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden', backgroundColor: customColors.cardBg, transition: 'all 0.3s ease', '&:hover': { boxShadow: `0 10px 20px ${alpha(customColors.primary, 0.15)}` }}}>
           <Box sx={{ position: 'relative' }}>
-            <CardMedia component="img" height="240" image={product.url || '/placeholder-image.jpg'} alt={product.nombre_producto} sx={{ objectFit: 'contain', pt: 2, cursor: 'pointer', transition: 'transform 0.6s ease', '&:hover': { transform: 'scale(1.05)' }}} onClick={() => handleProductClick(product)} />
+            <CardMedia 
+              component="img" 
+              height="240" 
+              image={product.url || '/placeholder-image.jpg'} 
+              alt={product.nombre_producto} 
+              sx={{ objectFit: 'contain', pt: 2, cursor: 'pointer', transition: 'transform 0.6s ease', '&:hover': { transform: 'scale(1.05)' }}} 
+              onClick={() => handleProductClick(product)} 
+            />
             <Chip label={stockText} color={stockColor} size="small" sx={{ position: 'absolute', top: 12, left: 12, fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
             <Chip label={colorName} size="small" sx={{ position: 'absolute', top: 12, right: 12, backgroundColor: colorCode, color: ['Blanco', 'Amarillo', 'Celeste', 'Beige'].includes(colorName) ? '#000000' : '#ffffff', fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
           </Box>
           <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
-            <Typography variant="h6" onClick={() => handleProductClick(product)} sx={{ fontWeight: 600, mb: 1.5, cursor: 'pointer', color: customColors.textPrimary, '&:hover': { color: customColors.accent }, transition: 'color 0.3s ease', fontSize: { xs: '1rem', sm: '1.1rem' } }}>{product.nombre_producto}</Typography>
-            <Typography variant="body2" sx={{ mb: 2, height: '40px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', color: customColors.textSecondary }}>{product.descripcion}</Typography>
+            <Typography 
+              variant="h6" 
+              onClick={() => handleProductClick(product)} 
+              sx={{ fontWeight: 600, mb: 1.5, cursor: 'pointer', color: customColors.textPrimary, '&:hover': { color: customColors.accent }, transition: 'color 0.3s ease', fontSize: { xs: '1rem', sm: '1.1rem' } }}
+            >
+              {product.nombre_producto}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2, height: '40px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', color: customColors.textSecondary }}>
+              {product.descripcion}
+            </Typography>
             <Chip label={categoryName} size="small" sx={{ borderRadius: '12px', backgroundColor: alpha(customColors.secondary, 0.1), color: customColors.secondary, fontWeight: 500, mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold', background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>${parseFloat(product.precio).toFixed(2)}</Typography>
+            <Typography variant="h6" sx={{ fontWeight: 'bold', background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              ${parseFloat(product.precio).toFixed(2)}
+            </Typography>
           </CardContent>
           <Divider sx={{ mx: 2, opacity: 0.6 }} />
           <CardActions sx={{ p: 2, justifyContent: 'space-between' }}>
             <Box>
-              <IconButton sx={{ color: customColors.primary, '&:hover': { backgroundColor: alpha(customColors.primary, 0.1) }, transition: 'all 0.3s ease' }}><ShoppingCartIcon /></IconButton>
-              <IconButton onClick={() => toggleFavorite(product.id)} sx={{ color: isFavorite ? customColors.rose : 'inherit', '&:hover': { backgroundColor: alpha(customColors.rose, 0.1) }, transition: 'all 0.3s ease' }}>{isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}</IconButton>
+              <IconButton sx={{ color: customColors.primary, '&:hover': { backgroundColor: alpha(customColors.primary, 0.1) }, transition: 'all 0.3s ease' }}>
+                <ShoppingCartIcon />
+              </IconButton>
             </Box>
-            <IconButton onClick={() => handleProductClick(product)} sx={{ color: customColors.accent, '&:hover': { backgroundColor: alpha(customColors.accent, 0.1) }, transition: 'all 0.3s ease' }}><VisibilityIcon /></IconButton>
+            <IconButton onClick={() => handleProductClick(product)} sx={{ color: customColors.accent, '&:hover': { backgroundColor: alpha(customColors.accent, 0.1) }, transition: 'all 0.3s ease' }}>
+              <VisibilityIcon />
+            </IconButton>
           </CardActions>
         </Paper>
       </motion.div>
@@ -271,7 +297,12 @@ const Mujer = () => {
   );
 
   const FilterDrawer = () => (
-    <Drawer anchor="left" open={drawerOpen} onClose={() => setDrawerOpen(false)} PaperProps={{ sx: { borderTopRightRadius: '16px', borderBottomRightRadius: '16px', width: 300, backgroundColor: customColors.background, color: customColors.textPrimary }}}>
+    <Drawer 
+      anchor="left" 
+      open={drawerOpen} 
+      onClose={() => setDrawerOpen(false)} 
+      PaperProps={{ sx: { borderTopRightRadius: '16px', borderBottomRightRadius: '16px', width: 300, backgroundColor: customColors.background, color: customColors.textPrimary }}}
+    >
       <Box sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Typography variant="h6" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Filtros</Typography>
@@ -288,7 +319,10 @@ const Mujer = () => {
       <Container maxWidth="xl" sx={{ py: 5 }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <Box sx={{ mb: 4, textAlign: 'center' }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: customColors.textPrimary, mb: 2, background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <Typography 
+              variant="h4" 
+              sx={{ fontWeight: 700, color: customColors.textPrimary, mb: 2, background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            >
               Uniformes para Mujeres
             </Typography>
             <Typography variant="subtitle1" sx={{ fontWeight: 400, color: customColors.textSecondary, maxWidth: '800px', mx: 'auto', lineHeight: 1.5 }}>
@@ -363,7 +397,11 @@ const Mujer = () => {
                 <Alert severity="error" sx={{ mb: 3, borderRadius: '12px', backgroundColor: alpha('#f44336', 0.1), '& .MuiAlert-icon': { color: '#f44336' }}}>
                   {error}
                 </Alert>
-                <Button variant="contained" sx={{ mt: 2, py: 1, px: 3, borderRadius: '12px', textTransform: 'none', fontWeight: 600, background: customColors.gradient, boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`, '&:hover': { boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}` }}} onClick={() => window.location.reload()}>
+                <Button 
+                  variant="contained" 
+                  sx={{ mt: 2, py: 1, px: 3, borderRadius: '12px', textTransform: 'none', fontWeight: 600, background: customColors.gradient, boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`, '&:hover': { boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}` }}} 
+                  onClick={() => window.location.reload()}
+                >
                   Reintentar
                 </Button>
               </Box>
@@ -382,7 +420,11 @@ const Mujer = () => {
                     <Box sx={{ textAlign: 'center', py: 8, backgroundColor: alpha(customColors.textPrimary, 0.03), borderRadius: '16px' }}>
                       <Typography variant="h6" gutterBottom sx={{ color: customColors.textPrimary }}>No se encontraron productos</Typography>
                       <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Intenta cambiar los filtros de búsqueda</Typography>
-                      <Button variant="outlined" sx={{ mt: 3, borderRadius: '12px', textTransform: 'none', borderColor: customColors.accent, color: customColors.accent, '&:hover': { borderColor: customColors.accent, backgroundColor: alpha(customColors.accent, 0.05) }}} onClick={resetFilters}>
+                      <Button 
+                        variant="outlined" 
+                        sx={{ mt: 3, borderRadius: '12px', textTransform: 'none', borderColor: customColors.accent, color: customColors.accent, '&:hover': { borderColor: customColors.accent, backgroundColor: alpha(customColors.accent, 0.05) }}} 
+                        onClick={resetFilters}
+                      >
                         Limpiar filtros
                       </Button>
                     </Box>
@@ -394,7 +436,11 @@ const Mujer = () => {
 
         <FilterDrawer />
         {isMobile && (
-          <Fab color="primary" sx={{ position: 'fixed', bottom: 20, right: 20, background: customColors.gradient, '&:hover': { boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.5)}` }}} onClick={() => setDrawerOpen(true)}>
+          <Fab 
+            color="primary" 
+            sx={{ position: 'fixed', bottom: 20, right: 20, background: customColors.gradient, '&:hover': { boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.5)}` }}} 
+            onClick={() => setDrawerOpen(true)}
+          >
             <FilterListIcon />
           </Fab>
         )}
@@ -404,3 +450,4 @@ const Mujer = () => {
 };
 
 export default Mujer;
+
