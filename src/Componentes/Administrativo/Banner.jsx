@@ -1,279 +1,377 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import {
-  Container,
-  TextField,
-  Button,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Snackbar,
-  Alert,
-  Typography,
-  Grid,
-  Box,
-  Card,
-  CardContent,
-  IconButton,
-  Divider,
-  useMediaQuery,
-  useTheme
-} from "@mui/material";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+import React, { useState, useEffect } from 'react';
+import { Container, Typography, Paper, Button, TextField, Grid,  Card, CardContent, CardMedia, CardActions, Dialog,  DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, IconButton, Box, CircularProgress} from '@mui/material';
+import { Add, Edit, Delete, Close } from '@mui/icons-material';
+import axios from 'axios';
 
-const BannerManager = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isTablet = useMediaQuery(theme.breakpoints.down("md"));
-
+const BannerManagement = () => {
+  // State variables
   const [banners, setBanners] = useState([]);
-  const [form, setForm] = useState({ titulo: "", descripcion: "", url: "" });
-  const [editingId, setEditingId] = useState(null);
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [currentBanner, setCurrentBanner] = useState(null);
+  const [formData, setFormData] = useState({
+    titulo: '',
+    descripcion: '',
+    imagen: null
+  });
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
+  // Fetch all banners on component mount
   useEffect(() => {
     fetchBanners();
   }, []);
 
+  // Function to fetch all banners
   const fetchBanners = async () => {
+    setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/banners/obtener");
-      setBanners(res.data);
+      const response = await axios.get(`http://localhost:3001/obtenerbanner`);
+      setBanners(response.data);
     } catch (error) {
-      console.error("Error obteniendo banners", error);
-      setMessage("Error al obtener los banners");
-      setOpenSnackbar(true);
+      showSnackbar('Error al cargar los banners', 'error');
+      console.error('Error fetching banners:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Handle file input changes
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData({
+        ...formData,
+        imagen: file
+      });
+      
+      // Create a preview URL
+      const fileReader = new FileReader();
+      fileReader.onload = () => {
+        setPreviewUrl(fileReader.result);
+      };
+      fileReader.readAsDataURL(file);
+    }
+  };
+
+  // Open dialog for adding a new banner
+  const handleAddBanner = () => {
+    setCurrentBanner(null);
+    setFormData({
+      titulo: '',
+      descripcion: '',
+      imagen: null
+    });
+    setPreviewUrl(null);
+    setOpenDialog(true);
+  };
+
+  // Open dialog for editing an existing banner
+  const handleEditBanner = (banner) => {
+    setCurrentBanner(banner);
+    setFormData({
+      titulo: banner.titulo,
+      descripcion: banner.descripcion,
+      imagen: null
+    });
+    setPreviewUrl(banner.url);
+    setOpenDialog(true);
+  };
+
+  // Open dialog for confirming banner deletion
+  const handleDeleteBannerClick = (banner) => {
+    setCurrentBanner(banner);
+    setOpenDeleteDialog(true);
+  };
+
+  // Close all dialogs
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    setOpenDeleteDialog(false);
+    setCurrentBanner(null);
+  };
+
+  // Submit the form to create or update a banner
+  const handleSubmit = async () => {
+    if (!formData.titulo || !formData.descripcion) {
+      showSnackbar('Título y descripción son obligatorios', 'error');
+      return;
+    }
+
+    setLoading(true);
     try {
-      if (editingId) {
-        await axios.put(`http://localhost:5000/banners/bannersact/${editingId}`, form);
-        setMessage("Banner actualizado con éxito");
-      } else {
-        await axios.post("http://localhost:5000/banners/insertar", form);
-        setMessage("Banner agregado con éxito");
+      const formDataObj = new FormData();
+      formDataObj.append('titulo', formData.titulo);
+      formDataObj.append('descripcion', formData.descripcion);
+      
+      if (formData.imagen) {
+        formDataObj.append('imagen', formData.imagen);
+      } else if (currentBanner && currentBanner.url) {
+        formDataObj.append('url', currentBanner.url);
       }
+
+      let response;
+      if (currentBanner) {
+        // Update existing banner
+        response = await axios.put(
+          `http://localhost:3001/actualizarbanner/${currentBanner.id}`, 
+          formDataObj
+        );
+        showSnackbar('Banner actualizado correctamente', 'success');
+      } else {
+        // Create new banner
+        response = await axios.post(`http://localhost:3001/api/insertabanner`, formDataObj);
+        showSnackbar('Banner creado correctamente', 'success');
+      }
+
+      // Refresh banner list
       fetchBanners();
-      setForm({ titulo: "", descripcion: "", url: "" });
-      setEditingId(null);
-      setOpenSnackbar(true);
+      handleCloseDialog();
     } catch (error) {
-      console.error("Error guardando banner", error);
-      setMessage("Error al guardar el banner");
-      setOpenSnackbar(true);
+      showSnackbar('Error al guardar el banner', 'error');
+      console.error('Error saving banner:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleEdit = (banner) => {
-    setForm(banner);
-    setEditingId(banner.id);
-    // Scroll to form on mobile
-    if (isMobile) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  };
-
-  const handleDelete = async (id) => {
+  // Delete a banner
+  const handleDeleteBanner = async () => {
+    if (!currentBanner) return;
+    
+    setLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/banners/banners/${id}`);
+      await axios.delete(`http://localhost:3001/api/eliminarbanner/${currentBanner.id}`);
+      showSnackbar('Banner eliminado correctamente', 'success');
       fetchBanners();
-      setMessage("Banner eliminado con éxito");
-      setOpenSnackbar(true);
+      handleCloseDialog();
     } catch (error) {
-      console.error("Error eliminando banner", error);
-      setMessage("Error al eliminar el banner");
-      setOpenSnackbar(true);
+      showSnackbar('Error al eliminar el banner', 'error');
+      console.error('Error deleting banner:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleCancel = () => {
-    setForm({ titulo: "", descripcion: "", url: "" });
-    setEditingId(null);
+  // Show snackbar notification
+  const showSnackbar = (message, severity) => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
   };
 
-  // Render banners as cards on mobile/tablet
-  const renderMobileView = () => (
-    <Box sx={{ mt: 3 }}>
-      {banners.map((banner) => (
-        <Card key={banner.id} sx={{ mb: 2, borderLeft: `4px solid ${theme.palette.primary.main}` }}>
-          <CardContent>
-            <Typography variant="h6" component="div" sx={{ fontWeight: "bold" }}>
-              {banner.titulo}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              ID: {banner.id}
-            </Typography>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              {banner.descripcion}
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, wordBreak: "break-all" }}>
-              URL: {banner.url}
-            </Typography>
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
-              <Button
-                startIcon={<EditIcon />}
-                onClick={() => handleEdit(banner)}
-                color="primary"
-                size="small"
-                sx={{ mr: 1 }}
-              >
-                Editar
-              </Button>
-              <Button 
-                startIcon={<DeleteIcon />}
-                onClick={() => handleDelete(banner.id)} 
-                color="error" 
-                size="small"
-              >
-                Eliminar
-              </Button>
-            </Box>
-          </CardContent>
-        </Card>
-      ))}
-    </Box>
-  );
-
-  // Render banners as table on desktop
-  const renderDesktopView = () => (
-    <TableContainer component={Paper} sx={{ mt: 3, boxShadow: 3, borderRadius: 2 }}>
-      <Table>
-        <TableHead sx={{ backgroundColor: theme.palette.primary.light }}>
-          <TableRow>
-            <TableCell sx={{ fontWeight: "bold", color: "white" }}>ID</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "white" }}>Título</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "white" }}>Descripción</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "white" }}>URL</TableCell>
-            <TableCell sx={{ fontWeight: "bold", color: "white" }}>Acciones</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {banners.map((banner) => (
-            <TableRow key={banner.id} sx={{ "&:hover": { backgroundColor: theme.palette.action.hover } }}>
-              <TableCell>{banner.id}</TableCell>
-              <TableCell>{banner.titulo}</TableCell>
-              <TableCell>{banner.descripcion}</TableCell>
-              <TableCell sx={{ maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis" }}>
-                {banner.url}
-              </TableCell>
-              <TableCell>
-                <IconButton onClick={() => handleEdit(banner)} color="primary" size="small" sx={{ mr: 1 }}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton onClick={() => handleDelete(banner.id)} color="error" size="small">
-                  <DeleteIcon />
-                </IconButton>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
+  // Close snackbar
+  const handleCloseSnackbar = () => {
+    setSnackbar({
+      ...snackbar,
+      open: false
+    });
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-        <Typography variant="h4" component="h1" gutterBottom color="primary" sx={{ fontWeight: "bold" }}>
-          Gestión de Banners
-        </Typography>
-        <Divider sx={{ mb: 3 }} />
+      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+          <Typography variant="h4" component="h1">
+            Gestión de Banners
+          </Typography>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            startIcon={<Add />} 
+            onClick={handleAddBanner}
+          >
+            Nuevo Banner
+          </Button>
+        </Box>
 
-        <Card sx={{ p: 2, mb: 4, bgcolor: editingId ? "rgba(255, 152, 0, 0.05)" : "white" }}>
-          <CardContent>
-            <Typography variant="h6" gutterBottom color={editingId ? "warning.dark" : "primary"}>
-              {editingId ? "Editar Banner" : "Agregar Nuevo Banner"}
-            </Typography>
-            
-            <form onSubmit={handleSubmit}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="Título"
-                    name="titulo"
-                    value={form.titulo}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    variant="outlined"
-                    size={isMobile ? "small" : "medium"}
-                  />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="Descripción"
-                    name="descripcion"
-                    value={form.descripcion}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    variant="outlined"
-                    size={isMobile ? "small" : "medium"}
-                  />
-                </Grid>
-                <Grid item xs={12} md={4}>
-                  <TextField
-                    label="URL"
-                    name="url"
-                    value={form.url}
-                    onChange={handleChange}
-                    fullWidth
-                    required
-                    variant="outlined"
-                    size={isMobile ? "small" : "medium"}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <Box sx={{ display: "flex", gap: 2, justifyContent: isMobile ? "center" : "flex-start" }}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color={editingId ? "warning" : "primary"}
-                      sx={{ px: 3 }}
-                    >
-                      {editingId ? "Actualizar" : "Agregar"}
-                    </Button>
-                    {editingId && (
-                      <Button variant="outlined" onClick={handleCancel}>
-                        Cancelar
-                      </Button>
-                    )}
-                  </Box>
-                </Grid>
-              </Grid>
-            </form>
-          </CardContent>
-        </Card>
-
-      
-
-        {banners.length === 0 ? (
-          <Box sx={{ textAlign: "center", py: 4 }}>
-            <Typography color="text.secondary">No hay banners disponibles</Typography>
+        {loading && banners.length === 0 ? (
+          <Box display="flex" justifyContent="center" my={4}>
+            <CircularProgress />
           </Box>
-        ) : isMobile || isTablet ? (
-          renderMobileView()
+        ) : banners.length > 0 ? (
+          <Grid container spacing={3}>
+            {banners.map((banner) => (
+              <Grid item xs={12} sm={6} md={4} key={banner.id}>
+                <Card elevation={2}>
+                  {banner.url && (
+                    <CardMedia
+                      component="img"
+                      height="180"
+                      image={banner.url}
+                      alt={banner.titulo}
+                    />
+                  )}
+                  <CardContent>
+                    <Typography variant="h6" component="div" gutterBottom>
+                      {banner.titulo}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {banner.descripcion}
+                    </Typography>
+                  </CardContent>
+                  <CardActions>
+                    <Button 
+                      size="small" 
+                      startIcon={<Edit />} 
+                      onClick={() => handleEditBanner(banner)}
+                    >
+                      Editar
+                    </Button>
+                    <Button 
+                      size="small" 
+                      color="error" 
+                      startIcon={<Delete />}
+                      onClick={() => handleDeleteBannerClick(banner)}
+                    >
+                      Eliminar
+                    </Button>
+                  </CardActions>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
         ) : (
-          renderDesktopView()
+          <Box textAlign="center" my={4}>
+            <Typography variant="h6" color="text.secondary">
+              No hay banners disponibles
+            </Typography>
+          </Box>
         )}
       </Paper>
 
+      {/* Dialog for Add/Edit Banner */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          {currentBanner ? 'Editar Banner' : 'Nuevo Banner'}
+        </DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="titulo"
+            label="Título"
+            type="text"
+            fullWidth
+            value={formData.titulo}
+            onChange={handleInputChange}
+            required
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+          <TextField
+            margin="dense"
+            name="descripcion"
+            label="Descripción"
+            type="text"
+            fullWidth
+            multiline
+            rows={4}
+            value={formData.descripcion}
+            onChange={handleInputChange}
+            required
+            variant="outlined"
+            sx={{ mb: 2 }}
+          />
+          <Box sx={{ mb: 2 }}>
+            <Button
+              variant="outlined"
+              component="label"
+              color="primary"
+            >
+              Seleccionar Imagen
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </Button>
+            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
+              {formData.imagen ? `Imagen seleccionada: ${formData.imagen.name}` : 'Ninguna imagen seleccionada'}
+            </Typography>
+          </Box>
+          {previewUrl && (
+            <Box sx={{ mt: 2, position: 'relative' }}>
+              <Typography variant="subtitle2" gutterBottom>
+                Vista previa:
+              </Typography>
+              <img 
+                src={previewUrl} 
+                alt="Vista previa" 
+                style={{ width: '100%', maxHeight: '200px', objectFit: 'contain' }} 
+              />
+              <IconButton
+                size="small"
+                sx={{ position: 'absolute', top: 0, right: 0, bgcolor: 'rgba(255,255,255,0.7)' }}
+                onClick={() => {
+                  setPreviewUrl(null);
+                  setFormData({...formData, imagen: null});
+                }}
+              >
+                <Close fontSize="small" />
+              </IconButton>
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancelar</Button>
+          <Button 
+            onClick={handleSubmit} 
+            variant="contained" 
+            color="primary" 
+            disabled={!formData.titulo || !formData.descripcion}
+          >
+            Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
 
+      {/* Dialog for Delete Confirmation */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDialog}>
+        <DialogTitle>Confirmar eliminación</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ¿Está seguro que desea eliminar el banner "{currentBanner?.titulo}"? Esta acción no se puede deshacer.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancelar</Button>
+          <Button onClick={handleDeleteBanner} color="error" variant="contained">
+            Eliminar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Snackbar for notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
 
-export default BannerManager;
+export default BannerManagement;

@@ -5,11 +5,11 @@ import axios from "axios";  // Importar axios
 
 const Perfil = () => {
   const [usuario, setUsuario] = useState({
-    nombre: "Matilde",
-    apellidoPaterno: "Lara",
-    apellidoMaterno: "Vázquez",
-    correo: "20221100@uthh.edu.mx",
-    telefono: "7713290734",
+    nombre: "",
+    apellidoPaterno: "",
+    apellidoMaterno: "",
+    correo: "",
+    telefono: "",
     fotoPerfil: null,
   });
 

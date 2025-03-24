@@ -111,7 +111,6 @@ const BarraNav = () => {
     { label: 'Inicio', path: '/' },
     { label: 'Acerca De', path: '/acercaDe' },
     { label: 'Contacto', path: '/contacto' },
-    { label: 'Ofertas', path: '/Ofertasespeciales' },
     { label: 'Iniciar Sesión', path: '/login' }
   ];
 
