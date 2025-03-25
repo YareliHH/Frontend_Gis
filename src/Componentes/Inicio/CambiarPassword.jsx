@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, Card, CardContent, IconButton, CircularProgress } from '@mui/material';
 import { Lock, ArrowBack, Visibility, VisibilityOff, CheckCircle } from '@mui/icons-material';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import zxcvbn from 'zxcvbn';
 import CryptoJS from 'crypto-js';
 import Notificaciones from '../Compartidos/Notificaciones'; 
 
+// Componente para cambiar contraseña
 const CambiarContrasena = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -25,7 +26,35 @@ const CambiarContrasena = () => {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
 
+    // Obtener token y email de la URL
     const token = searchParams.get('token');
+    const email = searchParams.get('email');
+
+    // Verificar token al cargar el componente
+    useEffect(() => {
+        if (!token || !email) {
+            setErrorMessage('Parámetros inválidos. Por favor, solicita un nuevo enlace de recuperación.');
+            return;
+        }
+
+        // Verificar validez del token
+        const verifyToken = async () => {
+            try {
+                await axios.post('http://localhost:3001/api/verify-tokene', { 
+                    correo: email, 
+                    token: token 
+                });
+            } catch (error) {
+                console.error('Error al verificar token:', error);
+                setErrorMessage('El token es inválido o ha expirado. Por favor, solicita un nuevo enlace de recuperación.');
+                setTimeout(() => {
+                    navigate('/recuperar_contrasena');
+                }, 3000);
+            }
+        };
+
+        verifyToken();
+    }, [token, email, navigate]);
 
     // Manejar cambios en los campos de contraseña
     const handleChange = async (e) => {
@@ -58,13 +87,19 @@ const CambiarContrasena = () => {
 
     // Validación de seguridad de la contraseña
     const checkPasswordSafety = async (password) => {
+        if (!password || password.length < 4) {
+            setPasswordError('');
+            setIsPasswordSafe(false);
+            return;
+        }
+        
         setIsLoading(true);
         try {
             const hashedPassword = CryptoJS.SHA1(password).toString(CryptoJS.enc.Hex);
             const prefix = hashedPassword.slice(0, 5);
             const suffix = hashedPassword.slice(5);
 
-            const response = await axios.get(`http://api.pwnedpasswords.com/range/${prefix}`);
+            const response = await axios.get(`https://api.pwnedpasswords.com/range/${prefix}`);
             const hashes = response.data.split('\n').map(line => line.split(':')[0]);
 
             if (hashes.includes(suffix.toUpperCase())) {
@@ -78,7 +113,10 @@ const CambiarContrasena = () => {
             }
         } catch (error) {
             console.error('Error al verificar la contraseña:', error);
-            setPasswordError('Error al verificar la contraseña.');
+            // Si falla la API externa, permitimos continuar
+            setPasswordError('');
+            setIsPasswordSafe(true);
+            setIsPasswordFiltered(false);
         } finally {
             setIsLoading(false);
         }
@@ -89,8 +127,8 @@ const CambiarContrasena = () => {
         e.preventDefault();
         setErrorMessage('');
 
-        if (!token) {
-            setErrorMessage('El token es inválido o ha expirado.');
+        if (!token || !email) {
+            setErrorMessage('El token y email son inválidos o han expirado.');
             return;
         }
 
@@ -111,7 +149,13 @@ const CambiarContrasena = () => {
 
         try {
             setIsLoading(true);
-            const response = await axios.post('http://localhost:3001/api/resetPassword', { token, newPassword });
+            // Incluir correo y token en la solicitud
+            const response = await axios.post('http://localhost:3001/api/resetPassword', { 
+                token, 
+                newPassword,
+                correo: email  // Agregar el correo para mayor seguridad
+            });
+            
             if (response.status === 200) {
                 setNotificationMessage('Contraseña actualizada correctamente.');
                 setNotificationType('success');
@@ -122,7 +166,12 @@ const CambiarContrasena = () => {
                 }, 2000);
             }
         } catch (error) {
-            setNotificationMessage('Error al cambiar la contraseña. Inténtalo de nuevo.');
+            console.error('Error al cambiar contraseña:', error);
+            
+            // Mensaje más detallado según el error
+            const errorMsg = error.response?.data?.message || 'Error al cambiar la contraseña. Inténtalo de nuevo.';
+            
+            setNotificationMessage(errorMsg);
             setNotificationType('error');
             setOpenNotification(true);
         } finally {
@@ -163,6 +212,12 @@ const CambiarContrasena = () => {
                         Cambiar Contraseña
                     </Typography>
 
+                    {errorMessage && (
+                        <Typography variant="body2" sx={{ color: 'error.main', mb: 2 }}>
+                            {errorMessage}
+                        </Typography>
+                    )}
+
                     <form onSubmit={handleSubmit}>
                         <Box sx={{ mb: 2 }}>
                             <TextField
@@ -173,6 +228,7 @@ const CambiarContrasena = () => {
                                 value={newPassword}
                                 onChange={handleChange}
                                 required
+                                disabled={!!errorMessage && errorMessage.includes('token')}
                                 InputProps={{
                                     startAdornment: <Lock sx={{ mr: 1 }} />,
                                     endAdornment: (
@@ -198,6 +254,7 @@ const CambiarContrasena = () => {
                                 value={confirmPassword}
                                 onChange={handleChange}
                                 required
+                                disabled={!!errorMessage && errorMessage.includes('token')}
                                 InputProps={{
                                     startAdornment: <Lock sx={{ mr: 1 }} />,
                                     endAdornment: (
@@ -218,7 +275,7 @@ const CambiarContrasena = () => {
                         )}
 
                         {/* Barra de fortaleza de la contraseña */}
-                        <Box sx={{ mt: 2 }}>
+                        <Box sx={{ mt: 2, mb: 3, position: 'relative' }}>
                             <Typography variant="body2">Fortaleza de la contraseña</Typography>
                             <Box
                                 sx={{
@@ -244,17 +301,8 @@ const CambiarContrasena = () => {
                                     }}
                                 />
                             </Box>
-                            <Typography
-                                variant="caption"
-                                sx={{
-                                    position: 'absolute',
-                                    top: '100%',
-                                    left: '50%',
-                                    transform: 'translateX(-50%)',
-                                    whiteSpace: 'nowrap',
-                                }}
-                            >
-                                {['Muy débil', 'Débil', 'Fuerte', 'Muy fuerte'][passwordStrength]}
+                            <Typography variant="caption" sx={{ mt: 0.5, display: 'block' }}>
+                                {['Muy débil', 'Débil', 'Moderada', 'Fuerte', 'Muy fuerte'][passwordStrength]}
                             </Typography>
                         </Box>
 
@@ -263,12 +311,10 @@ const CambiarContrasena = () => {
                             variant="contained"
                             color="primary"
                             sx={{ mt: 2, width: '100%' }}
-                            disabled={isLoading}
+                            disabled={isLoading || (!!errorMessage && errorMessage.includes('token'))}
                         >
                             {isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Cambiar Contraseña'}
                         </Button>
-
-                        {errorMessage && <Typography variant="body2" sx={{ color: 'red', mt: 2 }}>{errorMessage}</Typography>}
                     </form>
                 </CardContent>
             </Card>

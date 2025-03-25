@@ -4,6 +4,7 @@ import { Email, Lock } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+// Componente para la recuperación de contraseña
 const RecuperarContrasena = () => {
   const [email, setEmail] = useState('');
   const [token, setToken] = useState('');
@@ -12,6 +13,7 @@ const RecuperarContrasena = () => {
   const [emailSent, setEmailSent] = useState(false);
   const navigate = useNavigate();
 
+  // Validación básica de formato de email
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
@@ -20,6 +22,7 @@ const RecuperarContrasena = () => {
   const handleEmailChange = (e) => setEmail(e.target.value.trim());
   const handleTokenChange = (e) => setToken(e.target.value.trim());
 
+  // Envío de solicitud de recuperación de contraseña
   const handleSubmitEmail = async (e) => {
     e.preventDefault();
 
@@ -46,18 +49,19 @@ const RecuperarContrasena = () => {
       });
 
       setEmailSent(true);
-      setTimeout(() => setSnackbar({ ...snackbar, open: false }), 2000);
     } catch (error) {
       console.error("Error en la solicitud al backend:", error);
       const errorMessage = error.response?.status === 404
         ? 'El correo no existe en nuestra base de datos. Verifica e inténtalo de nuevo.'
         : 'Error al enviar el correo de recuperación. Inténtalo más tarde.';
+
       setSnackbar({ open: true, message: errorMessage, severity: 'error' });
     } finally {
       setIsLoading(false);
     }
   };
 
+  // Verificación del token
   const handleSubmitToken = async (e) => {
     e.preventDefault();
 
@@ -70,26 +74,53 @@ const RecuperarContrasena = () => {
       return;
     }
 
+    if (!email) {
+      setSnackbar({
+        open: true,
+        message: 'Correo electrónico no disponible. Por favor, inténtalo de nuevo.',
+        severity: 'error',
+      });
+      return;
+    }
+
     if (isLoading) return;
 
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/verify-tokene', { correo: email, token });
-      if (response.status === 200) {
-        setSnackbar({
-          open: true,
-          message: 'Código verificado correctamente. Ahora puedes restablecer tu contraseña.',
-          severity: 'success',
-        });
-        setTimeout(() => {
-          navigate(`/resetear_contrasena?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
-        }, 2000);
-      }
-    } catch (error) {
-      console.error("Error al verificar el token:", error);
+      // El endpoint es correcto, no hay necesidad de cambiarlo
+      const response = await axios.post('http://localhost:3001/api/verify-tokene', {
+        correo: email,
+        token: token.trim() // Asegura que no haya espacios
+      });
+
+      // Debug logs
+      console.log("Status code:", response.status);
+
+      // Acciones tras respuesta exitosa (no es necesario verificar response.status === 200)
+      // ya que axios solo entra en este bloque si la respuesta fue exitosa (2xx)
       setSnackbar({
         open: true,
-        message: 'Código inválido o expirado. Inténtalo de nuevo.',
+        message: 'Código verificado correctamente. Redirigiendo...',
+        severity: 'success',
+      });
+
+
+      setTimeout(() => {
+        console.log("Ejecutando navegación ahora");
+        navigate(`/resetear_contrasena?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`);
+      }, 1500);
+
+    } catch (error) {
+      console.error("Error al verificar el token:", error);
+
+
+      // Mostrar mensaje más detallado según la respuesta del servidor
+      const errorMessage = error.response?.data?.message ||
+        'Código inválido o expirado. Inténtalo de nuevo.';
+
+      setSnackbar({
+        open: true,
+        message: errorMessage,
         severity: 'error',
       });
     } finally {
@@ -104,7 +135,7 @@ const RecuperarContrasena = () => {
       sx={{
         position: 'relative',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #1e3c72 0%)', // Fondo gradiente moderno
+        background: 'linear-gradient(135deg, #1e3c72 0%)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
@@ -128,14 +159,14 @@ const RecuperarContrasena = () => {
             width: '100%',
             maxWidth: '450px',
             padding: { xs: 3, sm: 5 },
-            background: 'rgba(255, 255, 255, 0.95)', // Fondo blanco con ligera transparencia
+            background: 'rgba(255, 255, 255, 0.95)',
             borderRadius: 3,
             boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)',
             textAlign: 'center',
             position: 'relative',
             transition: 'transform 0.3s ease-in-out',
             '&:hover': {
-              transform: 'translateY(-5px)', // Efecto de elevación al pasar el mouse
+              transform: 'translateY(-5px)',
             },
           }}
         >
