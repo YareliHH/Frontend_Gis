@@ -1,113 +1,165 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { 
+  Box, 
+  Typography, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  IconButton, 
+  Button, 
+  CircularProgress, 
+  Paper, 
+  Container, 
+  Alert 
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
-// Crear contexto del carrito
-const CarritoContext = createContext();
-export const useCarrito = () => useContext(CarritoContext);
-
-export const CarritoProvider = ({ children }) => {
+const Carrito = ({ usuarioId }) => {
     const [carrito, setCarrito] = useState([]);
-    const usuario_id = 1; // ID del usuario autenticado (ajústalo según tu autenticación)
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    useEffect(() => {
-        obtenerCarrito();
-    }, []);
-
+    // Obtener los productos del carrito
     const obtenerCarrito = async () => {
         try {
-            const response = await axios.get(`http://localhost:3000/carrito/${usuario_id}`);
+            const response = await axios.get(`http://localhost:3001/api/carrito/${usuarioId}`);
             setCarrito(response.data);
         } catch (error) {
             console.error("Error al obtener el carrito:", error);
+            setError("Error al obtener el carrito");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const agregarProducto = async (producto_id) => {
+    useEffect(() => {
+        obtenerCarrito();
+    }, [usuarioId]);
+
+    // Agregar producto al carrito
+    const agregarProducto = async (producto_id, cantidad, precio_unitario) => {
         try {
-            await axios.post("http://localhost:3000/carrito/agregar", { usuario_id, producto_id });
+            await axios.post("http://localhost:3001/api/agregar", {
+                usuario_id: usuarioId,
+                producto_id,
+                cantidad,
+                precio_unitario
+            });
+            alert("Producto agregado al carrito");
             obtenerCarrito();
         } catch (error) {
-            console.error("Error al agregar el producto:", error);
+            console.error("Error al agregar producto:", error);
+            alert("Error al agregar producto al carrito");
         }
     };
 
+    // Eliminar producto del carrito
     const eliminarProducto = async (producto_id) => {
         try {
-            await axios.delete(`http://localhost:3000/carrito/eliminar/${usuario_id}/${producto_id}`);
+            await axios.delete(`http://localhost:3001/api/carrito/eliminar/${usuarioId}/${producto_id}`);
+            alert("Producto eliminado");
             obtenerCarrito();
         } catch (error) {
-            console.error("Error al eliminar el producto:", error);
+            console.error("Error al eliminar producto:", error);
+            alert("Error al eliminar producto");
         }
     };
 
+    // Vaciar carrito
     const vaciarCarrito = async () => {
         try {
-            await axios.delete(`http://localhost:3000/carrito/vaciar/${usuario_id}`);
-            setCarrito([]);
+            await axios.delete(`http://localhost:3001/api/carrito/vaciar/${usuarioId}`);
+            alert("Carrito vaciado");
+            obtenerCarrito();
         } catch (error) {
             console.error("Error al vaciar el carrito:", error);
+            alert("Error al vaciar el carrito");
         }
     };
 
+    // Calcular total
+    const total = carrito.reduce((acc, item) => acc + (item.cantidad * item.precio), 0);
+
     return (
-        <CarritoContext.Provider value={{ carrito, agregarProducto, eliminarProducto, vaciarCarrito }}>
-            {children}
-        </CarritoContext.Provider>
+        <Container maxWidth="sm">
+            <Paper elevation={3} sx={{ 
+                padding: 3, 
+                marginTop: 4, 
+                borderRadius: 2 
+            }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    marginBottom: 2 
+                }}>
+                    <ShoppingCartIcon sx={{ marginRight: 2 }} />
+                    <Typography variant="h4" component="h2">
+                        Carrito de Compras
+                    </Typography>
+                </Box>
+
+                {loading ? (
+                    <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'center', 
+                        alignItems: 'center', 
+                        height: 200 
+                    }}>
+                        <CircularProgress />
+                    </Box>
+                ) : carrito.length === 0 ? (
+                    <Typography variant="body1" color="textSecondary" align="center">
+                        El carrito está vacío
+                    </Typography>
+                ) : (
+                    <>
+                        <List>
+                            {carrito.map((item) => (
+                                <ListItem 
+                                    key={item.producto_id}
+                                    secondaryAction={
+                                        <IconButton 
+                                            edge="end" 
+                                            onClick={() => eliminarProducto(item.producto_id)}
+                                            color="error"
+                                        >
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    }
+                                    divider
+                                >
+                                    <ListItemText
+                                        primary={item.nombre}
+                                        secondary={`Cantidad: ${item.cantidad} - Precio: $${item.precio.toFixed(2)}`}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                        <Box sx={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            alignItems: 'center', 
+                            marginTop: 2 
+                        }}>
+                            <Typography variant="h6">
+                                Total: ${total.toFixed(2)}
+                            </Typography>
+                            <Button 
+                                variant="contained" 
+                                color="secondary" 
+                                onClick={vaciarCarrito}
+                                startIcon={<DeleteIcon />}
+                            >
+                                Vaciar Carrito
+                            </Button>
+                        </Box>
+                    </>
+                )}
+            </Paper>
+        </Container>
     );
 };
 
-// Componente de Carrito
-const Carrito = () => {
-    const { carrito, eliminarProducto, vaciarCarrito } = useCarrito();
-
-    return (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Carrito de Compras</h2>
-            {carrito.length === 0 ? (
-                <p>No hay productos en el carrito</p>
-            ) : (
-                <ul>
-                    {carrito.map((producto) => (
-                        <li key={producto.producto_id} className="flex justify-between p-2 border-b">
-                            <span>{producto.nombre}</span>
-                            <button onClick={() => eliminarProducto(producto.producto_id)} className="text-red-500">Eliminar</button>
-                        </li>
-                    ))}
-                </ul>
-            )}
-            {carrito.length > 0 && (
-                <button onClick={vaciarCarrito} className="mt-4 bg-red-500 text-white p-2 rounded">
-                    Vaciar Carrito
-                </button>
-            )}
-        </div>
-    );
-};
-
-// Componente de Producto
-const Producto = ({ producto }) => {
-    const { agregarProducto } = useCarrito();
-
-    return (
-        <div className="border p-4 rounded shadow">
-            <h3 className="text-lg font-bold">{producto.nombre}</h3>
-            <button onClick={() => agregarProducto(producto.id)} className="mt-2 bg-blue-500 text-white p-2 rounded">
-                Agregar al Carrito
-            </button>
-        </div>
-    );
-};
-
-// Componente Principal
-const App = () => {
-    return (
-        <CarritoProvider>
-            <div className="p-6">
-                <h1 className="text-3xl font-bold mb-6">Tienda</h1>
-                <Carrito />
-            </div>
-        </CarritoProvider>
-    );
-};
-
-export default App;
+export default Carrito;
