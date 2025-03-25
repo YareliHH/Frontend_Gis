@@ -89,6 +89,7 @@ const App = () => {
             <Route path="/acercaDe" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Acerca de' }]} /><AcercaDe /></LayoutEncabezado>} />
             <Route path="/busqueda" element={<LayoutEncabezado><Busqueda /></LayoutEncabezado>} />
             <Route path="/preguntasF" element={<LayoutEncabezado><FAQ /></LayoutEncabezado>} />
+            <Route path="/chat" element={<LayoutEncabezado><Chat/></LayoutEncabezado>} />
 
             <Route path="/detalles" element={<DetallesPrin />} />
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -10,50 +10,36 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { motion } from "framer-motion";
-
-const preguntas = [
-  {
-    pregunta: "🩺 ¿Qué tipos de uniformes clínicos ofrecen?",
-    respuesta:
-      "Ofrecemos una amplia variedad de uniformes clínicos y quirúrgicos, incluyendo batas médicas con diferentes especialidades",
-  },
-  {
-    pregunta: "🛒 ¿Cómo puedo realizar un pedido?",
-    respuesta:
-      "Realiza tu pedido seleccionando los productos en nuestra tienda en línea y agregándolos al carrito. Luego, procede con el pago de forma segura.",
-  },
-  {
-    pregunta: "💳 ¿Cuáles son los métodos de pago disponibles?",
-    respuesta:
-      "Aceptamos diversos métodos de pago, como tarjetas de crédito, transferencias bancarias y pagos a través de plataformas como PayPal.",
-  },
-  {
-    pregunta: "📦 ¿Cuánto cuesta el envío?",
-    respuesta:
-      "El costo del envío depende de la ubicación de destino y el peso total de los productos.",
-  },
-  {
-    pregunta: "👩‍⚕️ ¿Tienen uniformes para diferentes especialidades médicas?",
-    respuesta:
-      " Ofrecemos uniformes diseñados específicamente para distintas especialidades médicas, como cirugía, atención dental, enfermería y más.",
-  },
-];
+import axios from "axios"; // Importar axios para hacer la solicitud
 
 const PreguntasFrecuentes = () => {
+  const [preguntas, setPreguntas] = useState([]);
+
+  useEffect(() => {
+    const fetchPreguntas = async () => {
+      try {
+        const response = await axios.get("http://localhost:3001/api/faqs");
+        setPreguntas(response.data); // Guardar datos en el estado
+      } catch (error) {
+        console.error("Error al obtener preguntas frecuentes:", error);
+      }
+    };
+
+    fetchPreguntas();
+  }, []);
+
   return (
     <Container maxWidth="md" sx={{ py: 8 }}>
-      {/* Sección con fondo atractivo */}
       <Paper
         elevation={4}
         sx={{
           p: 5,
           borderRadius: "16px",
-          background: "linear-gradient(135deg, #00bfa5,rgb(159, 224, 217))",
+          background: "linear-gradient(135deg, #00bfa5, rgb(159, 224, 217))",
           color: "white",
           textAlign: "center",
         }}
       >
-        {/* Título con animación */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -68,7 +54,6 @@ const PreguntasFrecuentes = () => {
         </motion.div>
       </Paper>
 
-      {/* Preguntas y respuestas con animaciones */}
       <Box sx={{ mt: 4 }}>
         {preguntas.map((item, index) => (
           <motion.div
