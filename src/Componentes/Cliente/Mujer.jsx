@@ -1,48 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Grid, 
-  Card, 
-  CardMedia, 
-  CardContent, 
-  CardActions,
-  IconButton, 
-  Chip,
-  Container,
-  Divider,
-  TextField,
-  MenuItem,
-  Select,
-  FormControl,
-  InputLabel,
-  InputAdornment,
-  useMediaQuery,
-  Skeleton,
-  Fab,
-  Drawer,
-  Button,
-  Stack,
-  Alert,
-  CircularProgress,
-  Paper,
-  alpha
-} from '@mui/material';
-import { 
-  ShoppingCart as ShoppingCartIcon, 
-  Favorite as FavoriteIcon,
-  FavoriteBorder as FavoriteBorderIcon,
-  Search as SearchIcon,
-  FilterList as FilterListIcon,
-  Close as CloseIcon,
-  Visibility as VisibilityIcon
-} from '@mui/icons-material';
+import { Box, Typography, Grid, CardMedia, CardContent, CardActions, IconButton, Chip, Container, Divider, TextField, InputAdornment, useMediaQuery, Skeleton, Fab, Drawer, Button, Stack, Alert, CircularProgress, Paper, alpha } from '@mui/material';
+import { ShoppingCart as ShoppingCartIcon, Search as SearchIcon, FilterList as FilterListIcon, Close as CloseIcon, Visibility as VisibilityIcon, Category as CategoryIcon, ColorLens as ColorLensIcon, Straighten as StraightenIcon, Sort as SortIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useTheme } from '@mui/material/styles';
 import { motion } from 'framer-motion';
 
-// Función para obtener datos con manejo de errores
 const fetchData = async (url) => {
   try {
     const response = await axios.get(url);
@@ -53,39 +16,28 @@ const fetchData = async (url) => {
   }
 };
 
-const Mujeres = () => {
-  // Estados para productos
+const Mujer = () => {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Estados para catálogos
   const [categorias, setCategorias] = useState([]);
   const [colores, setColores] = useState([]);
   const [tallas, setTallas] = useState([]);
   const [catalogosLoading, setCatalogosLoading] = useState(true);
-  
-  // Estados para filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [colorFilter, setColorFilter] = useState('');
   const [tallaFilter, setTallaFilter] = useState('');
   const [categoriaFilter, setCategoriaFilter] = useState('');
-  const [stockFilter, setStockFilter] = useState('all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [sortOrder, setSortOrder] = useState('');
   const [drawerOpen, setDrawerOpen] = useState(false);
-  
-  // Estado para favoritos
-  const [favorites, setFavorites] = useState({});
-  
+
   const navigate = useNavigate();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isDarkMode = theme.palette.mode === 'dark';
-  
-  // Definir la paleta de colores personalizada - usando tonos más femeninos 
-  // manteniendo la coherencia con el diseño anterior
+
   const customColors = {
     primary: '#8857e0',
     secondary: '#b253d8',
@@ -99,12 +51,9 @@ const Mujeres = () => {
     gradient: 'linear-gradient(135deg, #8857e0 0%, #ff6ec4 100%)'
   };
 
-  // Cargar datos iniciales
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      
-      // Cargar productos y catálogos en paralelo
       const [productosResult, categoriasResult, coloresResult, tallasResult] = await Promise.all([
         fetchData('http://localhost:3001/api/Mujeres'),
         fetchData('http://localhost:3001/api/categorias'),
@@ -112,392 +61,146 @@ const Mujeres = () => {
         fetchData('http://localhost:3001/api/tallas')
       ]);
 
-      // Manejar errores de carga
       if (productosResult.error) {
         setError('Error al cargar productos: ' + productosResult.error);
         setLoading(false);
         return;
       }
 
-      // Actualizar estados con datos
       setProducts(productosResult.data);
       setFilteredProducts(productosResult.data);
-      
-      // Actualizar catálogos si se cargaron correctamente
-      if (categoriasResult.data) setCategorias(categoriasResult.data);
-      if (coloresResult.data) setColores(coloresResult.data);
-      if (tallasResult.data) setTallas(tallasResult.data);
-      
+      setCategorias(categoriasResult.data || []);
+      setColores(coloresResult.data || []);
+      setTallas(tallasResult.data || []);
       setCatalogosLoading(false);
       setLoading(false);
     };
-    
     loadData();
   }, []);
 
-  // Función para obtener nombre de categoría por ID
-  const getCategoryName = React.useCallback((categoryId) => {
-    const categoria = categorias.find(cat => cat.id_categoria === categoryId);
-    return categoria ? categoria.nombre : 'Categoría N/A';
-  }, [categorias]);
-  
-  // Función para obtener nombre de color por ID
-  const getColorName = React.useCallback((colorId) => {
-    const color = colores.find(col => col.id === colorId);
-    return color ? color.color : 'Color N/A';
-  }, [colores]);
-  
-  // Función para obtener código de color para visualización
-  const getColorCode = (colorName) => {
-    const colorMap = {
-      'Azul': '#3a36e0',
-      'Azul Marino': '#2c3e88',
-      'Negro': '#2c2c54',
-      'Blanco': '#ffffff',
-      'Rojo': '#e74c3c',
-      'Verde': '#2ecc71',
-      'Amarillo': '#f1c40f',
-      'Gris': '#7f8c8d',
-      'Morado': '#9b59b6',
-      'Rosa': '#e252b2',
-      'Naranja': '#e67e22',
-      'Café': '#795548',
-      'Beige': '#f5f5dc'
-    };
-    
-    return colorMap[colorName] || '#cccccc';
-  };
-  
-  // Función para obtener nombre de talla por ID
-  const getSizeName = React.useCallback((sizeId) => {
-    const talla = tallas.find(t => t.id === sizeId);
-    return talla ? talla.talla : 'Talla N/A';
-  }, [tallas]);
+  const getCategoryName = React.useCallback((id) => categorias.find(c => c.id_categoria === id)?.nombre || 'Categoría N/A', [categorias]);
+  const getColorName = React.useCallback((id) => colores.find(c => c.id === id)?.color || 'Color N/A', [colores]);
+  const getColorCode = (color) => ({
+    'Rojo': '#e74c3c',
+    'Blanco': '#ffffff',
+    'Azul': '#3a36e0',
+    'Celeste': '#81d4fa',
+    'Amarillo': '#f1c40f',
+    'Rojo Coral': '#ff4040',
+    'Azul Marino': '#2c3e88',
+    'Negro': '#2c2c54',
+    'Verde': '#2ecc71',
+    'Gris': '#7f8c8d',
+    'Morado': '#9b59b6',
+    'Rosa': '#e252b2',
+    'Naranja': '#e67e22',
+    'Café': '#795548',
+    'Beige': '#f5f5dc'
+  }[color] || '#cccccc');
+  const getSizeName = React.useCallback((id) => tallas.find(t => t.id === id)?.talla || 'Talla N/A', [tallas]);
+  const getStockStatus = (stock) => stock > 5 ? { text: 'En Stock', color: 'success' } : stock > 0 ? { text: `Últimas ${stock} piezas`, color: 'warning' } : { text: 'Agotado', color: 'error' };
 
-  // Función para visualizar el estado del stock
-  const getStockStatus = (stockValue) => {
-    if (stockValue > 5) return { text: 'En Stock', color: 'success' };
-    if (stockValue > 0) return { text: `Últimas ${stockValue} piezas`, color: 'warning' };
-    return { text: 'Agotado', color: 'error' };
-  };
-
-  // Función para manejar favoritos
-  const toggleFavorite = (productId) => {
-    setFavorites(prev => ({
-      ...prev,
-      [productId]: !prev[productId]
-    }));
-  };
-
-  // Efecto para filtrar productos cuando cambian los filtros
   useEffect(() => {
-    const filterProducts = () => {
-      let result = [...products];
-      
-      // Filtrar por término de búsqueda
-      if (searchTerm) {
-        const searchLower = searchTerm.toLowerCase();
-        result = result.filter(product => {
-          const nameMatch = product.nombre_producto?.toLowerCase().includes(searchLower);
-          const descMatch = product.descripcion?.toLowerCase().includes(searchLower);
-          
-          let colorMatch = false;
-          let categoriaMatch = false;
-          let tallaMatch = false;
-          
-          if (colores.length > 0) {
-            const colorName = getColorName(product.id_color)?.toLowerCase();
-            colorMatch = colorName?.includes(searchLower);
-          }
-          
-          if (categorias.length > 0) {
-            const categoriaName = getCategoryName(product.id_categoria)?.toLowerCase();
-            categoriaMatch = categoriaName?.includes(searchLower);
-          }
-          
-          if (tallas.length > 0) {
-            const tallaName = getSizeName(product.id_talla)?.toLowerCase();
-            tallaMatch = tallaName?.includes(searchLower);
-          }
-          
-          return nameMatch || descMatch || colorMatch || categoriaMatch || tallaMatch;
-        });
-      }
-      
-      // Filtrar por color
-      if (colorFilter) {
-        result = result.filter(product => product.id_color === parseInt(colorFilter));
-      }
-      
-      // Filtrar por talla
-      if (tallaFilter) {
-        result = result.filter(product => product.id_talla === parseInt(tallaFilter));
-      }
-      
-      // Filtrar por categoría
-      if (categoriaFilter) {
-        result = result.filter(product => product.id_categoria === parseInt(categoriaFilter));
-      }
-      
-      // Filtrar por disponibilidad
-      if (stockFilter !== 'all') {
-        if (stockFilter === 'inStock') {
-          result = result.filter(product => product.stock > 5);
-        } else if (stockFilter === 'lowStock') {
-          result = result.filter(product => product.stock > 0 && product.stock <= 5);
-        } else if (stockFilter === 'outOfStock') {
-          result = result.filter(product => product.stock <= 0);
-        }
-      }
-      
-      // Filtrar por rango de precio
-      result = result.filter(product => {
-        const price = parseFloat(product.precio);
-        return price >= priceRange[0] && price <= priceRange[1];
-      });
-      
-      // Ordenar productos
-      if (sortOrder === 'price-asc') {
-        result.sort((a, b) => parseFloat(a.precio) - parseFloat(b.precio));
-      } else if (sortOrder === 'price-desc') {
-        result.sort((a, b) => parseFloat(b.precio) - parseFloat(a.precio));
-      } else if (sortOrder === 'name-asc') {
-        result.sort((a, b) => a.nombre_producto.localeCompare(b.nombre_producto));
-      } else if (sortOrder === 'name-desc') {
-        result.sort((a, b) => b.nombre_producto.localeCompare(a.nombre_producto));
-      } else if (sortOrder === 'stock-desc') {
-        result.sort((a, b) => b.stock - a.stock);
-      }
-      
-      setFilteredProducts(result);
-    };
-    
-    filterProducts();
-  }, [searchTerm, colorFilter, tallaFilter, categoriaFilter, stockFilter, priceRange, sortOrder, products, categorias, colores, tallas, getCategoryName, getColorName, getSizeName]);
+    let result = [...products];
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      result = result.filter(p => 
+        p.nombre_producto?.toLowerCase().includes(term) ||
+        p.descripcion?.toLowerCase().includes(term) ||
+        getColorName(p.id_color)?.toLowerCase().includes(term) ||
+        getCategoryName(p.id_categoria)?.toLowerCase().includes(term) ||
+        getSizeName(p.id_talla)?.toLowerCase().includes(term)
+      );
+    }
+    if (colorFilter) result = result.filter(p => p.id_color === parseInt(colorFilter));
+    if (tallaFilter) result = result.filter(p => p.id_talla === parseInt(tallaFilter));
+    if (categoriaFilter) result = result.filter(p => p.id_categoria === parseInt(categoriaFilter));
+    result = result.filter(p => parseFloat(p.precio) >= priceRange[0] && parseFloat(p.precio) <= priceRange[1]);
+    if (sortOrder) {
+      result.sort((a, b) => 
+        sortOrder === 'price-asc' ? parseFloat(a.precio) - parseFloat(b.precio) :
+        sortOrder === 'price-desc' ? parseFloat(b.precio) - parseFloat(a.precio) :
+        sortOrder === 'name-asc' ? a.nombre_producto.localeCompare(b.nombre_producto) :
+        sortOrder === 'name-desc' ? b.nombre_producto.localeCompare(a.nombre_producto) :
+        b.stock - a.stock
+      );
+    }
+    setFilteredProducts(result);
+  }, [searchTerm, colorFilter, tallaFilter, categoriaFilter, priceRange, sortOrder, products, getCategoryName, getColorName, getSizeName]);
 
-  // Función para navegar al detalle del producto
   const handleProductClick = (product) => {
     navigate(`/cliente/detallesp/${product.id}`, { 
       state: { 
-        from: 'mujeres', // o 'mujeres' según el componente
+        from: 'mujeres',
         productName: product.nombre_producto 
       } 
     });
   };
-  
-  // Función para resetear filtros
-  const resetFilters = () => {
-    setSearchTerm('');
-    setColorFilter('');
-    setTallaFilter('');
-    setCategoriaFilter('');
-    setStockFilter('all');
-    setPriceRange([0, 1000]);
-    setSortOrder('');
-    setDrawerOpen(false);
+
+  const resetFilters = () => { 
+    setSearchTerm(''); 
+    setColorFilter(''); 
+    setTallaFilter(''); 
+    setCategoriaFilter(''); 
+    setPriceRange([0, 1000]); 
+    setSortOrder(''); 
+    setDrawerOpen(false); 
   };
 
-  // Componente de tarjeta de producto
   const ProductCard = ({ product, loading }) => {
-    if (loading) {
-      return (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Paper 
-            elevation={2} 
-            sx={{ 
-              height: '100%', 
-              borderRadius: '16px', 
-              overflow: 'hidden',
-              backgroundColor: customColors.cardBg,
-              transition: 'all 0.3s ease'
-            }}
-          >
-            <Skeleton variant="rectangular" height={240} />
-            <Box sx={{ p: 2 }}>
-              <Skeleton variant="text" height={30} />
-              <Skeleton variant="text" />
-              <Skeleton variant="text" width="60%" />
-            </Box>
-          </Paper>
-        </motion.div>
-      );
-    }
-    
-    const stockStatus = getStockStatus(product.stock);
+    if (loading) return (
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+        <Paper elevation={2} sx={{ height: '100%', borderRadius: '16px', overflow: 'hidden', backgroundColor: customColors.cardBg }}>
+          <Skeleton variant="rectangular" height={240} />
+          <Box sx={{ p: 2 }}><Skeleton variant="text" height={30} /><Skeleton variant="text" /><Skeleton variant="text" width="60%" /></Box>
+        </Paper>
+      </motion.div>
+    );
+
+    const { text: stockText, color: stockColor } = getStockStatus(product.stock);
     const colorName = !catalogosLoading ? getColorName(product.id_color) : 'Cargando...';
     const categoryName = !catalogosLoading ? getCategoryName(product.id_categoria) : 'Cargando...';
     const colorCode = getColorCode(colorName);
-    const isFavorite = favorites[product.id] || false;
-    
+
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        whileHover={{ y: -10 }}
-      >
-        <Paper 
-          elevation={2} 
-          sx={{ 
-            height: '100%', 
-            display: 'flex', 
-            flexDirection: 'column',
-            borderRadius: '16px',
-            overflow: 'hidden',
-            backgroundColor: customColors.cardBg,
-            transition: 'all 0.3s ease',
-            '&:hover': {
-              boxShadow: `0 10px 20px ${alpha(customColors.primary, 0.15)}`
-            }
-          }}
-        >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} whileHover={{ y: -10 }}>
+        <Paper elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden', backgroundColor: customColors.cardBg, transition: 'all 0.3s ease', '&:hover': { boxShadow: `0 10px 20px ${alpha(customColors.primary, 0.15)}` }}}>
           <Box sx={{ position: 'relative' }}>
-            <CardMedia
-              component="img"
-              height="240"
-              image={product.url || '/placeholder-image.jpg'}
-              alt={product.nombre_producto}
-              sx={{ 
-                objectFit: 'contain', 
-                pt: 2,
-                cursor: 'pointer',
-                transition: 'transform 0.6s ease',
-                '&:hover': {
-                  transform: 'scale(1.05)'
-                }
-              }}
-              onClick={() => handleProductClick(product)}
+            <CardMedia 
+              component="img" 
+              height="240" 
+              image={product.url || '/placeholder-image.jpg'} 
+              alt={product.nombre_producto} 
+              sx={{ objectFit: 'contain', pt: 2, cursor: 'pointer', transition: 'transform 0.6s ease', '&:hover': { transform: 'scale(1.05)' }}} 
+              onClick={() => handleProductClick(product)} 
             />
-            <Box sx={{ position: 'absolute', top: 12, left: 12 }}>
-              <Chip 
-                label={stockStatus.text} 
-                color={stockStatus.color} 
-                size="small" 
-                sx={{ 
-                  fontWeight: 'bold', 
-                  borderRadius: '12px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }} 
-              />
-            </Box>
-            <Box sx={{ position: 'absolute', top: 12, right: 12 }}>
-              <Chip 
-                label={colorName}
-                size="small"
-                sx={{ 
-                  backgroundColor: colorCode,
-                  color: ['Blanco', 'Amarillo', 'Beige'].includes(colorName) ? '#000000' : '#ffffff',
-                  fontWeight: 'bold',
-                  borderRadius: '12px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
-                }} 
-              />
-            </Box>
+            <Chip label={stockText} color={stockColor} size="small" sx={{ position: 'absolute', top: 12, left: 12, fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
+            <Chip label={colorName} size="small" sx={{ position: 'absolute', top: 12, right: 12, backgroundColor: colorCode, color: ['Blanco', 'Amarillo', 'Celeste', 'Beige'].includes(colorName) ? '#000000' : '#ffffff', fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
           </Box>
           <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
             <Typography 
               variant="h6" 
-              component="div"
-              sx={{ 
-                fontWeight: 600, 
-                mb: 1.5, 
-                cursor: 'pointer',
-                color: customColors.textPrimary,
-                '&:hover': { color: customColors.accent },
-                transition: 'color 0.3s ease',
-                fontSize: { xs: '1rem', sm: '1.1rem' }
-              }}
-              onClick={() => handleProductClick(product)}
+              onClick={() => handleProductClick(product)} 
+              sx={{ fontWeight: 600, mb: 1.5, cursor: 'pointer', color: customColors.textPrimary, '&:hover': { color: customColors.accent }, transition: 'color 0.3s ease', fontSize: { xs: '1rem', sm: '1.1rem' } }}
             >
               {product.nombre_producto}
             </Typography>
-            
-            <Typography 
-              variant="body2" 
-              sx={{ 
-                mb: 2,
-                height: '40px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                color: customColors.textSecondary
-              }}
-            >
+            <Typography variant="body2" sx={{ mb: 2, height: '40px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', color: customColors.textSecondary }}>
               {product.descripcion}
             </Typography>
-            
-            <Chip 
-              label={categoryName} 
-              size="small" 
-              sx={{ 
-                borderRadius: '12px', 
-                backgroundColor: alpha(customColors.secondary, 0.1), 
-                color: customColors.secondary,
-                fontWeight: 500,
-                mb: 2
-              }}
-            />
-            
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography 
-                variant="h6" 
-                sx={{ 
-                  fontWeight: 'bold', 
-                  background: customColors.gradient,
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent'
-                }}
-              >
-                ${parseFloat(product.precio).toFixed(2)}
-              </Typography>
-            </Box>
+            <Chip label={categoryName} size="small" sx={{ borderRadius: '12px', backgroundColor: alpha(customColors.secondary, 0.1), color: customColors.secondary, fontWeight: 500, mb: 2 }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold', background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              ${parseFloat(product.precio).toFixed(2)}
+            </Typography>
           </CardContent>
           <Divider sx={{ mx: 2, opacity: 0.6 }} />
           <CardActions sx={{ p: 2, justifyContent: 'space-between' }}>
             <Box>
-              <IconButton 
-                aria-label="añadir al carrito" 
-                sx={{ 
-                  color: customColors.primary,
-                  '&:hover': { 
-                    backgroundColor: alpha(customColors.primary, 0.1) 
-                  },
-                  transition: 'all 0.3s ease'
-                }}
-              >
+              <IconButton sx={{ color: customColors.primary, '&:hover': { backgroundColor: alpha(customColors.primary, 0.1) }, transition: 'all 0.3s ease' }}>
                 <ShoppingCartIcon />
               </IconButton>
-              <IconButton 
-                aria-label="añadir a favoritos"
-                onClick={() => toggleFavorite(product.id)}
-                sx={{ 
-                  color: isFavorite ? customColors.rose : 'inherit',
-                  '&:hover': { 
-                    backgroundColor: alpha(customColors.rose, 0.1) 
-                  },
-                  transition: 'all 0.3s ease'
-                }}
-              >
-                {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-              </IconButton>
             </Box>
-            <IconButton 
-              aria-label="ver detalles" 
-              sx={{ 
-                color: customColors.accent,
-                '&:hover': { 
-                  backgroundColor: alpha(customColors.accent, 0.1) 
-                },
-                transition: 'all 0.3s ease'
-              }} 
-              onClick={() => handleProductClick(product)}
-            >
+            <IconButton onClick={() => handleProductClick(product)} sx={{ color: customColors.accent, '&:hover': { backgroundColor: alpha(customColors.accent, 0.1) }, transition: 'all 0.3s ease' }}>
               <VisibilityIcon />
             </IconButton>
           </CardActions>
@@ -506,613 +209,236 @@ const Mujeres = () => {
     );
   };
 
-  // Drawer para filtros en móvil
+  const FilterContent = (
+    <Stack spacing={2}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <CategoryIcon sx={{ color: customColors.accent }} />
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>Categorías</Typography>
+      </Box>
+      <Stack direction="row" flexWrap="wrap" gap={1}>
+        <Chip label="Todas" clickable onClick={() => setCategoriaFilter('')} color={categoriaFilter === '' ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
+        {categorias.map(cat => (
+          <Chip key={cat.id_categoria} label={cat.nombre} clickable onClick={() => setCategoriaFilter(cat.id_categoria)} color={categoriaFilter === cat.id_categoria ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
+        ))}
+      </Stack>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <ColorLensIcon sx={{ color: customColors.accent }} />
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>Colores</Typography>
+      </Box>
+      <Stack direction="row" flexWrap="wrap" gap={1}>
+        <Chip label="Todos" clickable onClick={() => setColorFilter('')} color={colorFilter === '' ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
+        {colores.map(color => (
+          <Chip
+            key={color.id}
+            label={color.color}
+            clickable
+            onClick={() => setColorFilter(color.id)}
+            sx={{
+              backgroundColor: getColorCode(color.color),
+              color: ['Blanco', 'Amarillo', 'Celeste', 'Beige'].includes(color.color) ? '#000000' : '#ffffff',
+              borderRadius: '12px',
+              fontWeight: 'bold',
+              '&:hover': { opacity: 0.9 },
+              ...(colorFilter === color.id && { border: `2px solid ${customColors.accent}` })
+            }}
+          />
+        ))}
+      </Stack>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <StraightenIcon sx={{ color: customColors.accent }} />
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>Tallas</Typography>
+      </Box>
+      <Stack direction="row" flexWrap="wrap" gap={1}>
+        <Chip label="Todas" clickable onClick={() => setTallaFilter('')} color={tallaFilter === '' ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
+        {tallas.map(talla => (
+          <Chip key={talla.id} label={talla.talla} clickable onClick={() => setTallaFilter(talla.id)} color={tallaFilter === talla.id ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
+        ))}
+      </Stack>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <SortIcon sx={{ color: customColors.accent }} />
+        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>Ordenar por</Typography>
+      </Box>
+      <Stack direction="row" flexWrap="wrap" gap={1}>
+        <Chip label="Sin ordenar" clickable onClick={() => setSortOrder('')} color={sortOrder === '' ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
+        {[
+          { id: 'price-asc', label: 'Precio: Menor a Mayor' },
+          { id: 'price-desc', label: 'Precio: Mayor a Menor' },
+          { id: 'name-asc', label: 'Nombre: A-Z' },
+          { id: 'name-desc', label: 'Nombre: Z-A' },
+          { id: 'stock-desc', label: 'Disponibilidad' }
+        ].map(order => (
+          <Chip key={order.id} label={order.label} clickable onClick={() => setSortOrder(order.id)} color={sortOrder === order.id ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
+        ))}
+      </Stack>
+
+      <Button 
+        variant="contained" 
+        fullWidth 
+        onClick={resetFilters} 
+        disabled={!searchTerm && !colorFilter && !tallaFilter && !categoriaFilter && !sortOrder}
+        sx={{ 
+          mt: 2, 
+          py: 1, 
+          textTransform: 'none', 
+          borderRadius: '12px', 
+          fontWeight: 600, 
+          background: customColors.gradient, 
+          boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`, 
+          '&:hover': { boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}` },
+          '&.Mui-disabled': { background: alpha(customColors.primary, 0.2), color: alpha(customColors.textPrimary, 0.4) }
+        }}
+      >
+        Limpiar filtros
+      </Button>
+    </Stack>
+  );
+
   const FilterDrawer = () => (
-    <Drawer
-      anchor="left"
-      open={drawerOpen}
-      onClose={() => setDrawerOpen(false)}
-      PaperProps={{
-        sx: {
-          borderTopRightRadius: '16px',
-          borderBottomRightRadius: '16px',
-          width: 300,
-          backgroundColor: customColors.background,
-          color: customColors.textPrimary
-        }
-      }}
+    <Drawer 
+      anchor="left" 
+      open={drawerOpen} 
+      onClose={() => setDrawerOpen(false)} 
+      PaperProps={{ sx: { borderTopRightRadius: '16px', borderBottomRightRadius: '16px', width: 300, backgroundColor: customColors.background, color: customColors.textPrimary }}}
     >
-      <Box sx={{ width: '100%', p: 3 }}>
+      <Box sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-          <Typography variant="h6" sx={{ fontWeight: 600, color: customColors.textPrimary }}>
-            Filtros
-          </Typography>
-          <IconButton 
-            onClick={() => setDrawerOpen(false)}
-            sx={{ color: customColors.textPrimary }}
-          >
-            <CloseIcon />
-          </IconButton>
+          <Typography variant="h6" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Filtros</Typography>
+          <IconButton onClick={() => setDrawerOpen(false)} sx={{ color: customColors.textPrimary }}><CloseIcon /></IconButton>
         </Box>
         <Divider sx={{ mb: 3, backgroundColor: alpha(customColors.textPrimary, 0.1) }} />
         {FilterContent}
-        <Button 
-          variant="contained" 
-          fullWidth 
-          sx={{ 
-            mt: 3, 
-            py: 1.2,
-            textTransform: 'none',
-            borderRadius: '12px',
-            fontWeight: 600,
-            background: customColors.gradient,
-            boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`,
-            '&:hover': {
-              boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}`
-            }
-          }}
-          onClick={resetFilters}
-        >
-          Resetear filtros
-        </Button>
       </Box>
     </Drawer>
   );
 
-  // Contenido de filtros
-  const FilterContent = (
-    <Stack spacing={2.5}>
-      <FormControl fullWidth variant="outlined">
-        <InputLabel sx={{ color: customColors.textSecondary }}>Categoría</InputLabel>
-        <Select
-          value={categoriaFilter}
-          onChange={(e) => setCategoriaFilter(e.target.value)}
-          label="Categoría"
-          disabled={catalogosLoading}
-          sx={{ 
-            borderRadius: '12px',
-            '.MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.textPrimary, 0.2)
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.accent, 0.5)
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: customColors.accent
-            }
-          }}
-        >
-          <MenuItem value="">Todas</MenuItem>
-          {categorias.map((cat) => (
-            <MenuItem key={cat.id_categoria} value={cat.id_categoria}>
-              {cat.nombre}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth variant="outlined">
-        <InputLabel sx={{ color: customColors.textSecondary }}>Color</InputLabel>
-        <Select
-          value={colorFilter}
-          onChange={(e) => setColorFilter(e.target.value)}
-          label="Color"
-          disabled={catalogosLoading}
-          sx={{ 
-            borderRadius: '12px',
-            '.MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.textPrimary, 0.2)
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.accent, 0.5)
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: customColors.accent
-            }
-          }}
-        >
-          <MenuItem value="">Todos</MenuItem>
-          {colores.map((color) => (
-            <MenuItem key={color.id} value={color.id}>
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Box 
-                  sx={{ 
-                    width: 20, 
-                    height: 20, 
-                    borderRadius: '50%', 
-                    backgroundColor: getColorCode(color.color),
-                    border: '1px solid rgba(0,0,0,0.1)',
-                    mr: 1.5 
-                  }} 
-                />
-                {color.color}
-              </Box>
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth variant="outlined">
-        <InputLabel sx={{ color: customColors.textSecondary }}>Talla</InputLabel>
-        <Select
-          value={tallaFilter}
-          onChange={(e) => setTallaFilter(e.target.value)}
-          label="Talla"
-          disabled={catalogosLoading}
-          sx={{ 
-            borderRadius: '12px',
-            '.MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.textPrimary, 0.2)
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.accent, 0.5)
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: customColors.accent
-            }
-          }}
-        >
-          <MenuItem value="">Todas</MenuItem>
-          {tallas.map((talla) => (
-            <MenuItem key={talla.id} value={talla.id}>
-              {talla.talla}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth variant="outlined">
-        <InputLabel sx={{ color: customColors.textSecondary }}>Disponibilidad</InputLabel>
-        <Select
-          value={stockFilter}
-          onChange={(e) => setStockFilter(e.target.value)}
-          label="Disponibilidad"
-          sx={{ 
-            borderRadius: '12px',
-            '.MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.textPrimary, 0.2)
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.accent, 0.5)
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: customColors.accent
-            }
-          }}
-        >
-          <MenuItem value="all">Todos</MenuItem>
-          <MenuItem value="inStock">En stock</MenuItem>
-          <MenuItem value="lowStock">Últimas piezas</MenuItem>
-          <MenuItem value="outOfStock">Agotado</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl fullWidth variant="outlined">
-        <InputLabel sx={{ color: customColors.textSecondary }}>Ordenar por</InputLabel>
-        <Select
-          value={sortOrder}
-          onChange={(e) => setSortOrder(e.target.value)}
-          label="Ordenar por"
-          sx={{ 
-            borderRadius: '12px',
-            '.MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.textPrimary, 0.2)
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: alpha(customColors.accent, 0.5)
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: customColors.accent
-            }
-          }}
-        >
-          <MenuItem value="">Sin ordenar</MenuItem>
-          <MenuItem value="price-asc">Precio: Menor a Mayor</MenuItem>
-          <MenuItem value="price-desc">Precio: Mayor a Menor</MenuItem>
-          <MenuItem value="name-asc">Nombre: A-Z</MenuItem>
-          <MenuItem value="name-desc">Nombre: Z-A</MenuItem>
-          <MenuItem value="stock-desc">Disponibilidad</MenuItem>
-        </Select>
-      </FormControl>
-    </Stack>
-  );
-
-  // Renderizado principal
   return (
-    <Box 
-      sx={{ 
-        backgroundColor: customColors.background,
-        minHeight: '100vh',
-        transition: 'background-color 0.3s ease'
-      }}
-    >
+    <Box sx={{ backgroundColor: customColors.background, minHeight: '100vh', transition: 'background-color 0.3s ease' }}>
       <Container maxWidth="xl" sx={{ py: 5 }}>
-        {/* Encabezado */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-        >
-          <Box sx={{ mb: 6, textAlign: 'center' }}>
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+          <Box sx={{ mb: 4, textAlign: 'center' }}>
             <Typography 
-              variant="h6" 
-              component="h2" 
-              sx={{ 
-                fontWeight: 400, 
-                color: customColors.textSecondary,
-                maxWidth: '800px',
-                mx: 'auto',
-                lineHeight: 1.5
-              }}
+              variant="h4" 
+              sx={{ fontWeight: 700, color: customColors.textPrimary, mb: 2, background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
             >
+              Uniformes para Mujeres
+            </Typography>
+            <Typography variant="subtitle1" sx={{ fontWeight: 400, color: customColors.textSecondary, maxWidth: '800px', mx: 'auto', lineHeight: 1.5 }}>
               Uniformes clínicos y quirúrgicos de alta calidad para profesionales de la salud
             </Typography>
           </Box>
         </motion.div>
 
-        {/* Barra de búsqueda y filtros */}
-        <Box sx={{ mb: 5 }}>
-          <Paper 
-            elevation={2} 
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-start' }}>
+          <TextField 
+            placeholder="Buscar..." 
+            value={searchTerm} 
+            onChange={(e) => setSearchTerm(e.target.value)} 
+            variant="outlined" 
+            size="small"
             sx={{ 
-              p: 2, 
-              borderRadius: '16px',
-              backgroundColor: customColors.cardBg
-            }}
-          >
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12} md={6}>
-                <TextField
-                  fullWidth
-                  placeholder="Buscar por nombre, color, categoría..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  variant="outlined"
-                  size="medium"
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon sx={{ color: customColors.accent }} />
-                      </InputAdornment>
-                    ),
-                    sx: {
-                      borderRadius: '12px',
-                      '.MuiOutlinedInput-notchedOutline': {
-                        borderColor: alpha(customColors.textPrimary, 0.2)
-                      },
-                      '&:hover .MuiOutlinedInput-notchedOutline': {
-                        borderColor: alpha(customColors.accent, 0.5)
-                      },
-                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: customColors.accent
-                      }
-                    }
-                  }}
-                />
-              </Grid>
-              
-              {/* Filtros para desktop */}
-              {!isMobile && (
-                <>
-                  <Grid item xs={6} md={1.5}>
-                    <FormControl fullWidth variant="outlined" size="medium">
-                      <InputLabel sx={{ color: customColors.textSecondary }}>Categoría</InputLabel>
-                      <Select
-                        value={categoriaFilter}
-                        onChange={(e) => setCategoriaFilter(e.target.value)}
-                        label="Categoría"
-                        disabled={catalogosLoading}
-                        sx={{ 
-                          borderRadius: '12px',
-                          '.MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.textPrimary, 0.2)
-                          },
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.accent, 0.5)
-                          },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: customColors.accent
-                          }
-                        }}
-                      >
-                        <MenuItem value="">Todas</MenuItem>
-                        {categorias.map((cat) => (
-                          <MenuItem key={cat.id_categoria} value={cat.id_categoria}>
-                            {cat.nombre}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={6} md={1.5}>
-                    <FormControl fullWidth variant="outlined" size="medium">
-                      <InputLabel sx={{ color: customColors.textSecondary }}>Color</InputLabel>
-                      <Select
-                        value={colorFilter}
-                        onChange={(e) => setColorFilter(e.target.value)}
-                        label="Color"
-                        disabled={catalogosLoading}
-                        sx={{ 
-                          borderRadius: '12px',
-                          '.MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.textPrimary, 0.2)
-                          },
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.accent, 0.5)
-                          },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: customColors.accent
-                          }
-                        }}
-                      >
-                        <MenuItem value="">Todos</MenuItem>
-                        {colores.map((color) => (
-                          <MenuItem key={color.id} value={color.id}>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                              <Box 
-                                sx={{ 
-                                  width: 16, 
-                                  height: 16, 
-                                  borderRadius: '50%', 
-                                  backgroundColor: getColorCode(color.color),
-                                  border: '1px solid rgba(0,0,0,0.1)',
-                                  mr: 1 
-                                }} 
-                              />
-                              {color.color}
-                            </Box>
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={6} md={1.5}>
-                    <FormControl fullWidth variant="outlined" size="medium">
-                      <InputLabel sx={{ color: customColors.textSecondary }}>Talla</InputLabel>
-                      <Select
-                        value={tallaFilter}
-                        onChange={(e) => setTallaFilter(e.target.value)}
-                        label="Talla"
-                        disabled={catalogosLoading}
-                        sx={{ 
-                          borderRadius: '12px',
-                          '.MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.textPrimary, 0.2)
-                          },
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.accent, 0.5)
-                          },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: customColors.accent
-                          }
-                        }}
-                      >
-                        <MenuItem value="">Todas</MenuItem>
-                        {tallas.map((talla) => (
-                          <MenuItem key={talla.id} value={talla.id}>
-                            {talla.talla}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                  <Grid item xs={6} md={1.5}>
-                    <FormControl fullWidth variant="outlined" size="medium">
-                      <InputLabel sx={{ color: customColors.textSecondary }}>Ordenar</InputLabel>
-                      <Select
-                        value={sortOrder}
-                        onChange={(e) => setSortOrder(e.target.value)}
-                        label="Ordenar"
-                        sx={{ 
-                          borderRadius: '12px',
-                          '.MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.textPrimary, 0.2)
-                          },
-                          '&:hover .MuiOutlinedInput-notchedOutline': {
-                            borderColor: alpha(customColors.accent, 0.5)
-                          },
-                          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                            borderColor: customColors.accent
-                          }
-                        }}
-                      >
-                        <MenuItem value="">Sin ordenar</MenuItem>
-                        <MenuItem value="price-asc">Precio: ↑</MenuItem>
-                        <MenuItem value="price-desc">Precio: ↓</MenuItem>
-                        <MenuItem value="name-asc">Nombre: A-Z</MenuItem>
-                        <MenuItem value="name-desc">Nombre: Z-A</MenuItem>
-                        <MenuItem value="stock-desc">Disponibilidad</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </Grid>
-                </>
-              )}
-              
-              {/* Botón de filtros para móvil */}
-              {isMobile && (
-                <Grid item xs={12}>
-                  <Button 
-                    variant="outlined" 
-                    startIcon={<FilterListIcon />}
-                    fullWidth
-                    onClick={() => setDrawerOpen(true)}
-                    sx={{ 
-                      borderRadius: '12px',
-                      textTransform: 'none',
-                      py: 1.2,
-                      color: customColors.accent,
-                      borderColor: customColors.accent,
-                      '&:hover': {
-                        borderColor: customColors.accent,
-                        backgroundColor: alpha(customColors.accent, 0.05)
-                      }
-                    }}
-                  >
-                    Filtros y Ordenación
-                  </Button>
-                </Grid>
-              )}
-            </Grid>
-          </Paper>
-        </Box>
-
-        {/* Estado de carga de catálogos */}
-        {catalogosLoading && !loading && (
-          <Alert 
-            severity="info" 
-            sx={{ 
-              mb: 3, 
-              borderRadius: '12px',
-              '& .MuiAlert-icon': {
-                color: customColors.accent
+              width: { xs: '100%', sm: '250px' },
+              '& .MuiOutlinedInput-root': { 
+                borderRadius: '8px', 
+                height: '32px', 
+                fontSize: '0.875rem',
+                backgroundColor: customColors.cardBg,
+                border: 'none',
+                '& fieldset': { borderColor: alpha(customColors.accent, 0.3) },
+                '&:hover fieldset': { borderColor: customColors.accent },
+                '&.Mui-focused fieldset': { borderColor: customColors.accent }
+              },
+              '& .MuiInputBase-input': { 
+                py: '4px' 
               }
             }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <CircularProgress size={20} sx={{ mr: 1, color: customColors.accent }} />
-              Cargando información de categorías, colores y tallas...
-            </Box>
-          </Alert>
-        )}
-
-        {/* Estadísticas de resultados */}
-        <Box sx={{ 
-          mb: 3, 
-          display: 'flex', 
-          justifyContent: 'space-between', 
-          alignItems: 'center',
-          px: 1
-        }}>
-          <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
-            Mostrando {filteredProducts.length} de {products.length} productos
-          </Typography>
-          {(searchTerm || colorFilter || tallaFilter || categoriaFilter || stockFilter !== 'all' || sortOrder) && (
-            <Button 
-              size="small" 
-              onClick={resetFilters}
-              startIcon={<CloseIcon />}
-              sx={{ 
-                color: customColors.accent,
-                '&:hover': {
-                  backgroundColor: alpha(customColors.accent, 0.05)
-                }
-              }}
-            >
-              Limpiar filtros
-            </Button>
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: customColors.accent, fontSize: '1.2rem' }} /></InputAdornment>,
+              endAdornment: searchTerm && (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setSearchTerm('')} size="small"><CloseIcon sx={{ fontSize: '1rem' }} /></IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+          {isMobile && (
+            <IconButton onClick={() => setDrawerOpen(true)} sx={{ ml: 1, color: customColors.accent, p: '4px' }}>
+              <FilterListIcon sx={{ fontSize: '1.2rem' }} />
+            </IconButton>
           )}
         </Box>
-        
-        <Divider sx={{ mb: 4, backgroundColor: alpha(customColors.textPrimary, 0.1) }} />
 
-        {/* Mensaje de error */}
-        {error && (
-          <Box sx={{ textAlign: 'center', my: 6 }}>
-            <Alert 
-              severity="error" 
-              sx={{ 
-                mb: 3,
-                borderRadius: '12px',
-                backgroundColor: alpha('#f44336', 0.1),
-                '& .MuiAlert-icon': {
-                  color: '#f44336'
-                }
-              }}
-            >
-              {error}
-            </Alert>
-            <Button 
-              variant="contained" 
-              sx={{ 
-                mt: 2,
-                py: 1,
-                px: 3,
-                borderRadius: '12px',
-                textTransform: 'none',
-                fontWeight: 600,
-                background: customColors.gradient,
-                boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`,
-                '&:hover': {
-                  boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}`
-                }
-              }}
-              onClick={() => window.location.reload()}
-            >
-              Reintentar
-            </Button>
-          </Box>
-        )}
-
-        {/* Listado de productos */}
         <Grid container spacing={3}>
-          {loading ? (
-            // Skeleton para carga
-            Array.from(new Array(8)).map((_, index) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                <ProductCard loading={true} />
-              </Grid>
-            ))
-          ) : filteredProducts.length > 0 ? (
-            // Productos filtrados
-            filteredProducts.map((product) => (
-              <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-                <ProductCard product={product} loading={false} />
-              </Grid>
-            ))
-          ) : (
-            // No hay resultados
-            <Grid item xs={12}>
-              <Box sx={{ 
-                textAlign: 'center', 
-                py: 8,
-                backgroundColor: alpha(customColors.textPrimary, 0.03),
-                borderRadius: '16px'
-              }}>
-                <Typography variant="h6" gutterBottom sx={{ color: customColors.textPrimary }}>
-                  No se encontraron productos
-                </Typography>
-                <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
-                  Intenta cambiar los filtros de búsqueda
-                </Typography>
-                <Button 
-                  variant="outlined" 
-                  sx={{ 
-                    mt: 3,
-                    borderRadius: '12px',
-                    textTransform: 'none',
-                    borderColor: customColors.accent,
-                    color: customColors.accent,
-                    '&:hover': {
-                      borderColor: customColors.accent,
-                      backgroundColor: alpha(customColors.accent, 0.05)
-                    }
-                  }}
-                  onClick={resetFilters}
-                >
-                  Limpiar filtros
-                </Button>
-              </Box>
+          {!isMobile && (
+            <Grid item xs={12} md={3}>
+              <Paper elevation={2} sx={{ p: 3, borderRadius: '16px', backgroundColor: customColors.cardBg, position: 'sticky', top: 20, maxHeight: 'calc(100vh - 40px)', overflowY: 'auto' }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 2 }}>Filtros</Typography>
+                {catalogosLoading ? (
+                  <Box sx={{ textAlign: 'center' }}>
+                    <CircularProgress size={24} sx={{ color: customColors.accent, mb: 2 }} />
+                    <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Cargando filtros...</Typography>
+                  </Box>
+                ) : FilterContent}
+              </Paper>
             </Grid>
           )}
+
+          <Grid item xs={12} md={9}>
+            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
+                Mostrando {filteredProducts.length} de {products.length} productos
+              </Typography>
+            </Box>
+
+            {error && (
+              <Box sx={{ textAlign: 'center', my: 6 }}>
+                <Alert severity="error" sx={{ mb: 3, borderRadius: '12px', backgroundColor: alpha('#f44336', 0.1), '& .MuiAlert-icon': { color: '#f44336' }}}>
+                  {error}
+                </Alert>
+                <Button 
+                  variant="contained" 
+                  sx={{ mt: 2, py: 1, px: 3, borderRadius: '12px', textTransform: 'none', fontWeight: 600, background: customColors.gradient, boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`, '&:hover': { boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}` }}} 
+                  onClick={() => window.location.reload()}
+                >
+                  Reintentar
+                </Button>
+              </Box>
+            )}
+
+            <Grid container spacing={3}>
+              {loading ? 
+                Array.from(new Array(8)).map((_, i) => (
+                  <Grid item xs={12} sm={6} md={4} key={i}><ProductCard loading={true} /></Grid>
+                )) :
+                filteredProducts.length > 0 ? 
+                  filteredProducts.map(p => (
+                    <Grid item xs={12} sm={6} md={4} key={p.id}><ProductCard product={p} loading={false} /></Grid>
+                  )) :
+                  <Grid item xs={12}>
+                    <Box sx={{ textAlign: 'center', py: 8, backgroundColor: alpha(customColors.textPrimary, 0.03), borderRadius: '16px' }}>
+                      <Typography variant="h6" gutterBottom sx={{ color: customColors.textPrimary }}>No se encontraron productos</Typography>
+                      <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Intenta cambiar los filtros de búsqueda</Typography>
+                      <Button 
+                        variant="outlined" 
+                        sx={{ mt: 3, borderRadius: '12px', textTransform: 'none', borderColor: customColors.accent, color: customColors.accent, '&:hover': { borderColor: customColors.accent, backgroundColor: alpha(customColors.accent, 0.05) }}} 
+                        onClick={resetFilters}
+                      >
+                        Limpiar filtros
+                      </Button>
+                    </Box>
+                  </Grid>
+              }
+            </Grid>
+          </Grid>
         </Grid>
-        
-        {/* Drawer para filtros en móvil */}
+
         <FilterDrawer />
-        
-        {/* Botón flotante para acceso rápido a los filtros */}
         {isMobile && (
           <Fab 
             color="primary" 
-            aria-label="filtrar" 
-            sx={{ 
-              position: 'fixed', 
-              bottom: 20, 
-              right: 20,
-              background: customColors.gradient,
-              '&:hover': {
-                boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.5)}`
-              }
-            }}
+            sx={{ position: 'fixed', bottom: 20, right: 20, background: customColors.gradient, '&:hover': { boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.5)}` }}} 
             onClick={() => setDrawerOpen(true)}
           >
             <FilterListIcon />
@@ -1123,4 +449,5 @@ const Mujeres = () => {
   );
 };
 
-export default Mujeres;
+export default Mujer;
+

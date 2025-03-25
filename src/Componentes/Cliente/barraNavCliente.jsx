@@ -1,223 +1,158 @@
 import React, { useState, useEffect } from 'react';
-import {
-  AppBar,
-  Toolbar,
-  IconButton,
-  Box,
-  Button,
-  TextField,
-  InputAdornment,
-  Typography,
-  Badge,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Container,
-  Divider,
+import { 
+  AppBar, 
+  Toolbar, 
+  IconButton, 
+  Box, 
+  Button, 
+  Typography, 
+  Container, 
   useMediaQuery,
-  Fade,
-  Paper,
-  Avatar,
-  Zoom,
-  Grow,
+  Menu,
+  MenuItem,
+  Badge,
   InputBase,
-  CircularProgress,
-  Popper,
-  ClickAwayListener,
-  Autocomplete,
-  Card,
-  CardMedia,
-  CardContent,
-  alpha
+  Paper
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
+import { styled } from '@mui/material/styles';
+import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
-import MenuIcon from '@mui/icons-material/Menu';
-import CloseIcon from '@mui/icons-material/Close';
-import PersonIcon from '@mui/icons-material/Person';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import LogoutIcon from '@mui/icons-material/ExitToApp';
 import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
-import LogoutIcon from '@mui/icons-material/ExitToApp';
-import PhoneIcon from '@mui/icons-material/Phone';
-import EmailIcon from '@mui/icons-material/Email';
-import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+import SearchIcon from '@mui/icons-material/Search';
+import PersonIcon from '@mui/icons-material/Person'; // Ícono para Perfil
 import { useNavigate } from 'react-router-dom';
-import { createTheme, ThemeProvider, styled } from '@mui/material/styles';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
-import axios from 'axios';
 import { useAuth } from '../Autenticacion/AuthContext';
+import axios from 'axios';
 
-// Componente personalizado para el buscador redondo y elegante
-const SearchBox = styled('div')(({ theme, darkMode }) => ({
+// Componente estilizado para el buscador
+const SearchBox = styled('div')(({ theme }) => ({
   position: 'relative',
-  borderRadius: 30,
-  backgroundColor: darkMode ? alpha(theme.palette.common.white, 0.15) : 'white',
-  border: darkMode ? '1px solid rgba(255,255,255,0.2)' : '1px solid rgba(0,0,0,0.1)',
-  boxShadow: '0 1px 5px rgba(0, 0, 0, 0.03)',
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    width: 'auto',
-    minWidth: '320px'
+  borderRadius: '20px',
+  backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+  border: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+  marginLeft: theme.spacing(1),
+  width: 'auto',
+  display: 'flex',
+  alignItems: 'center',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    backgroundColor: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.12)' : 'rgba(0,0,0,0.06)',
+    borderColor: theme.palette.primary.main,
+    boxShadow: '0 0 8px rgba(59, 141, 153, 0.2)',
+  },
+  '&:focus-within': {
+    borderColor: theme.palette.primary.main,
+    boxShadow: '0 0 8px rgba(59, 141, 153, 0.3)',
+    backgroundColor: theme.palette.background.paper,
+  }
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  '& .MuiInputBase-input': {
+    padding: theme.spacing(1, 1, 1, 1.5),
+    width: '220px',
+    fontSize: '0.9rem',
+    transition: 'width 0.2s',
+    '&:focus': {
+      width: '240px',
+    }
   },
 }));
 
 const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
+  padding: theme.spacing(0, 1.5),
   height: '100%',
-  position: 'absolute',
-  right: 0,
-  top: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  zIndex: 1,
   cursor: 'pointer',
-  borderRadius: '0 30px 30px 0',
-  transition: 'all 0.2s ease',
+  color: theme.palette.primary.main,
+  transition: 'all 0.2s',
   '&:hover': {
-    backgroundColor: alpha(theme.palette.primary.main, 0.1)
+    transform: 'scale(1.1)',
   }
 }));
 
-const StyledInputBase = styled(InputBase)(({ theme, darkMode }) => ({
-  color: darkMode ? theme.palette.common.white : theme.palette.common.black,
-  width: '100%',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 4, 1, 2),
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    fontSize: '0.9rem',
-  },
-}));
-
-// Componente para el resultado de búsqueda
+// Componente simple para resultados de búsqueda
 const SearchResult = ({ product, onClick, darkMode }) => {
   return (
-    <Card
+    <Box
       sx={{
         display: 'flex',
-        mb: 1,
+        alignItems: 'center',
+        p: 1,
         cursor: 'pointer',
-        boxShadow: 'none',
-        borderRadius: 2,
-        backgroundColor: darkMode ? '#2a2a2a' : '#fff',
-        transition: 'all 0.3s ease',
+        borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'}`,
         '&:hover': {
-          backgroundColor: darkMode ? '#333' : '#f8f8f8',
-          transform: 'translateY(-2px)'
-        }
+          backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+        },
       }}
       onClick={() => onClick(product)}
     >
-      <CardMedia
-        component="img"
-        sx={{ width: 60, height: 60, objectFit: 'contain', p: 1 }}
-        image={product.url || '/placeholder-image.jpg'}
+      <img
+        src={product.url || '/placeholder-image.jpg'}
         alt={product.nombre_producto}
+        style={{ width: 40, height: 40, objectFit: 'contain', marginRight: 8 }}
       />
-      <CardContent sx={{ flex: '1 0 auto', p: 1 }}>
-        <Typography variant="body1" sx={{ fontWeight: 500, color: darkMode ? '#fff' : '#000' }}>
+      <Box>
+        <Typography variant="body2" sx={{ fontWeight: 500, color: darkMode ? '#fff' : '#333' }}>
           {product.nombre_producto}
         </Typography>
-        <Typography variant="body2" sx={{ color: darkMode ? '#bbb' : '#666' }}>
+        <Typography variant="caption" sx={{ color: darkMode ? '#ccc' : '#555' }}>
           ${parseFloat(product.precio).toFixed(2)}
         </Typography>
-      </CardContent>
-    </Card>
+      </Box>
+    </Box>
   );
 };
 
 const BarraNavCliente = () => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [darkMode, setDarkMode] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [cartCount, setCartCount] = useState(2); // Número de ejemplo para el carrito
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [openSearch, setOpenSearch] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [cartCount, setCartCount] = useState(2); // Ejemplo
   const navigate = useNavigate();
   const { logout } = useAuth();
 
-  // Estados para el buscador
-  const [searchResults, setSearchResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
-  // Detectar tamaño de pantalla con Material UI
-  const theme = createTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-
-  // Función para manejar el cierre de sesión
-  const handleLogout = async () => {
-    try {
-      await logout(); // La función logout del contexto se encargará de redirigir
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-    }
-  };
-
-  // Efecto para aplicar modo oscuro/claro
   useEffect(() => {
     document.body.style.backgroundColor = darkMode ? '#121212' : '#FFFFFF';
     document.body.style.color = darkMode ? '#FFFFFF' : '#000000';
-
-    // Cargar preferencia guardada
     const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) {
-      setDarkMode(savedMode === 'true');
-    }
+    if (savedMode) setDarkMode(savedMode === 'true');
   }, [darkMode]);
 
-  // Función para buscar productos
-  const searchProducts = async (query) => {
-    if (!query || query.trim() === '') {
-      setSearchResults([]);
-      setOpen(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      // Llamada a la API de búsqueda
-      const response = await axios.get(`http://localhost:3001/api/buscar?q=${query}`);
-      setSearchResults(response.data);
-      setOpen(response.data.length > 0);
-    } catch (error) {
-      console.error('Error al buscar productos:', error);
-      setSearchResults([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Efecto para debounce (retraso) en la búsqueda
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (searchTerm) {
-        searchProducts(searchTerm);
+      if (searchTerm.trim()) searchProducts(searchTerm);
+      else {
+        setSearchResults([]);
+        setOpenSearch(false);
       }
-    }, 300); // Retraso de 300ms para no hacer llamadas API en cada keystroke
-
+    }, 300);
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Manejar clic en resultado de búsqueda
-  const handleResultClick = (product) => {
-    navigate(`/detallesp/${product.id}`);
-    setSearchTerm('');
-    setOpen(false);
-  };
-
-  const handleSearch = () => {
-    if (searchTerm.trim()) {
-      navigate(`/buscar?q=${searchTerm}`);
-      setOpen(false);
+  const searchProducts = async (query) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/api/buscar?q=${query}`);
+      setSearchResults(response.data);
+      setOpenSearch(response.data.length > 0);
+    } catch (error) {
+      console.error('Error al buscar productos:', error);
+      setSearchResults([]);
+      setOpenSearch(false);
     }
   };
 
@@ -227,506 +162,326 @@ const BarraNavCliente = () => {
     localStorage.setItem('darkMode', newMode.toString());
   };
 
-  const toggleDrawer = () => {
-    setDrawerOpen(!drawerOpen);
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+  const handleMenuItemClick = (path) => {
+    navigate(path);
+    handleClose();
+  };
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
+  };
+  const handleSearchChange = (event) => setSearchTerm(event.target.value);
+  const handleSearch = () => {
+    if (searchTerm.trim()) {
+      navigate(`/buscar?q=${searchTerm}`);
+      setSearchTerm('');
+      setOpenSearch(false);
+    }
+  };
+  const handleResultClick = (product) => {
+    navigate(`/detallesp/${product.id}`);
+    setSearchTerm('');
+    setOpenSearch(false);
   };
 
-  // Navegación con delay para transición visual
-  const handleNavigation = (path) => {
-    // Crear un pequeño delay para animar la transición
-    setTimeout(() => {
-      navigate(path);
-    }, 150);
-  };
-
-  // Cerrar drawer al navegar en móvil
-  const handleMobileNav = (path) => {
-    setDrawerOpen(false);
-    handleNavigation(path);
-  };
-
-  // Manejar cambio en el input de búsqueda
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
-    setAnchorEl(event.currentTarget);
-  };
-
-  // Crear tema personalizado con Material UI
-  const customTheme = createTheme({
+  const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
-      primary: {
-        main: darkMode ? '#1e1e1e' : '#64b5f6', // Cambiado a un azul claro celestial
-      },
-      background: {
-        default: darkMode ? '#121212' : '#FFFFFF',
-        paper: darkMode ? '#1e1e1e' : '#FFFFFF',
-      },
-      text: {
-        primary: darkMode ? '#ffffff' : '#000000',
-      },
+      primary: { main: darkMode ? '#2A7F62' : '#3B8D99' },
+      secondary: { main: '#00695C' },
+      background: { default: darkMode ? '#121212' : '#F4F8FA', paper: darkMode ? '#1E1E1E' : '#FFFFFF' },
+      text: { primary: darkMode ? '#FFFFFF' : '#333333', secondary: darkMode ? '#CCCCCC' : '#555555' },
+      error: { main: '#FF4C4C' },
     },
     typography: {
-      fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-      h6: {
-        fontWeight: 600,
-        fontSize: '1.25rem',
-      },
-      button: {
-        textTransform: 'none',
-        fontWeight: 500,
-      },
+      fontFamily: '"Montserrat", "Roboto", "Helvetica", "Arial", sans-serif',
+      h6: { fontWeight: 700, fontSize: '28px', letterSpacing: '0.5px' },
+      button: { textTransform: 'none', fontWeight: '600', fontSize: '16px', letterSpacing: '0.3px' },
     },
     components: {
-      MuiAppBar: {
-        styleOverrides: {
-          root: {
-            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-          }
-        }
-      },
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            borderRadius: 8,
-          }
-        }
-      },
-      MuiPaper: {
-        styleOverrides: {
-          root: {
-            borderRadius: 8,
-          }
-        }
-      }
-    }
+      MuiButton: { styleOverrides: { root: { borderRadius: '4px', padding: '6px 16px', transition: 'all 0.3s ease-in-out' } } },
+    },
   });
 
+  const menuItems = [
+    { label: 'Hombre', path: '/cliente/hombres', icon: <ManIcon /> },
+    { label: 'Mujer', path: '/cliente/mujeres', icon: <WomanIcon /> },
+    { label: 'Ofertas', path: '/cliente/ofertasCliente', icon: <LocalOfferIcon /> },
+  ];
+
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
   return (
-    <ThemeProvider theme={customTheme}>
-      {/* Banner superior */}
-      <Fade in={true} timeout={800}>
-        <Box
-          sx={{
-            backgroundColor: darkMode ? '#222' : '#4285f4', // Cambiado a azul claro
-            color: 'white',
-            padding: isSmall ? '8px' : '10px 0',
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: 2
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', mx: 1 }}>
-            <PhoneIcon fontSize="small" sx={{ mr: 0.5 }} />
-            <Typography variant="body2">7898964861</Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', mx: 1 }}>
-            <PhoneIcon fontSize="small" sx={{ mr: 0.5 }} />
-            <Typography variant="body2">2223308869</Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', mx: 1 }}>
-            <EmailIcon fontSize="small" sx={{ mr: 0.5 }} />
-            <Typography variant="body2">gislive17@gmail.com</Typography>
-          </Box>
-
-          <Box sx={{ display: 'flex', alignItems: 'center', mx: 1 }}>
-            <LocalShippingIcon fontSize="small" sx={{ mr: 0.5 }} />
-            <Typography variant="body2">¡ENVÍOS GRATIS EN COMPRAS MAYORES A $2,500!</Typography>
-          </Box>
-        </Box>
-      </Fade>
-
-      {/* Sección de Logo */}
-      <Grow in={true} timeout={800}>
-        <Paper
-          elevation={0}
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '15px 0',
-            backgroundColor: darkMode ? '#1e1e1e' : '#f0f8ff', // Azul muy suave
-            borderRadius: 0
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Avatar
-              src={logo}
-              alt="Logo GisLive"
-              sx={{
-                width: isSmall ? 50 : 60,
-                height: isSmall ? 50 : 60,
-                mr: 2,
-                boxShadow: '0 2px 8px rgba(0, 0, 0, 0.2)',
-                transition: 'transform 0.3s ease',
-                '&:hover': {
-                  transform: 'scale(1.05)'
-                }
-              }}
-            />
-            <Typography
-              variant="h6"
-              sx={{
-                color: darkMode ? '#fff' : '#4285f4', // Azul claro
-                fontWeight: 'bold',
-                textShadow: darkMode ? '1px 1px 2px rgba(0,0,0,0.3)' : 'none'
-              }}
-            >
-              GisLive Boutique Clínica
-            </Typography>
-          </Box>
-        </Paper>
-      </Grow>
+    <ThemeProvider theme={theme}>
+      {/* Barra de información */}
+      <Box sx={{
+        background: darkMode 
+          ? 'linear-gradient(90deg, #333333 0%, #444444 100%)' 
+          : 'linear-gradient(90deg, #3B8D99 0%, #4E7C7F 100%)',
+        color: 'white',
+        textAlign: 'center',
+        padding: '8px 0',
+        fontSize: '14px',
+        letterSpacing: '0.5px',
+        fontWeight: '500',
+        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+      }}>
+        <Container maxWidth="lg">
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+            Tel: 7898964861 | 2223308869 | gislive17@gmail.com | ¡ENVÍOS GRATIS EN COMPRAS MAYORES A $2,500!
+          </Typography>
+        </Container>
+      </Box>
 
       {/* Barra de navegación principal */}
-      <AppBar
-        position="sticky"
-        sx={{
-          backgroundColor: darkMode ? '#1e1e1e' : '#4cb5ff', // Azul más claro como en la imagen
-          boxShadow: darkMode ? '0 2px 8px rgba(0, 0, 0, 0.5)' : '0 2px 8px rgba(76, 181, 255, 0.3)',
-          zIndex: (theme) => theme.zIndex.drawer + 1
-        }}
-      >
-        <Container maxWidth="xl">
-          <Toolbar sx={{ justifyContent: 'space-between' }}>
-            {/* Icono de menú móvil */}
-            {isMobile && (
-              <IconButton
-                edge="start"
-                color="inherit"
-                aria-label="menu"
-                onClick={toggleDrawer}
-                sx={{ mr: 2 }}
+      <AppBar position="sticky" elevation={3} sx={{ backgroundColor: theme.palette.background.paper }}>
+        <Container maxWidth="lg">
+          <Toolbar sx={{ py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            {/* Izquierda: Logo y Buscador */}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Box 
+                onClick={() => navigate('/cliente')} 
+                sx={{ 
+                  display: 'flex', 
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s',
+                  '&:hover': { transform: 'scale(1.02)' }
+                }}
               >
-                <MenuIcon />
-              </IconButton>
-            )}
-
-            {/* Búsqueda a la izquierda en desktop */}
-            <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 0, position: 'relative' }}>
-              {!isMobile && (
-                <Zoom in={true} style={{ transitionDelay: '200ms' }}>
-                  <SearchBox darkMode={darkMode}>
-                    <StyledInputBase
-                      placeholder="Buscar productos..."
-                      value={searchTerm}
-                      onChange={handleSearchChange}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                      darkMode={darkMode}
-                    />
-                    <SearchIconWrapper onClick={handleSearch}>
-                      {loading ? (
-                        <CircularProgress size={18} color="inherit" />
-                      ) : (
-                        <SearchIcon />
-                      )}
-                    </SearchIconWrapper>
-
-                    {/* Resultados de búsqueda */}
-                    <Popper
-                      open={open}
-                      anchorEl={anchorEl}
-                      placement="bottom-start"
-                      style={{
-                        width: anchorEl ? anchorEl.clientWidth : undefined,
-                        zIndex: 1300,
-                        marginTop: '5px'
-                      }}
-                    >
-                      <ClickAwayListener onClickAway={() => setOpen(false)}>
-                        <Paper
-                          elevation={3}
-                          sx={{
-                            p: 1,
-                            maxHeight: '350px',
-                            overflowY: 'auto',
-                            width: '100%',
-                            borderRadius: '12px',
-                            backgroundColor: darkMode ? '#222' : '#fff',
-                            boxShadow: '0 8px 20px rgba(0,0,0,0.15)'
-                          }}
-                        >
-                          {searchResults.length > 0 ? (
-                            <>
-                              <Typography
-                                variant="subtitle2"
-                                sx={{
-                                  p: 1,
-                                  color: darkMode ? '#aaa' : '#666',
-                                  borderBottom: '1px solid',
-                                  borderColor: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)'
-                                }}
-                              >
-                                Resultados de búsqueda
-                              </Typography>
-                              <Box sx={{ p: 1 }}>
-                                {searchResults.map((product) => (
-                                  <SearchResult
-                                    key={product.id}
-                                    product={product}
-                                    onClick={handleResultClick}
-                                    darkMode={darkMode}
-                                  />
-                                ))}
-                              </Box>
-                            </>
-                          ) : (
-                            <Box sx={{ p: 2, textAlign: 'center' }}>
-                              {loading ? (
-                                <CircularProgress size={24} />
-                              ) : (
-                                <Typography variant="body2" color="text.secondary">
-                                  No se encontraron productos
-                                </Typography>
-                              )}
-                            </Box>
-                          )}
-                        </Paper>
-                      </ClickAwayListener>
-                    </Popper>
-                  </SearchBox>
-                </Zoom>
-              )}
-            </Box>
-
-            {/* Navegación en escritorio */}
-            {!isMobile && (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                {[
-                  { label: 'Hombre', path: '/cliente/hombres', icon: <ManIcon sx={{ mr: 0.5 }} /> },
-                  { label: 'Mujer', path: '/cliente/mujeres', icon: <WomanIcon sx={{ mr: 0.5 }} /> },
-                  { label: 'Ofertas Especiales', path: '/cliente/ofertasCliente', icon: <LocalOfferIcon sx={{ mr: 0.5 }} /> },
-                ].map((item, index) => (
-                  <Button
-                    key={index}
-                    color="inherit"
-                    onClick={() => handleNavigation(item.path)}
-                    startIcon={item.icon}
+                <Box sx={{ 
+                  position: 'relative',
+                  width: isMobile ? 45 : 55,
+                  height: isMobile ? 45 : 55,
+                  borderRadius: '50%',
+                  background: darkMode 
+                    ? 'linear-gradient(45deg, #2A7F62, #3B8D99)' 
+                    : 'linear-gradient(45deg, #3B8D99, #91EAE4)',
+                  p: '3px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 3px 10px rgba(0,0,0,0.2)'
+                }}>
+                  <img
+                    src={logo}
+                    alt="Logo GisLive"
+                    style={{ 
+                      width: '100%', 
+                      height: '100%', 
+                      borderRadius: '50%',
+                      border: `2px solid ${darkMode ? '#333' : 'white'}`,
+                      objectFit: 'cover'
+                    }}
+                  />
+                </Box>
+              </Box>
+              <SearchBox sx={{ ml: 2 }}>
+                <StyledInputBase
+                  placeholder="Buscar productos..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+                  startAdornment={<SearchIcon sx={{ color: theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.4)', fontSize: '1.2rem', ml: 0.5, mr: 1 }} />}
+                />
+                {openSearch && (
+                  <Paper
                     sx={{
-                      mx: 0.5,
-                      transition: 'all 0.3s',
-                      position: 'relative',
-                      '&::after': {
-                        content: '""',
-                        position: 'absolute',
-                        bottom: '6px',
-                        left: '50%',
-                        width: '0%',
-                        height: '2px',
-                        backgroundColor: '#fff',
-                        transition: 'all 0.3s ease',
-                        transform: 'translateX(-50%)',
-                      },
-                      '&:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                        transform: 'translateY(-2px)',
-                        '&::after': {
-                          width: '70%'
-                        }
-                      }
+                      position: 'absolute',
+                      top: '100%',
+                      left: 0,
+                      mt: 1,
+                      width: '100%',
+                      maxHeight: '300px',
+                      overflowY: 'auto',
+                      backgroundColor: theme.palette.background.paper,
+                      boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                      zIndex: 1300,
+                      borderRadius: '8px',
                     }}
                   >
-                    {item.label}
-                  </Button>
-                ))}
+                    {searchResults.map((product) => (
+                      <SearchResult
+                        key={product.id}
+                        product={product}
+                        onClick={handleResultClick}
+                        darkMode={darkMode}
+                      />
+                    ))}
+                    {searchResults.length === 0 && (
+                      <Typography variant="body2" sx={{ p: 2, color: theme.palette.text.secondary }}>
+                        No se encontraron productos
+                      </Typography>
+                    )}
+                  </Paper>
+                )}
+              </SearchBox>
+            </Box>
 
-                <IconButton
-                  color="inherit"
-                  onClick={() => handleNavigation('/cliente/carrito')}
+            {/* Centro: Menú (Hombre, Mujer, Ofertas) */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, justifyContent: 'center', flexGrow: 1, gap: 2 }}>
+              {menuItems.map((item, index) => (
+                <Button
+                  key={index}
+                  onClick={() => navigate(item.path)}
+                  startIcon={item.icon}
                   sx={{
-                    mx: 1,
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                      transform: 'translateY(-2px)'
+                    color: theme.palette.text.primary,
+                    fontSize: '0.9rem',
+                    fontWeight: '600',
+                    position: 'relative',
+                    padding: '8px 12px',
+                    overflow: 'hidden',
+                    '&:hover': { 
+                      backgroundColor: 'transparent',
+                      color: theme.palette.primary.main,
+                      '&::after': { transform: 'scaleX(1)', transformOrigin: 'bottom left' }
+                    },
+                    '&::after': {
+                      content: '""',
+                      position: 'absolute',
+                      bottom: '5px',
+                      left: '8px',
+                      right: '8px',
+                      height: '2px',
+                      backgroundColor: theme.palette.primary.main,
+                      transform: 'scaleX(0)',
+                      transformOrigin: 'bottom right',
+                      transition: 'transform 0.3s',
                     }
                   }}
                 >
-                  <Badge badgeContent={cartCount} color="error">
-                    <ShoppingCartIcon />
-                  </Badge>
-                </IconButton>
+                  {item.label}
+                </Button>
+              ))}
+            </Box>
 
-                <IconButton
-                  color="inherit"
-                  onClick={toggleDarkMode}
-                  sx={{
-                    mx: 1,
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                      transform: 'translateY(-2px)'
-                    }
-                  }}
-                >
-                  {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-                </IconButton>
-
-                <IconButton
-                  color="inherit"
-                  onClick={handleLogout} // Cambiado de handleNavigation('/') a handleLogout
-                  sx={{
-                    mx: 1,
-                    transition: 'all 0.3s',
-                    '&:hover': {
-                      transform: 'translateY(-2px)'
-                    }
-                  }}
-                >
-                  <LogoutIcon />
-                </IconButton>
-              </Box>
-            )}
-
-            {/* Carrito para móvil */}
-            {isMobile && (
+            {/* Derecha: Iconos (Perfil, Carrito, Modo oscuro, Cerrar sesión) */}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton
-                color="inherit"
-                onClick={() => handleNavigation('/carrito')}
+                onClick={() => navigate('/cliente/perfil')}
+                size="large"
+                aria-label="perfil"
+                sx={{ 
+                  color: theme.palette.primary.main,
+                  transition: 'all 0.2s',
+                  '&:hover': { 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: 'scale(1.05)'
+                  } 
+                }}
+              >
+                <PersonIcon />
+              </IconButton>
+              <IconButton
+                onClick={() => navigate('/cliente/carrito-compras')}
+                size="large"
+                aria-label="ver carrito"
+                sx={{ 
+                  color: theme.palette.primary.main,
+                  transition: 'all 0.2s',
+                  '&:hover': { 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: 'scale(1.05)'
+                  } 
+                }}
               >
                 <Badge badgeContent={cartCount} color="error">
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>
-            )}
+              <IconButton
+                onClick={toggleDarkMode}
+                size="large"
+                aria-label="cambiar tema"
+                sx={{ 
+                  color: darkMode ? '#FFC107' : '#5C6BC0',
+                  transition: 'all 0.3s ease',
+                  transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
+                  '&:hover': { 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: darkMode ? 'rotate(180deg) scale(1.05)' : 'rotate(0deg) scale(1.05)'
+                  }
+                }}
+              >
+                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+              <IconButton
+                onClick={handleLogout}
+                size="large"
+                aria-label="cerrar sesión"
+                sx={{ 
+                  color: '#FF4C4C',
+                  transition: 'all 0.2s',
+                  '&:hover': { 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: 'scale(1.05)'
+                  } 
+                }}
+              >
+                <LogoutIcon />
+              </IconButton>
+
+              {/* Menú móvil */}
+              {isMobile && (
+                <>
+                  <IconButton
+                    aria-label="menú"
+                    aria-controls="menu-appbar"
+                    aria-haspopup="true"
+                    onClick={handleMenu}
+                    color="inherit"
+                    sx={{ color: theme.palette.text.primary }}
+                  >
+                    <MenuIcon />
+                  </IconButton>
+                  <Menu
+                    id="menu-appbar"
+                    anchorEl={anchorEl}
+                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                    keepMounted
+                    transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    open={open}
+                    onClose={handleClose}
+                    PaperProps={{
+                      sx: {
+                        mt: 1.5,
+                        backgroundColor: theme.palette.background.paper,
+                        boxShadow: '0 8px 16px rgba(0,0,0,0.1)',
+                        minWidth: 180
+                      }
+                    }}
+                  >
+                    {menuItems.map((item, index) => (
+                      <MenuItem 
+                        key={index} 
+                        onClick={() => handleMenuItemClick(item.path)}
+                        sx={{ py: 1.5, px: 3, fontWeight: 500 }}
+                      >
+                        {item.label}
+                      </MenuItem>
+                    ))}
+                    <MenuItem 
+                      onClick={() => handleMenuItemClick('/cliente/perfil')}
+                      sx={{ py: 1.5, px: 3, fontWeight: 500 }}
+                    >
+                      Perfil
+                    </MenuItem>
+                  </Menu>
+                </>
+              )}
+            </Box>
           </Toolbar>
         </Container>
       </AppBar>
-
-      {/* Menú móvil (Drawer) */}
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={toggleDrawer}
-        sx={{
-          '& .MuiDrawer-paper': {
-            width: 280,
-            backgroundColor: darkMode ? '#1e1e1e' : '#fff',
-          }
-        }}
-      >
-        <Box sx={{ p: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Typography variant="h6" sx={{ color: darkMode ? '#fff' : '#4285f4' }}>GisLive</Typography>
-          <IconButton onClick={toggleDrawer}>
-            <CloseIcon />
-          </IconButton>
-        </Box>
-
-        <Divider />
-
-        <Box sx={{ p: 2 }}>
-          <SearchBox darkMode={darkMode} sx={{ maxWidth: '100%' }}>
-            <StyledInputBase
-              placeholder="Buscar productos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-              darkMode={darkMode}
-            />
-            <SearchIconWrapper onClick={handleSearch}>
-              <SearchIcon />
-            </SearchIconWrapper>
-          </SearchBox>
-        </Box>
-
-        <List>
-          {[
-            { label: 'Hombre', path: '/cliente/hombres', icon: <ManIcon /> },
-            { label: 'Mujer', path: '/cliente/mujeres', icon: <WomanIcon /> },
-            { label: 'Ofertas Especiales', path: '/cliente/ofertasCliente', icon: <LocalOfferIcon /> },
-          ].map((item, index) => (
-            <ListItem
-              button
-              key={index}
-              onClick={() => handleMobileNav(item.path)}
-              sx={{
-                borderRadius: '8px',
-                mx: 1,
-                my: 0.5,
-                transition: 'all 0.2s',
-                '&:hover': {
-                  backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.1)' : 'rgba(100, 181, 246, 0.1)',
-                  transform: 'translateX(5px)'
-                }
-              }}
-            >
-              <ListItemIcon sx={{ color: darkMode ? '#64b5f6' : '#4285f4' }}>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.label} />
-            </ListItem>
-          ))}
-
-          <Divider sx={{ my: 2 }} />
-
-          <ListItem
-            button
-            onClick={() => handleMobileNav('/cliente/carrito')}
-            sx={{
-              borderRadius: '8px',
-              mx: 1,
-              my: 0.5,
-              transition: 'all 0.2s',
-              '&:hover': {
-                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.1)' : 'rgba(100, 181, 246, 0.1)',
-                transform: 'translateX(5px)'
-              }
-            }}
-          >
-            <ListItemIcon sx={{ color: darkMode ? '#64b5f6' : '#4285f4' }}>
-              <Badge badgeContent={cartCount} color="error">
-                <ShoppingCartIcon />
-              </Badge>
-            </ListItemIcon>
-            <ListItemText primary="Carrito de compras" />
-          </ListItem>
-
-          <ListItem
-            button
-            onClick={toggleDarkMode}
-            sx={{
-              borderRadius: '8px',
-              mx: 1,
-              my: 0.5,
-              transition: 'all 0.2s',
-              '&:hover': {
-                backgroundColor: darkMode ? 'rgba(100, 181, 246, 0.1)' : 'rgba(100, 181, 246, 0.1)',
-                transform: 'translateX(5px)'
-              }
-            }}
-          >
-            <ListItemIcon sx={{ color: darkMode ? '#64b5f6' : '#4285f4' }}>
-              {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
-            </ListItemIcon>
-            <ListItemText primary={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"} />
-          </ListItem>
-
-          <Divider sx={{ my: 2 }} />
-
-          <ListItem
-            button
-            onClick={handleLogout} // Cambiado de handleMobileNav('/') a handleLogout
-            sx={{
-              borderRadius: '8px',
-              mx: 1,
-              my: 0.5,
-              transition: 'all 0.2s',
-              '&:hover': {
-                backgroundColor: alpha('#f44336', 0.1),
-                transform: 'translateX(5px)'
-              }
-            }}
-          >
-            <ListItemIcon sx={{ color: '#f44336' }}>
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText primary="Cerrar Sesión" />
-          </ListItem>
-        </List>
-      </Drawer>
     </ThemeProvider>
   );
 };
 
 export default BarraNavCliente;
+

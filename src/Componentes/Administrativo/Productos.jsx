@@ -72,7 +72,7 @@ const ProductoForm = () => {
     if (!producto.descripcion.trim()) {
       tempErrors.descripcion = "La descripción es requerida";
     } else if (producto.descripcion.length < 10) {
-      tempErrors.descripcion = "La descripción debe tener al menos 10 caracteres";
+      tempErrors.descripcion = "La descripción debe ser requerida";
     } else if (producto.descripcion.length > 500) {
       tempErrors.descripcion = "La descripción no puede exceder 500 caracteres";
     }

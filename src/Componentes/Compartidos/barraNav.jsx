@@ -111,8 +111,9 @@ const BarraNav = () => {
     { label: 'Inicio', path: '/' },
     { label: 'Acerca De', path: '/acercaDe' },
     { label: 'Contacto', path: '/contacto' },
-    { label: 'Ofertas', path: '/Ofertasespeciales' },
-    { label: 'Iniciar Sesión', path: '/login' }
+    { label: 'Iniciar Sesión', path: '/login' },
+    { label: 'chat', path: '/chat' }
+  
   ];
 
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

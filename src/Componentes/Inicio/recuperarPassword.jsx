@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Box, Snackbar, Alert, CircularProgress } from '@mui/material';
-import { Email, Lock } from '@mui/icons-material';
+import { Container, TextField, Button, Typography, Box, Snackbar, Alert, CircularProgress, IconButton } from '@mui/material';
+import { Email, Lock, ArrowBack } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -21,6 +21,7 @@ const RecuperarContrasena = () => {
 
   const handleEmailChange = (e) => setEmail(e.target.value.trim());
   const handleTokenChange = (e) => setToken(e.target.value.trim());
+  const handleGoBack = () => navigate(-1);
 
   // Envío de solicitud de recuperación de contraseña
   const handleSubmitEmail = async (e) => {
@@ -142,8 +143,30 @@ const RecuperarContrasena = () => {
         alignItems: 'center',
         justifyContent: 'center',
         overflow: 'hidden',
+        py: { xs: 4, sm: 0 }, // Padding vertical en móviles
       }}
     >
+      {/* Botón de retroceso */}
+      <IconButton 
+        onClick={handleGoBack}
+        sx={{
+          position: 'absolute',
+          top: { xs: 16, sm: 24 },
+          left: { xs: 16, sm: 24 },
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          color: '#1976d2',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+          '&:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 1)',
+            transform: 'scale(1.05)',
+          },
+          zIndex: 10,
+        }}
+        aria-label="volver atrás"
+      >
+        <ArrowBack />
+      </IconButton>
+
       <Container
         maxWidth="sm"
         sx={{
@@ -151,7 +174,8 @@ const RecuperarContrasena = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          minHeight: '100vh',
+          px: { xs: 2, sm: 3 }, // Padding horizontal responsivo
+          minHeight: { xs: 'auto', sm: '100vh' },
         }}
       >
         <Box
@@ -159,15 +183,16 @@ const RecuperarContrasena = () => {
             width: '100%',
             maxWidth: '450px',
             padding: { xs: 3, sm: 5 },
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: 'rgba(255, 255, 255, 0.95)', // Fondo blanco con ligera transparencia
             borderRadius: 3,
             boxShadow: '0 15px 35px rgba(0, 0, 0, 0.2)',
             textAlign: 'center',
             position: 'relative',
             transition: 'transform 0.3s ease-in-out',
             '&:hover': {
-              transform: 'translateY(-5px)',
+              transform: 'translateY(-5px)', // Efecto de elevación al pasar el mouse
             },
+            mt: { xs: 6, sm: 0 }, // Margen superior para dispositivos móviles
           }}
         >
           {/* Icono decorativo en la parte superior */}
@@ -184,9 +209,9 @@ const RecuperarContrasena = () => {
             }}
           >
             {emailSent ? (
-              <Lock sx={{ color: 'white', fontSize: 40 }} />
+              <Lock sx={{ color: 'white', fontSize: { xs: 32, sm: 40 } }} />
             ) : (
-              <Email sx={{ color: 'white', fontSize: 40 }} />
+              <Email sx={{ color: 'white', fontSize: { xs: 32, sm: 40 } }} />
             )}
           </Box>
 
@@ -197,6 +222,7 @@ const RecuperarContrasena = () => {
               fontWeight: 700,
               color: '#333',
               mt: 4,
+              fontSize: { xs: '1.5rem', sm: '2rem' }, // Tamaño de fuente responsivo
               fontFamily: '"Roboto", sans-serif',
               letterSpacing: '0.5px',
             }}
@@ -209,9 +235,10 @@ const RecuperarContrasena = () => {
             gutterBottom
             sx={{
               mb: 4,
-              fontSize: '1rem',
+              fontSize: { xs: '0.875rem', sm: '1rem' }, // Tamaño de fuente responsivo
               color: '#666',
               fontStyle: 'italic',
+              px: { xs: 1, sm: 2 }, // Padding horizontal para texto en móviles
             }}
           >
             {emailSent
@@ -300,8 +327,8 @@ const RecuperarContrasena = () => {
                 fullWidth
                 disabled={isLoading}
                 sx={{
-                  padding: '12px',
-                  fontSize: '1rem',
+                  padding: { xs: '10px', sm: '12px' },
+                  fontSize: { xs: '0.9rem', sm: '1rem' },
                   fontWeight: 600,
                   borderRadius: '12px',
                   background: 'linear-gradient(90deg, #1976d2 0%, #42a5f5 100%)',
@@ -310,7 +337,7 @@ const RecuperarContrasena = () => {
                   '&:hover': {
                     background: 'linear-gradient(90deg, #1565c0 0%, #2196f3 100%)',
                     boxShadow: '0 8px 20px rgba(25, 118, 210, 0.5)',
-                    transform: 'translateY(-2px)',
+                    transform: { xs: 'none', sm: 'translateY(-2px)' }, // Solo aplica efecto hover en dispositivos no móviles
                   },
                   '&:disabled': {
                     background: '#cccccc',
@@ -326,7 +353,12 @@ const RecuperarContrasena = () => {
           </form>
         </Box>
 
-        <Snackbar open={snackbar.open} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+        <Snackbar 
+          open={snackbar.open} 
+          autoHideDuration={6000} 
+          onClose={handleCloseSnackbar}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }} // Mejor posición en móviles
+        >
           <Alert
             onClose={handleCloseSnackbar}
             severity={snackbar.severity}
