@@ -46,7 +46,7 @@ const PreguntasFrecuentes = () => {
           transition={{ duration: 0.6 }}
         >
           <Typography variant="h4" fontWeight="bold" gutterBottom>
-            ❓ Preguntas Frecuentes
+            Preguntas Frecuentes
           </Typography>
           <Typography variant="subtitle1">
             Encuentra respuestas a las dudas más comunes sobre nuestra tienda.

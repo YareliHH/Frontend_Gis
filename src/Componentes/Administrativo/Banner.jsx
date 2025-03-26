@@ -1,47 +1,65 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Paper, Button, TextField, Grid,  Card, CardContent, CardMedia, CardActions, Dialog,  DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, IconButton, Box, CircularProgress} from '@mui/material';
+import { 
+  Container, 
+  Typography, 
+  Grid, 
+  Card, 
+  CardMedia, 
+  CardContent, 
+  CardActions, 
+  Button, 
+  Dialog, 
+  DialogTitle, 
+  DialogContent, 
+  DialogActions, 
+  TextField,
+  CircularProgress,
+  Snackbar,
+  IconButton
+} from '@mui/material';
 import { Add, Edit, Delete, Close } from '@mui/icons-material';
 import axios from 'axios';
 
-const BannerManagement = () => {
-  // State variables
+const BannerList = () => {
   const [banners, setBanners] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [currentBanner, setCurrentBanner] = useState(null);
-  const [formData, setFormData] = useState({
-    titulo: '',
-    descripcion: '',
-    imagen: null
-  });
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: '',
     severity: 'success'
   });
+  const [formData, setFormData] = useState({
+    titulo: '',
+    descripcion: '',
+    url: ''
+  });
 
-  // Fetch all banners on component mount
   useEffect(() => {
     fetchBanners();
   }, []);
 
-  // Function to fetch all banners
   const fetchBanners = async () => {
-    setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3001/obtenerbanner`);
+      setLoading(true);
+      const response = await axios.get('http://localhost:3001/api/banners/obtenerbanner');
       setBanners(response.data);
+      setLoading(false);
     } catch (error) {
-      showSnackbar('Error al cargar los banners', 'error');
       console.error('Error fetching banners:', error);
-    } finally {
+      setSnackbar({
+        open: true,
+        message: 'Error al cargar los banners',
+        severity: 'error'
+      });
       setLoading(false);
     }
   };
 
-  // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -50,133 +68,131 @@ const BannerManagement = () => {
     });
   };
 
-  // Handle file input changes
-  const handleFileChange = (e) => {
+  const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData({
-        ...formData,
-        imagen: file
-      });
-      
-      // Create a preview URL
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
-        setPreviewUrl(fileReader.result);
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
       };
-      fileReader.readAsDataURL(file);
+      reader.readAsDataURL(file);
     }
   };
 
-  // Open dialog for adding a new banner
-  const handleAddBanner = () => {
-    setCurrentBanner(null);
-    setFormData({
-      titulo: '',
-      descripcion: '',
-      imagen: null
-    });
-    setPreviewUrl(null);
+  const handleOpenDialog = (banner = null) => {
+    if (banner) {
+      setCurrentBanner(banner);
+      setFormData({
+        titulo: banner.titulo,
+        descripcion: banner.descripcion,
+        url: banner.url
+      });
+      setImagePreview(banner.url);
+    } else {
+      setCurrentBanner(null);
+      setFormData({
+        titulo: '',
+        descripcion: '',
+        url: ''
+      });
+      setImagePreview(null);
+      setImageFile(null);
+    }
     setOpenDialog(true);
   };
 
-  // Open dialog for editing an existing banner
-  const handleEditBanner = (banner) => {
-    setCurrentBanner(banner);
-    setFormData({
-      titulo: banner.titulo,
-      descripcion: banner.descripcion,
-      imagen: null
-    });
-    setPreviewUrl(banner.url);
-    setOpenDialog(true);
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
   };
 
-  // Open dialog for confirming banner deletion
-  const handleDeleteBannerClick = (banner) => {
+  const handleOpenDeleteDialog = (banner) => {
     setCurrentBanner(banner);
     setOpenDeleteDialog(true);
   };
 
-  // Close all dialogs
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
+  const handleCloseDeleteDialog = () => {
     setOpenDeleteDialog(false);
-    setCurrentBanner(null);
   };
 
-  // Submit the form to create or update a banner
   const handleSubmit = async () => {
-    if (!formData.titulo || !formData.descripcion) {
-      showSnackbar('Título y descripción son obligatorios', 'error');
-      return;
-    }
-
-    setLoading(true);
     try {
-      const formDataObj = new FormData();
-      formDataObj.append('titulo', formData.titulo);
-      formDataObj.append('descripcion', formData.descripcion);
-      
-      if (formData.imagen) {
-        formDataObj.append('imagen', formData.imagen);
-      } else if (currentBanner && currentBanner.url) {
-        formDataObj.append('url', currentBanner.url);
+      if (!formData.titulo || !formData.descripcion) {
+        setSnackbar({
+          open: true,
+          message: 'Título y descripción son obligatorios',
+          severity: 'error'
+        });
+        return;
       }
 
-      let response;
+      const formDataToSend = new FormData();
+      formDataToSend.append('titulo', formData.titulo);
+      formDataToSend.append('descripcion', formData.descripcion);
+      if (imageFile) {
+        formDataToSend.append('imagen', imageFile);
+      } else if (formData.url) {
+        formDataToSend.append('url', formData.url);
+      }
+
       if (currentBanner) {
-        // Update existing banner
-        response = await axios.put(
-          `http://localhost:3001/actualizarbanner/${currentBanner.id}`, 
-          formDataObj
-        );
-        showSnackbar('Banner actualizado correctamente', 'success');
+        // Actualizar banner existente
+        await axios.put(`http://localhost:3001/api/banners/actualizarbanner/${currentBanner.id}`, formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        setSnackbar({
+          open: true,
+          message: 'Banner actualizado correctamente',
+          severity: 'success'
+        });
       } else {
-        // Create new banner
-        response = await axios.post(`http://localhost:3001/api/insertabanner`, formDataObj);
-        showSnackbar('Banner creado correctamente', 'success');
+        // Crear nuevo banner
+        await axios.post('http://localhost:3001/api/banners/insertabanner', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        setSnackbar({
+          open: true,
+          message: 'Banner creado correctamente',
+          severity: 'success'
+        });
       }
 
-      // Refresh banner list
       fetchBanners();
-      handleCloseDialog();
+      setOpenDialog(false);
     } catch (error) {
-      showSnackbar('Error al guardar el banner', 'error');
       console.error('Error saving banner:', error);
-    } finally {
-      setLoading(false);
+      setSnackbar({
+        open: true,
+        message: 'Error al guardar el banner',
+        severity: 'error'
+      });
     }
   };
 
-  // Delete a banner
-  const handleDeleteBanner = async () => {
-    if (!currentBanner) return;
-    
-    setLoading(true);
+  const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/eliminarbanner/${currentBanner.id}`);
-      showSnackbar('Banner eliminado correctamente', 'success');
+      await axios.delete(`http://localhost:3001/api/banners/eliminarbanner/${currentBanner.id}`);
+      setSnackbar({
+        open: true,
+        message: 'Banner eliminado correctamente',
+        severity: 'success'
+      });
       fetchBanners();
-      handleCloseDialog();
+      setOpenDeleteDialog(false);
     } catch (error) {
-      showSnackbar('Error al eliminar el banner', 'error');
       console.error('Error deleting banner:', error);
-    } finally {
-      setLoading(false);
+      setSnackbar({
+        open: true,
+        message: 'Error al eliminar el banner',
+        severity: 'error'
+      });
     }
   };
 
-  // Show snackbar notification
-  const showSnackbar = (message, severity) => {
-    setSnackbar({
-      open: true,
-      message,
-      severity
-    });
-  };
-
-  // Close snackbar
   const handleCloseSnackbar = () => {
     setSnackbar({
       ...snackbar,
@@ -185,193 +201,180 @@ const BannerManagement = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4" component="h1">
-            Gestión de Banners
-          </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            startIcon={<Add />} 
-            onClick={handleAddBanner}
-          >
-            Nuevo Banner
-          </Button>
-        </Box>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Gestión de Banners
+      </Typography>
 
-        {loading && banners.length === 0 ? (
-          <Box display="flex" justifyContent="center" my={4}>
-            <CircularProgress />
-          </Box>
-        ) : banners.length > 0 ? (
-          <Grid container spacing={3}>
-            {banners.map((banner) => (
-              <Grid item xs={12} sm={6} md={4} key={banner.id}>
-                <Card elevation={2}>
-                  {banner.url && (
-                    <CardMedia
-                      component="img"
-                      height="180"
-                      image={banner.url}
-                      alt={banner.titulo}
-                    />
-                  )}
-                  <CardContent>
-                    <Typography variant="h6" component="div" gutterBottom>
-                      {banner.titulo}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {banner.descripcion}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button 
-                      size="small" 
-                      startIcon={<Edit />} 
-                      onClick={() => handleEditBanner(banner)}
-                    >
-                      Editar
-                    </Button>
-                    <Button 
-                      size="small" 
-                      color="error" 
-                      startIcon={<Delete />}
-                      onClick={() => handleDeleteBannerClick(banner)}
-                    >
-                      Eliminar
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        ) : (
-          <Box textAlign="center" my={4}>
-            <Typography variant="h6" color="text.secondary">
-              No hay banners disponibles
-            </Typography>
-          </Box>
-        )}
-      </Paper>
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Add />}
+        onClick={() => handleOpenDialog()}
+        sx={{ mb: 3 }}
+      >
+        Nuevo Banner
+      </Button>
 
-      {/* Dialog for Add/Edit Banner */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      {loading ? (
+        <CircularProgress />
+      ) : (
+        <Grid container spacing={3}>
+          {banners.map((banner) => (
+            <Grid item key={banner.id} xs={12} sm={6} md={4}>
+              <Card>
+                {banner.url && (
+                  <CardMedia
+                    component="img"
+                    height="140"
+                    image={banner.url}
+                    alt={banner.titulo}
+                  />
+                )}
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {banner.titulo}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {banner.descripcion}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button 
+                    size="small" 
+                    startIcon={<Edit />}
+                    onClick={() => handleOpenDialog(banner)}
+                  >
+                    Editar
+                  </Button>
+                  <Button 
+                    size="small" 
+                    startIcon={<Delete />}
+                    color="error"
+                    onClick={() => handleOpenDeleteDialog(banner)}
+                  >
+                    Eliminar
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      )}
+
+      {/* Dialog para agregar/editar banner */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
         <DialogTitle>
           {currentBanner ? 'Editar Banner' : 'Nuevo Banner'}
+          <IconButton
+            aria-label="close"
+            onClick={handleCloseDialog}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <Close />
+          </IconButton>
         </DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="titulo"
-            label="Título"
-            type="text"
-            fullWidth
-            value={formData.titulo}
-            onChange={handleInputChange}
-            required
-            variant="outlined"
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="descripcion"
-            label="Descripción"
-            type="text"
-            fullWidth
-            multiline
-            rows={4}
-            value={formData.descripcion}
-            onChange={handleInputChange}
-            required
-            variant="outlined"
-            sx={{ mb: 2 }}
-          />
-          <Box sx={{ mb: 2 }}>
-            <Button
-              variant="outlined"
-              component="label"
-              color="primary"
-            >
-              Seleccionar Imagen
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleFileChange}
+        <DialogContent dividers>
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Título"
+                name="titulo"
+                value={formData.titulo}
+                onChange={handleInputChange}
+                required
               />
-            </Button>
-            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-              {formData.imagen ? `Imagen seleccionada: ${formData.imagen.name}` : 'Ninguna imagen seleccionada'}
-            </Typography>
-          </Box>
-          {previewUrl && (
-            <Box sx={{ mt: 2, position: 'relative' }}>
-              <Typography variant="subtitle2" gutterBottom>
-                Vista previa:
-              </Typography>
-              <img 
-                src={previewUrl} 
-                alt="Vista previa" 
-                style={{ width: '100%', maxHeight: '200px', objectFit: 'contain' }} 
+              <TextField
+                fullWidth
+                margin="normal"
+                label="Descripción"
+                name="descripcion"
+                value={formData.descripcion}
+                onChange={handleInputChange}
+                multiline
+                rows={4}
+                required
               />
-              <IconButton
-                size="small"
-                sx={{ position: 'absolute', top: 0, right: 0, bgcolor: 'rgba(255,255,255,0.7)' }}
-                onClick={() => {
-                  setPreviewUrl(null);
-                  setFormData({...formData, imagen: null});
-                }}
+            </Grid>
+            <Grid item xs={12} md={6}>
+              {imagePreview && (
+                <img 
+                  src={imagePreview} 
+                  alt="Preview" 
+                  style={{ 
+                    width: '100%', 
+                    maxHeight: '200px', 
+                    objectFit: 'contain',
+                    marginBottom: '16px'
+                  }} 
+                />
+              )}
+              <Button
+                variant="contained"
+                component="label"
+                fullWidth
               >
-                <Close fontSize="small" />
-              </IconButton>
-            </Box>
-          )}
+                Subir Imagen
+                <input
+                  type="file"
+                  hidden
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+              </Button>
+            </Grid>
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancelar</Button>
-          <Button 
-            onClick={handleSubmit} 
-            variant="contained" 
-            color="primary" 
-            disabled={!formData.titulo || !formData.descripcion}
-          >
+          <Button onClick={handleSubmit} variant="contained" color="primary">
             Guardar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Dialog for Delete Confirmation */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Confirmar eliminación</DialogTitle>
+      {/* Dialog para confirmar eliminación */}
+      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <DialogTitle>Confirmar Eliminación</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            ¿Está seguro que desea eliminar el banner "{currentBanner?.titulo}"? Esta acción no se puede deshacer.
-          </DialogContentText>
+          <Typography>
+            ¿Estás seguro de que deseas eliminar el banner "{currentBanner?.titulo}"?
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancelar</Button>
-          <Button onClick={handleDeleteBanner} color="error" variant="contained">
+          <Button onClick={handleCloseDeleteDialog}>Cancelar</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
             Eliminar
           </Button>
         </DialogActions>
       </Dialog>
 
-      {/* Snackbar for notifications */}
+      {/* Snackbar para mensajes */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+        message={snackbar.message}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleCloseSnackbar}
+          >
+            <Close fontSize="small" />
+          </IconButton>
+        }
+      />
     </Container>
   );
 };
 
-export default BannerManagement;
+export default BannerList;

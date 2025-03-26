@@ -67,54 +67,60 @@ const ProductoForm = () => {
     } else if (producto.nombre_producto.length > 100) {
       tempErrors.nombre_producto = "El nombre no puede exceder 100 caracteres";
     }
-
+  
     // Descripción
     if (!producto.descripcion.trim()) {
       tempErrors.descripcion = "La descripción es requerida";
     } else if (producto.descripcion.length < 10) {
-      tempErrors.descripcion = "La descripción debe ser requerida";
+      tempErrors.descripcion = "La descripción debe tener al menos 10 caracteres";
     } else if (producto.descripcion.length > 500) {
       tempErrors.descripcion = "La descripción no puede exceder 500 caracteres";
     }
-
+  
     // Precio
     if (!producto.precio) {
       tempErrors.precio = "El precio es requerido";
-    } else if (isNaN(producto.precio) || Number(producto.precio) <= 0) {
-      tempErrors.precio = "El precio debe ser un número mayor a 0";
-    } else if (Number(producto.precio) > 999999) {
-      tempErrors.precio = "El precio no puede exceder 999,999";
+    } else {
+      const precioNum = Number(producto.precio);
+      if (isNaN(precioNum) || precioNum <= 0) {
+        tempErrors.precio = "El precio debe ser un número mayor a 0";
+      } else if (precioNum > 999999) {
+        tempErrors.precio = "El precio no puede exceder 999,999";
+      }
     }
-
+  
     // Stock
     if (!producto.stock) {
       tempErrors.stock = "El stock es requerido";
-    } else if (!Number.isInteger(Number(producto.stock)) || Number(producto.stock) < 0) {
-      tempErrors.stock = "El stock debe ser un número entero no negativo";
-    } else if (Number(producto.stock) > 9999) {
-      tempErrors.stock = "El stock no puede exceder 9999";
+    } else {
+      const stockNum = Number(producto.stock);
+      if (!Number.isInteger(stockNum) || stockNum < 0) {
+        tempErrors.stock = "El stock debe ser un número entero no negativo";
+      } else if (stockNum > 9999) {
+        tempErrors.stock = "El stock no puede exceder 9999";
+      }
     }
-
+  
     // Categoría
     if (!producto.id_categoria) {
       tempErrors.id_categoria = "Debe seleccionar una categoría";
     }
-
+  
     // Color
     if (!producto.id_color) {
       tempErrors.id_color = "Debe seleccionar un color";
     }
-
+  
     // Talla
     if (!producto.id_talla) {
       tempErrors.id_talla = "Debe seleccionar una talla";
     }
-
+  
     // Género
     if (!producto.id_genero) {
       tempErrors.id_genero = "Debe seleccionar un género";
     }
-
+  
     // Imagen (solo requerida al crear)
     if (!producto.id && !producto.imagen) {
       tempErrors.imagen = "Debe subir una imagen";
@@ -126,7 +132,7 @@ const ProductoForm = () => {
         tempErrors.imagen = "La imagen no puede exceder 5MB";
       }
     }
-
+  
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -209,65 +215,49 @@ const ProductoForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) {
       setSnackbarMessage("Por favor, corrija los errores en el formulario");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);
       return;
     }
-
+  
     try {
-      if (producto.id) {
-        if (producto.imagen instanceof File) {
-          const formData = new FormData();
-          formData.append("nombre_producto", producto.nombre_producto);
-          formData.append("descripcion", producto.descripcion);
-          formData.append("precio", producto.precio);
-          formData.append("stock", producto.stock);
-          formData.append("id_categoria", producto.id_categoria);
-          formData.append("id_color", producto.id_color);
-          formData.append("id_talla", producto.id_talla);
-          formData.append("id_genero", producto.id_genero);
-          formData.append("imagenes", producto.imagen);
-
-          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
-        } else {
-          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, {
-            nombre_producto: producto.nombre_producto,
-            descripcion: producto.descripcion,
-            precio: producto.precio,
-            stock: producto.stock,
-            id_categoria: producto.id_categoria,
-            id_color: producto.id_color,
-            id_talla: producto.id_talla,
-            id_genero: producto.id_genero,
-          });
-        }
-        setSnackbarMessage("Producto actualizado con éxito");
-      } else {
-        const formData = new FormData();
-        formData.append("nombre_producto", producto.nombre_producto);
-        formData.append("descripcion", producto.descripcion);
-        formData.append("precio", producto.precio);
-        formData.append("stock", producto.stock);
-        formData.append("id_categoria", producto.id_categoria);
-        formData.append("id_color", producto.id_color);
-        formData.append("id_talla", producto.id_talla);
-        formData.append("id_genero", producto.id_genero);
-        if (producto.imagen) {
-          formData.append("imagenes", producto.imagen);
-        }
-        await axios.post("http://localhost:3001/api/agregarproducto", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-        setSnackbarMessage("Producto creado con éxito");
+      const formData = new FormData();
+      
+      // Append all product data
+      formData.append("nombre_producto", producto.nombre_producto);
+      formData.append("descripcion", producto.descripcion);
+      formData.append("precio", Number(producto.precio));
+      formData.append("stock", Number(producto.stock));
+      formData.append("id_categoria", Number(producto.id_categoria));
+      formData.append("id_color", Number(producto.id_color));
+      formData.append("id_talla", Number(producto.id_talla));
+      formData.append("id_genero", Number(producto.id_genero));
+  
+      // Append image if exists
+      if (producto.imagen) {
+        formData.append("imagen", producto.imagen);
       }
+  
+      // Determinar si es una actualización o creación
+      const url = producto.id 
+        ? `http://localhost:3001/api/actualizar/${producto.id}` 
+        : "http://localhost:3001/api/agregarProductos";
+  
+      const method = producto.id ? 'put' : 'post';
+  
+      await axios[method](url, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+  
+      setSnackbarMessage(producto.id ? "Producto actualizado con éxito" : "Producto creado con éxito");
       setSnackbarSeverity("success");
       setSnackbarOpen(true);
       fetchProductos();
+      
+      // Reset form
       setProducto({
         id: null,
         nombre_producto: "",
@@ -281,8 +271,9 @@ const ProductoForm = () => {
         imagen: null,
       });
       setErrors({});
+  
     } catch (error) {
-      console.error("Error al guardar producto:", error);
+      console.error("Error al guardar/actualizar producto:", error);
       setSnackbarMessage("Error al guardar el producto");
       setSnackbarSeverity("error");
       setSnackbarOpen(true);

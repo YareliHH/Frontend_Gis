@@ -379,7 +379,7 @@ const BarraNavCliente = () => {
                 <PersonIcon />
               </IconButton>
               <IconButton
-                onClick={() => navigate('/cliente/carrito-compras')}
+                onClick={() => navigate('/cliente/carrito')}
                 size="large"
                 aria-label="ver carrito"
                 sx={{ 

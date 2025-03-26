@@ -65,15 +65,15 @@ const Chat = () => {
         <Box
           sx={{
             p: 2,
-            background: "linear-gradient(135deg, #00796b, #009688)",
+            background: "linear-gradient(135deg,rgb(142, 169, 241),rgb(148, 169, 198))",
             display: "flex",
             alignItems: "center",
             gap: 2,
           }}
         >
-          <Avatar sx={{ bgcolor: "#e0f2f1", color: "#00796b" }}>A</Avatar>
+          <Avatar sx={{ bgcolor: "#e0f2f1", color: "#00796b" }}>G</Avatar>
           <Typography variant="h6" component="div" sx={{ color: "white", fontWeight: 500 }}>
-            Asistente Virtual
+            Gislive boutique clinica
           </Typography>
         </Box>
 
@@ -111,7 +111,7 @@ const Chat = () => {
                     fontSize: "0.875rem",
                   }}
                 >
-                  A
+                  G
                 </Avatar>
               )}
               <Paper
@@ -159,7 +159,7 @@ const Chat = () => {
                   fontSize: "0.875rem",
                 }}
               >
-                A
+                G
               </Avatar>
               <Paper
                 elevation={1}
