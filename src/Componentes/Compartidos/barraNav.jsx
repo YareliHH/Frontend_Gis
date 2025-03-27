@@ -268,7 +268,7 @@ const BarraNav = () => {
               gap: 1
             }}>
               <IconButton 
-                onClick={() => navigate('/carrito')} 
+                onClick={() => navigate('/cliente/carrito-compras')} 
                 size="large"
                 aria-label="ver carrito"
                 sx={{ 

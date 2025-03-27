@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Divider, Button, IconButton, Chip, Container,Paper,Rating,Stack,alpha,Skeleton,Alert,Snackbar} from '@mui/material';
-import { Add, Remove, ShoppingCart,ArrowBack,CheckCircle,LocalShipping,VerifiedUser,Payment} from '@mui/icons-material';
+import { Box, Typography, Grid, Divider, Button, IconButton, Chip, Container, Paper, Rating, Stack, alpha, Skeleton, Alert, Snackbar } from '@mui/material';
+import { Add, Remove, ShoppingCart, ArrowBack, CheckCircle, Payment } from '@mui/icons-material';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { useAuth } from '../Autenticacion/AuthContext';
 
 const DetallesProducto = () => {
   const { id } = useParams();
@@ -27,9 +28,11 @@ const DetallesProducto = () => {
     cardBg: '#ffffff',
     textPrimary: '#2c2c54',
     textSecondary: '#4b4b80',
-    buttonBlue: '#4682b4', // Nuevo color azul bajo para los botones
+    buttonBlue: '#4682b4',
     gradient: 'linear-gradient(135deg, #3a36e0 0%, #b253d8 100%)'
   };
+
+     const { user } = useAuth();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -59,22 +62,35 @@ const DetallesProducto = () => {
 
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL'];
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize) {
       setSnackbarMessage('Por favor selecciona una talla');
       setSnackbarOpen(true);
       return;
     }
-    
+
     if (!selectedColor) {
       setSnackbarMessage('Por favor selecciona un color');
       setSnackbarOpen(true);
       return;
     }
-    
-    setSnackbarMessage('Producto agregado al carrito correctamente');
-    setSnackbarOpen(true);
-    console.log('Producto agregado al carrito:', { product, selectedSize, selectedColor, selectedQuantity });
+
+    try {
+      const response = await axios.post("http://localhost:3001/api/agregarcarrito", {
+        usuario_id: user?.id, // Aquí debes tomar el ID del usuario desde tu estado o contexto
+        producto_id: product.id,
+        cantidad: selectedQuantity
+      });
+
+      setSnackbarMessage(response.data.mensaje || 'Producto agregado al carrito');
+      setSnackbarOpen(true);
+
+      console.log('Respuesta del servidor:', response.data);
+    } catch (error) {
+      console.error('Error al agregar el producto al carrito:', error);
+      setSnackbarMessage(error.response?.data?.error || 'Error al agregar el producto al carrito');
+      setSnackbarOpen(true);
+    }
   };
 
   const handleBuyNow = () => {
@@ -226,7 +242,7 @@ const DetallesProducto = () => {
                           : `1px solid ${alpha(customColors.textPrimary, 0.2)}`,
                         backgroundColor: selectedSize === size ? alpha(customColors.accent, 0.1) : 'transparent',
                         color: selectedSize === size ? customColors.accent : customColors.textPrimary,
-                        '&:hover': { backgroundColor: alpha(customColors.accent, 0.05) }
+                        '&:hover': { backgroundColor: alpha(customColors.accent, 0.2) }
                       }}
                     />
                   ))}
@@ -238,195 +254,91 @@ const DetallesProducto = () => {
                   Color
                 </Typography>
                 <Stack direction="row" spacing={1}>
-                  {colorOptions.map(({ name, colorCode }) => (
+                  {colorOptions.map((color) => (
                     <IconButton
-                      key={name}
-                      onClick={() => setSelectedColor(name)}
+                      key={color.name}
                       sx={{
-                        borderRadius: '12px',
+                        borderRadius: '50%',
                         width: 40,
                         height: 40,
-                        backgroundColor: colorCode,
-                        border: selectedColor === name 
-                          ? `2px solid ${customColors.accent}` 
-                          : `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
-                        boxShadow: name === 'Blanco' ? '0px 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
-                        '&:hover': { transform: 'scale(1.1)' }
+                        backgroundColor: color.colorCode,
+                        boxShadow: selectedColor === color.colorCode ? `0 0 8px 2px ${color.colorCode}` : 'none',
+                        '&:hover': {
+                          boxShadow: `0 0 10px 4px ${color.colorCode}`,
+                        }
                       }}
+                      onClick={() => setSelectedColor(color.colorCode)}
                     />
                   ))}
                 </Stack>
               </Box>
 
-              <Box sx={{ mb: 2 }}>
-                <Typography variant="subtitle1" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" sx={{ fontWeight: 600, color: customColors.textPrimary, mr: 2 }}>
                   Cantidad
                 </Typography>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  border: `1px solid ${alpha(customColors.textPrimary, 0.2)}`,
-                  borderRadius: '8px',
-                  width: 'fit-content'
-                }}>
-                  <IconButton 
-                    onClick={() => setSelectedQuantity(selectedQuantity > 1 ? selectedQuantity - 1 : 1)}
-                    sx={{ color: customColors.textPrimary }}
-                  >
-                    <Remove />
-                  </IconButton>
-                  <Typography sx={{ width: '40px', textAlign: 'center', fontWeight: 600 }}>
-                    {selectedQuantity}
-                  </Typography>
-                  <IconButton 
-                    onClick={() => setSelectedQuantity(selectedQuantity + 1)}
-                    sx={{ color: customColors.textPrimary }}
-                  >
-                    <Add />
-                  </IconButton>
-                </Box>
+                <IconButton onClick={() => setSelectedQuantity(Math.max(1, selectedQuantity - 1))} sx={{ color: customColors.textPrimary }}>
+                  <Remove />
+                </IconButton>
+                <Typography variant="h6" sx={{ color: customColors.textPrimary }}>
+                  {selectedQuantity}
+                </Typography>
+                <IconButton onClick={() => setSelectedQuantity(selectedQuantity + 1)} sx={{ color: customColors.textPrimary }}>
+                  <Add />
+                </IconButton>
               </Box>
 
-              <Grid container spacing={2} sx={{ mb: 2 }}>
-                <Grid item xs={6}>
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    sx={{
-                      py: 1,
-                      borderRadius: '12px',
-                      fontWeight: 600,
-                      backgroundColor: customColors.buttonBlue,
-                      '&:hover': { backgroundColor: alpha(customColors.buttonBlue, 0.8) }
-                    }}
-                    onClick={handleAddToCart}
-                    startIcon={<ShoppingCart />}
-                  >
-                    Agregar al carrito
-                  </Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    sx={{
-                      py: 1,
-                      borderRadius: '12px',
-                      fontWeight: 600,
-                      backgroundColor: customColors.buttonBlue,
-                      '&:hover': { backgroundColor: alpha(customColors.buttonBlue, 0.8) }
-                    }}
-                    onClick={handleBuyNow}
-                    startIcon={<Payment />}
-                  >
-                    Comprar ahora
-                  </Button>
-                </Grid>
-              </Grid>
+              <Button
+                variant="contained"
+                onClick={handleAddToCart}
+                fullWidth
+                startIcon={<ShoppingCart />}
+                sx={{
+                  mb: 2,
+                  backgroundColor: customColors.gradient,
+                  '&:hover': {
+                    backgroundColor: customColors.secondary
+                  }
+                }}
+              >
+                Agregar al carrito
+              </Button>
 
-              <Stack direction="column" spacing={1}>
-                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, backgroundColor: alpha(customColors.background, 0.5), borderRadius: '8px' }}>
-                  <LocalShipping sx={{ color: customColors.accent, mr: 1, fontSize: 24 }} />
-                  <Typography variant="body2" sx={{ color: customColors.textPrimary }}>
-                    Envío gratuito en pedidos superiores a $50
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, backgroundColor: alpha(customColors.background, 0.5), borderRadius: '8px' }}>
-                  <CheckCircle sx={{ color: customColors.accent, mr: 1, fontSize: 24 }} />
-                  <Typography variant="body2" sx={{ color: customColors.textPrimary }}>
-                    Disponible para entrega inmediata
-                  </Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, backgroundColor: alpha(customColors.background, 0.5), borderRadius: '8px' }}>
-                  <VerifiedUser sx={{ color: customColors.accent, mr: 1, fontSize: 24 }} />
-                  <Typography variant="body2" sx={{ color: customColors.textPrimary }}>
-                    Garantía de calidad
-                  </Typography>
-                </Box>
-              </Stack>
+              <Button
+                variant="contained"
+                onClick={handleBuyNow}
+                fullWidth
+                color="primary"
+                startIcon={<Payment />}
+                sx={{
+                  backgroundColor: customColors.primary,
+                  '&:hover': {
+                    backgroundColor: customColors.secondary
+                  }
+                }}
+              >
+                Comprar ahora
+              </Button>
             </Grid>
           </Grid>
         </Paper>
       </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-          <Grid item xs={12} md={7}>
-            <Paper elevation={2} sx={{ p: 2, borderRadius: '16px', backgroundColor: customColors.cardBg }}>
-              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: customColors.textPrimary }}>
-                Características del producto
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 2, color: customColors.textSecondary, lineHeight: 1.5 }}>
-                GisLive Boutique Clínica presenta una línea de uniformes médicos diseñados con los más altos estándares de calidad y comodidad. Nuestros productos están fabricados con materiales premium que garantizan durabilidad y resistencia durante largas jornadas laborales. La tela antimicrobiana y antifluidos ofrece protección adicional en entornos clínicos, mientras que su diseño ergonómico permite libertad de movimiento.
-              </Typography>
-              <Grid container spacing={1}>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Material</Typography>
-                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>65% Poliéster, 35% Algodón</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Cuidados</Typography>
-                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Lavado a máquina, temperatura media</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Características</Typography>
-                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Antimicrobiano, Antifluidos</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Bolsillos</Typography>
-                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Múltiples bolsillos funcionales</Typography>
-                </Grid>
-              </Grid>
-            </Paper>
-          </Grid>
-          <Grid item xs={12} md={5}>
-            <Paper elevation={2} sx={{ p: 2, borderRadius: '16px', backgroundColor: customColors.cardBg }}>
-              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: customColors.textPrimary }}>
-                Guía de tallas
-              </Typography>
-              <Typography variant="body2" sx={{ mb: 1, color: customColors.textSecondary }}>
-                Consulta nuestra tabla de tallas para el ajuste perfecto:
-              </Typography>
-              <Box>
-                <Grid container sx={{ fontWeight: 600, color: customColors.textPrimary, borderBottom: `1px solid ${alpha(customColors.textPrimary, 0.1)}`, pb: 1 }}>
-                  <Grid item xs={3}>Talla</Grid>
-                  <Grid item xs={3}>Pecho</Grid>
-                  <Grid item xs={3}>Cintura</Grid>
-                  <Grid item xs={3}>Cadera</Grid>
-                </Grid>
-                {[
-                  { size: 'XS', chest: '82-86', waist: '65-69', hip: '90-94' },
-                  { size: 'S', chest: '86-90', waist: '69-73', hip: '94-98' },
-                  { size: 'M', chest: '90-94', waist: '73-77', hip: '98-102' },
-                  { size: 'L', chest: '94-98', waist: '77-81', hip: '102-106' },
-                  { size: 'XL', chest: '98-102', waist: '81-85', hip: '106-110' }
-                ].map((row) => (
-                  <Grid container key={row.size} sx={{ py: 0.5, color: customColors.textSecondary }}>
-                    <Grid item xs={3} sx={{ fontWeight: selectedSize === row.size ? 600 : 400 }}>{row.size}</Grid>
-                    <Grid item xs={3}>{row.chest}</Grid>
-                    <Grid item xs={3}>{row.waist}</Grid>
-                    <Grid item xs={3}>{row.hip}</Grid>
-                  </Grid>
-                ))}
-              </Box>
-            </Paper>
-          </Grid>
-        </Grid>
-      </motion.div>
-
       <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
         message={snackbarMessage}
-        sx={{
-          '& .MuiSnackbarContent-root': {
-            backgroundColor: customColors.accent,
-            color: 'white',
-            borderRadius: '12px'
-          }
-        }}
+        action={
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={handleCloseSnackbar}
+          >
+            <CheckCircle />
+          </IconButton>
+        }
       />
     </Container>
   );

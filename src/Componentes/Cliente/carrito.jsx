@@ -20,6 +20,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
+import { useAuth } from '../Autenticacion/AuthContext';
 
 const Carrito = () => {
     // State Management
@@ -27,6 +28,7 @@ const Carrito = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [usuarioId, setUsuarioId] = useState(null);
+    const { user } = useAuth();
 
     // Theme and Responsiveness
     const theme = useTheme();
@@ -35,16 +37,18 @@ const Carrito = () => {
     // Fetch Cart Data
     const fetchCarrito = async () => {
         try {
-            const storedUsuarioId = localStorage.getItem('usuario_id');
-            if (!storedUsuarioId) {
+            const usuario_id = user?.id; // Acceder al id desde el contexto
+            console.log('usuarioid', usuario_id);
+
+            if (!usuario_id) {
                 setError('Inicia sesión para ver tu carrito');
                 setLoading(false);
                 return;
             }
             
-            setUsuarioId(storedUsuarioId);
-            const response = await axios.get(`http://localhost:3001/api/carrito/${storedUsuarioId}`);
-            setCarrito(response.data);
+            setUsuarioId(usuario_id);
+            const response = await axios.get(`http://localhost:3001/api/carrito/${usuario_id}`);
+            setCarrito(response.data.productos);  // Asumiendo que los productos están dentro de 'productos'
             setLoading(false);
         } catch (error) {
             console.error("Error al obtener el carrito:", error);
@@ -77,6 +81,7 @@ const Carrito = () => {
     const eliminarProducto = async (producto_id) => {
         try {
             await axios.delete(`http://localhost:3001/api/carrito/eliminar/${usuarioId}/${producto_id}`);
+
             await fetchCarrito();
         } catch (error) {
             console.error("Error al eliminar producto:", error);
@@ -185,24 +190,34 @@ const Carrito = () => {
                         <List>
                             {carrito.map((item) => (
                                 <React.Fragment key={item.producto_id}>
-                                    <ListItem 
-                                        secondaryAction={
-                                            <IconButton 
-                                                edge="end" 
-                                                aria-label="delete"
-                                                onClick={() => eliminarProducto(item.producto_id)}
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                    >
+                                   <ListItem 
+                secondaryAction={
+                    <IconButton 
+                        edge="end" 
+                        aria-label="delete"
+                        onClick={() => eliminarProducto(item.producto_id)}
+                    >
+                        <DeleteIcon />
+                    </IconButton>
+                }
+                sx={{ display: 'flex', alignItems: 'center', gap: 2 }}
+            >
+                {/* 📌 Mostrar la imagen del producto */}
+                <img 
+                    src={item.imagen_url || '/placeholder.jpg'} 
+                    alt={item.nombre_producto} 
+                    style={{
+                        width: 150, 
+                        height: 250, 
+                        borderRadius: 8, 
+                        objectFit: 'cover'
+                    }} 
+                />
                                         <ListItemText
-                                            primary={item.nombre}
-                                            secondary={`Cantidad: ${item.cantidad} | Precio: $${item.precio.toFixed(2)}`}
+                                            primary={item.nombre_producto}  // Cambié "nombre" a "nombre_producto"
+                                            secondary={`Cantidad: ${item.cantidad} - Precio: $${item.precio} - descripcion: ${item.descripcion}`}
+                                            secondarys={`descripcion: ${item.descripcion}`}
                                         />
-                                        <Typography variant="subtitle1">
-                                            ${(item.cantidad * item.precio).toFixed(2)}
-                                        </Typography>
                                     </ListItem>
                                     <Divider />
                                 </React.Fragment>
