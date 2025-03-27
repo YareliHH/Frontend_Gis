@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Box, Typography, TextField, Button, Grid, Paper } from '@mui/material';
+import { 
+  Box, 
+  Typography, 
+  TextField, 
+  Button, 
+  Grid, 
+  Paper, 
+  Snackbar, 
+  Alert 
+} from '@mui/material';
+import ReCAPTCHA from "react-google-recaptcha";
 
 const Contactanos = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -11,7 +21,9 @@ const Contactanos = () => {
     mensaje: '',
   });
   const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState(''); // Para mostrar mensaje de éxito
+  const [successMessage, setSuccessMessage] = useState('');
+  const [openSuccessNotification, setOpenSuccessNotification] = useState(false);
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
 
   useEffect(() => {
     const matchDarkTheme = window.matchMedia('(prefers-color-scheme: dark)');
@@ -30,31 +42,36 @@ const Contactanos = () => {
 
   const validate = () => {
     let newErrors = {};
-
-    // Validación de nombre
+  
+    // Nombre completo validation
     if (!form.nombre.trim()) {
-      newErrors.nombre = 'El nombre es obligatorio';
+      newErrors.nombre = 'Por favor, ingresa tu nombre';
     }
-
-    // Validación de correo electrónico
+  
+    // Correo electrónico validation
     if (!form.correo.trim()) {
-      newErrors.correo = 'El correo electrónico es obligatorio';
+      newErrors.correo = 'Por favor, ingresa tu correo electrónico';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.correo)) {
-      newErrors.correo = 'Ingrese un correo electrónico válido';
+      newErrors.correo = 'Por favor, ingresa un correo electrónico válido';
     }
-
-    // Validación de teléfono
+  
+    // Número de teléfono validation
     if (!form.telefono.trim()) {
-      newErrors.telefono = 'El teléfono es obligatorio';
+      newErrors.telefono = 'Por favor, ingresa tu número de teléfono';
     } else if (!/^\d+$/.test(form.telefono)) {
-      newErrors.telefono = 'El teléfono debe contener solo números';
+      newErrors.telefono = 'Por favor, ingresa un número de teléfono válido';
     }
-
-    // Validación de mensaje
+  
+    // Mensaje validation
     if (!form.mensaje.trim()) {
-      newErrors.mensaje = 'El mensaje es obligatorio';
+      newErrors.mensaje = 'Por favor, escribe tu mensaje';
     }
 
+    // reCAPTCHA validation
+    if (!recaptchaToken) {
+      newErrors.recaptcha = 'Por favor, verifica que no eres un robot';
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -63,34 +80,46 @@ const Contactanos = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleRecaptchaChange = (token) => {
+    setRecaptchaToken(token);
+  };
+
+  const handleCloseSuccessNotification = () => {
+    setOpenSuccessNotification(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Verificar si la validación es exitosa
+    // Verificar si la validación es exitosa
     if (validate()) {
         try {
-            // Mostrar los datos a enviar antes de realizar la solicitud
-            console.log('Datos enviados:', form);
-
             // Realizar la solicitud POST al backend con Axios
-            const response = await axios.post('http://localhost:3001/api/contacto', form, {
+            const response = await axios.post('http://localhost:3001/api/contacto', {
+                ...form,
+                recaptchaToken
+            }, {
                 headers: {
                     'Content-Type': 'application/json'
                 }
             });
 
-            // Mostrar el mensaje de éxito
-            console.log('Respuesta del servidor:', response.data);
+            // Preparar mensaje de éxito con los datos enviados
+            const successText = `Mensaje enviado exitosamente:\n`;
 
-            setSuccessMessage(response.data.message); // Mensaje de éxito
-            setForm({ nombre: '', correo: '', telefono: '', mensaje: '' }); // Limpiar el formulario
+            // Mostrar notificación de éxito
+            setSuccessMessage(successText);
+            setOpenSuccessNotification(true);
+
+            // Limpiar formulario
+            setForm({ nombre: '', correo: '', telefono: '', mensaje: '' });
+            setRecaptchaToken(null);
 
         } catch (error) {
-            // Mostrar error en consola
             console.error('Error al enviar el formulario:', error.response?.data || error.message);
         }
     } else {
-        console.log('Formulario no válido');
+        console.log('Formulario no válido');
     }
 };
   
@@ -108,10 +137,6 @@ const Contactanos = () => {
         padding: '20px',
       }}
     >
-      <Box
-      
-      />
-    
       <Grid container spacing={4} sx={{ maxWidth: '1000px', textAlign: 'left' }}>
         <Grid item xs={12} md={6}>
           <Paper elevation={3} sx={{ padding: '20px', borderRadius: '8px', backgroundColor: '#FFFFFF' }}>
@@ -168,6 +193,17 @@ const Contactanos = () => {
                 error={!!errors.mensaje}
                 helperText={errors.mensaje}
               />
+              <Box sx={{ my: 2 }}>
+                <ReCAPTCHA
+                  sitekey="6LcKwWEqAAAAAMe2IRU4TukPaY92LJnE6c8pZtSo"
+                  onChange={handleRecaptchaChange}
+                />
+                {errors.recaptcha && (
+                  <Typography color="error" variant="body2" sx={{ mt: 1 }}>
+                    {errors.recaptcha}
+                  </Typography>
+                )}
+              </Box>
               <Button type="submit" variant="contained" color="primary" sx={{ mt: 2, mb: 3 }}>
                 Enviar
               </Button>
@@ -192,6 +228,21 @@ const Contactanos = () => {
           </Box>
         </Grid>
       </Grid>
+
+      <Snackbar
+        open={openSuccessNotification}
+        autoHideDuration={6000}
+        onClose={handleCloseSuccessNotification}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSuccessNotification} 
+          severity="success" 
+          sx={{ width: '100%' }}
+        >
+          {successMessage}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };
