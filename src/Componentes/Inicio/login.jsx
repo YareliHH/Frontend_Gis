@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
@@ -49,7 +49,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from 'react-responsive-carousel';
 import { keyframes } from '@mui/system';
 
-// Importar el hook de autenticación
+// Hook de autenticación
 import { useAuth } from '../Autenticacion/AuthContext';
 
 // Importación de imágenes
@@ -86,45 +86,132 @@ const floatAnimation = keyframes`
   }
 `;
 
+// Componente principal de Login
 function Login() {
+  // Hooks y referencias
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const captchaRef = useRef(null);
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmallMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
-  // Usar el contexto de autenticación
+  // Contexto de autenticación
   const { login } = useAuth();
   
   // Estados
-  const [correo, setCorreo] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [captchaValue, setCaptchaValue] = useState(null);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [openSnackbar, setOpenSnackbar] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
-  const [showHelp, setShowHelp] = useState(false);
-  const [showPasswordTips, setShowPasswordTips] = useState(false);
+  const [formData, setFormData] = useState({
+    correo: '',
+    password: '',
+    showPassword: false,
+    captchaValue: null,
+    rememberMe: false
+  });
   
-  // Colores personalizados para GisLive
-  const primaryColor = '#1E88E5'; // Azul médico más profesional
-  const accentColor = '#F5F5F5';  // Fondo suave
+  const [uiState, setUiState] = useState({
+    errorMessage: '',
+    openSnackbar: false,
+    loading: false,
+    showHelp: false,
+    showPasswordTips: false
+  });
+  
+  // Colores personalizados
+  const primaryColor = '#1E88E5';
+  const accentColor = '#F5F5F5';
 
   // Cargar correo electrónico guardado al iniciar
   useEffect(() => {
     const savedEmail = localStorage.getItem('gislive_remembered_email');
     if (savedEmail) {
-      setCorreo(savedEmail);
-      setRememberMe(true);
+      setFormData(prev => ({
+        ...prev,
+        correo: savedEmail,
+        rememberMe: true
+      }));
     }
   }, []);
   
+  // Handlers
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Mostrar consejos de contraseña si corresponde
+    if (name === 'password') {
+      setUiState(prev => ({
+        ...prev,
+        showPasswordTips: value.length > 0
+      }));
+    }
+  };
+  
+  const handleCheckboxChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      rememberMe: e.target.checked
+    }));
+  };
+  
+  const handleTogglePassword = () => {
+    setFormData(prev => ({
+      ...prev,
+      showPassword: !prev.showPassword
+    }));
+  };
+  
+  const handleToggleHelp = () => {
+    setUiState(prev => ({
+      ...prev,
+      showHelp: !prev.showHelp
+    }));
+  };
+  
+  const handleSnackbarClose = () => {
+    setUiState(prev => ({
+      ...prev,
+      openSnackbar: false
+    }));
+  };
+  
+  const handleCaptchaChange = (value) => {
+    setFormData(prev => ({
+      ...prev,
+      captchaValue: value
+    }));
+  };
+  
+  // Función para resetear el reCAPTCHA
+  const resetCaptcha = () => {
+    if (captchaRef.current) {
+      captchaRef.current.reset();
+      setFormData(prev => ({
+        ...prev,
+        captchaValue: null
+      }));
+    }
+  };
+  
+  // Mostrar error con reCAPTCHA reseteado
+  const showError = (message) => {
+    setUiState(prev => ({
+      ...prev,
+      errorMessage: message,
+      openSnackbar: true,
+      loading: false
+    }));
+    resetCaptcha();
+  };
+  
+  // Manejo del envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const { correo, password, captchaValue, rememberMe } = formData;
     
-    // Guardar el correo si está marcada la opción "Recuérdame"
+    // Persistir o eliminar el correo según "Recuérdame"
     if (rememberMe) {
       localStorage.setItem('gislive_remembered_email', correo);
     } else {
@@ -132,18 +219,21 @@ function Login() {
     }
     
     if (!captchaValue) {
-      setErrorMessage('Por favor, resuelve el reCAPTCHA.');
-      setOpenSnackbar(true);
+      showError('Por favor, resuelve el reCAPTCHA.');
       return;
     }
     
-    setLoading(true);
+    setUiState(prev => ({
+      ...prev,
+      loading: true
+    }));
+    
     try {
-      // Usar la función login del contexto de autenticación
+      // Intentar iniciar sesión
       const result = await login(correo, password, captchaValue);
       
       if (result.success) {
-        // Determinar a dónde redirigir según el tipo de usuario
+        // Determinar redirección según tipo de usuario
         let redirectPath = '/';
         
         if (result.tipo === 'usuario') {
@@ -154,9 +244,10 @@ function Login() {
           redirectPath = '/empleado';
         }
         
-        // Si hay una ubicación anterior guardada, redirigir allí
+        // Usar ubicación anterior si existe
         const from = location.state?.from?.pathname || redirectPath;
         
+        // Mensaje de éxito
         MySwal.fire({
           position: 'center',
           icon: 'success',
@@ -173,23 +264,14 @@ function Login() {
           }
         }).then(() => navigate(from));
       } else {
-        setErrorMessage(result.error || 'Error al iniciar sesión');
-        setOpenSnackbar(true);
+        showError(result.error || 'Error al iniciar sesión');
       }
     } catch (error) {
-      setErrorMessage('Error al iniciar sesión. Inténtalo de nuevo más tarde.');
-      setOpenSnackbar(true);
-    } finally {
-      setLoading(false);
+      showError('Error al iniciar sesión. Inténtalo de nuevo más tarde.');
     }
   };
-
-  const handleClickShowPassword = () => setShowPassword((prev) => !prev);
-  const handleCloseSnackbar = () => setOpenSnackbar(false);
-  const handleToggleHelp = () => setShowHelp(prev => !prev);
-  const handleRememberChange = (event) => setRememberMe(event.target.checked);
-
-  // Imágenes para el carrusel optimizadas para mostrar uniformes clínicos
+  
+  // Imágenes para el carrusel
   const carouselImages = [
     { src: img7, alt: "Uniformes médicos GisLive" },
     { src: img9, alt: "Uniformes quirúrgicos GisLive" },
@@ -198,7 +280,7 @@ function Login() {
     { src: img25, alt: "Uniformes profesionales" }
   ];
 
-  // Preguntas frecuentes sobre inicio de sesión
+  // Preguntas frecuentes
   const faqItems = [
     {
       question: "¿Qué pasa si olvidé mi contraseña?",
@@ -214,10 +296,53 @@ function Login() {
     }
   ];
 
+  // Componente de logo para reutilización
+  const Logo = ({ size = 'medium' }) => {
+    const iconSize = size === 'small' ? 30 : 40;
+    const textVariant = size === 'small' ? 'h6' : 'h5';
+    
+    return (
+      <Box 
+        sx={{
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <Box 
+          sx={{
+            backgroundColor: accentColor,
+            borderRadius: '50%',
+            p: 1,
+            display: 'flex',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
+          }}
+        >
+          <HealthAndSafety 
+            sx={{ 
+              fontSize: iconSize, 
+              color: primaryColor 
+            }} 
+          />
+        </Box>
+        <Typography 
+          variant={textVariant} 
+          sx={{ 
+            ml: 2, 
+            fontWeight: 700, 
+            color: '#333',
+            letterSpacing: '-0.5px'
+          }}
+        >
+          GisLive
+        </Typography>
+      </Box>
+    );
+  };
+
   return (
     <Box
       sx={{
-        minHeight: '90vh', // Reducido un poco para adaptarse al LayoutEncabezado
+        minHeight: '90vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -234,7 +359,11 @@ function Login() {
             maxWidth: '1100px',
             borderRadius: 3,
             overflow: 'hidden',
-            position: 'relative'
+            position: 'relative',
+            transition: 'box-shadow 0.3s ease',
+            '&:hover': {
+              boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
+            }
           }}
         >
           {/* Botón de ayuda flotante */}
@@ -258,7 +387,7 @@ function Login() {
           </Tooltip>
           
           <Grid container>
-            {/* Logo mobile visible solo en dispositivos pequeños */}
+            {/* Logo mobile */}
             {isMobile && (
               <Grid item xs={12}>
                 <Box 
@@ -270,33 +399,7 @@ function Login() {
                     backgroundColor: 'white'
                   }}
                 >
-                  <Box 
-                    sx={{
-                      backgroundColor: accentColor,
-                      borderRadius: '50%',
-                      p: 1,
-                      display: 'flex',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
-                    }}
-                  >
-                    <HealthAndSafety 
-                      sx={{ 
-                        fontSize: 40, 
-                        color: primaryColor 
-                      }} 
-                    />
-                  </Box>
-                  <Typography 
-                    variant="h5" 
-                    sx={{ 
-                      ml: 2, 
-                      fontWeight: 700, 
-                      color: '#333',
-                      letterSpacing: '-0.5px'
-                    }}
-                  >
-                    GisLive
-                  </Typography>
+                  <Logo />
                 </Box>
               </Grid>
             )}
@@ -362,7 +465,7 @@ function Login() {
                   ))}
                 </Carousel>
                 
-                {/* Logo o branding superpuesto en la esquina */}
+                {/* Logo superpuesto */}
                 <Box 
                   sx={{
                     position: 'absolute',
@@ -377,25 +480,10 @@ function Login() {
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}
                 >
-                  <HealthAndSafety 
-                    sx={{ 
-                      fontSize: 30, 
-                      color: primaryColor 
-                    }} 
-                  />
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      ml: 1, 
-                      fontWeight: 700, 
-                      color: '#333' 
-                    }}
-                  >
-                    GisLive
-                  </Typography>
+                  <Logo size="small" />
                 </Box>
                 
-                {/* Chip flotante con mensaje */}
+                {/* Chip de acceso seguro */}
                 <Zoom in={true} style={{ transitionDelay: '500ms' }}>
                   <Chip
                     icon={<VerifiedUserIcon />}
@@ -474,15 +562,16 @@ function Login() {
                     margin="normal" 
                     required 
                     fullWidth 
-                    value={correo} 
-                    onChange={(e) => setCorreo(e.target.value)}
+                    name="correo"
+                    value={formData.correo} 
+                    onChange={handleChange}
                     InputProps={{ 
                       startAdornment: (
                         <InputAdornment position="start">
                           <EmailIcon sx={{ color: primaryColor }} />
                         </InputAdornment>
                       ),
-                      endAdornment: rememberMe && correo && (
+                      endAdornment: formData.rememberMe && formData.correo && (
                         <InputAdornment position="end">
                           <Tooltip title="Email recordado" placement="top">
                             <InfoIcon fontSize="small" color="primary" sx={{ opacity: 0.7 }} />
@@ -503,21 +592,14 @@ function Login() {
                   
                   <TextField 
                     label="Contraseña" 
-                    type={showPassword ? 'text' : 'password'} 
+                    type={formData.showPassword ? 'text' : 'password'} 
                     variant="outlined" 
                     margin="normal" 
                     required 
                     fullWidth 
-                    value={password} 
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      // Mostrar los consejos si comienza a escribir
-                      if (e.target.value.length > 0 && !showPasswordTips) {
-                        setShowPasswordTips(true);
-                      } else if (e.target.value.length === 0) {
-                        setShowPasswordTips(false);
-                      }
-                    }}
+                    name="password"
+                    value={formData.password} 
+                    onChange={handleChange}
                     InputProps={{ 
                       startAdornment: (
                         <InputAdornment position="start">
@@ -526,20 +608,20 @@ function Login() {
                       ), 
                       endAdornment: (
                         <InputAdornment position="end">
-                          <Tooltip title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}>
+                          <Tooltip title={formData.showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}>
                             <IconButton 
-                              onClick={handleClickShowPassword} 
+                              onClick={handleTogglePassword} 
                               edge="end"
-                              aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                              aria-label={formData.showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                             >
-                              {showPassword ? <VisibilityOff /> : <Visibility />}
+                              {formData.showPassword ? <VisibilityOff /> : <Visibility />}
                             </IconButton>
                           </Tooltip>
                         </InputAdornment>
                       )
                     }}
                     sx={{ 
-                      mb: 1, // Reducido para dejar espacio a los consejos
+                      mb: 1,
                       '& .MuiOutlinedInput-root': {
                         borderRadius: 2,
                         '&:hover fieldset': {
@@ -550,7 +632,7 @@ function Login() {
                   />
                   
                   {/* Consejos de contraseña */}
-                  <Collapse in={showPasswordTips}>
+                  <Collapse in={uiState.showPasswordTips}>
                     <Box 
                       sx={{ 
                         backgroundColor: alpha(primaryColor, 0.05),
@@ -587,8 +669,8 @@ function Login() {
                         control={
                           <Checkbox 
                             sx={{ color: primaryColor }} 
-                            checked={rememberMe}
-                            onChange={handleRememberChange}
+                            checked={formData.rememberMe}
+                            onChange={handleCheckboxChange}
                           />
                         }
                         label={
@@ -620,7 +702,7 @@ function Login() {
                     </Link>
                   </Box>
 
-                  {/* Captcha */}
+                  {/* Captcha con referencia para reinicio */}
                   <Box 
                     sx={{ 
                       my: 2, 
@@ -631,8 +713,9 @@ function Login() {
                     }}
                   >
                     <ReCAPTCHA 
+                      ref={captchaRef}
                       sitekey="6LcKwWEqAAAAAMe2IRU4TukPaY92LJnE6c8pZtSo" 
-                      onChange={(value) => setCaptchaValue(value)} 
+                      onChange={handleCaptchaChange}
                     />
                   </Box>
                   
@@ -641,8 +724,8 @@ function Login() {
                     <Button 
                       type="submit" 
                       variant="contained" 
-                      disabled={loading}
-                      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LoginOutlined />}
+                      disabled={uiState.loading}
+                      startIcon={uiState.loading ? <CircularProgress size={20} color="inherit" /> : <LoginOutlined />}
                       sx={{ 
                         py: 1.5,
                         px: 4,
@@ -653,14 +736,14 @@ function Login() {
                         textTransform: 'none',
                         fontSize: '1rem',
                         boxShadow: '0 4px 12px rgba(30, 136, 229, 0.2)',
-                        animation: loading ? 'none' : `${pulseAnimation} 2s infinite`,
+                        animation: uiState.loading ? 'none' : `${pulseAnimation} 2s infinite`,
                         '&:hover': {
                           backgroundColor: '#1565C0',
                           boxShadow: '0 6px 15px rgba(30, 136, 229, 0.3)'
                         }
                       }}
                     >
-                      {loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
+                      {uiState.loading ? 'Iniciando Sesión...' : 'Iniciar Sesión'}
                     </Button>
                   </Box>
                   
@@ -688,7 +771,7 @@ function Login() {
           </Grid>
           
           {/* Panel de ayuda desplegable */}
-          <Collapse in={showHelp}>
+          <Collapse in={uiState.showHelp}>
             <Box sx={{ 
               p: 3, 
               backgroundColor: alpha(primaryColor, 0.05),
@@ -744,13 +827,13 @@ function Login() {
       
       {/* Mensaje de error */}
       <Snackbar 
-        open={openSnackbar} 
+        open={uiState.openSnackbar} 
         autoHideDuration={6000} 
-        onClose={handleCloseSnackbar}
+        onClose={handleSnackbarClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
         <Alert 
-          onClose={handleCloseSnackbar} 
+          onClose={handleSnackbarClose} 
           severity="error" 
           variant="filled"
           sx={{ 
@@ -758,7 +841,7 @@ function Login() {
             boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
           }}
         >
-          {errorMessage}
+          {uiState.errorMessage}
         </Alert>
       </Snackbar>
     </Box>
