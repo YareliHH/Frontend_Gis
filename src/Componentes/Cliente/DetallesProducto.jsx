@@ -1,7 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Box, Typography, Grid, Divider, Button, IconButton, Chip, Container,Paper,Rating,Stack,alpha,Skeleton,Alert,Snackbar} from '@mui/material';
-import { Add, Remove, ShoppingCart,ArrowBack,CheckCircle,LocalShipping,VerifiedUser,Payment} from '@mui/icons-material';
+import { Box, Typography, Grid, Divider, Button, IconButton, Chip, Container, Paper, Rating, Stack, alpha, Skeleton, Alert, Snackbar } from '@mui/material';
+import { 
+  Add, 
+  Remove, 
+  ShoppingCart, 
+  ArrowBack, 
+  CheckCircle, 
+  LocalShipping, 
+  VerifiedUser, 
+  Payment,
+  ZoomIn,
+  ChevronLeft,
+  ChevronRight,
+  FavoriteBorder,
+  Share
+} from '@mui/icons-material';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import { useAuth } from '../Autenticacion/AuthContext';
@@ -47,13 +61,15 @@ const DetallesProducto = () => {
     rose: '#e252b2',
     background: '#f8f9ff',
     cardBg: '#ffffff',
+    white: '#ffffff',
     textPrimary: '#2c2c54',
     textSecondary: '#4b4b80',
-    buttonBlue: '#4682b4', // Nuevo color azul bajo para los botones
+    buttonBlue: '#4682b4',
+    mercadoBlue: '#3483fa',
     gradient: 'linear-gradient(135deg, #3a36e0 0%, #b253d8 100%)'
   };
 
-     const { user } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -595,18 +611,19 @@ const DetallesProducto = () => {
                   Color
                 </Typography>
                 <Stack direction="row" spacing={1}>
-                  {colorOptions.map(({ name, colorCode }) => (
+                  {colorOptions.map((color) => (
                     <IconButton
                       key={color.name}
+                      onClick={() => setSelectedColor(color.name)}
                       sx={{
                         borderRadius: '50%',
                         width: 40,
                         height: 40,
-                        backgroundColor: colorCode,
-                        border: selectedColor === name 
+                        backgroundColor: color.colorCode,
+                        border: selectedColor === color.name 
                           ? `2px solid ${customColors.accent}` 
                           : `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
-                        boxShadow: name === 'Blanco' ? '0px 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
+                        boxShadow: color.name === 'Blanco' ? '0px 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
                         '&:hover': { transform: 'scale(1.1)' }
                       }}
                     />
