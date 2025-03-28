@@ -324,7 +324,7 @@ const BarraNav = () => {
               
               {/* Icono del carrito */}
               <IconButton 
-                onClick={() => navigate('/carrito')} 
+                onClick={() => navigate('/cliente/carrito-compras')} 
                 size="large"
                 aria-label="ver carrito"
                 sx={styles.iconButton}

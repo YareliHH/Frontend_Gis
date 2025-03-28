@@ -184,7 +184,7 @@ const BarraNavCliente = () => {
     }
   };
   const handleResultClick = (product) => {
-    navigate(`/detallesp/${product.id}`);
+    navigate(`/cliente/detallesp/${product.id}`);
     setSearchTerm('');
     setOpenSearch(false);
   };

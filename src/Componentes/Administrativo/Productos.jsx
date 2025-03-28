@@ -238,98 +238,91 @@ const ProductoFormMejorado = () => {
     onSubmit: handleSubmit,
   });
 
-  // Funciones para manejar carga y descarga de imágenes
-  const onDrop = useCallback((acceptedFiles) => {
-    const validFiles = acceptedFiles.filter(
-      (file) =>
-        VALID_MIME_TYPES.includes(file.type) &&
-        file.size <= MAX_FILE_SIZE
-    );
+  const [productos, setProductos] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [colores, setColores] = useState([]);
+  const [tallas, setTallas] = useState([]);
+  const [generos, setGeneros] = useState([]);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
+  const [tabValue, setTabValue] = useState(0);
+  const [errors, setErrors] = useState({});
 
-    if (validFiles.length !== acceptedFiles.length) {
-      setSnackbar({
-        open: true,
-        message: "Algunas imágenes exceden el tamaño o no son del formato correcto",
-        severity: "warning",
-      });
+  // Validación de campos
+  const validateForm = () => {
+    let tempErrors = {};
+    
+    // Nombre del producto
+    if (!producto.nombre_producto.trim()) {
+      tempErrors.nombre_producto = "El nombre del producto es requerido";
+    } else if (producto.nombre_producto.length < 2) {
+      tempErrors.nombre_producto = "El nombre debe tener al menos 2 caracteres";
+    } else if (producto.nombre_producto.length > 100) {
+      tempErrors.nombre_producto = "El nombre no puede exceder 100 caracteres";
     }
 
-    const newImages = validFiles.map((file) => ({
-      file,
-      preview: URL.createObjectURL(file),
-    }));
-
-    setSelectedImages((prev) => [...prev, ...newImages]);
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    accept: {
-      'image/jpeg': ['.jpg', '.jpeg'],
-      'image/png': ['.png'],
-      'image/gif': ['.gif']
-    },
-    multiple: true,
-  });
-
-  const removeImage = (index) => {
-    setSelectedImages((prev) => {
-      const newImages = [...prev];
-      URL.revokeObjectURL(newImages[index].preview);
-      newImages.splice(index, 1);
-      return newImages;
-    });
-  };
-
-  // Función para obtener productos filtrados
-  const getFilteredProductos = () => {
-    let filtered = [...productos];
-
-    // Aplicar filtros
-    if (filters.nombre) {
-      filtered = filtered.filter(item =>
-        item.nombre_producto.toLowerCase().includes(filters.nombre.toLowerCase())
-      );
+    // Descripción
+    if (!producto.descripcion.trim()) {
+      tempErrors.descripcion = "La descripción es requerida";
+    } else if (producto.descripcion.length < 10) {
+      tempErrors.descripcion = "La descripción debe ser requerida";
+    } else if (producto.descripcion.length > 500) {
+      tempErrors.descripcion = "La descripción no puede exceder 500 caracteres";
     }
 
-    if (filters.categoria) {
-      filtered = filtered.filter(item =>
-        item.id_categoria === filters.categoria
-      );
+    // Precio
+    if (!producto.precio) {
+      tempErrors.precio = "El precio es requerido";
+    } else if (isNaN(producto.precio) || Number(producto.precio) <= 0) {
+      tempErrors.precio = "El precio debe ser un número mayor a 0";
+    } else if (Number(producto.precio) > 999999) {
+      tempErrors.precio = "El precio no puede exceder 999,999";
     }
 
-    if (filters.color) {
-      filtered = filtered.filter(item =>
-        item.id_color === filters.color
-      );
+    // Stock
+    if (!producto.stock) {
+      tempErrors.stock = "El stock es requerido";
+    } else if (!Number.isInteger(Number(producto.stock)) || Number(producto.stock) < 0) {
+      tempErrors.stock = "El stock debe ser un número entero no negativo";
+    } else if (Number(producto.stock) > 9999) {
+      tempErrors.stock = "El stock no puede exceder 9999";
     }
 
-    if (filters.talla) {
-      filtered = filtered.filter(item =>
-        item.id_talla === filters.talla
-      );
+    // Categoría
+    if (!producto.id_categoria) {
+      tempErrors.id_categoria = "Debe seleccionar una categoría";
     }
 
-    if (filters.genero) {
-      filtered = filtered.filter(item =>
-        item.id_genero === filters.genero
-      );
+    // Color
+    if (!producto.id_color) {
+      tempErrors.id_color = "Debe seleccionar un color";
     }
 
-    // Aplicar ordenamiento
-    if (sortConfig.key) {
-      filtered.sort((a, b) => {
-        if (a[sortConfig.key] < b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (a[sortConfig.key] > b[sortConfig.key]) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      });
+    // Talla
+    if (!producto.id_talla) {
+      tempErrors.id_talla = "Debe seleccionar una talla";
     }
 
-    return filtered;
+    // Género
+    if (!producto.id_genero) {
+      tempErrors.id_genero = "Debe seleccionar un género";
+    }
+
+    // Imagen (solo requerida al crear)
+    if (!producto.id && !producto.imagen) {
+      tempErrors.imagen = "Debe subir una imagen";
+    } else if (producto.imagen instanceof File) {
+      const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validTypes.includes(producto.imagen.type)) {
+        tempErrors.imagen = "Solo se permiten imágenes JPEG, PNG o GIF";
+      } else if (producto.imagen.size > 5 * 1024 * 1024) { // 5MB
+        tempErrors.imagen = "La imagen no puede exceder 5MB";
+      }
+    }
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
   };
 
   // Fetch data functions
@@ -447,85 +440,99 @@ const ProductoFormMejorado = () => {
       fetchProductos();
     } catch (error) {
       console.error("Error al eliminar producto:", error);
-      setSnackbar({
-        open: true,
-        message: "Error al eliminar el producto",
-        severity: "error",
-      });
-    } finally {
-      setTableLoading(false);
-      setDeleteDialogOpen(false);
-      setProductToDelete(null);
+      setSnackbarMessage("Error al eliminar el producto");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
   };
 
-  // Función para procesar color y asegurar visualización correcta
-  const processColor = (colorString) => {
-    // Si ya es un color válido en formato hex o rgb, devolverlo tal cual
-    if (colorString?.startsWith('#') || colorString?.startsWith('rgb')) {
-      return colorString;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      setSnackbarMessage("Por favor, corrija los errores en el formulario");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
     }
 
-    // Colores básicos y sus equivalentes en hex
-    const colorMap = {
-      'rojo': '#ff0000',
-      'azul': '#0000ff',
-      'verde': '#008000',
-      'amarillo': '#ffff00',
-      'negro': '#000000',
-      'blanco': '#ffffff',
-      'gris': '#808080',
-      'naranja': '#ffa500',
-      'morado': '#800080',
-      'rosa': '#ffc0cb',
-      'marrón': '#a52a2a',
-      'cyan': '#00ffff',
-      'beige': '#f5f5dc',
-      'turquesa': '#40e0d0',
-      'dorado': '#ffd700',
-      'plateado': '#c0c0c0'
-    };
+    try {
+      if (producto.id) {
+        if (producto.imagen instanceof File) {
+          const formData = new FormData();
+          formData.append("nombre_producto", producto.nombre_producto);
+          formData.append("descripcion", producto.descripcion);
+          formData.append("precio", producto.precio);
+          formData.append("stock", producto.stock);
+          formData.append("id_categoria", producto.id_categoria);
+          formData.append("id_color", producto.id_color);
+          formData.append("id_talla", producto.id_talla);
+          formData.append("id_genero", producto.id_genero);
+          formData.append("imagenes", producto.imagen);
 
-    // Intenta convertir nombres de colores comunes
-    if (colorString && typeof colorString === 'string') {
-      const normalizedColor = colorString.toLowerCase();
-      if (colorMap[normalizedColor]) {
-        return colorMap[normalizedColor];
+          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          });
+        } else {
+          await axios.put(`http://localhost:3001/api/actualizar/${producto.id}`, {
+            nombre_producto: producto.nombre_producto,
+            descripcion: producto.descripcion,
+            precio: producto.precio,
+            stock: producto.stock,
+            id_categoria: producto.id_categoria,
+            id_color: producto.id_color,
+            id_talla: producto.id_talla,
+            id_genero: producto.id_genero,
+          });
+        }
+        setSnackbarMessage("Producto actualizado con éxito");
+      } else {
+        const formData = new FormData();
+        formData.append("nombre_producto", producto.nombre_producto);
+        formData.append("descripcion", producto.descripcion);
+        formData.append("precio", producto.precio);
+        formData.append("stock", producto.stock);
+        formData.append("id_categoria", producto.id_categoria);
+        formData.append("id_color", producto.id_color);
+        formData.append("id_talla", producto.id_talla);
+        formData.append("id_genero", producto.id_genero);
+        if (producto.imagen) {
+          formData.append("imagenes", producto.imagen);
+        }
+        await axios.post("http://localhost:3001/api/agregarproducto", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        setSnackbarMessage("Producto creado con éxito");
       }
+      setSnackbarSeverity("success");
+      setSnackbarOpen(true);
+      fetchProductos();
+      setProducto({
+        id: null,
+        nombre_producto: "",
+        descripcion: "",
+        precio: "",
+        stock: "",
+        id_categoria: "",
+        id_color: "",
+        id_talla: "",
+        id_genero: "",
+        imagen: null,
+      });
+      setErrors({});
+    } catch (error) {
+      console.error("Error al guardar producto:", error);
+      setSnackbarMessage("Error al guardar el producto");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
     }
-
-    // Color por defecto si no se puede procesar
-    return '#cccccc';
   };
 
-  // Funciones para manejo de filtros
-  const handleFilterChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const clearFilters = () => {
-    setFilters({
-      nombre: "",
-      categoria: "",
-      color: "",
-      talla: "",
-      genero: "",
-    });
-  };
-
-  // Funciones para ordenamiento
-  const handleSort = (key) => {
-    let direction = "asc";
-    if (sortConfig.key === key && sortConfig.direction === "asc") {
-      direction = "desc";
-    }
-    setSortConfig({ key, direction });
-  };
-
-  // Funciones para paginación
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
+    setProducto({ ...producto, [name]: value });
+    // Validación en tiempo real
+    validateField(name, value);
   };
 
   const handleChangeRowsPerPage = (event) => {

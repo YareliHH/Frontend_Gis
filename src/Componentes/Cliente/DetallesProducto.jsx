@@ -1,17 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  Box, Typography, Grid, Divider, Button, IconButton, Chip, Container,
-  Paper, Rating, Stack, alpha, Skeleton, Alert, Snackbar, Tabs, Tab,
-  Dialog, DialogContent, Backdrop
-} from '@mui/material';
-import { 
-  Add, Remove, ShoppingCart, ArrowBack, CheckCircle, LocalShipping,
-  VerifiedUser, Payment, FavoriteBorder, Share, ChevronLeft, ChevronRight,
-  ZoomIn, Close
-} from '@mui/icons-material';
+import { Box, Typography, Grid, Divider, Button, IconButton, Chip, Container,Paper,Rating,Stack,alpha,Skeleton,Alert,Snackbar} from '@mui/material';
+import { Add, Remove, ShoppingCart,ArrowBack,CheckCircle,LocalShipping,VerifiedUser,Payment} from '@mui/icons-material';
 import axios from 'axios';
 import { motion } from 'framer-motion';
+import { useAuth } from '../Autenticacion/AuthContext';
 
 const DetallesProducto = () => {
   // Referencias para zoom
@@ -56,13 +49,11 @@ const DetallesProducto = () => {
     cardBg: '#ffffff',
     textPrimary: '#2c2c54',
     textSecondary: '#4b4b80',
-    buttonBlue: '#4682b4',
-    mercadoYellow: '#fff159',
-    mercadoBlue: '#2968c8',
-    white: '#ffffff',
-    black: '#000000',
+    buttonBlue: '#4682b4', // Nuevo color azul bajo para los botones
     gradient: 'linear-gradient(135deg, #3a36e0 0%, #b253d8 100%)'
   };
+
+     const { user } = useAuth();
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -164,22 +155,35 @@ const DetallesProducto = () => {
 
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL'];
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!selectedSize) {
       setSnackbarMessage('Por favor selecciona una talla');
       setSnackbarOpen(true);
       return;
     }
-    
+
     if (!selectedColor) {
       setSnackbarMessage('Por favor selecciona un color');
       setSnackbarOpen(true);
       return;
     }
-    
-    setSnackbarMessage('Producto agregado al carrito correctamente');
-    setSnackbarOpen(true);
-    console.log('Producto agregado al carrito:', { product, selectedSize, selectedColor, selectedQuantity });
+
+    try {
+      const response = await axios.post("http://localhost:3001/api/agregarcarrito", {
+        usuario_id: user?.id, // Aquí debes tomar el ID del usuario desde tu estado o contexto
+        producto_id: product.id,
+        cantidad: selectedQuantity
+      });
+
+      setSnackbarMessage(response.data.mensaje || 'Producto agregado al carrito');
+      setSnackbarOpen(true);
+
+      console.log('Respuesta del servidor:', response.data);
+    } catch (error) {
+      console.error('Error al agregar el producto al carrito:', error);
+      setSnackbarMessage(error.response?.data?.error || 'Error al agregar el producto al carrito');
+      setSnackbarOpen(true);
+    }
   };
 
   const handleBuyNow = () => {
@@ -577,10 +581,9 @@ const DetallesProducto = () => {
                         border: selectedSize === size 
                           ? `2px solid ${customColors.mercadoBlue}` 
                           : `1px solid ${alpha(customColors.textPrimary, 0.2)}`,
-                        backgroundColor: selectedSize === size ? alpha(customColors.mercadoBlue, 0.1) : 'transparent',
-                        color: selectedSize === size ? customColors.mercadoBlue : customColors.textPrimary,
-                        '&:hover': { backgroundColor: alpha(customColors.mercadoBlue, 0.05) },
-                        mb: 1
+                        backgroundColor: selectedSize === size ? alpha(customColors.accent, 0.1) : 'transparent',
+                        color: selectedSize === size ? customColors.accent : customColors.textPrimary,
+                        '&:hover': { backgroundColor: alpha(customColors.accent, 0.05) }
                       }}
                     />
                   ))}
@@ -591,92 +594,52 @@ const DetallesProducto = () => {
                 <Typography variant="subtitle1" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
                   Color
                 </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap">
+                <Stack direction="row" spacing={1}>
                   {colorOptions.map(({ name, colorCode }) => (
                     <IconButton
-                      key={name}
-                      onClick={() => setSelectedColor(name)}
+                      key={color.name}
                       sx={{
-                        borderRadius: '12px',
+                        borderRadius: '50%',
                         width: 40,
                         height: 40,
                         backgroundColor: colorCode,
                         border: selectedColor === name 
-                          ? `2px solid ${customColors.mercadoBlue}` 
+                          ? `2px solid ${customColors.accent}` 
                           : `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
                         boxShadow: name === 'Blanco' ? '0px 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
-                        '&:hover': { transform: 'scale(1.1)' },
-                        mb: 1
+                        '&:hover': { transform: 'scale(1.1)' }
                       }}
                     />
                   ))}
                 </Stack>
               </Box>
 
-              <Box sx={{ mb: 3 }}>
+              <Box sx={{ mb: 2 }}>
                 <Typography variant="subtitle1" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
                   Cantidad
                 </Typography>
-                <Box sx={{ 
-                  display: 'flex', 
-                  alignItems: 'center',
-                  border: `1px solid ${alpha(customColors.textPrimary, 0.2)}`,
-                  borderRadius: '8px',
-                  width: 'fit-content'
-                }}>
-                  <IconButton 
-                    onClick={() => setSelectedQuantity(selectedQuantity > 1 ? selectedQuantity - 1 : 1)}
-                    sx={{ color: customColors.textPrimary }}
-                  >
-                    <Remove />
-                  </IconButton>
-                  <Typography sx={{ width: '40px', textAlign: 'center', fontWeight: 600 }}>
-                    {selectedQuantity}
-                  </Typography>
-                  <IconButton 
-                    onClick={() => setSelectedQuantity(selectedQuantity + 1)}
-                    sx={{ color: customColors.textPrimary }}
-                  >
-                    <Add />
-                  </IconButton>
-                </Box>
+                <IconButton onClick={() => setSelectedQuantity(Math.max(1, selectedQuantity - 1))} sx={{ color: customColors.textPrimary }}>
+                  <Remove />
+                </IconButton>
+                <Typography variant="h6" sx={{ color: customColors.textPrimary }}>
+                  {selectedQuantity}
+                </Typography>
+                <IconButton onClick={() => setSelectedQuantity(selectedQuantity + 1)} sx={{ color: customColors.textPrimary }}>
+                  <Add />
+                </IconButton>
               </Box>
 
-              <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item xs={12}>
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid item xs={6}>
                   <Button 
                     variant="contained" 
                     fullWidth
                     sx={{
-                      py: 1.5,
-                      borderRadius: '4px',
+                      py: 1,
+                      borderRadius: '12px',
                       fontWeight: 600,
-                      backgroundColor: customColors.mercadoBlue,
-                      '&:hover': { backgroundColor: alpha(customColors.mercadoBlue, 0.9) },
-                      boxShadow: 'none',
-                      textTransform: 'none',
-                      fontSize: '1rem'
-                    }}
-                    onClick={handleBuyNow}
-                    startIcon={<Payment />}
-                  >
-                    Comprar ahora
-                  </Button>
-                </Grid>
-                <Grid item xs={12}>
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    sx={{
-                      py: 1.5,
-                      borderRadius: '4px',
-                      fontWeight: 600,
-                      backgroundColor: alpha(customColors.mercadoBlue, 0.1),
-                      color: customColors.mercadoBlue,
-                      '&:hover': { backgroundColor: alpha(customColors.mercadoBlue, 0.2) },
-                      boxShadow: 'none',
-                      textTransform: 'none',
-                      fontSize: '1rem'
+                      backgroundColor: customColors.buttonBlue,
+                      '&:hover': { backgroundColor: alpha(customColors.buttonBlue, 0.8) }
                     }}
                     onClick={handleAddToCart}
                     startIcon={<ShoppingCart />}
@@ -684,34 +647,42 @@ const DetallesProducto = () => {
                     Agregar al carrito
                   </Button>
                 </Grid>
+                <Grid item xs={6}>
+                  <Button 
+                    variant="contained" 
+                    fullWidth
+                    sx={{
+                      py: 1,
+                      borderRadius: '12px',
+                      fontWeight: 600,
+                      backgroundColor: customColors.buttonBlue,
+                      '&:hover': { backgroundColor: alpha(customColors.buttonBlue, 0.8) }
+                    }}
+                    onClick={handleBuyNow}
+                    startIcon={<Payment />}
+                  >
+                    Comprar ahora
+                  </Button>
+                </Grid>
               </Grid>
 
-              <Box sx={{ 
-                p: 2, 
-                borderRadius: '8px', 
-                backgroundColor: alpha(customColors.mercadoYellow, 0.2),
-                mb: 2
-              }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1, display: 'flex', alignItems: 'center' }}>
-                  <LocalShipping sx={{ mr: 1, color: customColors.mercadoBlue, fontSize: 20 }} />
-                  Envío gratis a todo el país
-                </Typography>
-                <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
-                  Conoce los tiempos y las formas de envío.
-                </Typography>
-              </Box>
-
-              <Stack direction="column" spacing={1.5}>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <CheckCircle sx={{ color: customColors.mercadoBlue, mr: 1, fontSize: 20 }} />
+              <Stack direction="column" spacing={1}>
+                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, backgroundColor: alpha(customColors.background, 0.5), borderRadius: '8px' }}>
+                  <LocalShipping sx={{ color: customColors.accent, mr: 1, fontSize: 24 }} />
+                  <Typography variant="body2" sx={{ color: customColors.textPrimary }}>
+                    Envío gratuito en pedidos superiores a $50
+                  </Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, backgroundColor: alpha(customColors.background, 0.5), borderRadius: '8px' }}>
+                  <CheckCircle sx={{ color: customColors.accent, mr: 1, fontSize: 24 }} />
                   <Typography variant="body2" sx={{ color: customColors.textPrimary }}>
                     Disponible para entrega inmediata
                   </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <VerifiedUser sx={{ color: customColors.mercadoBlue, mr: 1, fontSize: 20 }} />
+                <Box sx={{ display: 'flex', alignItems: 'center', p: 1, backgroundColor: alpha(customColors.background, 0.5), borderRadius: '8px' }}>
+                  <VerifiedUser sx={{ color: customColors.accent, mr: 1, fontSize: 24 }} />
                   <Typography variant="body2" sx={{ color: customColors.textPrimary }}>
-                    Garantía de 30 días directamente con nosotros
+                    Garantía de calidad
                   </Typography>
                 </Box>
               </Stack>
@@ -720,285 +691,81 @@ const DetallesProducto = () => {
         </Paper>
       </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.2 }}>
-        <Paper elevation={0} sx={{ mt: 3, borderRadius: '16px', backgroundColor: customColors.cardBg, boxShadow: '0 2px 12px rgba(0,0,0,0.08)' }}>
-          <Tabs 
-            value={activeTab} 
-            onChange={handleTabChange}
-            variant="fullWidth"
-            sx={{ 
-              borderBottom: 1, 
-              borderColor: 'divider',
-              '& .MuiTab-root': {
-                textTransform: 'none',
-                fontWeight: 600,
-                color: customColors.textSecondary,
-                '&.Mui-selected': {
-                  color: customColors.mercadoBlue,
-                }
-              },
-              '& .MuiTabs-indicator': {
-                backgroundColor: customColors.mercadoBlue,
-              }
-            }}
-          >
-            <Tab label="Información del producto" />
-            <Tab label="Características" />
-            <Tab label="Guía de tallas" />
-          </Tabs>
-          
-          <Box sx={{ p: 3 }}>
-            {activeTab === 0 && (
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 2 }}>
-                  Descripción
-                </Typography>
-                <Typography variant="body2" sx={{ color: customColors.textSecondary, mb: 2, lineHeight: 1.6 }}>
-                  GisLive Boutique Clínica presenta una línea de uniformes médicos diseñados con los más altos estándares de calidad y comodidad. Nuestros productos están fabricados con materiales premium que garantizan durabilidad y resistencia durante largas jornadas laborales. La tela antimicrobiana y antifluidos ofrece protección adicional en entornos clínicos, mientras que su diseño ergonómico permite libertad de movimiento.
-                </Typography>
-                <Typography variant="body2" sx={{ color: customColors.textSecondary, lineHeight: 1.6 }}>
-                  Ideal para profesionales de la salud que buscan uniformes que combinen funcionalidad y estilo. Disponible en diversos colores y tallas para adaptarse a sus preferencias y necesidades.
-                </Typography>
-              </Box>
-            )}
-            
-            {activeTab === 1 && (
-              <Box>
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: customColors.textPrimary }}>
-                  Características del producto
-                </Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ 
-                      p: 2, 
-                      borderRadius: '8px', 
-                      border: `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
-                      mb: 2
-                    }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
-                        Material
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
-                        65% Poliéster, 35% Algodón
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ 
-                      p: 2, 
-                      borderRadius: '8px', 
-                      border: `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
-                      mb: 2
-                    }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
-                        Cuidados
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
-                        Lavado a máquina, temperatura media
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ 
-                      p: 2, 
-                      borderRadius: '8px', 
-                      border: `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
-                      mb: 2
-                    }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
-                        Características
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
-                        Antimicrobiano, Antifluidos
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Box sx={{ 
-                      p: 2, 
-                      borderRadius: '8px', 
-                      border: `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
-                      mb: 2
-                    }}>
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
-                        Bolsillos
-                      </Typography>
-                      <Typography variant="body2" sx={{ color: customColors.textSecondary }}>
-                        Múltiples bolsillos funcionales
-                      </Typography>
-                    </Box>
-                  </Grid>
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+        <Grid container spacing={2} sx={{ mt: 2 }}>
+          <Grid item xs={12} md={7}>
+            <Paper elevation={2} sx={{ p: 2, borderRadius: '16px', backgroundColor: customColors.cardBg }}>
+              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: customColors.textPrimary }}>
+                Características del producto
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: customColors.textSecondary, lineHeight: 1.5 }}>
+                GisLive Boutique Clínica presenta una línea de uniformes médicos diseñados con los más altos estándares de calidad y comodidad. Nuestros productos están fabricados con materiales premium que garantizan durabilidad y resistencia durante largas jornadas laborales. La tela antimicrobiana y antifluidos ofrece protección adicional en entornos clínicos, mientras que su diseño ergonómico permite libertad de movimiento.
+              </Typography>
+              <Grid container spacing={1}>
+                <Grid item xs={6}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Material</Typography>
+                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>65% Poliéster, 35% Algodón</Typography>
                 </Grid>
-              </Box>
-            )}
-            
-            {activeTab === 2 && (
+                <Grid item xs={6}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Cuidados</Typography>
+                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Lavado a máquina, temperatura media</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Características</Typography>
+                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Antimicrobiano, Antifluidos</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Bolsillos</Typography>
+                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Múltiples bolsillos funcionales</Typography>
+                </Grid>
+              </Grid>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} md={5}>
+            <Paper elevation={2} sx={{ p: 2, borderRadius: '16px', backgroundColor: customColors.cardBg }}>
+              <Typography variant="h6" sx={{ mb: 1, fontWeight: 600, color: customColors.textPrimary }}>
+                Guía de tallas
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 1, color: customColors.textSecondary }}>
+                Consulta nuestra tabla de tallas para el ajuste perfecto:
+              </Typography>
               <Box>
-                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600, color: customColors.textPrimary }}>
-                  Guía de tallas
-                </Typography>
-                <Typography variant="body2" sx={{ mb: 2, color: customColors.textSecondary }}>
-                  Consulta nuestra tabla de tallas para el ajuste perfecto:
-                </Typography>
-                <Box sx={{ 
-                  borderRadius: '8px',
-                  border: `1px solid ${alpha(customColors.textPrimary, 0.1)}`,
-                  overflow: 'hidden'
-                }}>
-                  <Grid container sx={{ 
-                    fontWeight: 600, 
-                    color: customColors.textPrimary, 
-                    p: 1.5,
-                    backgroundColor: alpha(customColors.background, 0.5)
-                  }}>
-                    <Grid item xs={3}>Talla</Grid>
-                    <Grid item xs={3}>Pecho</Grid>
-                    <Grid item xs={3}>Cintura</Grid>
-                    <Grid item xs={3}>Cadera</Grid>
+                <Grid container sx={{ fontWeight: 600, color: customColors.textPrimary, borderBottom: `1px solid ${alpha(customColors.textPrimary, 0.1)}`, pb: 1 }}>
+                  <Grid item xs={3}>Talla</Grid>
+                  <Grid item xs={3}>Pecho</Grid>
+                  <Grid item xs={3}>Cintura</Grid>
+                  <Grid item xs={3}>Cadera</Grid>
+                </Grid>
+                {[
+                  { size: 'XS', chest: '82-86', waist: '65-69', hip: '90-94' },
+                  { size: 'S', chest: '86-90', waist: '69-73', hip: '94-98' },
+                  { size: 'M', chest: '90-94', waist: '73-77', hip: '98-102' },
+                  { size: 'L', chest: '94-98', waist: '77-81', hip: '102-106' },
+                  { size: 'XL', chest: '98-102', waist: '81-85', hip: '106-110' }
+                ].map((row) => (
+                  <Grid container key={row.size} sx={{ py: 0.5, color: customColors.textSecondary }}>
+                    <Grid item xs={3} sx={{ fontWeight: selectedSize === row.size ? 600 : 400 }}>{row.size}</Grid>
+                    <Grid item xs={3}>{row.chest}</Grid>
+                    <Grid item xs={3}>{row.waist}</Grid>
+                    <Grid item xs={3}>{row.hip}</Grid>
                   </Grid>
-                  {[
-                    { size: 'XS', chest: '82-86', waist: '65-69', hip: '90-94' },
-                    { size: 'S', chest: '86-90', waist: '69-73', hip: '94-98' },
-                    { size: 'M', chest: '90-94', waist: '73-77', hip: '98-102' },
-                    { size: 'L', chest: '94-98', waist: '77-81', hip: '102-106' },
-                    { size: 'XL', chest: '98-102', waist: '81-85', hip: '106-110' }
-                  ].map((row, index) => (
-                    <Grid 
-                      container 
-                      key={row.size} 
-                      sx={{ 
-                        py: 1.5,
-                        px: 1.5,
-                        color: customColors.textSecondary,
-                        backgroundColor: index % 2 === 0 ? customColors.white : alpha(customColors.background, 0.3)
-                      }}
-                    >
-                      <Grid item xs={3} sx={{ fontWeight: selectedSize === row.size ? 600 : 400 }}>{row.size}</Grid>
-                      <Grid item xs={3}>{row.chest}</Grid>
-                      <Grid item xs={3}>{row.waist}</Grid>
-                      <Grid item xs={3}>{row.hip}</Grid>
-                    </Grid>
-                  ))}
-                </Box>
-              </Box>
-            )}
-          </Box>
-        </Paper>
-      </motion.div>
-
-      {/* Diálogo de zoom */}
-      <Dialog
-        open={zoomOpen}
-        maxWidth="xl"
-        onClose={handleCloseZoom}
-        sx={{
-          '& .MuiPaper-root': {
-            backgroundColor: 'transparent',
-            boxShadow: 'none',
-            overflow: 'hidden'
-          }
-        }}
-      >
-        <DialogContent 
-          sx={{ 
-            p: 0, 
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            position: 'relative'
-          }}
-        >
-          <IconButton
-            onClick={handleCloseZoom}
-            sx={{
-              position: 'absolute',
-              top: 10,
-              right: 10,
-              color: customColors.white,
-              zIndex: 10
-            }}
-          >
-            <Close />
-          </IconButton>
-
-          <Box 
-            sx={{ 
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              width: '100%'
-            }}
-          >
-            <Box
-              component="img"
-              src={productImages[selectedImageIndex]?.url}
-              alt={`${product.nombre_producto} - Ampliado`}
-              sx={{
-                maxWidth: '90%',
-                maxHeight: '80vh',
-                objectFit: 'contain'
-              }}
-            />
-            {/* Miniaturas en el diálogo de zoom - solo si hay más de una imagen */}
-            {productImages.length > 1 && (
-              <Box 
-                sx={{ 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  mt: 2,
-                  gap: 1,
-                  flexWrap: 'wrap'
-                }}
-              >
-                {productImages.map((image, index) => (
-                  <Box
-                    key={image.id}
-                    onClick={() => handleChangeImage(index)}
-                    sx={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: '4px',
-                      border: index === selectedImageIndex 
-                        ? `2px solid ${customColors.white}` 
-                        : `1px solid rgba(255,255,255,0.3)`,
-                      overflow: 'hidden',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      backgroundColor: 'rgba(0,0,0,0.3)'
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src={image.url}
-                      alt={`${product.nombre_producto} - Miniatura ${index + 1}`}
-                      sx={{
-                        maxWidth: '90%',
-                        maxHeight: '90%',
-                        objectFit: 'contain'
-                      }}
-                    />
-                  </Box>
                 ))}
               </Box>
-            )}
-          </Box>
-        </DialogContent>
-      </Dialog>
+            </Paper>
+          </Grid>
+        </Grid>
+      </motion.div>
 
       <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
         message={snackbarMessage}
         sx={{
           '& .MuiSnackbarContent-root': {
-            backgroundColor: customColors.mercadoBlue,
-            color: customColors.white,
-            borderRadius: '8px'
+            backgroundColor: customColors.accent,
+            color: 'white',
+            borderRadius: '12px'
           }
         }}
       />

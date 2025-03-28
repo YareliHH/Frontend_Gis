@@ -22,7 +22,7 @@ import {
   Snackbar,
   Alert,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
+import { Edit, Delete, Visibility } from '@mui/icons-material';
 
 const TerminosYCondiciones = () => {
   const [terminos, setTerminos] = useState([]);
@@ -34,6 +34,8 @@ const TerminosYCondiciones = () => {
   const [open, setOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [viewOpen, setViewOpen] = useState(false); // For view dialog
+  const [viewTermino, setViewTermino] = useState(null); // Store selected término for viewing
 
   const fetchTerminos = async () => {
     try {
@@ -44,7 +46,7 @@ const TerminosYCondiciones = () => {
     }
   };
 
-  //Crear un nuevo termino
+  // Crear un nuevo término
   const handleCreateTermino = async () => {
     if (!newTitulo.trim() || !newContenido.trim()) {
       setSnackbarMessage('Por favor, complete todos los campos.');
@@ -66,7 +68,7 @@ const TerminosYCondiciones = () => {
     }
   };
 
-//Actualizar un termino
+  // Actualizar un término
   const handleUpdateTermino = async () => {
     if (!editTitulo.trim() || !editContenido.trim()) {
       setSnackbarMessage('Por favor, complete todos los campos.');
@@ -90,17 +92,19 @@ const TerminosYCondiciones = () => {
     }
   };
 
+  // Eliminar un término (lógicamente)
   const handleDeleteTermino = async (id) => {
     try {
       await axios.put(`http://localhost:3001/api/deactivatetermino/${id}`);
       fetchTerminos();
-      setSnackbarMessage('Término elimiminado con éxito');
+      setSnackbarMessage('Término eliminado con éxito');
       setSnackbarOpen(true);
     } catch (error) {
       console.error('Error al eliminar el término', error);
     }
   };
 
+  // Manejar el diálogo de edición
   const handleClickOpen = (termino) => {
     setEditId(termino.id);
     setEditTitulo(termino.titulo);
@@ -113,6 +117,17 @@ const TerminosYCondiciones = () => {
     setEditId(null);
     setEditTitulo('');
     setEditContenido('');
+  };
+
+  // Manejar el diálogo de visualización
+  const handleViewOpen = (termino) => {
+    setViewTermino(termino);
+    setViewOpen(true);
+  };
+
+  const handleViewClose = () => {
+    setViewOpen(false);
+    setViewTermino(null);
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -129,7 +144,7 @@ const TerminosYCondiciones = () => {
       maxWidth="lg"
       sx={{
         padding: '40px 20px',
-        background: 'linear-gradient(135deg, #f5f7fa 0%)', // Fondo degradado
+        background: 'linear-gradient(135deg, #f5f7fa 0%, #e0e7ff 100%)',
         minHeight: '100vh',
       }}
     >
@@ -150,7 +165,7 @@ const TerminosYCondiciones = () => {
           gutterBottom
           sx={{
             fontWeight: '700',
-            color:  '#00050a',
+            color: '#00050a',
             textAlign: 'center',
             letterSpacing: '1px',
           }}
@@ -169,8 +184,8 @@ const TerminosYCondiciones = () => {
             borderRadius: '8px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': { borderColor: '#c4c4c4' },
-              '&:hover fieldset': { borderColor:  '#1976d2' }, 
-              '&.Mui-focused fieldset': { borderColor:  '#1976d2' }, 
+              '&:hover fieldset': { borderColor: '#1976d2' },
+              '&.Mui-focused fieldset': { borderColor: '#1976d2' },
             },
           }}
         />
@@ -188,8 +203,8 @@ const TerminosYCondiciones = () => {
             borderRadius: '8px',
             '& .MuiOutlinedInput-root': {
               '& fieldset': { borderColor: '#c4c4c4' },
-              '&:hover fieldset': { borderColor:  '#1976d2' }, 
-              '&.Mui-focused fieldset': { borderColor:  '#1976d2' }, 
+              '&:hover fieldset': { borderColor: '#1976d2' },
+              '&.Mui-focused fieldset': { borderColor: '#1976d2' },
             },
           }}
         />
@@ -202,9 +217,9 @@ const TerminosYCondiciones = () => {
             padding: '12px 30px',
             fontWeight: '600',
             borderRadius: '12px',
-            backgroundColor:  '#1976d2',
+            backgroundColor: '#1976d2',
             textTransform: 'none',
-            '&:hover': { backgroundColor:  '#1976d2', transform: 'scale(1.05)' },
+            '&:hover': { backgroundColor: '#1565c0', transform: 'scale(1.05)' },
             transition: 'all 0.3s ease',
           }}
         >
@@ -212,35 +227,39 @@ const TerminosYCondiciones = () => {
         </Button>
       </Box>
 
-      {/* Tabla */}
+      {/* Tabla Mejorada */}
       <TableContainer
         component={Paper}
         sx={{
-          borderRadius: '16px',
-          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.1)',
+          borderRadius: '20px',
+          boxShadow: '0 10px 30px rgba(0, 0, 0, 0.08)',
           overflow: 'hidden',
           backgroundColor: '#ffffff',
+          border: '1px solid #e5e7eb',
         }}
       >
         <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
-              {['Título', 'Contenido', 'Versión', 'Estado', 'Fecha de Creación', 'Acciones'].map((header) => (
-                <TableCell
-                  key={header}
-                  sx={{
-                    fontWeight: '700',
-                    backgroundColor:  '#1976d2',
-                    color: '#fff',
-                    textAlign: 'center',
-                    padding: '16px',
-                    fontSize: '1.1rem',
-                    letterSpacing: '0.5px',
-                  }}
-                >
-                  {header}
-                </TableCell>
-              ))}
+              {['Título', 'Contenido', 'Versión', 'Estado', 'Fecha de Creación', 'Acciones'].map(
+                (header) => (
+                  <TableCell
+    key={header}
+                      sx={{
+                        fontWeight: '700',
+                        backgroundColor: '#4585f5', // Dark blue header
+                        color: '#fff',
+                        textAlign: 'center',
+                        padding: '16px',
+                        fontSize: '1.1rem',
+                        letterSpacing: '0.5px',
+                        borderBottom: '2px solid #1e40af',
+                      }}
+                    >
+                      {header}
+                    </TableCell>
+                )
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -249,75 +268,164 @@ const TerminosYCondiciones = () => {
                 <TableRow
                   key={item.id}
                   sx={{
-                    '&:hover': { backgroundColor: '#f5f7fa' },
-                    transition: 'background-color 0.3s ease',
+                    '&:hover': {
+                      backgroundColor: '#f9fafb',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.05)',
+                    },
+                    transition: 'all 0.2s ease',
+                    borderBottom: '1px solid #e5e7eb',
                   }}
                 >
-                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                  <TableCell
+                    sx={{
+                      textAlign: 'center',
+                      padding: '20px',
+                      fontSize: '1rem',
+                      fontWeight: '500',
+                      color: '#1f2937',
+                      maxWidth: '200px',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
+                  >
                     {item.titulo}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
-                    <Typography
-                      variant="body2"
-                      sx={{ maxWidth: '300px', wordWrap: 'break-word', color: '#424242' }}
-                    >
-                      {item.contenido}
-                    </Typography>
+                  <TableCell
+                    sx={{
+                      textAlign: 'left',
+                      padding: '20px',
+                      fontSize: '0.95rem',
+                      color: '#4b5563',
+                      maxWidth: '450px',
+                      wordWrap: 'break-word',
+                    }}
+                  >
+                    <Tooltip title={item.contenido} placement="top-start">
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          display: '-webkit-box',
+                          WebkitLineClamp: 3,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {item.contenido}
+                      </Typography>
+                    </Tooltip>
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                  <TableCell
+                    sx={{
+                      textAlign: 'center',
+                      padding: '20px',
+                      fontSize: '1rem',
+                      color: '#6b7280',
+                    }}
+                  >
                     {item.version}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
+                  <TableCell sx={{ textAlign: 'center', padding: '20px' }}>
                     <Typography
                       variant="body2"
                       sx={{
                         fontWeight: '600',
-                        color: item.estado === 'Activo' ? '#388e3c' : '#d32f2f',
-                        backgroundColor: item.estado === 'Activo' ? '#e8f5e9' : '#ffebee',
-                        borderRadius: '20px',
-                        padding: '6px 14px',
+                        color: item.estado === 'Activo' ? '#166534' : '#991b1b',
+                        backgroundColor: item.estado === 'Activo' ? '#dcfce7' : '#fee2e2',
+                        borderRadius: '16px',
+                        padding: '6px 12px',
                         display: 'inline-block',
+                        fontSize: '0.85rem',
                       }}
                     >
                       {item.estado}
                     </Typography>
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px', fontSize: '1rem' }}>
+                  <TableCell
+                    sx={{
+                      textAlign: 'center',
+                      padding: '20px',
+                      fontSize: '1rem',
+                      color: '#6b7280',
+                    }}
+                  >
                     {new Date(item.fecha_creacion).toLocaleDateString('es-ES', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric',
                     })}
                   </TableCell>
-                  <TableCell sx={{ textAlign: 'center', padding: '18px' }}>
-                    <Tooltip title="Editar">
-                      <IconButton
-                        onClick={() => handleClickOpen(item)}
-                        sx={{
-                          color: '#3f51b5',
-                          '&:hover': { color: '#303f9f', backgroundColor: '#e8eaf6' },
-                        }}
-                      >
-                        <Edit />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Desactivar">
-                      <IconButton
-                        onClick={() => handleDeleteTermino(item.id)}
-                        sx={{
-                          color: '#d32f2f',
-                          '&:hover': { color: '#b71c1c', backgroundColor: '#ffebee' },
-                        }}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Tooltip>
+                  <TableCell sx={{ textAlign: 'center', padding: '20px' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1.5 }}>
+                      <Tooltip title="Visualizar">
+                        <IconButton
+                          onClick={() => handleViewOpen(item)}
+                          sx={{
+                            color: '#1e40af',
+                            backgroundColor: '#eff6ff',
+                            borderRadius: '8px',
+                            padding: '8px',
+                            '&:hover': {
+                              color: '#1e3a8a',
+                              backgroundColor: '#dbeafe',
+                            },
+                          }}
+                        >
+                          <Visibility fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Editar">
+                        <IconButton
+                          onClick={() => handleClickOpen(item)}
+                          sx={{
+                            color: '#3f51b5',
+                            backgroundColor: '#eef2ff',
+                            borderRadius: '8px',
+                            padding: '8px',
+                            '&:hover': {
+                              color: '#303f9f',
+                              backgroundColor: '#e0e7ff',
+                            },
+                          }}
+                        >
+                          <Edit fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Eliminar">
+                        <IconButton
+                          onClick={() => handleDeleteTermino(item.id)}
+                          sx={{
+                            color: '#dc2626',
+                            backgroundColor: '#fef2f2',
+                            borderRadius: '8px',
+                            padding: '8px',
+                            '&:hover': {
+                              color: '#b91c1c',
+                              backgroundColor: '#fee2e2',
+                            },
+                          }}
+                        >
+                          <Delete fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
                   </TableCell>
                 </TableRow>
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={6} sx={{ textAlign: 'center', padding: '20px', color: '#757575' }}>
+                <TableCell
+                  colSpan={6}
+                  sx={{
+                    textAlign: 'center',
+                    padding: '40px',
+                    color: '#6b7280',
+                    fontSize: '1.2rem',
+                    fontStyle: 'italic',
+                  }}
+                >
                   No hay términos disponibles
                 </TableCell>
               </TableRow>
@@ -400,6 +508,59 @@ const TerminosYCondiciones = () => {
             }}
           >
             Guardar
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Diálogo de visualización */}
+      <Dialog
+        open={viewOpen}
+        onClose={handleViewClose}
+        PaperProps={{
+          sx: { borderRadius: '16px', padding: '20px', backgroundColor: '#fafafa' },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: '700', color: '#1a237e', textAlign: 'center' }}>
+          Visualizar Término
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="h6" sx={{ fontWeight: '600', color: '#1a237e', mb: 2 }}>
+            {viewTermino?.titulo}
+          </Typography>
+          <Typography variant="body1" sx={{ color: '#424242', whiteSpace: 'pre-wrap', mb: 2 }}>
+            {viewTermino?.contenido}
+          </Typography>
+          <Box>
+            <Typography variant="body2" sx={{ color: '#616161' }}>
+              <strong>Versión:</strong> {viewTermino?.version}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#616161' }}>
+              <strong>Estado:</strong> {viewTermino?.estado}
+            </Typography>
+            <Typography variant="body2" sx={{ color: '#616161' }}>
+              <strong>Fecha de Creación:</strong>{' '}
+              {viewTermino &&
+                new Date(viewTermino.fecha_creacion).toLocaleDateString('es-ES', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                })}
+            </Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ justifyContent: 'center', paddingBottom: '20px' }}>
+          <Button
+            onClick={handleViewClose}
+            variant="contained"
+            sx={{
+              fontWeight: '600',
+              borderRadius: '12px',
+              padding: '8px 20px',
+              backgroundColor: '#1e40af',
+              '&:hover': { backgroundColor: '#1e3a8a' },
+            }}
+          >
+            Cerrar
           </Button>
         </DialogActions>
       </Dialog>

@@ -1,377 +1,404 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Typography, Paper, Button, TextField, Grid,  Card, CardContent, CardMedia, CardActions, Dialog,  DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, Alert, IconButton, Box, CircularProgress} from '@mui/material';
-import { Add, Edit, Delete, Close } from '@mui/icons-material';
 import axios from 'axios';
+import {
+  Container,
+  Typography,
+  Paper,
+  TextField,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  IconButton,
+  Box,
+  Grid,
+  Divider,
+  Tooltip,
+  Alert,
+  Snackbar,
+  CircularProgress
+} from '@mui/material';
+import { Edit, Delete, Save, Add, Cancel } from '@mui/icons-material';
 
-const BannerManagement = () => {
-  // State variables
+const BannersAdmin = () => {
   const [banners, setBanners] = useState([]);
+  const [titulo, setTitulo] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [imagen, setImagen] = useState(null);
+  const [editMode, setEditMode] = useState(false);
+  const [currentBannerId, setCurrentBannerId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [openDialog, setOpenDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [currentBanner, setCurrentBanner] = useState(null);
-  const [formData, setFormData] = useState({
-    titulo: '',
-    descripcion: '',
-    imagen: null
-  });
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [snackbar, setSnackbar] = useState({
-    open: false,
-    message: '',
-    severity: 'success'
-  });
+  const [notification, setNotification] = useState({ open: false, message: '', severity: 'success' });
 
-  // Fetch all banners on component mount
   useEffect(() => {
     fetchBanners();
   }, []);
 
-  // Function to fetch all banners
   const fetchBanners = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3001/obtenerbanner`);
+      const response = await axios.get('http://localhost:3001/api/banners');
       setBanners(response.data);
+      setLoading(false);
     } catch (error) {
-      showSnackbar('Error al cargar los banners', 'error');
-      console.error('Error fetching banners:', error);
-    } finally {
+      console.error('Error al obtener los banners:', error);
+      setNotification({
+        open: true,
+        message: 'Error al cargar los banners',
+        severity: 'error'
+      });
       setLoading(false);
     }
   };
 
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value
-    });
-  };
-
-  // Handle file input changes
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFormData({
-        ...formData,
-        imagen: file
+  const handleAddBanner = async () => {
+    if (!titulo || !descripcion) {
+      setNotification({
+        open: true,
+        message: 'El título y la descripción son obligatorios',
+        severity: 'warning'
       });
-      
-      // Create a preview URL
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
-        setPreviewUrl(fileReader.result);
-      };
-      fileReader.readAsDataURL(file);
-    }
-  };
-
-  // Open dialog for adding a new banner
-  const handleAddBanner = () => {
-    setCurrentBanner(null);
-    setFormData({
-      titulo: '',
-      descripcion: '',
-      imagen: null
-    });
-    setPreviewUrl(null);
-    setOpenDialog(true);
-  };
-
-  // Open dialog for editing an existing banner
-  const handleEditBanner = (banner) => {
-    setCurrentBanner(banner);
-    setFormData({
-      titulo: banner.titulo,
-      descripcion: banner.descripcion,
-      imagen: null
-    });
-    setPreviewUrl(banner.url);
-    setOpenDialog(true);
-  };
-
-  // Open dialog for confirming banner deletion
-  const handleDeleteBannerClick = (banner) => {
-    setCurrentBanner(banner);
-    setOpenDeleteDialog(true);
-  };
-
-  // Close all dialogs
-  const handleCloseDialog = () => {
-    setOpenDialog(false);
-    setOpenDeleteDialog(false);
-    setCurrentBanner(null);
-  };
-
-  // Submit the form to create or update a banner
-  const handleSubmit = async () => {
-    if (!formData.titulo || !formData.descripcion) {
-      showSnackbar('Título y descripción son obligatorios', 'error');
       return;
     }
 
     setLoading(true);
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('descripcion', descripcion);
+    if (imagen) formData.append('imagen', imagen);
+
     try {
-      const formDataObj = new FormData();
-      formDataObj.append('titulo', formData.titulo);
-      formDataObj.append('descripcion', formData.descripcion);
-      
-      if (formData.imagen) {
-        formDataObj.append('imagen', formData.imagen);
-      } else if (currentBanner && currentBanner.url) {
-        formDataObj.append('url', currentBanner.url);
-      }
-
-      let response;
-      if (currentBanner) {
-        // Update existing banner
-        response = await axios.put(
-          `http://localhost:3001/actualizarbanner/${currentBanner.id}`, 
-          formDataObj
-        );
-        showSnackbar('Banner actualizado correctamente', 'success');
-      } else {
-        // Create new banner
-        response = await axios.post(`http://localhost:3001/api/insertabanner`, formDataObj);
-        showSnackbar('Banner creado correctamente', 'success');
-      }
-
-      // Refresh banner list
-      fetchBanners();
-      handleCloseDialog();
+      const response = await axios.post('http://localhost:3001/api/banners', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setBanners([...banners, { id: response.data.id, titulo, descripcion, imagen: response.data.imagen || '' }]);
+      setTitulo('');
+      setDescripcion('');
+      setImagen(null);
+      setNotification({
+        open: true,
+        message: 'Banner agregado con éxito',
+        severity: 'success'
+      });
+      setLoading(false);
     } catch (error) {
-      showSnackbar('Error al guardar el banner', 'error');
-      console.error('Error saving banner:', error);
-    } finally {
+      console.error('Error al agregar el banner:', error);
+      setNotification({
+        open: true,
+        message: 'Error al agregar el banner',
+        severity: 'error'
+      });
       setLoading(false);
     }
   };
 
-  // Delete a banner
-  const handleDeleteBanner = async () => {
-    if (!currentBanner) return;
-    
+  const handleEditBanner = (id) => {
+    const banner = banners.find(b => b.id === id);
+    setTitulo(banner.titulo);
+    setDescripcion(banner.descripcion);
+    setEditMode(true);
+    setCurrentBannerId(id);
+    setImagen(null); // Resetear imagen para permitir subir una nueva
+  };
+
+  const handleUpdateBanner = async () => {
+    if (!titulo || !descripcion) {
+      setNotification({
+        open: true,
+        message: 'El título y la descripción son obligatorios',
+        severity: 'warning'
+      });
+      return;
+    }
+
     setLoading(true);
+    const formData = new FormData();
+    formData.append('titulo', titulo);
+    formData.append('descripcion', descripcion);
+    if (imagen) formData.append('imagen', imagen);
+
     try {
-      await axios.delete(`http://localhost:3001/api/eliminarbanner/${currentBanner.id}`);
-      showSnackbar('Banner eliminado correctamente', 'success');
+      const response = await axios.put(`http://localhost:3001/api/banners/${currentBannerId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      // Actualizar el banner en el estado con los nuevos datos
+      setBanners(banners.map(b => 
+        b.id === currentBannerId 
+          ? { ...b, titulo, descripcion, imagen: imagen ? response.data.imagen || URL.createObjectURL(imagen) : b.imagen } 
+          : b
+      ));
+      setTitulo('');
+      setDescripcion('');
+      setImagen(null);
+      setEditMode(false);
+      setCurrentBannerId(null);
+      setNotification({
+        open: true,
+        message: 'Banner actualizado con éxito',
+        severity: 'success'
+      });
+      setLoading(false);
+      // Refrescar la lista para asegurar consistencia con el backend
       fetchBanners();
-      handleCloseDialog();
     } catch (error) {
-      showSnackbar('Error al eliminar el banner', 'error');
-      console.error('Error deleting banner:', error);
-    } finally {
+      console.error('Error al actualizar el banner:', error);
+      setNotification({
+        open: true,
+        message: 'Error al actualizar el banner',
+        severity: 'error'
+      });
       setLoading(false);
     }
   };
 
-  // Show snackbar notification
-  const showSnackbar = (message, severity) => {
-    setSnackbar({
-      open: true,
-      message,
-      severity
-    });
+  const handleDeleteBanner = async (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este banner?')) {
+      setLoading(true);
+      try {
+        await axios.delete(`http://localhost:3001/api/banners/${id}`);
+        setBanners(banners.filter(b => b.id !== id));
+        setNotification({
+          open: true,
+          message: 'Banner eliminado con éxito',
+          severity: 'success'
+        });
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al eliminar el banner:', error);
+        setNotification({
+          open: true,
+          message: 'Error al eliminar el banner',
+          severity: 'error'
+        });
+        setLoading(false);
+      }
+    }
   };
 
-  // Close snackbar
-  const handleCloseSnackbar = () => {
-    setSnackbar({
-      ...snackbar,
-      open: false
-    });
+  const handleCancelEdit = () => {
+    setTitulo('');
+    setDescripcion('');
+    setImagen(null);
+    setEditMode(false);
+    setCurrentBannerId(null);
+  };
+
+  const handleCloseNotification = () => {
+    setNotification({ ...notification, open: false });
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Paper elevation={3} sx={{ p: 3, mb: 4 }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-          <Typography variant="h4" component="h1">
-            Gestión de Banners
+    <Container maxWidth="md" sx={{ py: 4, display: 'flex', justifyContent: 'center' }}>
+      <Paper elevation={3} sx={{ p: 3, mb: 4, borderRadius: 2, maxWidth: '800px', width: '100%' }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ 
+          fontWeight: 'bold', 
+          color: '#1976d2',
+          textAlign: 'center', 
+          mb: 3 
+        }}>
+          Administración de Banners
+        </Typography>
+
+        <Box sx={{ mb: 4, p: 2, bgcolor: '#f5f5f5', borderRadius: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ color: '#555', textAlign: 'center' }}>
+            {editMode ? 'Editar Banner' : 'Agregar Nuevo Banner'}
           </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            startIcon={<Add />} 
-            onClick={handleAddBanner}
-          >
-            Nuevo Banner
-          </Button>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Título"
+                variant="outlined"
+                fullWidth
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                margin="normal"
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Descripción"
+                variant="outlined"
+                fullWidth
+                multiline
+                rows={4}
+                value={descripcion}
+                onChange={(e) => setDescripcion(e.target.value)}
+                margin="normal"
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImagen(e.target.files[0])}
+                style={{ margin: '16px 0' }}
+              />
+              {imagen && <Typography variant="body2">Archivo seleccionado: {imagen.name}</Typography>}
+            </Grid>
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                {editMode ? (
+                  <>
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      startIcon={<Save />} 
+                      onClick={handleUpdateBanner}
+                    >
+                      Actualizar
+                    </Button>
+                    <Button 
+                      variant="outlined" 
+                      color="secondary" 
+                      startIcon={<Cancel />} 
+                      onClick={handleCancelEdit}
+                    >
+                      Cancelar
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    variant="contained" 
+                    color="primary" 
+                    startIcon={<Add />} 
+                    onClick={handleAddBanner}
+                  >
+                    Agregar
+                  </Button>
+                )}
+              </Box>
+            </Grid>
+          </Grid>
         </Box>
 
-        {loading && banners.length === 0 ? (
-          <Box display="flex" justifyContent="center" my={4}>
+        <Divider sx={{ my: 3 }} />
+
+        <Typography variant="h6" gutterBottom sx={{ color: '#555', textAlign: 'center' }}>
+          Lista de Banners
+        </Typography>
+
+        {loading && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
             <CircularProgress />
           </Box>
-        ) : banners.length > 0 ? (
-          <Grid container spacing={3}>
-            {banners.map((banner) => (
-              <Grid item xs={12} sm={6} md={4} key={banner.id}>
-                <Card elevation={2}>
-                  {banner.url && (
-                    <CardMedia
-                      component="img"
-                      height="180"
-                      image={banner.url}
-                      alt={banner.titulo}
-                    />
-                  )}
-                  <CardContent>
-                    <Typography variant="h6" component="div" gutterBottom>
-                      {banner.titulo}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {banner.descripcion}
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Button 
-                      size="small" 
-                      startIcon={<Edit />} 
-                      onClick={() => handleEditBanner(banner)}
-                    >
-                      Editar
-                    </Button>
-                    <Button 
-                      size="small" 
-                      color="error" 
-                      startIcon={<Delete />}
-                      onClick={() => handleDeleteBannerClick(banner)}
-                    >
-                      Eliminar
-                    </Button>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+        )}
+
+        {!loading && banners.length === 0 ? (
+          <Alert severity="info" sx={{ my: 2 }}>
+            No hay banners disponibles. Agrega uno nuevo.
+          </Alert>
         ) : (
-          <Box textAlign="center" my={4}>
-            <Typography variant="h6" color="text.secondary">
-              No hay banners disponibles
-            </Typography>
-          </Box>
+          <TableContainer component={Paper} sx={{ 
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)', 
+            borderRadius: 2,
+            overflow: 'hidden',
+            maxWidth: '100%',
+            margin: '0 auto'
+          }}>
+            <Table>
+              <TableHead sx={{ bgcolor: '#1976d2' }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center', width: '10%' }}>ID</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center', width: '20%' }}>Título</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center', width: '35%' }}>Descripción</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center', width: '20%' }}>Imagen</TableCell>
+                  <TableCell sx={{ fontWeight: 'bold', color: 'white', textAlign: 'center', width: '15%' }}>Acciones</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {banners.map(banner => (
+                  <TableRow 
+                    key={banner.id}
+                    sx={{
+                      '&:nth-of-type(odd)': { backgroundColor: '#f7faff' },
+                      '&:hover': { backgroundColor: '#e3f2fd' },
+                      transition: 'background-color 0.3s'
+                    }}
+                  >
+                    <TableCell sx={{ textAlign: 'center', fontSize: '0.9rem', padding: '10px' }}>{banner.id}</TableCell>
+                    <TableCell sx={{ textAlign: 'center', fontSize: '0.9rem', padding: '10px' }}>
+                      <Tooltip title={banner.titulo}>
+                        <span>{banner.titulo.length > 20 ? `${banner.titulo.substring(0, 20)}...` : banner.titulo}</span>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell sx={{ 
+                      textAlign: 'center', 
+                      fontSize: '0.9rem', 
+                      padding: '10px',
+                      maxWidth: '250px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}>
+                      <Tooltip title={banner.descripcion}>
+                        <span>{banner.descripcion.length > 30 ? `${banner.descripcion.substring(0, 30)}...` : banner.descripcion}</span>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', padding: '10px' }}>
+                      {banner.imagen ? (
+                        <Tooltip title="Ver imagen completa">
+                          <img 
+                            src={banner.imagen} 
+                            alt={banner.titulo} 
+                            style={{ maxWidth: '60px', maxHeight: '60px', borderRadius: '4px', cursor: 'pointer' }} 
+                            onClick={() => window.open(banner.imagen, '_blank')}
+                          />
+                        </Tooltip>
+                      ) : (
+                        <Typography variant="body2" color="textSecondary">Sin imagen</Typography>
+                      )}
+                    </TableCell>
+                    <TableCell sx={{ textAlign: 'center', padding: '10px' }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1 }}>
+                        <Tooltip title="Editar">
+                          <IconButton 
+                            color="primary" 
+                            onClick={() => handleEditBanner(banner.id)}
+                            sx={{ padding: '6px', '&:hover': { backgroundColor: 'rgba(25, 118, 210, 0.1)' } }}
+                          >
+                            <Edit fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Eliminar">
+                          <IconButton 
+                            color="error" 
+                            onClick={() => handleDeleteBanner(banner.id)}
+                            sx={{ padding: '6px', '&:hover': { backgroundColor: 'rgba(244, 67, 54, 0.1)' } }}
+                          >
+                            <Delete fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Paper>
 
-      {/* Dialog for Add/Edit Banner */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>
-          {currentBanner ? 'Editar Banner' : 'Nuevo Banner'}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            name="titulo"
-            label="Título"
-            type="text"
-            fullWidth
-            value={formData.titulo}
-            onChange={handleInputChange}
-            required
-            variant="outlined"
-            sx={{ mb: 2 }}
-          />
-          <TextField
-            margin="dense"
-            name="descripcion"
-            label="Descripción"
-            type="text"
-            fullWidth
-            multiline
-            rows={4}
-            value={formData.descripcion}
-            onChange={handleInputChange}
-            required
-            variant="outlined"
-            sx={{ mb: 2 }}
-          />
-          <Box sx={{ mb: 2 }}>
-            <Button
-              variant="outlined"
-              component="label"
-              color="primary"
-            >
-              Seleccionar Imagen
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </Button>
-            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-              {formData.imagen ? `Imagen seleccionada: ${formData.imagen.name}` : 'Ninguna imagen seleccionada'}
-            </Typography>
-          </Box>
-          {previewUrl && (
-            <Box sx={{ mt: 2, position: 'relative' }}>
-              <Typography variant="subtitle2" gutterBottom>
-                Vista previa:
-              </Typography>
-              <img 
-                src={previewUrl} 
-                alt="Vista previa" 
-                style={{ width: '100%', maxHeight: '200px', objectFit: 'contain' }} 
-              />
-              <IconButton
-                size="small"
-                sx={{ position: 'absolute', top: 0, right: 0, bgcolor: 'rgba(255,255,255,0.7)' }}
-                onClick={() => {
-                  setPreviewUrl(null);
-                  setFormData({...formData, imagen: null});
-                }}
-              >
-                <Close fontSize="small" />
-              </IconButton>
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancelar</Button>
-          <Button 
-            onClick={handleSubmit} 
-            variant="contained" 
-            color="primary" 
-            disabled={!formData.titulo || !formData.descripcion}
-          >
-            Guardar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog for Delete Confirmation */}
-      <Dialog open={openDeleteDialog} onClose={handleCloseDialog}>
-        <DialogTitle>Confirmar eliminación</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            ¿Está seguro que desea eliminar el banner "{currentBanner?.titulo}"? Esta acción no se puede deshacer.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancelar</Button>
-          <Button onClick={handleDeleteBanner} color="error" variant="contained">
-            Eliminar
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Snackbar for notifications */}
-      <Snackbar
-        open={snackbar.open}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      <Snackbar 
+        open={notification.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseNotification}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} variant="filled">
-          {snackbar.message}
+        <Alert 
+          onClose={handleCloseNotification} 
+          severity={notification.severity} 
+          sx={{ width: '100%' }}
+        >
+          {notification.message}
         </Alert>
       </Snackbar>
     </Container>
   );
 };
 
-export default BannerManagement;
+export default BannersAdmin;
