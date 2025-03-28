@@ -55,20 +55,51 @@ const Hombre = () => {
     const loadData = async () => {
       setLoading(true);
       const [productosResult, categoriasResult, coloresResult, tallasResult] = await Promise.all([
-        fetchData('http://localhost:3001/api/Hombres'),
+        fetchData('http://localhost:3001/api/Hombres'), // o 'http://localhost:3001/api/Mujeres' para ese componente
         fetchData('http://localhost:3001/api/categorias'),
         fetchData('http://localhost:3001/api/colores'),
         fetchData('http://localhost:3001/api/tallas')
       ]);
-
+  
       if (productosResult.error) {
         setError('Error al cargar productos: ' + productosResult.error);
         setLoading(false);
         return;
       }
-
-      setProducts(productosResult.data);
-      setFilteredProducts(productosResult.data);
+  
+      // Agrupar productos por ID para evitar duplicados por cada imagen
+      const productosAgrupados = [];
+      const productosMap = new Map();
+  
+      // Procesar los productos y agruparlos por ID
+      productosResult.data.forEach(item => {
+        if (!productosMap.has(item.id)) {
+          // Si es la primera vez que vemos este producto, lo inicializamos
+          const nuevoProducto = { ...item, imagenes: [] };
+          
+          // Si tiene una URL, la agregamos al array de imágenes
+          if (item.url) {
+            nuevoProducto.imagenes.push({ id: 1, url: item.url });
+          }
+          
+          productosMap.set(item.id, nuevoProducto);
+          productosAgrupados.push(nuevoProducto);
+        } else {
+          // Si ya hemos visto este producto, solo agregamos la imagen si es nueva
+          const productoExistente = productosMap.get(item.id);
+          
+          if (item.url && !productoExistente.imagenes.some(img => img.url === item.url)) {
+            productoExistente.imagenes.push({ 
+              id: productoExistente.imagenes.length + 1, 
+              url: item.url 
+            });
+          }
+        }
+      });
+  
+      console.log('Productos agrupados:', productosAgrupados);
+      setProducts(productosAgrupados);
+      setFilteredProducts(productosAgrupados);
       setCategorias(categoriasResult.data || []);
       setColores(coloresResult.data || []);
       setTallas(tallasResult.data || []);
@@ -77,7 +108,7 @@ const Hombre = () => {
     };
     loadData();
   }, []);
-
+  
   const getCategoryName = React.useCallback((id) => categorias.find(c => c.id_categoria === id)?.nombre || 'Categoría N/A', [categorias]);
   const getColorName = React.useCallback((id) => colores.find(c => c.id === id)?.color || 'Color N/A', [colores]);
   const getColorCode = (color) => ({

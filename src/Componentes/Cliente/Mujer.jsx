@@ -55,7 +55,7 @@ const Mujer = () => {
     const loadData = async () => {
       setLoading(true);
       const [productosResult, categoriasResult, coloresResult, tallasResult] = await Promise.all([
-        fetchData('http://localhost:3001/api/Mujeres'),
+        fetchData('http://localhost:3001/api/Hombres'), // o 'http://localhost:3001/api/Mujeres' para ese componente
         fetchData('http://localhost:3001/api/categorias'),
         fetchData('http://localhost:3001/api/colores'),
         fetchData('http://localhost:3001/api/tallas')
@@ -67,8 +67,39 @@ const Mujer = () => {
         return;
       }
 
-      setProducts(productosResult.data);
-      setFilteredProducts(productosResult.data);
+      // Agrupar productos por ID para evitar duplicados por cada imagen
+      const productosAgrupados = [];
+      const productosMap = new Map();
+
+      // Procesar los productos y agruparlos por ID
+      productosResult.data.forEach(item => {
+        if (!productosMap.has(item.id)) {
+          // Si es la primera vez que vemos este producto, lo inicializamos
+          const nuevoProducto = { ...item, imagenes: [] };
+
+          // Si tiene una URL, la agregamos al array de imágenes
+          if (item.url) {
+            nuevoProducto.imagenes.push({ id: 1, url: item.url });
+          }
+
+          productosMap.set(item.id, nuevoProducto);
+          productosAgrupados.push(nuevoProducto);
+        } else {
+          // Si ya hemos visto este producto, solo agregamos la imagen si es nueva
+          const productoExistente = productosMap.get(item.id);
+
+          if (item.url && !productoExistente.imagenes.some(img => img.url === item.url)) {
+            productoExistente.imagenes.push({
+              id: productoExistente.imagenes.length + 1,
+              url: item.url
+            });
+          }
+        }
+      });
+
+      console.log('Productos agrupados:', productosAgrupados);
+      setProducts(productosAgrupados);
+      setFilteredProducts(productosAgrupados);
       setCategorias(categoriasResult.data || []);
       setColores(coloresResult.data || []);
       setTallas(tallasResult.data || []);
@@ -104,7 +135,7 @@ const Mujer = () => {
     let result = [...products];
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
-      result = result.filter(p => 
+      result = result.filter(p =>
         p.nombre_producto?.toLowerCase().includes(term) ||
         p.descripcion?.toLowerCase().includes(term) ||
         getColorName(p.id_color)?.toLowerCase().includes(term) ||
@@ -117,34 +148,36 @@ const Mujer = () => {
     if (categoriaFilter) result = result.filter(p => p.id_categoria === parseInt(categoriaFilter));
     result = result.filter(p => parseFloat(p.precio) >= priceRange[0] && parseFloat(p.precio) <= priceRange[1]);
     if (sortOrder) {
-      result.sort((a, b) => 
+      result.sort((a, b) =>
         sortOrder === 'price-asc' ? parseFloat(a.precio) - parseFloat(b.precio) :
-        sortOrder === 'price-desc' ? parseFloat(b.precio) - parseFloat(a.precio) :
-        sortOrder === 'name-asc' ? a.nombre_producto.localeCompare(b.nombre_producto) :
-        sortOrder === 'name-desc' ? b.nombre_producto.localeCompare(a.nombre_producto) :
-        b.stock - a.stock
+          sortOrder === 'price-desc' ? parseFloat(b.precio) - parseFloat(a.precio) :
+            sortOrder === 'name-asc' ? a.nombre_producto.localeCompare(b.nombre_producto) :
+              sortOrder === 'name-desc' ? b.nombre_producto.localeCompare(a.nombre_producto) :
+                b.stock - a.stock
       );
     }
     setFilteredProducts(result);
   }, [searchTerm, colorFilter, tallaFilter, categoriaFilter, priceRange, sortOrder, products, getCategoryName, getColorName, getSizeName]);
 
   const handleProductClick = (product) => {
-    navigate(`/cliente/detallesp/${product.id}`, { 
-      state: { 
-        from: 'mujeres',
-        productName: product.nombre_producto 
-      } 
+    navigate(`/cliente/detallesp/${product.id}`, {
+      state: {
+        from: 'hombres', // o 'mujeres' según corresponda
+        productName: product.nombre_producto,
+        // Pasar las imágenes para asegurar que estén disponibles en la página de detalle
+        productImages: product.imagenes
+      }
     });
   };
 
-  const resetFilters = () => { 
-    setSearchTerm(''); 
-    setColorFilter(''); 
-    setTallaFilter(''); 
-    setCategoriaFilter(''); 
-    setPriceRange([0, 1000]); 
-    setSortOrder(''); 
-    setDrawerOpen(false); 
+  const resetFilters = () => {
+    setSearchTerm('');
+    setColorFilter('');
+    setTallaFilter('');
+    setCategoriaFilter('');
+    setPriceRange([0, 1000]);
+    setSortOrder('');
+    setDrawerOpen(false);
   };
 
   const ProductCard = ({ product, loading }) => {
@@ -164,23 +197,23 @@ const Mujer = () => {
 
     return (
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} whileHover={{ y: -10 }}>
-        <Paper elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden', backgroundColor: customColors.cardBg, transition: 'all 0.3s ease', '&:hover': { boxShadow: `0 10px 20px ${alpha(customColors.primary, 0.15)}` }}}>
+        <Paper elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden', backgroundColor: customColors.cardBg, transition: 'all 0.3s ease', '&:hover': { boxShadow: `0 10px 20px ${alpha(customColors.primary, 0.15)}` } }}>
           <Box sx={{ position: 'relative' }}>
-            <CardMedia 
-              component="img" 
-              height="240" 
-              image={product.url || '/placeholder-image.jpg'} 
-              alt={product.nombre_producto} 
-              sx={{ objectFit: 'contain', pt: 2, cursor: 'pointer', transition: 'transform 0.6s ease', '&:hover': { transform: 'scale(1.05)' }}} 
-              onClick={() => handleProductClick(product)} 
+            <CardMedia
+              component="img"
+              height="240"
+              image={product.url || '/placeholder-image.jpg'}
+              alt={product.nombre_producto}
+              sx={{ objectFit: 'contain', pt: 2, cursor: 'pointer', transition: 'transform 0.6s ease', '&:hover': { transform: 'scale(1.05)' } }}
+              onClick={() => handleProductClick(product)}
             />
             <Chip label={stockText} color={stockColor} size="small" sx={{ position: 'absolute', top: 12, left: 12, fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
             <Chip label={colorName} size="small" sx={{ position: 'absolute', top: 12, right: 12, backgroundColor: colorCode, color: ['Blanco', 'Amarillo', 'Celeste', 'Beige'].includes(colorName) ? '#000000' : '#ffffff', fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
           </Box>
           <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
-            <Typography 
-              variant="h6" 
-              onClick={() => handleProductClick(product)} 
+            <Typography
+              variant="h6"
+              onClick={() => handleProductClick(product)}
               sx={{ fontWeight: 600, mb: 1.5, cursor: 'pointer', color: customColors.textPrimary, '&:hover': { color: customColors.accent }, transition: 'color 0.3s ease', fontSize: { xs: '1rem', sm: '1.1rem' } }}
             >
               {product.nombre_producto}
@@ -274,19 +307,19 @@ const Mujer = () => {
         ))}
       </Stack>
 
-      <Button 
-        variant="contained" 
-        fullWidth 
-        onClick={resetFilters} 
+      <Button
+        variant="contained"
+        fullWidth
+        onClick={resetFilters}
         disabled={!searchTerm && !colorFilter && !tallaFilter && !categoriaFilter && !sortOrder}
-        sx={{ 
-          mt: 2, 
-          py: 1, 
-          textTransform: 'none', 
-          borderRadius: '12px', 
-          fontWeight: 600, 
-          background: customColors.gradient, 
-          boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`, 
+        sx={{
+          mt: 2,
+          py: 1,
+          textTransform: 'none',
+          borderRadius: '12px',
+          fontWeight: 600,
+          background: customColors.gradient,
+          boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`,
           '&:hover': { boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}` },
           '&.Mui-disabled': { background: alpha(customColors.primary, 0.2), color: alpha(customColors.textPrimary, 0.4) }
         }}
@@ -297,11 +330,11 @@ const Mujer = () => {
   );
 
   const FilterDrawer = () => (
-    <Drawer 
-      anchor="left" 
-      open={drawerOpen} 
-      onClose={() => setDrawerOpen(false)} 
-      PaperProps={{ sx: { borderTopRightRadius: '16px', borderBottomRightRadius: '16px', width: 300, backgroundColor: customColors.background, color: customColors.textPrimary }}}
+    <Drawer
+      anchor="left"
+      open={drawerOpen}
+      onClose={() => setDrawerOpen(false)}
+      PaperProps={{ sx: { borderTopRightRadius: '16px', borderBottomRightRadius: '16px', width: 300, backgroundColor: customColors.background, color: customColors.textPrimary } }}
     >
       <Box sx={{ p: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -319,8 +352,8 @@ const Mujer = () => {
       <Container maxWidth="xl" sx={{ py: 5 }}>
         <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
           <Box sx={{ mb: 4, textAlign: 'center' }}>
-            <Typography 
-              variant="h4" 
+            <Typography
+              variant="h4"
               sx={{ fontWeight: 700, color: customColors.textPrimary, mb: 2, background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
             >
               Uniformes para Mujeres
@@ -332,17 +365,17 @@ const Mujer = () => {
         </motion.div>
 
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-start' }}>
-          <TextField 
-            placeholder="Buscar..." 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)} 
-            variant="outlined" 
+          <TextField
+            placeholder="Buscar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            variant="outlined"
             size="small"
-            sx={{ 
+            sx={{
               width: { xs: '100%', sm: '250px' },
-              '& .MuiOutlinedInput-root': { 
-                borderRadius: '8px', 
-                height: '32px', 
+              '& .MuiOutlinedInput-root': {
+                borderRadius: '8px',
+                height: '32px',
                 fontSize: '0.875rem',
                 backgroundColor: customColors.cardBg,
                 border: 'none',
@@ -350,8 +383,8 @@ const Mujer = () => {
                 '&:hover fieldset': { borderColor: customColors.accent },
                 '&.Mui-focused fieldset': { borderColor: customColors.accent }
               },
-              '& .MuiInputBase-input': { 
-                py: '4px' 
+              '& .MuiInputBase-input': {
+                py: '4px'
               }
             }}
             InputProps={{
@@ -394,12 +427,12 @@ const Mujer = () => {
 
             {error && (
               <Box sx={{ textAlign: 'center', my: 6 }}>
-                <Alert severity="error" sx={{ mb: 3, borderRadius: '12px', backgroundColor: alpha('#f44336', 0.1), '& .MuiAlert-icon': { color: '#f44336' }}}>
+                <Alert severity="error" sx={{ mb: 3, borderRadius: '12px', backgroundColor: alpha('#f44336', 0.1), '& .MuiAlert-icon': { color: '#f44336' } }}>
                   {error}
                 </Alert>
-                <Button 
-                  variant="contained" 
-                  sx={{ mt: 2, py: 1, px: 3, borderRadius: '12px', textTransform: 'none', fontWeight: 600, background: customColors.gradient, boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`, '&:hover': { boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}` }}} 
+                <Button
+                  variant="contained"
+                  sx={{ mt: 2, py: 1, px: 3, borderRadius: '12px', textTransform: 'none', fontWeight: 600, background: customColors.gradient, boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.3)}`, '&:hover': { boxShadow: `0 6px 15px ${alpha(customColors.primary, 0.4)}` } }}
                   onClick={() => window.location.reload()}
                 >
                   Reintentar
@@ -408,11 +441,11 @@ const Mujer = () => {
             )}
 
             <Grid container spacing={3}>
-              {loading ? 
+              {loading ?
                 Array.from(new Array(8)).map((_, i) => (
                   <Grid item xs={12} sm={6} md={4} key={i}><ProductCard loading={true} /></Grid>
                 )) :
-                filteredProducts.length > 0 ? 
+                filteredProducts.length > 0 ?
                   filteredProducts.map(p => (
                     <Grid item xs={12} sm={6} md={4} key={p.id}><ProductCard product={p} loading={false} /></Grid>
                   )) :
@@ -420,9 +453,9 @@ const Mujer = () => {
                     <Box sx={{ textAlign: 'center', py: 8, backgroundColor: alpha(customColors.textPrimary, 0.03), borderRadius: '16px' }}>
                       <Typography variant="h6" gutterBottom sx={{ color: customColors.textPrimary }}>No se encontraron productos</Typography>
                       <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Intenta cambiar los filtros de búsqueda</Typography>
-                      <Button 
-                        variant="outlined" 
-                        sx={{ mt: 3, borderRadius: '12px', textTransform: 'none', borderColor: customColors.accent, color: customColors.accent, '&:hover': { borderColor: customColors.accent, backgroundColor: alpha(customColors.accent, 0.05) }}} 
+                      <Button
+                        variant="outlined"
+                        sx={{ mt: 3, borderRadius: '12px', textTransform: 'none', borderColor: customColors.accent, color: customColors.accent, '&:hover': { borderColor: customColors.accent, backgroundColor: alpha(customColors.accent, 0.05) } }}
                         onClick={resetFilters}
                       >
                         Limpiar filtros
@@ -436,9 +469,9 @@ const Mujer = () => {
 
         <FilterDrawer />
         {isMobile && (
-          <Fab 
-            color="primary" 
-            sx={{ position: 'fixed', bottom: 20, right: 20, background: customColors.gradient, '&:hover': { boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.5)}` }}} 
+          <Fab
+            color="primary"
+            sx={{ position: 'fixed', bottom: 20, right: 20, background: customColors.gradient, '&:hover': { boxShadow: `0 4px 10px ${alpha(customColors.primary, 0.5)}` } }}
             onClick={() => setDrawerOpen(true)}
           >
             <FilterListIcon />
