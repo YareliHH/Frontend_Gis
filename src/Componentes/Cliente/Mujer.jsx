@@ -55,7 +55,7 @@ const Mujer = () => {
     const loadData = async () => {
       setLoading(true);
       const [productosResult, categoriasResult, coloresResult, tallasResult] = await Promise.all([
-        fetchData('http://localhost:3001/api/Hombres'), // o 'http://localhost:3001/api/Mujeres' para ese componente
+        fetchData('http://localhost:3001/api/Mujeres'), // o 'http://localhost:3001/api/Mujeres' para ese componente
         fetchData('http://localhost:3001/api/categorias'),
         fetchData('http://localhost:3001/api/colores'),
         fetchData('http://localhost:3001/api/tallas')
@@ -162,7 +162,7 @@ const Mujer = () => {
   const handleProductClick = (product) => {
     navigate(`/cliente/detallesp/${product.id}`, {
       state: {
-        from: 'hombres', // o 'mujeres' según corresponda
+        from: 'mujeres', // o 'mujeres' según corresponda
         productName: product.nombre_producto,
         // Pasar las imágenes para asegurar que estén disponibles en la página de detalle
         productImages: product.imagenes
