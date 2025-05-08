@@ -37,6 +37,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import PriceCheckIcon from '@mui/icons-material/PriceCheck';
 
 // Importar las imágenes locales de los productos y el fondo
 import img1 from '../imagenes/img1.jpg';
@@ -161,6 +165,30 @@ const PaginaPrincipal = () => {
     hidden: { y: 20, opacity: 0 },
     visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100, damping: 12 } },
   };
+
+  // Datos para la sección "Por qué elegirnos"
+  const whyChooseUs = [
+    {
+      icon: <LocalShippingIcon sx={{ fontSize: 45, color: colors.button }} />,
+      title: "Envío Rápido",
+      description: "Entrega a domicilio en 24-48 horas en todo el país. Tu compra llegará rápidamente y en perfectas condiciones."
+    },
+    {
+      icon: <VerifiedUserIcon sx={{ fontSize: 45, color: colors.button }} />,
+      title: "Calidad Garantizada",
+      description: "Todas nuestras prendas pasan por rigurosos controles de calidad. Ofrecemos garantía de devolución si no estás satisfecho."
+    },
+    {
+      icon: <SupportAgentIcon sx={{ fontSize: 45, color: colors.button }} />,
+      title: "Atención Personalizada",
+      description: "Nuestro equipo está disponible para ayudarte en todo momento. Te asesoramos para que encuentres exactamente lo que buscas."
+    },
+    {
+      icon: <PriceCheckIcon sx={{ fontSize: 45, color: colors.button }} />,
+      title: "Precios Competitivos",
+      description: "Trabajamos directamente con los fabricantes para ofrecerte los mejores precios del mercado sin sacrificar calidad."
+    }
+  ];
 
   return (
     <Box
@@ -393,6 +421,134 @@ const PaginaPrincipal = () => {
             ))}
           </Grid>
         </Box>
+
+        {/* ¿Por qué elegirnos? Sección */}
+        <Fade in={loaded} timeout={1500}>
+          <Box sx={{ mb: 8 }}>
+            <Box sx={{ textAlign: 'center', mb: 6 }}>
+              <Typography
+                variant="h3"
+                component="h2"
+                sx={{
+                  color: colors.primaryText,
+                  fontWeight: 'bold',
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontSize: isMobile ? '1.8rem' : '2.5rem',
+                  position: 'relative',
+                  display: 'inline-block',
+                  '&::after': {
+                    content: '""',
+                    position: 'absolute',
+                    bottom: '-10px',
+                    left: '50%',
+                    width: '80px',
+                    height: '3px',
+                    backgroundColor: colors.button,
+                    transform: 'translateX(-50%)',
+                    borderRadius: '2px',
+                  },
+                }}
+              >
+                ¿Por qué elegirnos?
+              </Typography>
+              <Typography 
+                variant="subtitle1" 
+                sx={{ 
+                  mt: 4, 
+                  color: colors.secondaryText, 
+                  maxWidth: '800px', 
+                  mx: 'auto',
+                  fontFamily: 'Montserrat, sans-serif',
+                  fontSize: isMobile ? '0.9rem' : '1rem',
+                }}
+              >
+                En GisLive Boutique nos distinguimos por ofrecer productos de la más alta calidad, 
+                con un servicio excepcional y precios que se adaptan a tus necesidades.
+              </Typography>
+            </Box>
+
+            <Box component={motion.div} variants={containerVariants} initial="hidden" animate="visible">
+              <Grid container spacing={isMobile ? 4 : 5} justifyContent="center">
+                {whyChooseUs.map((item, index) => (
+                  <Grid item xs={12} sm={6} md={3} key={index}>
+                    <Box 
+                      component={motion.div} 
+                      variants={itemVariants} 
+                      whileHover={{ y: -8, transition: { duration: 0.3 } }}
+                    >
+                      <Paper 
+                        elevation={3}
+                        sx={{
+                          p: 4,
+                          height: '100%',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          borderRadius: '16px',
+                          overflow: 'hidden',
+                          position: 'relative',
+                          '&::before': {
+                            content: '""',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '4px',
+                            background: `linear-gradient(90deg, ${colors.gradientStart} 0%, ${colors.gradientEnd} 100%)`,
+                          },
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            boxShadow: '0 10px 30px rgba(64, 224, 208, 0.2)',
+                            transform: 'translateY(-5px)',
+                          },
+                        }}
+                      >
+                        <Box 
+                          sx={{ 
+                            mb: 2, 
+                            p: 2, 
+                            borderRadius: '50%', 
+                            backgroundColor: 'rgba(64, 224, 208, 0.1)',
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            transition: 'all 0.3s ease',
+                            '&:hover': { transform: 'scale(1.1)' },
+                          }}
+                        >
+                          {item.icon}
+                        </Box>
+                        <Typography 
+                          variant="h6" 
+                          component="h3"
+                          sx={{
+                            mb: 2,
+                            fontWeight: 'bold',
+                            fontFamily: 'Montserrat, sans-serif',
+                            color: colors.dark,
+                          }}
+                        >
+                          {item.title}
+                        </Typography>
+                        <Typography 
+                          variant="body1"
+                          sx={{
+                            color: colors.secondaryText,
+                            fontFamily: 'Montserrat, sans-serif',
+                            lineHeight: 1.6,
+                          }}
+                        >
+                          {item.description}
+                        </Typography>
+                      </Paper>
+                    </Box>
+                  </Grid>
+                ))}
+              </Grid>
+            </Box>
+          </Box>
+        </Fade>
       </Container>
     </Box>
   );
