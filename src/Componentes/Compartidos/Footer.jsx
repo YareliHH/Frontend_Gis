@@ -32,10 +32,12 @@ import {
   QuestionAnswer,
   ContactSupport,
   KeyboardArrowUp,
-  Close as CloseIcon
+  Close as CloseIcon,
+  Group as GroupIcon
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import mercadopago from '../imagenes/mercadopago.png';
 
 // Redes sociales disponibles
 const availableSocials = [
@@ -65,12 +67,8 @@ const availableSocials = [
 // Métodos de pago con imágenes estáticas
 const paymentMethods = [
   {
-    label: 'MasterCard',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg',
-  },
-  {
-    label: 'PayPal',
-    image: 'https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg',
+    label: 'Mercado Pago',
+    image: mercadopago,
   },
 ];
 
@@ -331,9 +329,9 @@ const FooterCliente = () => {
               </Box>
             </Grid>
 
-            {/* Divisor vertical solo visible en tablet/desktop */}
+            {/* Columna 2: Enlaces rápidos */}
             <Grid item xs={12} sm={6} md={4}>
-              <Box sx={{ height: '100%', position: 'relative' }}>
+              <Box sx={{ position: 'relative' }}>
                 {!isMobile && (
                   <Divider 
                     orientation="vertical" 
@@ -349,7 +347,6 @@ const FooterCliente = () => {
                   />
                 )}
               
-                {/* Columna 2: Enlaces rápidos */}
                 <Box sx={{ 
                   textAlign: { xs: 'center', sm: 'left' },
                   height: '100%',
@@ -376,7 +373,6 @@ const FooterCliente = () => {
                       mt: 1,
                     }}
                   >
-                    {/* Enlaces mejorados */}
                     <Link
                       component="button"
                       variant="body2"
@@ -522,7 +518,7 @@ const FooterCliente = () => {
               </Box>
             </Grid>
 
-            {/* Columna 3: Síguenos en redes sociales y Métodos de Pago */}
+            {/* Columna 3: Síguenos en redes sociales, Métodos de Pago y Colaboraciones */}
             <Grid item xs={12} md={4}>
               <Box sx={{ position: 'relative' }}>
                 {!isMobile && (
@@ -626,20 +622,79 @@ const FooterCliente = () => {
                             '&:hover': {
                               transform: 'scale(1.05)',
                               boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-                            }
+                            },
                           }}
                         >
                           <img
                             src={method.image}
                             alt={method.label}
+                            onError={(e) => {
+                              e.target.src = 'https://via.placeholder.com/70x50?text=Mercado+Pago';
+                            }}
                             style={{
                               width: '100%',
                               height: '100%',
                               objectFit: 'contain',
+                              maxWidth: 80,
+                              maxHeight: 50,
                             }}
                           />
                         </Box>
                       ))}
+                    </Box>
+                  </Box>
+
+                  {/* Colaboraciones */}
+                  <Box sx={{ mt: 4 }}>
+                    <Typography 
+                      variant="h6" 
+                      component="div" 
+                      sx={{ 
+                        fontWeight: 'bold', 
+                        mb: 2.5,
+                        color: '#FFFFFF',
+                        textShadow: '1px 1px 3px rgba(0,0,0,0.1)',
+                      }}
+                    >
+                      Colaboraciones
+                    </Typography>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        gap: 2.5,
+                        mt: 1,
+                      }}
+                    >
+                      <Link
+                        component="button"
+                        variant="body2"
+                        color="inherit"
+                        underline="none"
+                        onClick={() => navigate('/colaboraciones')}
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.2s',
+                          '&:hover': {
+                            transform: 'translateX(5px)',
+                            color: '#FFFFFF',
+                            opacity: 1
+                          },
+                          opacity: 0.9
+                        }}
+                      >
+                        <GroupIcon 
+                          sx={{ 
+                            mr: 1.5, 
+                            fontSize: '1.1rem',
+                            color: '#FFFFFF',
+                          }} 
+                        />
+                        Conoce Nuestras Colaboraciones
+                      </Link>
                     </Box>
                   </Box>
                 </Box>
@@ -719,7 +774,6 @@ const FooterCliente = () => {
         </DialogTitle>
         
         <DialogContent dividers sx={{ p: 3 }}>
-          {/* Aplicamos estilos para mejorar la legibilidad del contenido */}
           <Typography 
             variant="body1" 
             component="div"

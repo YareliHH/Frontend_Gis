@@ -364,21 +364,6 @@ const BarraNavCliente = () => {
             {/* Derecha: Iconos (Perfil, Carrito, Modo oscuro, Cerrar sesión) */}
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton
-                onClick={() => navigate('/cliente/perfil')}
-                size="large"
-                aria-label="perfil"
-                sx={{ 
-                  color: theme.palette.primary.main,
-                  transition: 'all 0.2s',
-                  '&:hover': { 
-                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-                    transform: 'scale(1.05)'
-                  } 
-                }}
-              >
-                <PersonIcon />
-              </IconButton>
-              <IconButton
                 onClick={() => navigate('/cliente/carrito-compras')}
                 size="large"
                 aria-label="ver carrito"
@@ -395,21 +380,20 @@ const BarraNavCliente = () => {
                   <ShoppingCartIcon />
                 </Badge>
               </IconButton>
-              <IconButton
-                onClick={toggleDarkMode}
+                <IconButton
+                onClick={() => navigate('/cliente/perfil')}
                 size="large"
-                aria-label="cambiar tema"
+                aria-label="perfil"
                 sx={{ 
-                  color: darkMode ? '#FFC107' : '#5C6BC0',
-                  transition: 'all 0.3s ease',
-                  transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
+                  color: theme.palette.primary.main,
+                  transition: 'all 0.2s',
                   '&:hover': { 
                     backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
-                    transform: darkMode ? 'rotate(180deg) scale(1.05)' : 'rotate(0deg) scale(1.05)'
-                  }
+                    transform: 'scale(1.05)'
+                  } 
                 }}
               >
-                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                <PersonIcon />
               </IconButton>
               <IconButton
                 onClick={handleLogout}
@@ -425,6 +409,22 @@ const BarraNavCliente = () => {
                 }}
               >
                 <LogoutIcon />
+              </IconButton>
+                 <IconButton
+                onClick={toggleDarkMode}
+                size="large"
+                aria-label="cambiar tema"
+                sx={{ 
+                  color: darkMode ? '#FFC107' : '#5C6BC0',
+                  transition: 'all 0.3s ease',
+                  transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
+                  '&:hover': { 
+                    backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                    transform: darkMode ? 'rotate(180deg) scale(1.05)' : 'rotate(0deg) scale(1.05)'
+                  }
+                }}
+              >
+                {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>
 
               {/* Menú móvil */}

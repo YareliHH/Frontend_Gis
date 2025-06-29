@@ -28,6 +28,7 @@ import DetallesPrin from './Componentes/Inicio/DetallesPrin.jsx';
 import Breadcrumbs from './Componentes/Navegacion/Breadcrumbs.jsx';
 import DynamicBreadcrumbsDetector from './Componentes/Navegacion/DynamicBreadcrumbs.jsx';
 import SectionTracker from './Componentes/Navegacion/SectionTracker .jsx';
+import Colaboraciones from './Componentes/Inicio/colaboraciones.jsx';
 
 //CLIENTE 
 import PaginaCliente from './Componentes/Cliente/PaginaCliente.jsx';
@@ -39,6 +40,9 @@ import OfertasCliente from './Componentes/Cliente/OfertasCliente.jsx';
 import DetallesProducto from './Componentes/Cliente/DetallesProducto.jsx';
 import CarritoC from './Componentes/Cliente/carrito.jsx';
 import DetallesProMujer from './Componentes/Cliente/DetallesProMujer.jsx';
+import MetodoPago from './Componentes/Cliente/MetodoPago.jsx';
+import Paypal from './Componentes/Cliente/Paypal.jsx';
+import MercadPago from './Componentes/Cliente/Mercadopago.jsx';
 
 // Componentes administrativos
 import PaginaAdministrativa from './Componentes/Administrativo/PaginaAdministrativa.jsx';
@@ -90,6 +94,8 @@ const App = () => {
             <Route path="/busqueda" element={<LayoutEncabezado><Busqueda /></LayoutEncabezado>} />
             <Route path="/preguntasF" element={<LayoutEncabezado><FAQ /></LayoutEncabezado>} />
             <Route path="/chat" element={<LayoutEncabezado><Chat/></LayoutEncabezado>} />
+             <Route path="/colaboraciones" element={<LayoutEncabezado><Colaboraciones/></LayoutEncabezado>} />
+            
 
             <Route path="/detalles" element={<DetallesPrin />} />
 
@@ -108,6 +114,8 @@ const App = () => {
             <Route path="/cliente/detalles-producto" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre', path: '/cliente/hombres' }, { name: 'Detalle Hombre' }]} /><DetallesProducto /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/carrito-compras" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Carrito', path: '/cliente/carrito' }, { name: 'carrito compras' }]} /><CarritoC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/detalles-Mujer" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer', path: '/cliente/mujeres' }, { name: 'Detalle Mujer' }]} /><DetallesProMujer /></EncabezadoCliente></ProtectedRoute>} />
+           <Route path="/cliente/pago" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'carrito', path: '/cliente/carrito' }, { name: 'pago' }]} /><MetodoPago/></EncabezadoCliente></ProtectedRoute>} />
+
 
             {/* Rutas administrativas - Protegidas */}
             <Route path="/admin" element={ <ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin></ProtectedRoute>} />

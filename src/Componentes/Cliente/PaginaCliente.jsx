@@ -298,16 +298,18 @@ const PaginaPrincipal = () => {
       </Drawer>
 
       {/* Main content */}
-      <Container maxWidth="lg" sx={{ py: 4, flexGrow: 1 }}>
-        {/* Hero section with improved slider */}
+      <Container maxWidth={false} sx={{ py: 0, flexGrow: 1, width: '100vw', margin: 0 }}>
+        {/* Hero section with full-screen slider */}
         <Zoom in={loaded} timeout={800}>
-          <Box sx={{ maxWidth: '100%', margin: '0 auto', mb: 6, position: 'relative' }}>
+          <Box sx={{ width: '100vw', height: '100vh', position: 'relative', margin: 0 }}>
             <Paper
               elevation={5}
               sx={{
-                borderRadius: '16px',
+                borderRadius: 0,
                 overflow: 'hidden',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                boxShadow: 'none',
+                width: '100%',
+                height: '100%',
                 position: 'relative',
                 '&::after': {
                   content: '""',
@@ -322,13 +324,14 @@ const PaginaPrincipal = () => {
                 }
               }}
             >
-              <Box className="carousel-container" sx={{ position: 'relative' }}>
+              <Box className="carousel-container" sx={{ width: '100%', height: '100%', position: 'relative' }}>
                 <Slider {...sliderSettings}>
                   {images.map((img, index) => (
-                    <Box key={index} sx={{ position: 'relative', width: '100%' }}>
+                    <Box key={index} sx={{ width: '100vw', height: '100vh', position: 'relative' }}>
                       <Box
                         sx={{
-                          height: isMobile ? '300px' : '500px',
+                          width: '100%',
+                          height: '100%',
                           background: `url(${img})`,
                           backgroundPosition: 'center',
                           backgroundSize: 'cover',
@@ -366,7 +369,6 @@ const PaginaPrincipal = () => {
                            index === 4 ? 'Elegancia para cada ocasión' : 
                            'Tu estilo, tu personalidad'}
                         </Typography>
-                      
                       </Box>
                     </Box>
                   ))}

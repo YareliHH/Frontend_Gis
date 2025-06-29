@@ -621,12 +621,7 @@ const DetallesProducto = () => {
                 {product.nombre_producto}
               </Typography>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <Rating value={4.5} precision={0.5} readOnly sx={{ color: customColors.mercadoBlue }} />
-                <Typography variant="body2" sx={{ ml: 1, color: customColors.textSecondary }}>
-                  (24 reseñas)
-                </Typography>
-              </Box>
+           
 
               <Typography variant="h4" sx={{ 
                 mb: 1, 
@@ -635,14 +630,7 @@ const DetallesProducto = () => {
               }}>
                 ${parseFloat(product.precio || '0').toFixed(2)}
               </Typography>
-              
-              <Typography variant="body2" sx={{ 
-                color: customColors.accent, 
-                mb: 2,
-                fontWeight: 500
-              }}>
-                12 cuotas sin interés de ${(parseFloat(product.precio || '0') / 12).toFixed(2)}
-              </Typography>
+        
 
               <Typography variant="body1" sx={{ color: customColors.textSecondary, mb: 2 }}>
                 {product.descripcion}

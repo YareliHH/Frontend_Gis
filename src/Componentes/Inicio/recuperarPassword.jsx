@@ -136,7 +136,7 @@ const RecuperarContrasena = () => {
       sx={{
         position: 'relative',
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #1e3c72 0%)',
+        background: 'linear-gradient(135deg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         display: 'flex',
