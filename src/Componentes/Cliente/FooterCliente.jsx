@@ -36,6 +36,8 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+//mofificar la parte del metodo de pago 
+
 // Redes sociales disponibles
 const availableSocials = [
   {
