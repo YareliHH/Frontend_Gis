@@ -27,7 +27,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import RemoveShoppingCartIcon from '@mui/icons-material/RemoveShoppingCart';
 import { useAuth } from '../Autenticacion/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
+//Se modifico en la parte del boton de proceder el pago 
 const Carrito = () => {
   const [carrito, setCarrito] = useState([]);
   const [loading, setLoading] = useState(true);

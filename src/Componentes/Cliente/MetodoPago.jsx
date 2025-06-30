@@ -17,6 +17,8 @@ import CreditCardIcon from '@mui/icons-material/CreditCard';
 import SecurityIcon from '@mui/icons-material/Security';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
+
+//Modificaron la parte del pago 
 const MetodoPago = () => {
   const [selectedMethod, setSelectedMethod] = useState(null);
   const [hoveredMethod, setHoveredMethod] = useState(null);
