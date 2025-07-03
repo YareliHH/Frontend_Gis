@@ -29,6 +29,9 @@ import Breadcrumbs from './Componentes/Navegacion/Breadcrumbs.jsx';
 import DynamicBreadcrumbsDetector from './Componentes/Navegacion/DynamicBreadcrumbs.jsx';
 import SectionTracker from './Componentes/Navegacion/SectionTracker .jsx';
 import Colaboraciones from './Componentes/Inicio/colaboraciones.jsx';
+import DeslindeLegal from './Componentes/Inicio/deslinde.jsx'
+import TerminosYCondiciones from './Componentes/Inicio/condicione.jsx'
+import AvisosdePrivacidad from './Componentes/Inicio/privacidad.jsx'
 
 //CLIENTE 
 import PaginaCliente from './Componentes/Cliente/PaginaCliente.jsx';
@@ -43,6 +46,14 @@ import DetallesProMujer from './Componentes/Cliente/DetallesProMujer.jsx';
 import MetodoPago from './Componentes/Cliente/MetodoPago.jsx';
 import Paypal from './Componentes/Cliente/Paypal.jsx';
 import MercadPago from './Componentes/Cliente/Mercadopago.jsx';
+import PoliticaC from './Componentes/Cliente/AvisosCliente.jsx';
+import CondicionesC from './Componentes/Cliente/condicionesCliente.jsx';
+import DeslindeC from './Componentes/Cliente/deslindeCliente.jsx';
+import PreguntasFrecuentesC from './Componentes/Cliente/FAQCliente.jsx';
+import ContactanosCliente from './Componentes/Cliente/ContactanosCliente.jsx';
+
+
+
 
 // Componentes administrativos
 import PaginaAdministrativa from './Componentes/Administrativo/PaginaAdministrativa.jsx';
@@ -63,6 +74,7 @@ import Generos from './Componentes/Administrativo/Generos.jsx';
 import FaqsAdmin from './Componentes/Administrativo/Faqsadmin.jsx';
 import Ventas from './Componentes/Administrativo/Ventas.jsx';
 import Banner from './Componentes/Administrativo/Banner.jsx';
+import PromocionAdmin from './Componentes/Administrativo/PromocionAdmin.jsx';
 
 // Componentes del Empleado
 import PaginaEmpleado from './Componentes/Empleado/PaginaEmpleado.jsx';
@@ -73,6 +85,7 @@ import Error500 from './Componentes/Pagina/Error500.jsx';
 import Error404 from './Componentes/Pagina/Error404.jsx';
 import Error400 from './Componentes/Pagina/Error400.jsx';
 import AuthError from './Componentes/Autenticacion/AuthError.jsx';
+import PreguntasFrecuentes from './Componentes/Inicio/FAQ.jsx';
 
 const App = () => {
   return (
@@ -89,12 +102,16 @@ const App = () => {
             <Route path="/recuperar_password" element={<LayoutEncabezado><RecuperarContraseña /></LayoutEncabezado>} />
             <Route path="/resetear_contrasena" element={<LayoutEncabezado><CambiarContra /></LayoutEncabezado>} />
             <Route path="/Ofertasespeciales" element={<LayoutEncabezado><OfertasEspeciales /></LayoutEncabezado>} />
-            <Route path="/contacto" element={<LayoutEncabezado><Contactanos /></LayoutEncabezado>} />
+            <Route path="/contacto" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Contactanos' }]} /><Contactanos /></LayoutEncabezado>} />
             <Route path="/acercaDe" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Acerca de' }]} /><AcercaDe /></LayoutEncabezado>} />
             <Route path="/busqueda" element={<LayoutEncabezado><Busqueda /></LayoutEncabezado>} />
-            <Route path="/preguntasF" element={<LayoutEncabezado><FAQ /></LayoutEncabezado>} />
+            <Route path="/preguntasF" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'FAQ' }]} /><FAQ /></LayoutEncabezado>} />
             <Route path="/chat" element={<LayoutEncabezado><Chat/></LayoutEncabezado>} />
-             <Route path="/colaboraciones" element={<LayoutEncabezado><Colaboraciones/></LayoutEncabezado>} />
+             <Route path="/colaboraciones" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'colaboraciones' }]} /><Colaboraciones/></LayoutEncabezado>} />
+            <Route path="/deslindelegal" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Deslinde legal' }]} /><DeslindeLegal/></LayoutEncabezado>} />
+            <Route path="/terminoscondiciones" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Terminos y condiciones' }]} /><TerminosYCondiciones/></LayoutEncabezado>} />
+           <Route path="/avisosprivacidad" element={<LayoutEncabezado><Breadcrumbs paths={[  { name: 'Inicio', path: '/' },{ name: 'Avisos de privacidad' } ]} /> <AvisosdePrivacidad /> </LayoutEncabezado>}/>
+
             
 
             <Route path="/detalles" element={<DetallesPrin />} />
@@ -115,8 +132,14 @@ const App = () => {
             <Route path="/cliente/carrito-compras" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Carrito', path: '/cliente/carrito' }, { name: 'carrito compras' }]} /><CarritoC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/detalles-Mujer" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer', path: '/cliente/mujeres' }, { name: 'Detalle Mujer' }]} /><DetallesProMujer /></EncabezadoCliente></ProtectedRoute>} />
            <Route path="/cliente/pago" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'carrito', path: '/cliente/carrito' }, { name: 'pago' }]} /><MetodoPago/></EncabezadoCliente></ProtectedRoute>} />
+           <Route path="/cliente/avisosCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'PoliticasC' }]} /><PoliticaC/></EncabezadoCliente></ProtectedRoute>} />
+           <Route path="/cliente/condicionesCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'CondicionesC' }]} /><CondicionesC/></EncabezadoCliente></ProtectedRoute>} />
+            <Route path="/cliente/deslindeCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'deslindeC' }]} /><DeslindeC/></EncabezadoCliente></ProtectedRoute>} />
+           <Route path="/cliente/preguntasFCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Faqs' }]} /><PreguntasFrecuentesC/></EncabezadoCliente></ProtectedRoute>} />
+          <Route path="/cliente/contactoCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Contactanos' }]} /><ContactanosCliente/></EncabezadoCliente></ProtectedRoute>} />
 
-
+         
+         
             {/* Rutas administrativas - Protegidas */}
             <Route path="/admin" element={ <ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/deslinde" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Deslinde /></LayoutEncabezadoAdmin></ProtectedRoute> } />
@@ -134,6 +157,7 @@ const App = () => {
             <Route path="/admin/faqsadmin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><FaqsAdmin /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/ventas" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Ventas /></LayoutEncabezadoAdmin></ProtectedRoute> } />
             <Route path="/admin/banner" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Banner /></LayoutEncabezadoAdmin></ProtectedRoute>} />
+            <Route path="/admin/promocionAdmin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PromocionAdmin /></LayoutEncabezadoAdmin></ProtectedRoute>} />
 
             {/* Rutas Empleado - Protegidas */}
             <Route path="/empleado" element={<ProtectedRoute requiredRole="empleado"><LayoutEncabezadoEmpleado><PaginaEmpleado /></LayoutEncabezadoEmpleado></ProtectedRoute>} />

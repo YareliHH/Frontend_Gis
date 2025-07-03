@@ -41,6 +41,8 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import PersonIcon from '@mui/icons-material/Person';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import WebAssetIcon from "@mui/icons-material/WebAsset";
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
+
 
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -156,7 +158,8 @@ const EncabezadoAdministrativo = () => {
         { icon: CategoryIcon, text: 'Categorías', path: '/admin/categorias' },
         { icon: ColorLensIcon, text: 'Colores', path: '/admin/colores' },
         { icon: StraightenIcon, text: 'Tallas', path: '/admin/tallas' },
-        { icon: TransgenderIcon, text: 'Géneros', path: '/admin/generos' }
+        { icon: TransgenderIcon, text: 'Géneros', path: '/admin/generos' },
+        { icon: LocalOfferIcon, text: 'Promoción', path: '/admin/promocionAdmin' },
       ]
     },
     {
