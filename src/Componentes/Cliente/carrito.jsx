@@ -315,83 +315,205 @@ const Carrito = () => {
                 </List>
               </Grid>
 
-              {/* Columna del resumen y pago */}
-              <Grid item xs={12} lg={4}>
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    position: 'sticky',
-                    top: 20,
-                    bgcolor: 'background.default'
-                  }}
-                >
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Resumen del Pedido
-                  </Typography>
-                  
-                  <Divider sx={{ my: 2 }} />
-                  
-                  <Box sx={{ mb: 3 }}>
-                    <Typography variant="body2" color="text.secondary" gutterBottom>
-                      Productos en tu carrito:
-                    </Typography>
-                    {carrito.map((item) => (
-                      <Box key={item.producto_id} sx={{ 
-                        display: 'flex', 
-                        justifyContent: 'space-between', 
-                        alignItems: 'center',
-                        py: 0.5
-                      }}>
-                        <Typography variant="body2" sx={{ flex: 1 }}>
-                          {item.nombre_producto} x{item.cantidad}
-                        </Typography>
-                        <Typography variant="body2" fontWeight="medium">
-                          ${(item.precio * item.cantidad).toFixed(2)}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-
-                  <Divider sx={{ my: 2 }} />
-
-                  <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mb: 3,
-                    p: 2,
-                    bgcolor: 'grey.50',
-                    borderRadius: 2
-                  }}>
-                    <Typography variant="h6" fontWeight="bold">
-                      Total:
-                    </Typography>
-                    <Typography variant="h5" color="primary.main" fontWeight="bold">
-                      ${total.toFixed(2)}
-                    </Typography>
-                  </Box>
-
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    fullWidth
-                    size="large"
-                    onClick={() => navigate('/cliente/pago')}
-                    sx={{
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      py: 1.5,
-                      fontSize: '1.1rem',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-                      '&:hover': { boxShadow: '0 6px 16px rgba(0,0,0,0.2)' }
-                    }}
-                  >
-                    Proceder al Pago
-                  </Button>
-                </Paper>
-              </Grid>
+        {/* Columna del resumen y pago */}
+<Grid item xs={12} lg={4}>
+  <Paper
+    elevation={3}
+    sx={{
+      p: 3,
+      borderRadius: 2,
+      position: 'sticky',
+      top: 20,
+      bgcolor: 'background.default'
+    }}
+  >
+    <Typography variant="h6" fontWeight="bold" gutterBottom>
+      Resumen del Pedido
+    </Typography>
+    
+    <Divider sx={{ my: 2 }} />
+    
+    {/* Lista de productos con detalles */}
+    <Box sx={{ mb: 3 }}>
+      {carrito.map((item) => (
+        <Box 
+          key={item.producto_id} 
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            py: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            '&:last-child': { borderBottom: 'none' }
+          }}
+        >
+          {/* Imagen del producto */}
+          <Box
+            sx={{
+              width: 60,
+              height: 60,
+              bgcolor: 'grey.100',
+              borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              flexShrink: 0
+            }}
+          >
+            {item.imagen_url ? (
+              <img
+                src={item.imagen_url}
+                alt={item.nombre_producto}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+              />
+            ) : (
+              <Box
+                sx={{
+                  width: '100%',
+                  height: '100%',
+                  bgcolor: 'grey.200',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Typography variant="caption" color="text.secondary">
+                  IMG
+                </Typography>
+              </Box>
+            )}
+          </Box>
+          
+          {/* Información del producto */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography 
+              variant="body2" 
+              fontWeight="medium"
+              sx={{
+                mb: 0.5,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {item.nombre_producto}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Cantidad: {item.cantidad}
+            </Typography>
+            <Typography variant="body2" fontWeight="bold" color="primary.main">
+              ${(item.precio * item.cantidad).toFixed(2)}
+            </Typography>
+          </Box>
+        </Box>
+      ))}
+    </Box>
+    
+    <Divider sx={{ my: 2 }} />
+    
+    {/* Subtotal */}
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      mb: 1
+    }}>
+      <Typography variant="body2" color="text.secondary">
+        Subtotal ({carrito.length} producto{carrito.length !== 1 ? 's' : ''})
+      </Typography>
+      <Typography variant="body2" fontWeight="medium">
+        ${total.toFixed(2)}
+      </Typography>
+    </Box>
+    
+    {/* Envío */}
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      mb: 2
+    }}>
+      <Typography variant="body2" color="text.secondary">
+        Envío
+      </Typography>
+      <Typography variant="body2" fontWeight="medium" color="success.main">
+        Gratis
+      </Typography>
+    </Box>
+    
+    <Divider sx={{ my: 2 }} />
+    
+    {/* Total */}
+    <Box sx={{
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      mb: 3,
+      p: 2,
+      bgcolor: 'grey.50',
+      borderRadius: 2
+    }}>
+      <Typography variant="h6" fontWeight="bold">
+        Total
+      </Typography>
+      <Typography variant="h5" color="primary.main" fontWeight="bold">
+        ${total.toFixed(2)}
+      </Typography>
+    </Box>
+  
+    {/* Botones de pago */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+      {/* Botón PayPal */}
+      <Button
+        variant="contained"
+        fullWidth
+        size="large"
+        onClick={() => navigate('/cliente/pago?metodo=paypal')}
+        sx={{
+          borderRadius: 2,
+          textTransform: 'none',
+          py: 1.5,
+          fontSize: '1.1rem',
+          bgcolor: '#FFC439',
+          color: '#003087',
+          fontWeight: 'bold',
+          '&:hover': { 
+            bgcolor: '#FFB800',
+            boxShadow: '0 6px 16px rgba(0,0,0,0.2)' 
+          }
+        }}
+      >
+        Mercado pago
+      </Button>
+   
+      
+     
+    </Box>
+    
+    {/* Botón volver al carrito */}
+    <Button
+      variant="text"
+      fullWidth
+      onClick={() => navigate('/cliente/carrito')}
+      sx={{
+        mt: 2,
+        color: 'text.secondary',
+        textTransform: 'none',
+        fontSize: '0.9rem'
+      }}
+    >
+      Volver al Carrito
+    </Button>
+  </Paper>
+</Grid>
             </Grid>
           )}
         </Paper>

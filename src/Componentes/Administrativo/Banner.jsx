@@ -40,7 +40,7 @@ const BannersAdmin = () => {
   const fetchBanners = async () => {
     setLoading(true);
     try {
-      const response = await axios.get('http://localhost:3001/api/banners');
+     const response = await axios.get('http://localhost:3001/obtbanner');
       setBanners(response.data);
       setLoading(false);
     } catch (error) {
@@ -71,9 +71,9 @@ const BannersAdmin = () => {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-      const response = await axios.post('http://localhost:3001/api/banners', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+   const response = await axios.post('http://localhost:3001/agregarbanner', formData, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
       setBanners([...banners, { id: response.data.id, titulo, descripcion, imagen: response.data.imagen || '' }]);
       setTitulo('');
       setDescripcion('');
@@ -121,9 +121,9 @@ const BannersAdmin = () => {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-      const response = await axios.put(`http://localhost:3001/api/banners/${currentBannerId}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
+     const response = await axios.put(`http://localhost:3001/bannersedit/${currentBannerId}`, formData, {
+     headers: { 'Content-Type': 'multipart/form-data' } 
+    });
       // Actualizar el banner en el estado con los nuevos datos
       setBanners(banners.map(b => 
         b.id === currentBannerId 
@@ -158,7 +158,7 @@ const BannersAdmin = () => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este banner?')) {
       setLoading(true);
       try {
-        await axios.delete(`http://localhost:3001/api/banners/${id}`);
+        await axios.delete(`http://localhost:3001/banners/${id}`);
         setBanners(banners.filter(b => b.id !== id));
         setNotification({
           open: true,

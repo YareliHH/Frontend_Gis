@@ -43,9 +43,6 @@ import OfertasCliente from './Componentes/Cliente/OfertasCliente.jsx';
 import DetallesProducto from './Componentes/Cliente/DetallesProducto.jsx';
 import CarritoC from './Componentes/Cliente/carrito.jsx';
 import DetallesProMujer from './Componentes/Cliente/DetallesProMujer.jsx';
-import MetodoPago from './Componentes/Cliente/MetodoPago.jsx';
-import Paypal from './Componentes/Cliente/Paypal.jsx';
-import MercadPago from './Componentes/Cliente/Mercadopago.jsx';
 import PoliticaC from './Componentes/Cliente/AvisosCliente.jsx';
 import CondicionesC from './Componentes/Cliente/condicionesCliente.jsx';
 import DeslindeC from './Componentes/Cliente/deslindeCliente.jsx';
@@ -85,7 +82,6 @@ import Error500 from './Componentes/Pagina/Error500.jsx';
 import Error404 from './Componentes/Pagina/Error404.jsx';
 import Error400 from './Componentes/Pagina/Error400.jsx';
 import AuthError from './Componentes/Autenticacion/AuthError.jsx';
-import PreguntasFrecuentes from './Componentes/Inicio/FAQ.jsx';
 
 const App = () => {
   return (
@@ -131,7 +127,6 @@ const App = () => {
             <Route path="/cliente/detalles-producto" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre', path: '/cliente/hombres' }, { name: 'Detalle Hombre' }]} /><DetallesProducto /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/carrito-compras" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Carrito', path: '/cliente/carrito' }, { name: 'carrito compras' }]} /><CarritoC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/detalles-Mujer" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer', path: '/cliente/mujeres' }, { name: 'Detalle Mujer' }]} /><DetallesProMujer /></EncabezadoCliente></ProtectedRoute>} />
-           <Route path="/cliente/pago" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'carrito', path: '/cliente/carrito' }, { name: 'pago' }]} /><MetodoPago/></EncabezadoCliente></ProtectedRoute>} />
            <Route path="/cliente/avisosCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'PoliticasC' }]} /><PoliticaC/></EncabezadoCliente></ProtectedRoute>} />
            <Route path="/cliente/condicionesCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'CondicionesC' }]} /><CondicionesC/></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/deslindeCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'deslindeC' }]} /><DeslindeC/></EncabezadoCliente></ProtectedRoute>} />
