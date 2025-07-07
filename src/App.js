@@ -99,14 +99,11 @@ const App = () => {
             <Route path="/acercaDe" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Acerca de' }]} /><AcercaDe /></LayoutEncabezado>} />
             <Route path="/busqueda" element={<LayoutEncabezado><Busqueda /></LayoutEncabezado>} />
             <Route path="/preguntasF" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'FAQ' }]} /><FAQ /></LayoutEncabezado>} />
-            <Route path="/chat" element={<LayoutEncabezado><Chat/></LayoutEncabezado>} />
-             <Route path="/colaboraciones" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'colaboraciones' }]} /><Colaboraciones/></LayoutEncabezado>} />
-            <Route path="/deslindelegal" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Deslinde legal' }]} /><DeslindeLegal/></LayoutEncabezado>} />
-            <Route path="/terminoscondiciones" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Terminos y condiciones' }]} /><TerminosYCondiciones/></LayoutEncabezado>} />
-           <Route path="/avisosprivacidad" element={<LayoutEncabezado><Breadcrumbs paths={[  { name: 'Inicio', path: '/' },{ name: 'Avisos de privacidad' } ]} /> <AvisosdePrivacidad /> </LayoutEncabezado>}/>
-
-            
-
+            <Route path="/chat" element={<LayoutEncabezado><Chat /></LayoutEncabezado>} />
+            <Route path="/colaboraciones" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'colaboraciones' }]} /><Colaboraciones /></LayoutEncabezado>} />
+            <Route path="/deslindelegal" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Deslinde legal' }]} /><DeslindeLegal /></LayoutEncabezado>} />
+            <Route path="/terminoscondiciones" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Terminos y condiciones' }]} /><TerminosYCondiciones /></LayoutEncabezado>} />
+            <Route path="/avisosprivacidad" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Avisos de privacidad' }]} /> <AvisosdePrivacidad /> </LayoutEncabezado>} />
             <Route path="/detalles" element={<DetallesPrin />} />
 
             {/* Páginas de error */}
@@ -115,7 +112,7 @@ const App = () => {
             <Route path="/error400" element={<LayoutEncabezado><Error400 /></LayoutEncabezado>} />
 
             {/* Rutas de CLIENTE - Protegidas */}
-            <Route path="/cliente" element={<ProtectedRoute requiredRole="usuario">  <EncabezadoCliente><PaginaCliente /></EncabezadoCliente></ProtectedRoute> } />
+            <Route path="/cliente" element={<ProtectedRoute requiredRole="usuario">  <EncabezadoCliente><PaginaCliente /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/hombres" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><SectionTracker sectionName="hombres" /><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre' }]} /><Hombre /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/mujeres" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><SectionTracker sectionName="mujeres" /><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer' }]} /> <Mujer /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/detallesp/:id" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><DynamicBreadcrumbsDetector><DetallesProducto /></DynamicBreadcrumbsDetector></EncabezadoCliente></ProtectedRoute>} />
@@ -124,17 +121,17 @@ const App = () => {
             <Route path="/cliente/detalles-producto" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Hombre', path: '/cliente/hombres' }, { name: 'Detalle Hombre' }]} /><DetallesProducto /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/carrito-compras" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Carrito', path: '/cliente/carrito' }, { name: 'carrito compras' }]} /><CarritoC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/detalles-Mujer" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Mujer', path: '/cliente/mujeres' }, { name: 'Detalle Mujer' }]} /><DetallesProMujer /></EncabezadoCliente></ProtectedRoute>} />
-           <Route path="/cliente/avisosCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'PoliticasC' }]} /><PoliticaC/></EncabezadoCliente></ProtectedRoute>} />
-           <Route path="/cliente/condicionesCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'CondicionesC' }]} /><CondicionesC/></EncabezadoCliente></ProtectedRoute>} />
-            <Route path="/cliente/deslindeCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'deslindeC' }]} /><DeslindeC/></EncabezadoCliente></ProtectedRoute>} />
-           <Route path="/cliente/preguntasFCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Faqs' }]} /><PreguntasFrecuentesC/></EncabezadoCliente></ProtectedRoute>} />
-          <Route path="/cliente/contactoCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Contactanos' }]} /><ContactanosCliente/></EncabezadoCliente></ProtectedRoute>} />
+            <Route path="/cliente/avisosCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'PoliticasC' }]} /><PoliticaC /></EncabezadoCliente></ProtectedRoute>} />
+            <Route path="/cliente/condicionesCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'CondicionesC' }]} /><CondicionesC /></EncabezadoCliente></ProtectedRoute>} />
+            <Route path="/cliente/deslindeCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'deslindeC' }]} /><DeslindeC /></EncabezadoCliente></ProtectedRoute>} />
+            <Route path="/cliente/preguntasFCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Faqs' }]} /><PreguntasFrecuentesC /></EncabezadoCliente></ProtectedRoute>} />
+            <Route path="/cliente/contactoCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Contactanos' }]} /><ContactanosCliente /></EncabezadoCliente></ProtectedRoute>} />
 
-         
-         
+
+
             {/* Rutas administrativas - Protegidas */}
-            <Route path="/admin" element={ <ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin></ProtectedRoute>} />
-            <Route path="/admin/deslinde" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Deslinde /></LayoutEncabezadoAdmin></ProtectedRoute> } />
+            <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin></ProtectedRoute>} />
+            <Route path="/admin/deslinde" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Deslinde /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/perfil" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PerfilEmpresa /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/politicas" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Politicas /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/terminos" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><TerminosCondiciones /></LayoutEncabezadoAdmin></ProtectedRoute>} />
@@ -147,7 +144,7 @@ const App = () => {
             <Route path="/admin/tallas" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Tallas /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/generos" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Generos /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/faqsadmin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><FaqsAdmin /></LayoutEncabezadoAdmin></ProtectedRoute>} />
-            <Route path="/admin/ventas" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Ventas /></LayoutEncabezadoAdmin></ProtectedRoute> } />
+            <Route path="/admin/ventas" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Ventas /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/banner" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><Banner /></LayoutEncabezadoAdmin></ProtectedRoute>} />
             <Route path="/admin/promocionAdmin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PromocionAdmin /></LayoutEncabezadoAdmin></ProtectedRoute>} />
 

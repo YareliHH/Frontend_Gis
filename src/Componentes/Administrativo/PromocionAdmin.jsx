@@ -105,7 +105,7 @@ const Promociones = () => {
   const fetchPromociones = async () => {
     setLoadingData(true);
     try {
-      const response = await fetch('http://localhost:3001/api/promo/get');
+      const response = await fetch('http://localhost:3001/api/promo/get_promo');
       const data = await response.json();
       setPromociones(data);
     } catch (err) {
