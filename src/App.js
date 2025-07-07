@@ -49,9 +49,6 @@ import DeslindeC from './Componentes/Cliente/deslindeCliente.jsx';
 import PreguntasFrecuentesC from './Componentes/Cliente/FAQCliente.jsx';
 import ContactanosCliente from './Componentes/Cliente/ContactanosCliente.jsx';
 
-
-
-
 // Componentes administrativos
 import PaginaAdministrativa from './Componentes/Administrativo/PaginaAdministrativa.jsx';
 import LayoutEncabezadoAdmin from './Componentes/Administrativo/LayoutConEncabezadoAdmin.jsx';
