@@ -146,7 +146,7 @@ const BarraNavCliente = () => {
 
   const searchProducts = async (query) => {
     try {
-      const response = await axios.get(`https://backend-gis-1.onrender.com/api/buscare?q=${query}`);
+      const response = await axios.get(`http://localhost:3001/api/buscare?q=${query}`);
       setSearchResults(response.data);
       setOpenSearch(response.data.length > 0);
     } catch (error) {

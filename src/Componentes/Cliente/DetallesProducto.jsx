@@ -22,7 +22,7 @@ import { useAuth } from '../Autenticacion/AuthContext';
 
 // Cliente axios con configuración y timeout extendido
 const apiClient = axios.create({
-  baseURL: 'https://backend-gis-1.onrender.com',
+  baseURL: 'http://localhost:3001',
   timeout: 15000, // Tiempo de espera más largo (15 segundos)
   headers: {
     'Content-Type': 'application/json'

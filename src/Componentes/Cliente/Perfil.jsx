@@ -213,7 +213,7 @@ const UserProfile = () => {
   const fetchUserProfile = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('https://backend-gis-1.onrender.com/api/perfil', {
+      const response = await axios.get('http://localhost:3001/api/perfil', {
         withCredentials: true
       });
       
@@ -340,7 +340,7 @@ const UserProfile = () => {
     try {
       setLoading(true);
       // Enviar datos actualizados al servidor
-      await axios.put('https://backend-gis-1.onrender.com/api/perfil', tempUser, {
+      await axios.put('http://localhost:3001/api/perfil', tempUser, {
         withCredentials: true
       });
       
@@ -451,7 +451,7 @@ const UserProfile = () => {
     try {
       setLoading(true);
       // Enviar solicitud de cambio de contraseña
-      await axios.post('https://backend-gis-1.onrender.com/api/cambiar-password', {
+      await axios.post('http://localhost:3001/api/cambiar-password', {
         currentPassword: passwordData.currentPassword,
         newPassword: passwordData.newPassword
       }, {

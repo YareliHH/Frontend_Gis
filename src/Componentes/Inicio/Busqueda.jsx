@@ -56,7 +56,7 @@ const Busqueda = () => {
       
       try {
         // Usar la misma estructura de llamada que en otros componentes
-        const data = await fetchData(`https://backend-gis-1.onrender.com/api/buscar?q=${query}`);
+        const data = await fetchData(`http://localhost:3001/api/buscar?q=${query}`);
         setResultados(data);
       } catch (err) {
         console.error("Error al buscar productos:", err);

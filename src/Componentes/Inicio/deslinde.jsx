@@ -24,7 +24,7 @@ const DeslindeLegal = () => {
   const theme = useTheme();
 
   useEffect(() => {
-   axios.get('https://backend-gis-1.onrender.com/api/deslinde/deslinde')
+   axios.get('http://localhost:3001/api/deslinde/deslinde')
       .then(response => {
         setContenido(response.data[0]?.contenido || 'Deslinde legal no disponible.');
       })

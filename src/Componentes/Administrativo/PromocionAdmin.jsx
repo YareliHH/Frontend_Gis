@@ -105,7 +105,7 @@ const Promociones = () => {
   const fetchPromociones = async () => {
     setLoadingData(true);
     try {
-      const response = await fetch('https://backend-gis-1.onrender.com/api/promo/get_promo');
+      const response = await fetch('http://localhost:3001/api/promo/get_promo');
       const data = await response.json();
       setPromociones(data);
     } catch (err) {
@@ -119,7 +119,7 @@ const Promociones = () => {
   // Función para obtener productos desde la API
   const fetchProductos = async () => {
     try {
-      const response = await fetch('https://backend-gis-1.onrender.com/api/obtener');
+      const response = await fetch('http://localhost:3001/api/obtener');
       const data = await response.json();
       setProductos(data);
     } catch (err) {
@@ -402,8 +402,8 @@ const Promociones = () => {
       };
 
       const url = editId
-        ? `https://backend-gis-1.onrender.com/api/promo/update/${editId}`
-        : 'https://backend-gis-1.onrender.com/api/promo/create';
+        ? `http://localhost:3001/api/promo/update/${editId}`
+        : 'http://localhost:3001/api/promo/create';
 
       const response = await fetch(url, options);
 
@@ -436,7 +436,7 @@ const Promociones = () => {
 
     setLoading(true);
     try {
-      const response = await fetch(`https://backend-gis-1.onrender.com/api/promo/delete/${deleteId}`, {
+      const response = await fetch(`http://localhost:3001/api/promo/delete/${deleteId}`, {
         method: 'DELETE'
       });
 

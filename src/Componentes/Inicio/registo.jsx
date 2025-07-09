@@ -177,7 +177,7 @@ const Registro = () => {
 
     setIsVerifying(true);
     try {
-      const response = await axios.post('https://backend-gis-1.onrender.com/api/verificar-correo', { correo: formData.correo });
+      const response = await axios.post('http://localhost:3001/api/verificar-correo', { correo: formData.correo });
       if (response.data.exists) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -209,7 +209,7 @@ const Registro = () => {
     }
 
     try {
-      const response = await axios.post('https://backend-gis-1.onrender.com/api/verify-token', {
+      const response = await axios.post('http://localhost:3001/api/verify-token', {
         correo: formData.correo,
         token: formData.token
       });
@@ -275,7 +275,7 @@ const Registro = () => {
     setIsLoading(true);
 
     try {
-      await axios.post('https://backend-gis-1.onrender.com/api/registro', formData);
+      await axios.post('http://localhost:3001/api/registro', formData);
       setSnackbarMessage('¡Usuario registrado exitosamente!');
       setSnackbarSeverity('success');
       setSnackbarOpen(true);

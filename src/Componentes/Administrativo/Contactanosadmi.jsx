@@ -43,7 +43,7 @@ const ContactanosAdmin = () => {
     // Obtener los mensajes desde el backend
     const fetchMensajes = async () => {
         try {
-            const response = await axios.get('https://backend-gis-1.onrender.com/api/contactos');
+            const response = await axios.get('http://localhost:3001/api/contactos');
             setMensajes(response.data);
         } catch (error) {
             handleError('Error al obtener los mensajes', error);
@@ -67,7 +67,7 @@ const ContactanosAdmin = () => {
         if (!selectedMensaje) return;
 
         try {
-            await axios.delete(`https://backend-gis-1.onrender.com/api/contacto/${selectedMensaje.id}`);
+            await axios.delete(`http://localhost:3001/api/contacto/${selectedMensaje.id}`);
             
             // Actualizar lista de mensajes
             setMensajes(mensajes.filter(mensaje => mensaje.id !== selectedMensaje.id));

@@ -72,7 +72,7 @@ const PaginaPrincipal = () => {
   useEffect(() => {
     setLoaded(true);
     // Cargar productos desde la API al montar el componente
-    axios.get('https://backend-gis-1.onrender.com/api/productos')  // URL de la API para obtener los productos
+    axios.get('http://localhost:3001/api/productos')  // URL de la API para obtener los productos
       .then((response) => {
         setProducts(response.data);  // Asigna los datos obtenidos de la API a los productos
       })

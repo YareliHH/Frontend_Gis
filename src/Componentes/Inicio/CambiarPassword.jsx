@@ -40,7 +40,7 @@ const CambiarContrasena = () => {
         // Verificar validez del token
         const verifyToken = async () => {
             try {
-                await axios.post('https://backend-gis-1.onrender.com/api/verify-tokene', { 
+                await axios.post('http://localhost:3001/api/verify-tokene', { 
                     correo: email, 
                     token: token 
                 });
@@ -150,7 +150,7 @@ const CambiarContrasena = () => {
         try {
             setIsLoading(true);
             // Incluir correo y token en la solicitud
-            const response = await axios.post('https://backend-gis-1.onrender.com/api/resetPassword', { 
+            const response = await axios.post('http://localhost:3001/api/resetPassword', { 
                 token, 
                 newPassword,
                 correo: email  // Agregar el correo para mayor seguridad

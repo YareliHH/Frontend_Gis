@@ -19,7 +19,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const verificarAutenticacion = async () => {
       try {
-        const response = await axios.get('https://backend-gis-1.onrender.com/api/verificar-auth', {
+        const response = await axios.get('http://localhost:3001/api/verificar-auth', {
           withCredentials: true, // Importante para enviar cookies en la solicitud
         });
         
@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (correo, password, captchaValue) => {
     try {
       const response = await axios.post(
-        'https://backend-gis-1.onrender.com/api/login',
+        'http://localhost:3001/api/login',
         { correo, password, captchaValue },
         { withCredentials: true }
       );
@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
   // Función de logout
   const logout = async () => {
     try {
-      await axios.post('https://backend-gis-1.onrender.com/api/logout', {}, {
+      await axios.post('http://localhost:3001/api/logout', {}, {
         withCredentials: true
       });
       setUser(null);
