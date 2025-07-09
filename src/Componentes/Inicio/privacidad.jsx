@@ -24,7 +24,7 @@ const PoliticaPrivacidad = () => {
   const theme = useTheme();
 
   useEffect(() => {
-    axios.get('http://localhost:3001/api/politicas/politicas_privacidad')
+    axios.get('https://backend-gis-1.onrender.com/api/politicas/politicas_privacidad')
       .then(response => {
         setContenido(response.data[0]?.contenido || 'Política no disponible.');
       })

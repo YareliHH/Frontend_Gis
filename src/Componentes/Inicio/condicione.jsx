@@ -24,7 +24,7 @@ const TerminosCondiciones = () => {
   const theme = useTheme();
 
   useEffect(() => {
-     axios.get('http://localhost:3001/api/termiCondicion/terminos_condiciones')
+     axios.get('https://backend-gis-1.onrender.com/api/termiCondicion/terminos_condiciones')
       .then(response => {
         setContenido(response.data[0]?.contenido || 'Términos y condiciones no disponibles.');
       })

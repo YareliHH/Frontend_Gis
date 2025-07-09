@@ -95,7 +95,7 @@ const Contactanos = () => {
     if (validate()) {
         try {
             // Realizar la solicitud POST al backend con Axios
-            const response = await axios.post('http://localhost:3001/api/contacto', {
+            const response = await axios.post('https://backend-gis-1.onrender.com/api/contacto', {
                 ...form,
                 recaptchaToken
             }, {

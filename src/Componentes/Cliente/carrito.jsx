@@ -51,7 +51,7 @@ const Carrito = () => {
       }
 
       setUsuarioId(usuario_id);
-      const response = await axios.get(`http://localhost:3001/api/carrito/${usuario_id}`);
+      const response = await axios.get(`https://backend-gis-1.onrender.com/api/carrito/${usuario_id}`);
       setCarrito(response.data.productos);
       setLoading(false);
     } catch (error) {
@@ -67,7 +67,7 @@ const Carrito = () => {
 
   const agregarProducto = async (producto_id, cantidad, precio_unitario) => {
     try {
-      await axios.post("http://localhost:3001/api/agregar", {
+      await axios.post("https://backend-gis-1.onrender.com/api/agregar", {
         usuario_id: usuarioId,
         producto_id,
         cantidad,
@@ -82,7 +82,7 @@ const Carrito = () => {
 
   const eliminarProducto = async (producto_id) => {
     try {
-      await axios.delete(`http://localhost:3001/api/carrito/eliminar/${usuarioId}/${producto_id}`);
+      await axios.delete(`https://backend-gis-1.onrender.com/api/carrito/eliminar/${usuarioId}/${producto_id}`);
       await fetchCarrito();
     } catch (error) {
       console.error("Error al eliminar producto:", error);
@@ -92,7 +92,7 @@ const Carrito = () => {
 
   const vaciarCarrito = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/carrito/vaciar/${usuarioId}`);
+      await axios.delete(`https://backend-gis-1.onrender.com/api/carrito/vaciar/${usuarioId}`);
       await fetchCarrito();
     } catch (error) {
       console.error("Error al vaciar el carrito:", error);
@@ -494,7 +494,6 @@ const Carrito = () => {
        Realizar compra
       </Button>
     </Box>
-        
         </Paper>
       </Grid>
             </Grid>

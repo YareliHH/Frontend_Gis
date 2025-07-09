@@ -38,7 +38,7 @@ const Chat = () => {
     setLoading(true);
 
     try {
-      const { data } = await axios.post("http://localhost:3001/api/chat", { message: input });
+      const { data } = await axios.post("https://backend-gis-1.onrender.com/api/chat", { message: input });
       setMessages([...newMessages, { text: data.response, sender: "bot" }]);
     } catch (error) {
       console.error("Error enviando mensaje:", error);

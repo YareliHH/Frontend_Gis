@@ -40,7 +40,7 @@ const Deslindes = () => {
   // Obtener todos los deslindes
   const fetchDeslindes = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/getdeslinde');
+      const response = await axios.get('https://backend-gis-1.onrender.com/api/getdeslinde');
       setDeslindes(response.data);
     } catch (error) {
       console.error('Error al obtener los deslindes:', error.response ? error.response.data : error.message);
@@ -55,7 +55,7 @@ const Deslindes = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:3001/api/deslinde', {
+      await axios.post('https://backend-gis-1.onrender.com/api/deslinde', {
         titulo: newTitulo,
         contenido: newContenido,
       });
@@ -77,7 +77,7 @@ const Deslindes = () => {
       return;
     }
     try {
-      await axios.put(`http://localhost:3001/api/updatedeslinde/${editId}`, {
+      await axios.put(`https://backend-gis-1.onrender.com/api/updatedeslinde/${editId}`, {
         titulo: editTitulo,
         contenido: editContenido,
       });
@@ -96,7 +96,7 @@ const Deslindes = () => {
   // Eliminar un deslinde (lógicamente)
   const handleDeleteDeslinde = async (id) => {
     try {
-      await axios.put(`http://localhost:3001/api/deactivatedeslinde/${id}`);
+      await axios.put(`https://backend-gis-1.onrender.com/api/deactivatedeslinde/${id}`);
       fetchDeslindes();
       setSnackbarMessage('Deslinde eliminado con éxito');
       setSnackbarOpen(true);

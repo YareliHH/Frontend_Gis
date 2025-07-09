@@ -21,7 +21,7 @@ const Actividades = () => {
   useEffect(() => {
     const fetchActividades = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/reportes/actividades', {
+        const response = await fetch('https://backend-gis-1.onrender.com/api/reportes/actividades', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

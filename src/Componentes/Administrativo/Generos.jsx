@@ -40,7 +40,7 @@ const Generos = () => {
   // Obtener géneros desde la base de datos
   const fetchGeneros = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/generos');
+      const response = await axios.get('https://backend-gis-1.onrender.com/api/generos');
       setGeneros(response.data);
     } catch (error) {
       console.error('Error al obtener géneros:', error);
@@ -61,7 +61,7 @@ const Generos = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/agregargenero', {
+      const response = await axios.post('https://backend-gis-1.onrender.com/api/agregargenero', {
         genero: newGenero,
       });
 
@@ -102,7 +102,7 @@ const Generos = () => {
   // Actualizar un género
   const handleUpdateGenero = async () => {
     try {
-      await axios.put(`http://localhost:3001/api/editargenero/${editId}`, {
+      await axios.put(`https://backend-gis-1.onrender.com/api/editargenero/${editId}`, {
         genero: editNombre,
       });
 
@@ -128,7 +128,7 @@ const Generos = () => {
   // Eliminar un género
   const handleDeleteGenero = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/eliminargenero/${deleteId}`);
+      await axios.delete(`https://backend-gis-1.onrender.com/api/eliminargenero/${deleteId}`);
 
       setGeneros((prevGeneros) => prevGeneros.filter((item) => item.id !== deleteId));
 

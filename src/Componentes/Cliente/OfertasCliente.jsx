@@ -27,7 +27,7 @@ const ListaPromociones = () => {
 
   const obtenerPromociones = async () => {
     try {
-      const response = await fetch('http://localhost:3001/api/promo/get');
+      const response = await fetch('https://backend-gis-1.onrender.com/api/promo/get');
       const data = await response.json();
       setPromociones(data);
       setPromocionesFiltradas(data);

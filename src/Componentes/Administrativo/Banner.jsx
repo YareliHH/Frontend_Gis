@@ -40,7 +40,7 @@ const BannersAdmin = () => {
   const fetchBanners = async () => {
     setLoading(true);
     try {
-     const response = await axios.get('http://localhost:3001/obtbanner');
+     const response = await axios.get('https://backend-gis-1.onrender.com/obtbanner');
       setBanners(response.data);
       setLoading(false);
     } catch (error) {
@@ -71,7 +71,7 @@ const BannersAdmin = () => {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-   const response = await axios.post('http://localhost:3001/agregarbanner', formData, {
+   const response = await axios.post('https://backend-gis-1.onrender.com/agregarbanner', formData, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
       setBanners([...banners, { id: response.data.id, titulo, descripcion, imagen: response.data.imagen || '' }]);
@@ -121,7 +121,7 @@ const BannersAdmin = () => {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-     const response = await axios.put(`http://localhost:3001/bannersedit/${currentBannerId}`, formData, {
+     const response = await axios.put(`https://backend-gis-1.onrender.com/bannersedit/${currentBannerId}`, formData, {
      headers: { 'Content-Type': 'multipart/form-data' } 
     });
       // Actualizar el banner en el estado con los nuevos datos
@@ -158,7 +158,7 @@ const BannersAdmin = () => {
     if (window.confirm('¿Estás seguro de que deseas eliminar este banner?')) {
       setLoading(true);
       try {
-        await axios.delete(`http://localhost:3001/banners/${id}`);
+        await axios.delete(`https://backend-gis-1.onrender.com/banners/${id}`);
         setBanners(banners.filter(b => b.id !== id));
         setNotification({
           open: true,
