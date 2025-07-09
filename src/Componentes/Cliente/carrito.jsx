@@ -491,24 +491,11 @@ const Carrito = () => {
           }
         }}
       >
-        Mercado pago
+       Realizar compra
       </Button>
 
     </Box>
-          {/* Botón volver al carrito */}
-          <Button
-            variant="text"
-            fullWidth
-            onClick={() => navigate('/cliente/carrito')}
-            sx={{
-              mt: 2,
-              color: 'text.secondary',
-              textTransform: 'none',
-              fontSize: '0.9rem'
-            }}
-          >
-            Volver al Carrito
-          </Button>
+        
         </Paper>
       </Grid>
             </Grid>
