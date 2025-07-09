@@ -113,7 +113,7 @@ const PreguntasFrecuentes = () => {
   useEffect(() => {
     const fetchPreguntas = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/faqs");
+        const response = await axios.get("https://backend-gis-1.onrender.com/api/faqs");
         setPreguntas(response.data);
       } catch (error) {
         console.error("Error al obtener preguntas frecuentes:", error);

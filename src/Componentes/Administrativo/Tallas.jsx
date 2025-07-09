@@ -40,7 +40,7 @@ const Tallas = () => {
   // Obtener tallas desde la base de datos
   const fetchTallas = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/api/tallas');
+      const response = await axios.get('https://backend-gis-1.onrender.com/api/tallas');
       setTallas(response.data);
     } catch (error) {
       console.error('Error al obtener tallas:', error);
@@ -61,7 +61,7 @@ const Tallas = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/api/agregartalla', {
+      const response = await axios.post('https://backend-gis-1.onrender.com/api/agregartalla', {
         talla: newTalla,
       });
 
@@ -102,7 +102,7 @@ const Tallas = () => {
   // Actualizar una talla
   const handleUpdateTalla = async () => {
     try {
-      await axios.put(`http://localhost:3001/api/editartalla/${editId}`, {
+      await axios.put(`https://backend-gis-1.onrender.com/api/editartalla/${editId}`, {
         talla: editNombre,
       });
 
@@ -128,7 +128,7 @@ const Tallas = () => {
   // Eliminar una talla
   const handleDeleteTalla = async () => {
     try {
-      await axios.delete(`http://localhost:3001/api/eliminartalla/${deleteId}`);
+      await axios.delete(`https://backend-gis-1.onrender.com/api/eliminartalla/${deleteId}`);
 
       setTallas((prevTallas) => prevTallas.filter((item) => item.id !== deleteId));
 

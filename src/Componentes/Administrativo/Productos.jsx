@@ -78,7 +78,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 
 // Constantes para manejo de errores
-const BACKEND_URL = "http://localhost:3001/api";
+const BACKEND_URL = "https://backend-gis-1.onrender.com/api";
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const VALID_MIME_TYPES = ["image/jpeg", "image/png", "image/gif"];
 

@@ -44,7 +44,7 @@ const PerfilEmpresa = () => {
   useEffect(() => {
     const fetchPerfil = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/perfil");
+        const response = await axios.get("https://backend-gis-1.onrender.com/api/perfil");
         if (response.data.length > 0) {
           setPerfil(response.data[0]);
           setIsEditing(true);
@@ -152,14 +152,14 @@ const PerfilEmpresa = () => {
       }
 
       if (isEditing) {
-        await axios.put(`http://localhost:3001/api/perfil/${perfil.id}`, formData, {
+        await axios.put(`https://backend-gis-1.onrender.com/api/perfil/${perfil.id}`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         });
         setSnackbarMessage("Perfil actualizado con éxito");
       } else {
-        await axios.post("http://localhost:3001/api/perfil", formData, {
+        await axios.post("https://backend-gis-1.onrender.com/api/perfil", formData, {
           headers: {
             "Content-Type": "multipart/form-data",
           },

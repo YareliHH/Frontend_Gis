@@ -55,10 +55,10 @@ const Mujer = () => {
     const loadData = async () => {
       setLoading(true);
       const [productosResult, categoriasResult, coloresResult, tallasResult] = await Promise.all([
-        fetchData('http://localhost:3001/api/Mujeres'), // o 'http://localhost:3001/api/Mujeres' para ese componente
-        fetchData('http://localhost:3001/api/categorias'),
-        fetchData('http://localhost:3001/api/colores'),
-        fetchData('http://localhost:3001/api/tallas')
+        fetchData('https://backend-gis-1.onrender.com/api/Mujeres'), // o 'https://backend-gis-1.onrender.com/api/Mujeres' para ese componente
+        fetchData('https://backend-gis-1.onrender.com/api/categorias'),
+        fetchData('https://backend-gis-1.onrender.com/api/colores'),
+        fetchData('https://backend-gis-1.onrender.com/api/tallas')
       ]);
 
       if (productosResult.error) {
