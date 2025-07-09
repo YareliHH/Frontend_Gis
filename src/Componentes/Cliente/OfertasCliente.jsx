@@ -1,34 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Container,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  TextField,
-  Button,
-  Collapse,
-  Chip,
-  Box,
-  Stack,
-  CircularProgress,
-  InputAdornment,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Tooltip
-} from '@mui/material';
-import {
-  Search as SearchIcon,
-  FilterList as FilterIcon,
-  Clear as ClearIcon,
-  LocalOffer as OfferIcon,
-  AccessTime as TimeIcon,
-} from '@mui/icons-material';
+import {Container, Grid, Card, CardMedia, CardContent, Typography, TextField, Button, Collapse, Chip, Box,Stack, CircularProgress, InputAdornment, FormControl, InputLabel, Select, MenuItem, Tooltip} from '@mui/material';
+import { Search as SearchIcon, FilterList as FilterIcon, Clear as ClearIcon, LocalOffer as OfferIcon, AccessTime as TimeIcon,} from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const ListaPromociones = () => {
+  const navigate = useNavigate();
   const [promociones, setPromociones] = useState([]);
   const [promocionesFiltradas, setPromocionesFiltradas] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -43,12 +19,10 @@ const ListaPromociones = () => {
 
   useEffect(() => {
     obtenerPromociones();
-    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     aplicarFiltros();
-    // eslint-disable-next-line
   }, [filtros, promociones]);
 
   const obtenerPromociones = async () => {
@@ -132,16 +106,7 @@ const ListaPromociones = () => {
 
   if (loading) {
     return (
-      <Box
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        }}
-      >
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
         <CircularProgress size={60} sx={{ color: 'white', mb: 3 }} />
         <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold' }}>
           Cargando promociones increíbles...
@@ -151,26 +116,8 @@ const ListaPromociones = () => {
   }
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      bgcolor: { xs: '#fff', md: '#f5f5f5' },
-      py: 2
-    }}>
-      {/* Header */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          py: { xs: 4, md: 6 },
-          px: 2,
-          mb: 4,
-          textAlign: 'center',
-          borderRadius: 3,
-          boxShadow: 2,
-          mx: { xs: 1, sm: 2, md: 'auto' },
-          maxWidth: 1300
-        }}
-      >
+    <Box sx={{ minHeight: '100vh', bgcolor: { xs: '#fff', md: '#f5f5f5' }, py: 2 }}>
+      <Box sx={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white', py: { xs: 4, md: 6 }, px: 2, mb: 4, textAlign: 'center', borderRadius: 3, boxShadow: 2, mx: { xs: 1, sm: 2, md: 'auto' }, maxWidth: 1300 }}>
         <Typography variant="h3" sx={{ fontWeight: 700, mb: 1, fontSize: { xs: 28, md: 38 } }}>
           🎉 Promociones Increíbles
         </Typography>
@@ -189,17 +136,8 @@ const ListaPromociones = () => {
         </Stack>
       </Box>
 
-      {/* Search and Filters */}
       <Container maxWidth="lg">
-        <Box
-          sx={{
-            bgcolor: 'white',
-            p: { xs: 2, sm: 3 },
-            borderRadius: 3,
-            boxShadow: 3,
-            mb: 4,
-          }}
-        >
+        <Box sx={{ bgcolor: 'white', p: { xs: 2, sm: 3 }, borderRadius: 3, boxShadow: 3, mb: 4 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={12} md={8}>
               <TextField
@@ -230,19 +168,12 @@ const ListaPromociones = () => {
               </Button>
             </Grid>
           </Grid>
+
           <Collapse in={mostrarFiltros} sx={{ mt: 3 }}>
             <Box sx={{ pt: 3, borderTop: 1, borderColor: 'grey.300' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-                <Typography variant="h6" color="primary">
-                  Filtros Avanzados
-                </Typography>
-                <Button
-                  onClick={limpiarFiltros}
-                  color="secondary"
-                  startIcon={<ClearIcon />}
-                >
-                  Limpiar
-                </Button>
+                <Typography variant="h6" color="primary">Filtros Avanzados</Typography>
+                <Button onClick={limpiarFiltros} color="secondary" startIcon={<ClearIcon />}>Limpiar</Button>
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={3}>
@@ -305,17 +236,8 @@ const ListaPromociones = () => {
           </Collapse>
         </Box>
 
-        {/* Promotions Grid */}
         {promocionesFiltradas.length === 0 ? (
-          <Box
-            sx={{
-              bgcolor: 'white',
-              p: 6,
-              borderRadius: 3,
-              boxShadow: 1,
-              textAlign: 'center',
-            }}
-          >
+          <Box sx={{ bgcolor: 'white', p: 6, borderRadius: 3, boxShadow: 1, textAlign: 'center' }}>
             <Typography variant="h4" color="text.secondary" gutterBottom>
               🔍 No se encontraron promociones
             </Typography>
@@ -352,78 +274,31 @@ const ListaPromociones = () => {
                       sx={{ position: 'absolute', top: 10, right: 10, fontWeight: 'bold', zIndex: 1 }}
                     />
                   )}
-                  <Box
-                    sx={{
-                      width: '100%',
-                      display: 'flex',
-                      flexDirection: 'row',
-                      gap: 1,
-                      overflowX: 'auto',
-                      p: 1,
-                      borderRadius: '12px 12px 0 0',
-                      bgcolor: '#f7f9fc',
-                      minHeight: { xs: 120, sm: 180 },
-                      mb: 1,
-                    }}
-                  >
+                  <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 1, overflowX: 'auto', p: 1, borderRadius: '12px 12px 0 0', bgcolor: '#f7f9fc', minHeight: { xs: 120, sm: 180 }, mb: 1 }}>
                     {(promo.imagenes && promo.imagenes.length > 0)
                       ? promo.imagenes.map((img, idx) => (
                         <img
                           key={img.id || idx}
                           src={img.url}
                           alt={promo.titulo}
-                          style={{
-                            height: 130,
-                            width: 180,
-                            objectFit: 'cover',
-                            borderRadius: 12,
-                            flexShrink: 0,
-                            boxShadow: '0 2px 8px rgba(0,0,0,0.06)'
-                          }}
+                          style={{ height: 130, width: 180, objectFit: 'cover', borderRadius: 12, flexShrink: 0, boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
                         />
                       ))
                       : (
                         <img
                           src={'https://via.placeholder.com/400x240?text=Sin+Imagen'}
                           alt={promo.titulo}
-                          style={{
-                            height: 130,
-                            width: 180,
-                            objectFit: 'cover',
-                            borderRadius: 12
-                          }}
+                          style={{ height: 130, width: 180, objectFit: 'cover', borderRadius: 12 }}
                         />
                       )}
                   </Box>
-
                   <CardContent sx={{ flexGrow: 1, p: 3, display: 'flex', flexDirection: 'column' }}>
                     <Tooltip title={promo.titulo} arrow>
-                      <Typography
-                        variant="h6"
-                        gutterBottom
-                        sx={{
-                          fontWeight: 'bold',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
+                      <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {promo.titulo}
                       </Typography>
                     </Tooltip>
-                    <Typography
-                      variant="body2"
-                      color="text.secondary"
-                      sx={{
-                        mb: 2,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        minHeight: '40px'
-                      }}
-                    >
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', minHeight: '40px' }}>
                       {promo.descripcion}
                     </Typography>
                     <Typography variant="subtitle1" color="primary" sx={{ fontWeight: 'medium', mb: 1 }}>
@@ -433,10 +308,7 @@ const ListaPromociones = () => {
                       Stock: {promo.stock} unidades
                     </Typography>
                     <Box sx={{ mb: 2 }}>
-                      <Typography
-                        variant="body2"
-                        sx={{ textDecoration: 'line-through', color: 'text.secondary', mb: 0.5 }}
-                      >
+                      <Typography variant="body2" sx={{ textDecoration: 'line-through', color: 'text.secondary', mb: 0.5 }}>
                         Precio original: {formatearPrecio(promo.precio_original)}
                       </Typography>
                       <Typography variant="h5" color="success.main" sx={{ fontWeight: 'bold' }}>
@@ -449,21 +321,9 @@ const ListaPromociones = () => {
                       )}
                     </Box>
                     <Stack direction="row" spacing={1} sx={{ mb: 2, flexWrap: 'wrap', gap: 1 }}>
-                      <Chip
-                        icon={<OfferIcon />}
-                        label={promo.tipo}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
+                      <Chip icon={<OfferIcon />} label={promo.tipo} size="small" color="primary" variant="outlined" />
                       {promo.dias_restantes !== null && (
-                        <Chip
-                          icon={<TimeIcon />}
-                          label={`${promo.dias_restantes} días`}
-                          size="small"
-                          color={obtenerColorUrgencia(promo.dias_restantes)}
-                          variant="outlined"
-                        />
+                        <Chip icon={<TimeIcon />} label={`${promo.dias_restantes} días`} size="small" color={obtenerColorUrgencia(promo.dias_restantes)} variant="outlined" />
                       )}
                     </Stack>
                     <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
@@ -477,6 +337,7 @@ const ListaPromociones = () => {
                         variant="contained"
                         color="primary"
                         fullWidth
+                        onClick={() => navigate('/cliente/carrito')}
                         sx={{ py: 1.2, fontWeight: 700, borderRadius: 2 }}
                       >
                         Agregar al carrito

@@ -482,8 +482,8 @@ const Carrito = () => {
           textTransform: 'none',
           py: 1.5,
           fontSize: '1.1rem',
-          bgcolor: '#FFC439',
-          color: '#003087',
+          bgcolor: '#0070BA', // 💙 Azul PayPal
+         color: '#FFFFFF',   // 🤍 Texto blanco
           fontWeight: 'bold',
           '&:hover': { 
             bgcolor: '#FFB800',
@@ -493,27 +493,24 @@ const Carrito = () => {
       >
         Mercado pago
       </Button>
-   
-      
-     
+
     </Box>
-    
-    {/* Botón volver al carrito */}
-    <Button
-      variant="text"
-      fullWidth
-      onClick={() => navigate('/cliente/carrito')}
-      sx={{
-        mt: 2,
-        color: 'text.secondary',
-        textTransform: 'none',
-        fontSize: '0.9rem'
-      }}
-    >
-      Volver al Carrito
-    </Button>
-  </Paper>
-</Grid>
+          {/* Botón volver al carrito */}
+          <Button
+            variant="text"
+            fullWidth
+            onClick={() => navigate('/cliente/carrito')}
+            sx={{
+              mt: 2,
+              color: 'text.secondary',
+              textTransform: 'none',
+              fontSize: '0.9rem'
+            }}
+          >
+            Volver al Carrito
+          </Button>
+        </Paper>
+      </Grid>
             </Grid>
           )}
         </Paper>
