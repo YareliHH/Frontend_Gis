@@ -519,205 +519,204 @@ const Carrito = () => {
                 </List>
               </Grid>
 
-              {/* Columna del resumen y pago */}
-              <Grid item xs={12} lg={4}>
-                <Paper
-                  elevation={3}
-                  sx={{
-                    p: 3,
-                    borderRadius: 2,
-                    position: 'sticky',
-                    top: 20,
-                    bgcolor: 'background.default',
-                    border: '1px solid',
-                    borderColor: 'grey.200'
-                  }}
-                >
-                  <Typography variant="h6" fontWeight="bold" gutterBottom>
-                    Resumen del Pedido
-                  </Typography>
-                  
-                  <Divider sx={{ my: 2 }} />
-                  
-                  {/* Lista de productos con detalles */}
-                  <Box sx={{ mb: 3, maxHeight: 300, overflowY: 'auto' }}>
-                    {carrito.map((item, index) => (
-                      <Box 
-                        key={item.producto_id || index}
-                        sx={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 2,
-                          py: 2,
-                          borderBottom: '1px solid',
-                          borderColor: 'divider',
-                          '&:last-child': { borderBottom: 'none' }
-                        }}
-                      >
-                        {/* Imagen pequeña del producto */}
-                        <Box
-                          sx={{
-                            width: 50,
-                            height: 50,
-                            bgcolor: 'grey.100',
-                            borderRadius: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            overflow: 'hidden',
-                            flexShrink: 0,
-                            border: '1px solid',
-                            borderColor: 'grey.300'
-                          }}
-                        >
-                          {item.imagen_url ? (
-                            <img
-                              src={item.imagen_url}
-                              alt={item.nombre_producto}
-                              style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover'
-                              }}
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                                e.target.nextSibling.style.display = 'flex';
-                              }}
-                            />
-                          ) : null}
-                          <Box
-                            sx={{
-                              width: '100%',
-                              height: '100%',
-                              bgcolor: 'grey.200',
-                              display: item.imagen_url ? 'none' : 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center'
-                            }}
-                          >
-                            <Typography variant="caption" color="text.secondary">
-                              IMG
-                            </Typography>
-                          </Box>
-                        </Box>
-                        
-                        {/* Información del producto */}
-                        <Box sx={{ flex: 1, minWidth: 0 }}>
-                          <Typography 
-                            variant="body2" 
-                            fontWeight="medium"
-                            sx={{
-                              mb: 0.5,
-                              display: '-webkit-box',
-                              WebkitLineClamp: 2,
-                              WebkitBoxOrient: 'vertical',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}
-                          >
-                            {item.nombre_producto || 'Producto'}
-                          </Typography>
-                          <Typography variant="caption" color="text.secondary" display="block">
-                            Cantidad: {item.cantidad || 1}
-                          </Typography>
-                          <Typography variant="body2" fontWeight="bold" color="primary.main">
-                            ${(parsePrice(item.precio) * (parseInt(item.cantidad) || 1)).toFixed(2)}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    ))}
-                  </Box>
-                  
-                  <Divider sx={{ my: 2 }} />
-                  
-                  {/* Subtotal */}
-                  <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mb: 1
-                  }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Subtotal ({carrito.length} producto{carrito.length !== 1 ? 's' : ''})
-                    </Typography>
-                    <Typography variant="body2" fontWeight="medium">
-                      ${total.toFixed(2)}
-                    </Typography>
-                  </Box>
-                  
-                  {/* Envío */}
-                  <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mb: 2
-                  }}>
-                    <Typography variant="body2" color="text.secondary">
-                      Envío
-                    </Typography>
-                    <Typography variant="body2" fontWeight="medium" color="success.main">
-                      Gratis
-                    </Typography>
-                  </Box>
-                  
-                  <Divider sx={{ my: 2 }} />
-                  
-                  {/* Total */}
-                  <Box sx={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mb: 3,
-                    p: 2,
-                    bgcolor: 'primary.light',
-                    borderRadius: 2,
-                    color: 'primary.contrastText'
-                  }}>
-                    <Typography variant="h6" fontWeight="bold">
-                      Total
-                    </Typography>
-                    <Typography variant="h5" fontWeight="bold">
-                      ${total.toFixed(2)}
-                    </Typography>
-                  </Box>
-                
-                  {/* Botón de compra */}
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      size="large"
-                      onClick={() => navigate('/cliente/pago?metodo=paypal')}
-                      sx={{
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        py: 1.5,
-                        fontSize: '1.1rem',
-                        bgcolor: '#0070BA',
-                        color: '#FFFFFF',
-                        fontWeight: 'bold',
-                        '&:hover': { 
-                          bgcolor: '#005ea6',
-                          boxShadow: '0 6px 16px rgba(0,0,0,0.2)' 
-                        }
-                      }}
-                    >
-                      Realizar Compra
-                    </Button>
-                    
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => navigate('/cliente')}
-                      sx={{
-                        borderRadius: 2,
-                        textTransform: 'none',
-                        py: 1
-                      }}
-                    >
-                      Seguir Comprando
-                    </Button>
-                  </Box>
+            {/* Columna del resumen y pago */}
+<Grid item xs={12} lg={4}>
+  <Paper
+    elevation={3}
+    sx={{
+      p: 3,
+      borderRadius: 2,
+      position: 'sticky',
+      top: 20,
+      border: '1px solid',
+      borderColor: 'grey.200'
+    }}
+  >
+    <Typography variant="h6" fontWeight="bold" gutterBottom>
+      Resumen del Pedido
+    </Typography>
+
+    <Divider sx={{ my: 2 }} />
+
+    {/* Lista de productos con detalles */}
+    <Box sx={{ mb: 3, maxHeight: 300, overflowY: 'auto' }}>
+      {carrito.map((item, index) => (
+        <Box
+          key={item.producto_id || index}
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            py: 2,
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            '&:last-child': { borderBottom: 'none' }
+          }}
+        >
+          {/* Imagen del producto */}
+          <Box
+            sx={{
+              width: 50,
+              height: 50,
+              borderRadius: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              overflow: 'hidden',
+              flexShrink: 0,
+              border: '1px solid',
+              borderColor: 'grey.300'
+            }}
+          >
+            {item.imagen_url ? (
+              <img
+                src={item.imagen_url}
+                alt={item.nombre_producto}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <Box
+              sx={{
+                width: '100%',
+                height: '100%',
+                display: item.imagen_url ? 'none' : 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              <Typography variant="caption">
+                IMG
+              </Typography>
+            </Box>
+          </Box>
+
+          {/* Info del producto */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography
+              variant="body2"
+              fontWeight="medium"
+              sx={{
+                mb: 0.5,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}
+            >
+              {item.nombre_producto || 'Producto'}
+            </Typography>
+            <Typography variant="caption" display="block">
+              Cantidad: {item.cantidad || 1}
+            </Typography>
+            <Typography variant="body2" fontWeight="bold">
+              ${(
+                parsePrice(item.precio) *
+                (parseInt(item.cantidad) || 1)
+              ).toFixed(2)}
+            </Typography>
+          </Box>
+        </Box>
+      ))}
+    </Box>
+
+    <Divider sx={{ my: 2 }} />
+
+    {/* Subtotal */}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 1
+      }}
+    >
+      <Typography variant="body2">
+        Subtotal ({carrito.length} producto{carrito.length !== 1 ? 's' : ''})
+      </Typography>
+      <Typography variant="body2" fontWeight="medium">
+        ${total.toFixed(2)}
+      </Typography>
+    </Box>
+
+    {/* Envío */}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 2
+      }}
+    >
+      <Typography variant="body2">
+        Envío
+      </Typography>
+      <Typography variant="body2" fontWeight="medium">
+        Gratis
+      </Typography>
+    </Box>
+
+    <Divider sx={{ my: 2 }} />
+
+    {/* Total */}
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        mb: 3,
+        p: 2,
+        borderRadius: 2
+      }}
+    >
+      <Typography variant="h6" fontWeight="bold">
+        Total
+      </Typography>
+      <Typography variant="h5" fontWeight="bold">
+        ${total.toFixed(2)}
+      </Typography>
+    </Box>
+
+    {/* Botones */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Button
+        variant="contained"
+        fullWidth
+        size="large"
+        onClick={() => navigate('/cliente/pago?metodo=paypal')}
+        sx={{
+          borderRadius: 2,
+          textTransform: 'none',
+          py: 1.5,
+          fontSize: '1.1rem',
+          fontWeight: 'bold'
+        }}
+      >
+        Realizar Compra
+      </Button>
+
+      <Button
+        variant="outlined"
+        fullWidth
+        onClick={() => navigate('/cliente')}
+        sx={{
+          borderRadius: 2,
+          textTransform: 'none',
+          py: 1
+        }}
+      >
+        Seguir Comprando
+      </Button>
+    </Box>
+
                 </Paper>
               </Grid>
             </Grid>
