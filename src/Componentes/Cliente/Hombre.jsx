@@ -126,7 +126,6 @@ const Hombre = () => {
     'Rosa': '#e252b2',
     'Naranja': '#e67e22',
     'Café': '#795548',
-    'Beige': '#f5f5dc'
   }[color] || '#cccccc');
   const getSizeName = React.useCallback((id) => tallas.find(t => t.id === id)?.talla || 'Talla N/A', [tallas]);
   const getStockStatus = (stock) => stock > 5 ? { text: 'En Stock', color: 'success' } : stock > 0 ? { text: `Últimas ${stock} piezas`, color: 'warning' } : { text: 'Agotado', color: 'error' };
@@ -253,30 +252,40 @@ const Hombre = () => {
         ))}
       </Stack>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-        <ColorLensIcon sx={{ color: customColors.accent }} />
-        <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>Colores</Typography>
-      </Box>
-      <Stack direction="row" flexWrap="wrap" gap={1}>
-        <Chip label="Todos" clickable onClick={() => setColorFilter('')} color={colorFilter === '' ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
-        {colores.map(color => (
-          <Chip
-            key={color.id}
-            label={color.color}
-            clickable
-            onClick={() => setColorFilter(color.id)}
-            sx={{
-              backgroundColor: getColorCode(color.color),
-              color: ['Blanco', 'Amarillo', 'Celeste', 'Beige'].includes(color.color) ? '#000000' : '#ffffff',
-              borderRadius: '12px',
-              fontWeight: 'bold',
-              '&:hover': { opacity: 0.9 },
-              ...(colorFilter === color.id && { border: `2px solid ${customColors.accent}` })
-            }}
-          />
-        ))}
-      </Stack>
-
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+     <ColorLensIcon sx={{ color: customColors.accent }} />
+     <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
+       Colores
+     </Typography>
+   </Box>
+   <Stack direction="row" flexWrap="wrap" gap={1} alignItems="center">
+     <Chip
+       label="Todos"
+       clickable
+       onClick={() => setColorFilter('')}
+       color={colorFilter === '' ? 'primary' : 'default'}
+       sx={{ borderRadius: '12px' }}
+     />
+     {colores.map((color) => (
+       <Box
+         key={color.id}
+         onClick={() => setColorFilter(color.id)}
+         sx={{
+           width: 28,
+           height: 28,
+           borderRadius: '50%',
+           backgroundColor: getColorCode(color.color),
+           border: colorFilter === color.id ? `2px solid ${customColors.accent}` : '2px solid transparent',
+           cursor: 'pointer',
+           transition: 'transform 0.2s ease',
+           '&:hover': {
+             transform: 'scale(1.15)',
+             boxShadow: `0 0 6px ${alpha(getColorCode(color.color), 0.5)}`
+           }
+         }}
+       />
+     ))}
+   </Stack>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <StraightenIcon sx={{ color: customColors.accent }} />
         <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>Tallas</Typography>
