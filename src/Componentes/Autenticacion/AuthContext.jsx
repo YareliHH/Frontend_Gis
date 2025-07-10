@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         if (response.data.autenticado) {
           setUser({
             correo: response.data.user,
-            tipo: response.data.tipo,
+            tipo: response.data.tipo, 
             id: response.data.id
           });
         } else {

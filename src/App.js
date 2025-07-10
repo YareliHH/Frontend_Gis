@@ -88,7 +88,6 @@ const App = () => {
           <Routes>
             {/* PAGINA PRINCIPAL */}
             <Route path="/" element={<LayoutEncabezado><PaginaPrincipal /></LayoutEncabezado>} />
-
             <Route path="/login" element={<LayoutEncabezado><Login /></LayoutEncabezado>} />
             <Route path="/registro" element={<LayoutEncabezado><Registro /></LayoutEncabezado>} />
             <Route path="/verificar-correo" element={<LayoutEncabezado><VerificarCorreo /></LayoutEncabezado>} />
