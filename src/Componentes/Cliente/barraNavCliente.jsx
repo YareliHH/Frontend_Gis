@@ -471,26 +471,27 @@ const BarraNavCliente = () => {
           />
         </ListItem>
 
-        <ListItem 
-          button 
-          onClick={handleLogout}
-          sx={{
-            borderRadius: '12px',
-            transition: 'all 0.2s',
-            '&:hover': {
-              backgroundColor: 'rgba(255, 76, 76, 0.1)',
-              transform: 'translateX(4px)',
-            }
-          }}
-        >
-          <ListItemIcon sx={{ color: '#FF4C4C', minWidth: 40 }}>
-            <LogoutIcon />
-          </ListItemIcon>
-          <ListItemText 
-            primary="Cerrar Sesión" 
-            primaryTypographyProps={{ fontWeight: 600, fontSize: '15px', color: '#FF4C4C' }}
-          />
-        </ListItem>
+<ListItem 
+  button 
+  onClick={handleLogout}
+  sx={{
+    borderRadius: '12px',
+    transition: 'all 0.2s',
+    '&:hover': {
+      backgroundColor: 'rgba(255, 76, 76, 0.1)',
+      transform: 'translateX(4px)',
+    }
+  }}
+>
+  <ListItemIcon sx={{ color: '#FF4C4C', minWidth: 40 }}>
+    <LogoutIcon />
+  </ListItemIcon>
+  <ListItemText 
+    primary="Cerrar Sesión" 
+    primaryTypographyProps={{ fontWeight: 600, fontSize: '15px', color: '#FF4C4C' }}
+  />
+</ListItem>
+
       </List>
     </Box>
   );
