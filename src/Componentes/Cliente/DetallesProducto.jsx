@@ -230,12 +230,11 @@ const DetallesProducto = () => {
   };
 
   const colorOptions = [
-    { name: 'Azul', colorCode: '#3a36e0' },
-    { name: 'Rosa', colorCode: '#e252b2' },
     { name: 'Rojo', colorCode: '#e74c3c' },
-    { name: 'Verde', colorCode: '#2ecc71' },
-    { name: 'Blanco', colorCode: customColors.white },
     { name: 'Negro', colorCode: '#2c2c54' },
+    { name: 'Rosa', colorCode: '#e252b2' },
+    { name: 'Naranja', colorCode: '#f39c12' },
+    { name: 'Azul', colorCode: '#3498db' },
   ];
 
   const sizeOptions = ['XS', 'S', 'M', 'L', 'XL'];
@@ -417,8 +416,8 @@ const DetallesProducto = () => {
                       <Box 
                         component="img"
                         ref={imgRef}
-                        src={productImages[selectedImageIndex]?.url || '/placeholder-image.jpg'}
-                        alt={product.nombre_producto}
+                        src={productImages[selectedImageIndex]?.url || '/placeholder-scrub-image.jpg'}
+                        alt={product.nombre_producto || 'Uniforme Médico'}
                         onMouseMove={handleMouseMove}
                         onMouseEnter={() => {
                           if (hideZoomTimer.current) {
@@ -432,7 +431,7 @@ const DetallesProducto = () => {
                           }, 100);
                         }}
                         onError={(e) => {
-                          e.target.src = '/placeholder-image.jpg';
+                          e.target.src = '/placeholder-scrub-image.jpg';
                         }}
                         sx={{
                           maxWidth: '100%',
@@ -559,9 +558,9 @@ const DetallesProducto = () => {
                       <Box
                         component="img"
                         src={image.url}
-                        alt={`${product.nombre_producto} - Imagen ${index + 1}`}
+                        alt={`${product.nombre_producto || 'Uniforme Médico'} - Imagen ${index + 1}`}
                         onError={(e) => {
-                          e.target.src = '/placeholder-image.jpg';
+                          e.target.src = '/placeholder-scrub-image.jpg';
                         }}
                         sx={{
                           maxWidth: '90%',
@@ -573,30 +572,7 @@ const DetallesProducto = () => {
                   ))}
                 </Box>
               )}
-
-              {/* Botones de acción social */}
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2, gap: 2 }}>
-                <Button 
-                  startIcon={<FavoriteBorder />} 
-                  sx={{ 
-                    color: customColors.textSecondary,
-                    '&:hover': { color: customColors.mercadoBlue }
-                  }}
-                >
-                  Favorito
-                </Button>
-                <Button 
-                  startIcon={<Share />} 
-                  sx={{ 
-                    color: customColors.textSecondary,
-                    '&:hover': { color: customColors.mercadoBlue }
-                  }}
-                >
-                  Compartir
-                </Button>
-              </Box>
-            </Grid>
-
+        </Grid>
             {/* Información del producto */}
             <Grid item xs={12} md={6} sx={{ p: { xs: 2, md: 3 }, backgroundColor: alpha(customColors.background, 0.3) }}>
               <Box sx={{ mb: 1, display: 'flex', alignItems: 'center' }}>
@@ -618,10 +594,8 @@ const DetallesProducto = () => {
               </Box>
 
               <Typography variant="h4" sx={{ fontWeight: 700, color: customColors.textPrimary, mb: 1 }}>
-                {product.nombre_producto}
+                {product.nombre_producto || 'Uniforme Médico L001'}
               </Typography>
-
-           
 
               <Typography variant="h4" sx={{ 
                 mb: 1, 
@@ -630,10 +604,9 @@ const DetallesProducto = () => {
               }}>
                 ${parseFloat(product.precio || '0').toFixed(2)}
               </Typography>
-        
 
               <Typography variant="body1" sx={{ color: customColors.textSecondary, mb: 2 }}>
-                {product.descripcion}
+                {product.descripcion || 'Uniforme médico diseñado para profesionales de la salud. Confeccionado con materiales de alta calidad, cómodo y duradero, ideal para largas jornadas en hospitales y clínicas.'}
               </Typography>
 
               <Divider sx={{ mb: 2, backgroundColor: alpha(customColors.textPrimary, 0.1) }} />
@@ -686,7 +659,6 @@ const DetallesProducto = () => {
                         border: selectedColor === color.name 
                           ? `3px solid ${customColors.mercadoBlue}` 
                           : `1px solid ${alpha(customColors.textPrimary, 0.2)}`,
-                        boxShadow: color.name === 'Blanco' ? '0px 2px 8px rgba(0, 0, 0, 0.1)' : 'none',
                         cursor: 'pointer',
                         m: 0.5,
                         display: 'flex',
@@ -701,7 +673,7 @@ const DetallesProducto = () => {
                     >
                       {selectedColor === color.name && (
                         <CheckCircle sx={{ 
-                          color: color.name === 'Blanco' ? customColors.textPrimary : customColors.white,
+                          color: customColors.white,
                           fontSize: '24px'
                         }} />
                       )}
@@ -835,7 +807,7 @@ const DetallesProducto = () => {
                 Características del producto
               </Typography>
               <Typography variant="body2" sx={{ mb: 2, color: customColors.textSecondary, lineHeight: 1.5 }}>
-                GisLive Boutique Clínica presenta una línea de uniformes médicos diseñados con los más altos estándares de calidad y comodidad. Nuestros productos están fabricados con materiales premium que garantizan durabilidad y resistencia durante largas jornadas laborales. La tela antimicrobiana y antifluidos ofrece protección adicional en entornos clínicos, mientras que su diseño ergonómico permite libertad de movimiento.
+                Nuestra línea de uniformes médicos L001 está diseñada para profesionales de la salud que buscan comodidad, durabilidad y estilo. Fabricados con una mezcla de algodón y poliéster, estos scrubs ofrecen una textura suave, transpirable y resistente al desgaste. Su diseño con bolsillos laterales proporciona funcionalidad adicional, ideal para entornos clínicos como hospitales y clínicas.
               </Typography>
               <Grid container spacing={1}>
                 <Grid item xs={6}>
@@ -848,11 +820,11 @@ const DetallesProducto = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Características</Typography>
-                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Antimicrobiano, Antifluidos</Typography>
+                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Antimicrobiano, Bolsillos Laterales</Typography>
                 </Grid>
                 <Grid item xs={6}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Bolsillos</Typography>
-                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Múltiples bolsillos funcionales</Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: customColors.textPrimary }}>Diseño</Typography>
+                  <Typography variant="body2" sx={{ color: customColors.textSecondary }}>Cuello en V, Manga Corta</Typography>
                 </Grid>
               </Grid>
             </Paper>
@@ -863,7 +835,7 @@ const DetallesProducto = () => {
                 Guía de tallas
               </Typography>
               <Typography variant="body2" sx={{ mb: 1, color: customColors.textSecondary }}>
-                Consulta nuestra tabla de tallas para el ajuste perfecto:
+                Consulta nuestra tabla de tallas para encontrar el ajuste perfecto para tu uniforme médico:
               </Typography>
               <Box>
                 <Grid container sx={{ fontWeight: 600, color: customColors.textPrimary, borderBottom: `1px solid ${alpha(customColors.textPrimary, 0.1)}`, pb: 1 }}>

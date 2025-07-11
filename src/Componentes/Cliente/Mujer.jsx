@@ -126,6 +126,7 @@ const Mujer = () => {
     'Rosa': '#e252b2',
     'Naranja': '#e67e22',
     'Café': '#795548',
+    'Beige': '#f5f5dc'
   }[color] || '#cccccc');
   const getSizeName = React.useCallback((id) => tallas.find(t => t.id === id)?.talla || 'Talla N/A', [tallas]);
   const getStockStatus = (stock) => stock > 5 ? { text: 'En Stock', color: 'success' } : stock > 0 ? { text: `Últimas ${stock} piezas`, color: 'warning' } : { text: 'Agotado', color: 'error' };
@@ -179,67 +180,68 @@ const Mujer = () => {
     setDrawerOpen(false);
   };
 
-  const ProductCard = ({ product, loading }) => {
-    if (loading) return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-        <Paper elevation={2} sx={{ height: '100%', borderRadius: '16px', overflow: 'hidden', backgroundColor: customColors.cardBg }}>
-          <Skeleton variant="rectangular" height={240} />
-          <Box sx={{ p: 2 }}><Skeleton variant="text" height={30} /><Skeleton variant="text" /><Skeleton variant="text" width="60%" /></Box>
-        </Paper>
-      </motion.div>
-    );
+ const ProductCard = ({ product, loading }) => {
+  if (loading) return (
+    <Paper elevation={2} sx={{ height: '100%', borderRadius: '16px', overflow: 'hidden' }}>
+      <Skeleton variant="rectangular" height={240} />
+      <Box sx={{ p: 2 }}>
+        <Skeleton variant="text" height={30} />
+        <Skeleton variant="text" />
+        <Skeleton variant="text" width="60%" />
+      </Box>
+    </Paper>
+  );
 
-    const { text: stockText, color: stockColor } = getStockStatus(product.stock);
-    const colorName = !catalogosLoading ? getColorName(product.id_color) : 'Cargando...';
-    const categoryName = !catalogosLoading ? getCategoryName(product.id_categoria) : 'Cargando...';
-    const colorCode = getColorCode(colorName);
+  const { text: stockText, color: stockColor } = getStockStatus(product.stock);
+  const colorName = getColorName(product.id_color);
+  const categoryName = getCategoryName(product.id_categoria);
 
-    return (
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} whileHover={{ y: -10 }}>
-        <Paper elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden', backgroundColor: customColors.cardBg, transition: 'all 0.3s ease', '&:hover': { boxShadow: `0 10px 20px ${alpha(customColors.primary, 0.15)}` } }}>
-          <Box sx={{ position: 'relative' }}>
-            <CardMedia
-              component="img"
-              height="240"
-              image={product.url || '/placeholder-image.jpg'}
-              alt={product.nombre_producto}
-              sx={{ objectFit: 'contain', pt: 2, cursor: 'pointer', transition: 'transform 0.6s ease', '&:hover': { transform: 'scale(1.05)' } }}
-              onClick={() => handleProductClick(product)}
-            />
-            <Chip label={stockText} color={stockColor} size="small" sx={{ position: 'absolute', top: 12, left: 12, fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
-            <Chip label={colorName} size="small" sx={{ position: 'absolute', top: 12, right: 12, backgroundColor: colorCode, color: ['Blanco', 'Amarillo', 'Celeste', 'Beige'].includes(colorName) ? '#000000' : '#ffffff', fontWeight: 'bold', borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }} />
-          </Box>
-          <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
-            <Typography
-              variant="h6"
-              onClick={() => handleProductClick(product)}
-              sx={{ fontWeight: 600, mb: 1.5, cursor: 'pointer', color: customColors.textPrimary, '&:hover': { color: customColors.accent }, transition: 'color 0.3s ease', fontSize: { xs: '1rem', sm: '1.1rem' } }}
-            >
-              {product.nombre_producto}
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 2, height: '40px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', color: customColors.textSecondary }}>
-              {product.descripcion}
-            </Typography>
-            <Chip label={categoryName} size="small" sx={{ borderRadius: '12px', backgroundColor: alpha(customColors.secondary, 0.1), color: customColors.secondary, fontWeight: 500, mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold', background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              ${parseFloat(product.precio).toFixed(2)}
-            </Typography>
-          </CardContent>
-          <Divider sx={{ mx: 2, opacity: 0.6 }} />
-          <CardActions sx={{ p: 2, justifyContent: 'space-between' }}>
-            <Box>
-              <IconButton sx={{ color: customColors.primary, '&:hover': { backgroundColor: alpha(customColors.primary, 0.1) }, transition: 'all 0.3s ease' }}>
-                <ShoppingCartIcon />
-              </IconButton>
-            </Box>
-            <IconButton onClick={() => handleProductClick(product)} sx={{ color: customColors.accent, '&:hover': { backgroundColor: alpha(customColors.accent, 0.1) }, transition: 'all 0.3s ease' }}>
-              <VisibilityIcon />
-            </IconButton>
-          </CardActions>
-        </Paper>
-      </motion.div>
-    );
-  };
+  return (
+    <Paper elevation={2} sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: '16px', overflow: 'hidden' }}>
+      <Box sx={{ position: 'relative' }}>
+        <CardMedia
+          component="img"
+          height="240"
+          image={product.url || '/placeholder-image.jpg'}
+          alt={product.nombre_producto}
+          sx={{ objectFit: 'contain', pt: 2, cursor: 'pointer' }}
+          onClick={() => handleProductClick(product)}
+        />
+        <Chip label={stockText} color={stockColor} size="small" sx={{ position: 'absolute', top: 12, left: 12 }} />
+        <Chip label={colorName} size="small" sx={{ position: 'absolute', top: 12, right: 12 }} />
+      </Box>
+      <CardContent sx={{ flexGrow: 1, px: 3, pt: 2 }}>
+        <Typography
+          variant="h6"
+          onClick={() => handleProductClick(product)}
+          sx={{ fontWeight: 600, mb: 1.5, cursor: 'pointer' }}
+        >
+          {product.nombre_producto}
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 2, height: '40px', overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+          {product.descripcion}
+        </Typography>
+        <Chip label={categoryName} size="small" sx={{ borderRadius: '12px', mb: 2 }} />
+        <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+          ${parseFloat(product.precio).toFixed(2)}
+        </Typography>
+      </CardContent>
+      <Divider sx={{ mx: 2, opacity: 0.6 }} />
+      <CardActions sx={{ p: 2, justifyContent: 'space-between' }}>
+        <Box>
+          <IconButton
+            onClick={() => navigate('/cliente/carrito-compras')}
+          >
+            <ShoppingCartIcon />
+          </IconButton>
+        </Box>
+        <IconButton onClick={() => handleProductClick(product)}>
+          <VisibilityIcon />
+        </IconButton>
+      </CardActions>
+    </Paper>
+  );
+};
 
   const FilterContent = (
     <Stack spacing={2}>
@@ -253,42 +255,40 @@ const Mujer = () => {
           <Chip key={cat.id_categoria} label={cat.nombre} clickable onClick={() => setCategoriaFilter(cat.id_categoria)} color={categoriaFilter === cat.id_categoria ? 'primary' : 'default'} sx={{ borderRadius: '12px' }} />
         ))}
       </Stack>
-
  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-  <ColorLensIcon sx={{ color: customColors.accent }} />
-  <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
-    Colores
-  </Typography>
-</Box>
-<Stack direction="row" flexWrap="wrap" gap={1} alignItems="center">
-  <Chip
-    label="Todos"
-    clickable
-    onClick={() => setColorFilter('')}
-    color={colorFilter === '' ? 'primary' : 'default'}
-    sx={{ borderRadius: '12px' }}
-  />
-  {colores.map((color) => (
-    <Box
-      key={color.id}
-      onClick={() => setColorFilter(color.id)}
-      sx={{
-        width: 28,
-        height: 28,
-        borderRadius: '50%',
-        backgroundColor: getColorCode(color.color),
-        border: colorFilter === color.id ? `2px solid ${customColors.accent}` : '2px solid transparent',
-        cursor: 'pointer',
-        transition: 'transform 0.2s ease',
-        '&:hover': {
-          transform: 'scale(1.15)',
-          boxShadow: `0 0 6px ${alpha(getColorCode(color.color), 0.5)}`
-        }
-      }}
-    />
-  ))}
-</Stack>
-
+     <ColorLensIcon sx={{ color: customColors.accent }} />
+     <Typography variant="subtitle2" sx={{ fontWeight: 600, color: customColors.textPrimary, mb: 1 }}>
+       Colores
+     </Typography>
+   </Box>
+   <Stack direction="row" flexWrap="wrap" gap={1} alignItems="center">
+     <Chip
+       label="Todos"
+       clickable
+       onClick={() => setColorFilter('')}
+       color={colorFilter === '' ? 'primary' : 'default'}
+       sx={{ borderRadius: '12px' }}
+     />
+     {colores.map((color) => (
+       <Box
+         key={color.id}
+         onClick={() => setColorFilter(color.id)}
+         sx={{
+           width: 28,
+           height: 28,
+           borderRadius: '50%',
+           backgroundColor: getColorCode(color.color),
+           border: colorFilter === color.id ? `2px solid ${customColors.accent}` : '2px solid transparent',
+           cursor: 'pointer',
+           transition: 'transform 0.2s ease',
+           '&:hover': {
+             transform: 'scale(1.15)',
+             boxShadow: `0 0 6px ${alpha(getColorCode(color.color), 0.5)}`
+           }
+         }}
+       />
+     ))}
+      </Stack>
 
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
         <StraightenIcon sx={{ color: customColors.accent }} />
