@@ -691,7 +691,7 @@ const Carrito = () => {
         variant="contained"
         fullWidth
         size="large"
-        onClick={() => navigate('/cliente/pago?metodo=paypal')}
+        onClick={() => navigate('/cliente/mercadopago')}
         sx={{
           borderRadius: 2,
           textTransform: 'none',
@@ -703,19 +703,19 @@ const Carrito = () => {
         Realizar Compra
       </Button>
 
-      <Button
-        variant="outlined"
-        fullWidth
-        onClick={() => navigate('/cliente')}
-        sx={{
-          borderRadius: 2,
-          textTransform: 'none',
-          py: 1
-        }}
-      >
-        Seguir Comprando
-      </Button>
-    </Box>
+              <Button
+                variant="outlined"
+                fullWidth
+                onClick={() => navigate('/cliente')}
+                sx={{
+                  borderRadius: 2,
+                  textTransform: 'none',
+                  py: 1
+                }}
+              >
+                Seguir Comprando
+              </Button>
+            </Box>
 
                 </Paper>
               </Grid>

@@ -48,6 +48,7 @@ import CondicionesC from './Componentes/Cliente/condicionesCliente.jsx';
 import DeslindeC from './Componentes/Cliente/deslindeCliente.jsx';
 import PreguntasFrecuentesC from './Componentes/Cliente/FAQCliente.jsx';
 import ContactanosCliente from './Componentes/Cliente/ContactanosCliente.jsx';
+import MetodoPago from './Componentes/Cliente/Mercadopago.jsx';
 
 // Componentes administrativos
 import PaginaAdministrativa from './Componentes/Administrativo/PaginaAdministrativa.jsx';
@@ -125,7 +126,7 @@ const App = () => {
             <Route path="/cliente/deslindeCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'deslindeC' }]} /><DeslindeC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/preguntasFCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Faqs' }]} /><PreguntasFrecuentesC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/contactoCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Contactanos' }]} /><ContactanosCliente /></EncabezadoCliente></ProtectedRoute>} />
-
+            <Route path="/cliente/mercadopago" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'MetodoPago' }]} /><MetodoPago/></EncabezadoCliente></ProtectedRoute>} />
 
 
             {/* Rutas administrativas - Protegidas */}
