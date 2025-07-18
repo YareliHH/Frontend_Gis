@@ -219,30 +219,40 @@ const Hombre = () => {
               {product.descripcion}
             </Typography>
             <Chip label={categoryName} size="small" sx={{ borderRadius: '12px', backgroundColor: alpha(customColors.secondary, 0.1), color: customColors.secondary, fontWeight: 500, mb: 2 }} />
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: 'bold',
-              background: customColors.gradient,
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            ${parseFloat(product.precio).toFixed(2)}
-          </Typography>
+        <Box sx={{ position: 'relative' }}>
+          {/* Ojito en la esquina */}
           <IconButton
             onClick={() => handleProductClick(product)}
             sx={{
+              position: 'absolute',
+              top: 8,
+              right: 8,
               color: customColors.accent,
+              backgroundColor: 'transparent',
               '&:hover': {
                 backgroundColor: alpha(customColors.accent, 0.1),
               },
               transition: 'all 0.3s ease',
+              zIndex: 1
             }}
           >
             <VisibilityIcon fontSize="small" />
           </IconButton>
+
+          {/* Precio debajo del ojito */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontWeight: 'bold',
+                background: customColors.gradient,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              ${parseFloat(product.precio).toFixed(2)}
+            </Typography>
+          </Box>
         </Box>
           </CardContent>
         </Paper>
