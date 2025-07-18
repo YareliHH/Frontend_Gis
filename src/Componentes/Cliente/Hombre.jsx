@@ -219,21 +219,32 @@ const Hombre = () => {
               {product.descripcion}
             </Typography>
             <Chip label={categoryName} size="small" sx={{ borderRadius: '12px', backgroundColor: alpha(customColors.secondary, 0.1), color: customColors.secondary, fontWeight: 500, mb: 2 }} />
-            <Typography variant="h6" sx={{ fontWeight: 'bold', background: customColors.gradient, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              ${parseFloat(product.precio).toFixed(2)}
-            </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 'bold',
+              background: customColors.gradient,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}
+          >
+            ${parseFloat(product.precio).toFixed(2)}
+          </Typography>
+          <IconButton
+            onClick={() => handleProductClick(product)}
+            sx={{
+              color: customColors.accent,
+              '&:hover': {
+                backgroundColor: alpha(customColors.accent, 0.1),
+              },
+              transition: 'all 0.3s ease',
+            }}
+          >
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+        </Box>
           </CardContent>
-          <Divider sx={{ mx: 2, opacity: 0.6 }} />
-          <CardActions sx={{ p: 2, justifyContent: 'space-between' }}>
-            <Box>
-              <IconButton sx={{ color: customColors.primary, '&:hover': { backgroundColor: alpha(customColors.primary, 0.1) }, transition: 'all 0.3s ease' }}>
-                <ShoppingCartIcon />
-              </IconButton>
-            </Box>
-            <IconButton onClick={() => handleProductClick(product)} sx={{ color: customColors.accent, '&:hover': { backgroundColor: alpha(customColors.accent, 0.1) }, transition: 'all 0.3s ease' }}>
-              <VisibilityIcon />
-            </IconButton>
-          </CardActions>
         </Paper>
       </motion.div>
     );

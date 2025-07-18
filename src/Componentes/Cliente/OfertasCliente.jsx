@@ -342,13 +342,6 @@ const ListaPromociones = () => {
                       >
                         Agregar al carrito
                       </Button>
-                      <Button
-                        variant="outlined"
-                        color="primary"
-                        sx={{ py: 1.2, fontWeight: 700, borderRadius: 2, minWidth: 80 }}
-                      >
-                        Ver
-                      </Button>
                     </Stack>
                   </CardContent>
                 </Card>
