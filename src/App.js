@@ -82,6 +82,9 @@ import Error404 from './Componentes/Pagina/Error404.jsx';
 import Error400 from './Componentes/Pagina/Error400.jsx';
 import AuthError from './Componentes/Autenticacion/AuthError.jsx';
 
+// Importar el componente de WhatsApp
+import WhatsAppFloat from  './Componentes/Inicio/Watsapp.jsx'; // Asegúrate de crear este archivo
+
 const App = () => {
   return (
     <ThemeProvider>
@@ -155,6 +158,8 @@ const App = () => {
             {/* Ruta 404 - debe ser la última */}
             <Route path="*" element={<LayoutEncabezado><Error404 /></LayoutEncabezado>} />
           </Routes>
+          {/* Agregar el componente WhatsAppFloat fuera de las rutas */}
+          <WhatsAppFloat />
         </AuthProvider>
       </Router>
     </ThemeProvider>

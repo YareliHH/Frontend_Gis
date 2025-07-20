@@ -91,28 +91,28 @@ const DireccionForm = () => {
         px: { xs: 2, sm: 3, md: 0 },
       }}
     >
-    {/* Botón de regreso */}
-<Box sx={{ mb: 3 }}>
-  <Button
-    onClick={() => navigate('/cliente/carrito-compras')}
-    startIcon={<ArrowBackIosIcon sx={{ fontSize: '1rem' }} />}
-    sx={{
-      textTransform: 'none',
-      border: 'none',
-      background: 'none',
-      color: 'primary.main',
-      fontSize: '1rem',
-      cursor: 'pointer',
-      '&:hover': {
-        textDecoration: 'underline',
-        background: 'none',
-      },
-      pl: 0,
-    }}
-  >
-    Regresar al carrito
-  </Button>
-</Box>
+      {/* Botón de regreso */}
+      <Box sx={{ mb: 3 }}>
+        <Button
+          onClick={() => navigate('/cliente/carrito-compras')}
+          startIcon={<ArrowBackIosIcon sx={{ fontSize: '1rem' }} />}
+          sx={{
+            textTransform: 'none',
+            border: 'none',
+            background: 'none',
+            color: 'primary.main',
+            fontSize: '1rem',
+            cursor: 'pointer',
+            '&:hover': {
+              textDecoration: 'underline',
+              background: 'none',
+            },
+            pl: 0,
+          }}
+        >
+          Regresar al carrito
+        </Button>
+      </Box>
 
       <Typography
         variant="h4"
@@ -158,6 +158,7 @@ const DireccionForm = () => {
                 helperText={errors.calleNumero}
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
+                placeholder="Ej: Av. Insurgentes 123"
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             </Grid>
@@ -173,6 +174,7 @@ const DireccionForm = () => {
                 helperText={errors.codigoPostal}
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
+                placeholder="Ej: 12345"
                 inputProps={{ maxLength: 5 }}
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
@@ -189,6 +191,7 @@ const DireccionForm = () => {
                 helperText={errors.estado}
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
+                placeholder="Ej: Hidalgo"
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             </Grid>
@@ -204,6 +207,7 @@ const DireccionForm = () => {
                 helperText={errors.municipio}
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
+                placeholder="Ej: Mexico"
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             </Grid>
@@ -219,6 +223,7 @@ const DireccionForm = () => {
                 helperText={errors.colonia}
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
+                placeholder="Ej: Lomas"
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             </Grid>
@@ -234,6 +239,7 @@ const DireccionForm = () => {
                 onChange={handleChange}
                 variant="outlined"
                 InputLabelProps={{ shrink: true }}
+                placeholder="Ej: Dejar en recepción si no hay nadie"
                 sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
               />
             </Grid>
@@ -254,26 +260,26 @@ const DireccionForm = () => {
             </Grid>
 
             <Grid item xs={12}>
-             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-              <Button
-                onClick={() => navigate('/cliente/mercadopago')}
-                variant="contained"
-                sx={{
-                  px: 3,
-                  py: 1,
-                  fontSize: '0.9rem',
-                  textTransform: 'none',
-                  borderRadius: 2,
-                  bgcolor: 'primary.main',
-                  '&:hover': {
-                    bgcolor: 'primary.dark',
-                  },
-                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
-                }}
-              >
-                Continuar pago  
-              </Button>
-            </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button
+                  onClick={() => navigate('/cliente/mercadopago')}
+                  variant="contained"
+                  sx={{
+                    px: 3,
+                    py: 1,
+                    fontSize: '0.9rem',
+                    textTransform: 'none',
+                    borderRadius: 2,
+                    bgcolor: 'primary.main',
+                    '&:hover': {
+                      bgcolor: 'primary.dark',
+                    },
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  Continuar pago  
+                </Button>
+              </Box>
             </Grid>
           </Grid>
         </form>
