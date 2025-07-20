@@ -49,6 +49,7 @@ import DeslindeC from './Componentes/Cliente/deslindeCliente.jsx';
 import PreguntasFrecuentesC from './Componentes/Cliente/FAQCliente.jsx';
 import ContactanosCliente from './Componentes/Cliente/ContactanosCliente.jsx';
 import MetodoPago from './Componentes/Cliente/Mercadopago.jsx';
+import Envios from './Componentes/Cliente/envios.jsx';
 
 // Componentes administrativos
 import PaginaAdministrativa from './Componentes/Administrativo/PaginaAdministrativa.jsx';
@@ -126,8 +127,8 @@ const App = () => {
             <Route path="/cliente/deslindeCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'deslindeC' }]} /><DeslindeC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/preguntasFCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Faqs' }]} /><PreguntasFrecuentesC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/contactoCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Contactanos' }]} /><ContactanosCliente /></EncabezadoCliente></ProtectedRoute>} />
-            <Route path="/cliente/mercadopago" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'MetodoPago' }]} /><MetodoPago/></EncabezadoCliente></ProtectedRoute>} />
-
+            <Route path="/cliente/mercadopago" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' },{ name: 'Carrito', path: '/cliente/carrito-compras' }, { name: 'Envío' }, { name: 'MetodoPago' }]} /><MetodoPago/></EncabezadoCliente></ProtectedRoute>} />    
+             <Route path="/cliente/envios"element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente> <Breadcrumbs paths={[ { name: 'Home', path: '/cliente' }, { name: 'Carrito', path: '/cliente/carrito-compras' }, { name: 'Envío' } ]}/><Envios /></EncabezadoCliente></ProtectedRoute> }/>
 
             {/* Rutas administrativas - Protegidas */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin></ProtectedRoute>} />

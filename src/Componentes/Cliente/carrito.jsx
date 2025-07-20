@@ -335,7 +335,7 @@ const Carrito = () => {
               fontWeight="bold"
               color="primary.main"
             >
-              Tu Carrito ({carrito.length})
+              Tu Carrito
               <ShoppingCartIcon sx={{ ml: 1, verticalAlign: 'middle', fontSize: 32 }} />
             </Typography>
             
@@ -691,7 +691,7 @@ const Carrito = () => {
         variant="contained"
         fullWidth
         size="large"
-        onClick={() => navigate('/cliente/mercadopago')}
+        onClick={() => navigate('/cliente/envios')}
         sx={{
           borderRadius: 2,
           textTransform: 'none',
