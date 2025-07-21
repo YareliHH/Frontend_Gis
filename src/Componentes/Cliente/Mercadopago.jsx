@@ -10,9 +10,6 @@ import {
   useMediaQuery,
   useTheme,
   Alert,
-  List,
-  ListItem,
-  ListItemText,
   CircularProgress,
 } from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
@@ -26,7 +23,6 @@ const MercadoPago = () => {
 
   const [carrito, setCarrito] = useState([]);
   const [total, setTotal] = useState(0);
-  const [expandedItems, setExpandedItems] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -39,13 +35,6 @@ const MercadoPago = () => {
     setTotal(location.state.total || 0);
     localStorage.setItem('carrito', JSON.stringify(location.state.carrito));
   }, [location.state]);
-
-  const toggleItemExpansion = (itemId) => {
-    setExpandedItems((prev) => ({
-      ...prev,
-      [itemId]: !prev[itemId],
-    }));
-  };
 
   const pagarConMercadoPago = async () => {
     try {
@@ -131,52 +120,130 @@ const MercadoPago = () => {
 
           {error && <Alert severity="error">{error}</Alert>}
 
-          {/* Total y detalles */}
-          <Box>
-            <Typography variant="body1" color="text.secondary">
-              Monto total:
-            </Typography>
-            <Typography variant="h6" fontWeight="bold">
-              ${total.toFixed(2)} MXN
+          {/* Resumen del Pedido */}
+          <Paper
+            elevation={1}
+            sx={{
+              p: 3,
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'grey.200'
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold" gutterBottom>
+              Resumen del Pedido
             </Typography>
 
-            {carrito.length > 0 && (
-              <Box mt={2}>
-                <Typography variant="body2" color="text.secondary">
-                  Detalles del pedido:
-                </Typography>
-                <List dense>
-                  {carrito.map((item, i) => (
-                    <ListItem key={i} sx={{ flexDirection: 'column', alignItems: 'flex-start' }}>
-                      <Box sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-                        <ListItemText
-                          primary={
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                display: '-webkit-box',
-                                WebkitBoxOrient: 'vertical',
-                                WebkitLineClamp: expandedItems[item.id] ? 'unset' : 2,
-                                overflow: 'hidden',
-                              }}
-                            >
-                              {item.nombre} (x{item.cantidad_carrito})
-                            </Typography>
-                          }
-                          secondary={`Subtotal: $${(
-                            item.subtotal ||
-                            (item.precio_carrito ?? 0) * (item.cantidad_carrito ?? 0)
-                          ).toFixed(2)} MXN`}
-                          primaryTypographyProps={{ component: 'div' }}
-                          secondaryTypographyProps={{ variant: 'caption', color: 'text.secondary' }}
-                        />
-                      </Box>
-                    </ListItem>
-                  ))}
-                </List>
-              </Box>
-            )}
-          </Box>
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ mb: 3, maxHeight: 300, overflowY: 'auto' }}>
+              {carrito.map((item, index) => (
+                <Box
+                  key={item.producto_id || index}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                    py: 2,
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    '&:last-child': { borderBottom: 'none' }
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 50,
+                      height: 50,
+                      borderRadius: 1,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                      border: '1px solid',
+                      borderColor: 'grey.300'
+                    }}
+                  >
+                    {item.imagen_url ? (
+                      <img
+                        src={item.imagen_url}
+                        alt={item.nombre_producto}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <Box
+                      sx={{
+                        width: '100%',
+                        height: '100%',
+                        display: item.imagen_url ? 'none' : 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <Typography variant="caption">IMG</Typography>
+                    </Box>
+                  </Box>
+
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography
+                      variant="body2"
+                      fontWeight="medium"
+                      sx={{
+                        mb: 0.5,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {item.nombre || item.nombre_producto || 'Producto'}
+                    </Typography>
+                    <Typography variant="caption" display="block">
+                      Cantidad: {item.cantidad_carrito || item.cantidad || 1}
+                    </Typography>
+                    <Typography variant="body2" fontWeight="bold">
+                      ${(
+                        (parseFloat(item.precio_carrito) || parseFloat(item.precio) || 0) *
+                        (parseInt(item.cantidad_carrito) || parseInt(item.cantidad) || 1)
+                      ).toFixed(2)}
+                    </Typography>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography variant="body2">
+                Subtotal ({carrito.length} producto{carrito.length !== 1 ? 's' : ''})
+              </Typography>
+              <Typography variant="body2" fontWeight="medium">
+                ${total.toFixed(2)}
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+              <Typography variant="body2">Envío</Typography>
+              <Typography variant="body2" fontWeight="medium">Gratis</Typography>
+            </Box>
+
+            <Divider sx={{ my: 2 }} />
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="h6" fontWeight="bold">Total</Typography>
+              <Typography variant="h5" fontWeight="bold">${total.toFixed(2)}</Typography>
+            </Box>
+          </Paper>
 
           {/* Botón pagar */}
           <Box display="flex" justifyContent="center">
