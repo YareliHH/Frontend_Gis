@@ -50,6 +50,7 @@ import { Carousel } from 'react-responsive-carousel';
 import { keyframes } from '@mui/system';
 
 // Hook de autenticación
+
 import { useAuth } from '../Autenticacion/AuthContext';
 
 // Importación de imágenes
