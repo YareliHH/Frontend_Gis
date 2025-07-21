@@ -66,7 +66,7 @@ const Direcciones = ({ usuarioId }) => {
   const registrarDireccion = async () => {
     setMensaje('');
     if (!validarCampos()) return;
-
+    console.log(usuarioId)
     setCargando(true);
     try {
       const res = await axios.post('https://backend-gis-1.onrender.com/api/direcciones/upsert', {
