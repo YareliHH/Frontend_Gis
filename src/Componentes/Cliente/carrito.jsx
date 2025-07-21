@@ -533,7 +533,7 @@ const Carrito = () => {
     }}
   >
     <Typography variant="h6" fontWeight="bold" gutterBottom>
-      Resumen del Pedido
+      Resumen de la compra
     </Typography>
 
     <Divider sx={{ my: 2 }} />
