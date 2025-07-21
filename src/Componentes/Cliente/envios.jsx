@@ -64,7 +64,7 @@ const DireccionForm = ({ usuarioId }) => {
   };
 
   return (
-    <Box maxWidth={800} mx="auto" mt={4} p={2}>
+    <Box maxWidth={1000} mx="auto" mt={4} p={2}>
       <Typography
         onClick={() => navigate('/cliente/carrito-compras')}
         sx={{
@@ -86,7 +86,7 @@ const DireccionForm = ({ usuarioId }) => {
         Mi Dirección
       </Typography>
 
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+     <Paper elevation={3} sx={{ p: 4, borderRadius: 2, width: '100%' }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
