@@ -131,7 +131,7 @@ const App = () => {
             <Route path="/cliente/preguntasFCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Faqs' }]} /><PreguntasFrecuentesC /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/contactoCliente" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' }, { name: 'Contactanos' }]} /><ContactanosCliente /></EncabezadoCliente></ProtectedRoute>} />
             <Route path="/cliente/mercadopago" element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente><Breadcrumbs paths={[{ name: 'Home', path: '/cliente' },{ name: 'Carrito', path: '/cliente/carrito-compras' }, { name: 'Envío' }, { name: 'MetodoPago' }]} /><MetodoPago/></EncabezadoCliente></ProtectedRoute>} />    
-             <Route path="/cliente/envios"element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente> <Breadcrumbs paths={[ { name: 'Home', path: '/cliente' }, { name: 'Carrito', path: '/cliente/carrito-compras' }, { name: 'Envío' } ]}/><Envios /></EncabezadoCliente></ProtectedRoute> }/>
+            <Route path="/cliente/envios"element={<ProtectedRoute requiredRole="usuario"><EncabezadoCliente> <Breadcrumbs paths={[ { name: 'Home', path: '/cliente' }, { name: 'Carrito', path: '/cliente/carrito-compras' }, { name: 'Envío' } ]}/><Envios /></EncabezadoCliente></ProtectedRoute> }/>
 
             {/* Rutas administrativas - Protegidas */}
             <Route path="/admin" element={<ProtectedRoute requiredRole="admin"><LayoutEncabezadoAdmin><PaginaAdministrativa /></LayoutEncabezadoAdmin></ProtectedRoute>} />
