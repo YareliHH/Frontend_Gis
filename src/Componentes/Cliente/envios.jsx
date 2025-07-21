@@ -1,21 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Grid,
-  Checkbox,
-  FormControlLabel,
+  Box, Typography, TextField, Button, Paper, Grid, Checkbox, FormControlLabel
 } from '@mui/material';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { ArrowBackIos as ArrowBackIosIcon } from '@mui/icons-material';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const DireccionForm = () => {
+const Direcciones = ({ usuarioId }) => {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     calle: '',
     numero: '',
     codigo_postal: '',
@@ -26,25 +19,98 @@ const DireccionForm = () => {
     es_predeterminada: false,
   });
 
-  const [errors, setErrors] = useState({});
+  const [errores, setErrores] = useState({});
+  const [mensaje, setMensaje] = useState('');
+  const [colorMensaje, setColorMensaje] = useState('success.main');
+  const [cargando, setCargando] = useState(false);
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === 'checkbox' ? checked : value,
-    }));
+  useEffect(() => {
+    if (usuarioId) obtenerDirecciones();
+  }, [usuarioId]);
+
+  const obtenerDirecciones = async () => {
+    try {
+      const res = await axios.get(`https://backend-gis-1.onrender.com/api/direcciones/usuario/${usuarioId}`);
+      // console.log(res.data);
+    } catch (error) {
+      console.error('Error al obtener direcciones:', error);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aquí puedes hacer validación si gustas
-    // Luego enviar los datos al backend si es necesario
-    console.log('Datos enviados:', formData);
+  const manejarCambio = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
+
+    if (errores[name]) {
+      setErrores((prev) => ({ ...prev, [name]: '' }));
+    }
+  };
+
+  const validarCampos = () => {
+    const nuevosErrores = {};
+    const camposObligatorios = ['calle', 'numero', 'codigo_postal', 'estado', 'municipio', 'colonia'];
+
+    camposObligatorios.forEach((campo) => {
+      if (!form[campo] || form[campo].trim() === '') {
+        nuevosErrores[campo] = 'Este campo es obligatorio';
+      }
+    });
+
+    setErrores(nuevosErrores);
+    return Object.keys(nuevosErrores).length === 0;
+  };
+
+  const registrarDireccion = async () => {
+    setMensaje('');
+    if (!validarCampos()) return;
+
+    setCargando(true);
+    try {
+      const res = await axios.post('https://backend-gis-1.onrender.com/api/direcciones/upsert', {
+        usuario_id: usuarioId,
+        ...form,
+      });
+
+      setMensaje(res.data.mensaje || 'Dirección registrada correctamente');
+      setColorMensaje('success.main');
+
+      setForm({
+        calle: '',
+        numero: '',
+        codigo_postal: '',
+        estado: '',
+        municipio: '',
+        colonia: '',
+        instrucciones: '',
+        es_predeterminada: false,
+      });
+
+      return true;
+    } catch (error) {
+      const mensajeError = error.response?.data?.mensaje || 'Error al registrar dirección.';
+      setMensaje(mensajeError);
+      setColorMensaje('error.main');
+      return false;
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  const placeholders = {
+    calle: 'Ej: Av. Juárez',
+    numero: 'Ej: 123',
+    codigo_postal: 'Ej: 43000',
+    estado: 'Ej: Hidalgo',
+    municipio: 'Ej: Huejutla de Reyes',
+    colonia: 'Ej: Centro',
+    instrucciones: 'Ej: Entregar en portón negro, tocar claxon',
   };
 
   return (
-    <Box maxWidth={1000} mx="auto" mt={4} p={2}>
+    <Box maxWidth={900} mx="auto" mt={4}>
       <Typography
         onClick={() => navigate('/cliente/carrito-compras')}
         sx={{
@@ -53,152 +119,84 @@ const DireccionForm = () => {
           color: '#1976d2',
           cursor: 'pointer',
           mb: 2,
-          '&:hover': {
-            textDecoration: 'underline',
-          },
+          '&:hover': { textDecoration: 'underline' },
         }}
       >
         <ArrowBackIosIcon sx={{ mr: 1 }} />
         Regresar
       </Typography>
 
-      <Typography variant="h4" component="h1" align="center" gutterBottom sx={{ fontWeight: 'bold', color: '#333' }}>
-        Mi Dirección
-      </Typography>
+      <Typography variant="h5" gutterBottom>Mis Direcciones</Typography>
 
-      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} sm={6}>
+      {mensaje && (
+        <Typography sx={{ mb: 2, color: colorMensaje }}>
+          {mensaje}
+        </Typography>
+      )}
+
+      <Paper sx={{ p: 3, mb: 4 }}>
+        <Grid container spacing={2}>
+          {['calle', 'numero', 'codigo_postal', 'estado', 'municipio', 'colonia'].map((campo) => (
+            <Grid item xs={12} sm={6} key={campo}>
               <TextField
-                label="Calle"
-                name="calle"
-                placeholder="Ej. Av. Reforma"
                 fullWidth
-                value={formData.calle}
-                onChange={handleChange}
-                error={!!errors.calle}
-                helperText={errors.calle}
-                variant="outlined"
-                InputProps={{ sx: { borderRadius: 1 } }}
+                name={campo}
+                label={campo.replace('_', ' ').toUpperCase()}
+                value={form[campo]}
+                onChange={manejarCambio}
+                placeholder={placeholders[campo]}
+                error={!!errores[campo]}
+                helperText={errores[campo]}
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Número"
-                name="numero"
-                placeholder="Ej. 123"
-                fullWidth
-                value={formData.numero}
-                onChange={handleChange}
-                error={!!errors.numero}
-                helperText={errors.numero}
-                variant="outlined"
-                InputProps={{ sx: { borderRadius: 1 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Código Postal"
-                name="codigo_postal"
-                placeholder="Ej. 43000"
-                fullWidth
-                value={formData.codigo_postal}
-                onChange={handleChange}
-                error={!!errors.codigo_postal}
-                helperText={errors.codigo_postal}
-                variant="outlined"
-                InputProps={{ sx: { borderRadius: 1 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Estado"
-                name="estado"
-                placeholder="Ej. Hidalgo"
-                fullWidth
-                value={formData.estado}
-                onChange={handleChange}
-                error={!!errors.estado}
-                helperText={errors.estado}
-                variant="outlined"
-                InputProps={{ sx: { borderRadius: 1 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Municipio"
-                name="municipio"
-                placeholder="Ej. Huejutla"
-                fullWidth
-                value={formData.municipio}
-                onChange={handleChange}
-                error={!!errors.municipio}
-                helperText={errors.municipio}
-                variant="outlined"
-                InputProps={{ sx: { borderRadius: 1 } }}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Colonia"
-                name="colonia"
-                placeholder="Ej. Centro"
-                fullWidth
-                value={formData.colonia}
-                onChange={handleChange}
-                error={!!errors.colonia}
-                helperText={errors.colonia}
-                variant="outlined"
-                InputProps={{ sx: { borderRadius: 1 } }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Instrucciones"
-                name="instrucciones"
-                placeholder="Ej. Dejar en recepción o con el vigilante"
-                fullWidth
-                value={formData.instrucciones}
-                onChange={handleChange}
-                variant="outlined"
-                multiline
-                rows={3}
-                InputProps={{ sx: { borderRadius: 1 } }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="es_predeterminada"
-                    checked={formData.es_predeterminada}
-                    onChange={handleChange}
-                    color="primary"
-                  />
-                }
-                label="Establecer como dirección predeterminada"
-                sx={{ ml: 0 }}
-              />
-            </Grid>
-            <Grid item xs={12}>
-             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={() => navigate('/cliente/mercadopago')}
-              sx={{ mt: 2, px: 4, borderRadius: 2 }}
-            >
-              Continuar pago
-            </Button>
-          </Box>
-            </Grid>
+          ))}
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              multiline
+              rows={2}
+              name="instrucciones"
+              label="Instrucciones"
+              value={form.instrucciones}
+              onChange={manejarCambio}
+              placeholder={placeholders.instrucciones}
+            />
           </Grid>
-        </form>
+          <Grid item xs={12}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  name="es_predeterminada"
+                  checked={form.es_predeterminada}
+                  onChange={manejarCambio}
+                />
+              }
+              label="Establecer como predeterminada"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button
+                variant="contained"
+                color="primary"
+                size="large"
+                onClick={async () => {
+                  const exito = await registrarDireccion();
+                  if (exito) {
+                    navigate('/cliente/mercadopago');
+                  }
+                }}
+                sx={{ mt: 2, px: 4, borderRadius: 2 }}
+                disabled={cargando}
+              >
+                {cargando ? 'Guardando...' : 'Continuar pago'}
+              </Button>
+            </Box>
+          </Grid>
+        </Grid>
       </Paper>
     </Box>
   );
 };
 
-export default DireccionForm;
+export default Direcciones;
