@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import {
   Box,
-  Button,
-  Grid,
-  TextField,
   Typography,
-  FormControlLabel,
-  Checkbox,
+  TextField,
+  Button,
   Paper,
+  Grid,
+  Checkbox,
+  FormControlLabel,
 } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from 'react-router-dom';
 
-const DireccionForm = ({ usuarioId }) => {
+const DireccionForm = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -29,38 +28,19 @@ const DireccionForm = ({ usuarioId }) => {
 
   const [errors, setErrors] = useState({});
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.calle.trim()) newErrors.calle = 'Requerido';
-    if (!formData.numero.trim()) newErrors.numero = 'Requerido';
-    if (!/^\d{5}$/.test(formData.codigo_postal)) newErrors.codigo_postal = 'Debe ser 5 dígitos';
-    if (!formData.estado.trim()) newErrors.estado = 'Requerido';
-    if (!formData.municipio.trim()) newErrors.municipio = 'Requerido';
-    if (!formData.colonia.trim()) newErrors.colonia = 'Requerido';
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData({ ...formData, [name]: type === 'checkbox' ? checked : value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: type === 'checkbox' ? checked : value,
+    }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
-    try {
-      await axios.post('https://backend-gis-1.onrender.com/api/direcciones/upsert', {
-        ...formData,
-        usuario_id: usuarioId,
-      });
-      navigate('/cliente/mercadopago');
-    } catch (err) {
-      console.error(err);
-      alert('Error al guardar la dirección');
-    }
+    // Aquí puedes hacer validación si gustas
+    // Luego enviar los datos al backend si es necesario
+    console.log('Datos enviados:', formData);
   };
 
   return (
@@ -86,7 +66,7 @@ const DireccionForm = ({ usuarioId }) => {
         Mi Dirección
       </Typography>
 
-     <Paper elevation={3} sx={{ p: 4, borderRadius: 2, width: '100%' }}>
+      <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={3}>
             <Grid item xs={12} sm={6}>
@@ -202,7 +182,7 @@ const DireccionForm = ({ usuarioId }) => {
               />
             </Grid>
             <Grid item xs={12}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+             <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
             <Button
               variant="contained"
               color="primary"
