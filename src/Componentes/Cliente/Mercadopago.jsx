@@ -49,7 +49,7 @@ const MercadoPago = () => {
 
       if (!carritoValido) throw new Error('Uno o más productos tienen datos inválidos.');
 
-      const response = await fetch('https://backendcentro.onrender.com/api/pagos/create_preference', {
+      const response = await fetch('https://backend-gis-1.onrender.com/api/pago/crear_preferencia', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ carrito }),
