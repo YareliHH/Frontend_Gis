@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import {
   Box,
@@ -19,6 +19,8 @@ import {
   Chip,
   Fade,
   Grid,
+  List,
+  ListItemText,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -32,12 +34,8 @@ const Carrito = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [usuarioId, setUsuarioId] = useState(null);
-
-  // Justo después de tus otros useState al inicio del componente
   const [scrollIndex, setScrollIndex] = useState(0);
-  const containerRef = React.useRef(null);
-
-  // Estados para nombres de recomendaciones y detalles
+  const containerRef = useRef(null);
   const [recNames, setRecNames] = useState([]);
   const [detRecs, setDetRecs] = useState([]);
   const [recLoading, setRecLoading] = useState(false);
@@ -53,7 +51,7 @@ const Carrito = () => {
   const scrollNext = () => {
     if (!containerRef.current) return;
     const container = containerRef.current;
-    const cardWidth = container.firstChild?.offsetWidth || 300; // ancho aproximado de tarjeta
+    const cardWidth = container.firstChild?.offsetWidth || 300;
     const maxIndex = detRecs.length - (isMobile ? 1 : 4);
     setScrollIndex((prev) => {
       const next = Math.min(prev + 1, maxIndex);
@@ -73,7 +71,7 @@ const Carrito = () => {
     });
   };
 
-  // 1) Obtener carrito
+  // Funciones existentes (sin cambios)
   const fetchCarrito = async () => {
     try {
       setLoading(true); setError(null);
@@ -100,13 +98,12 @@ const Carrito = () => {
     }
   };
 
-  // 2) Pedir nombres de recomendados
   const fetchRecNames = async (productoNombre) => {
     setRecLoading(true); setRecError(''); setRecNames([]);
     try {
       const { data } = await axios.post(
         'https://flask1-yowt.onrender.com/recomendar',
-        { productos: [productoNombre] }, // ✅ lo que Flask espera
+        { productos: [productoNombre] },
         { timeout: 10000 }
       );
       console.log("Productos recomendados:", data);
@@ -120,18 +117,14 @@ const Carrito = () => {
     }
   };
 
-  // 3) Pedir detalles de recomendados
   const fetchDetRecs = async (names) => {
     if (!names.length) return setDetRecs([]);
     setDetLoading(true); setDetError(''); setDetRecs([]);
-
-    // Limpiar nombres recibidos: quitar espacios al inicio y fin
     const cleanedNames = names.map(name => name.trim());
-
     try {
       const { data } = await axios.post(
         "https://backend-gis-1.onrender.com/api/productos/recomendados",
-        { recomendaciones: cleanedNames },  // envío limpio
+        { recomendaciones: cleanedNames },
         { timeout: 10000 }
       );
       console.log("Productos recomendados detalles:", data);
@@ -145,7 +138,6 @@ const Carrito = () => {
     }
   };
 
-  // Montaje: carga carrito
   useEffect(() => {
     if (user?.id) fetchCarrito();
     else {
@@ -155,7 +147,6 @@ const Carrito = () => {
     }
   }, [user]);
 
-  // Cuando cambia carrito: pide recomendaciones para el primer ítem
   useEffect(() => {
     if (carrito.length) {
       fetchRecNames(carrito[0].nombre_producto);
@@ -165,7 +156,6 @@ const Carrito = () => {
     }
   }, [carrito]);
 
-  // Cuando llegan los nombres: pide detalles
   useEffect(() => {
     if (recNames.length) {
       fetchDetRecs(recNames);
@@ -174,7 +164,6 @@ const Carrito = () => {
     }
   }, [recNames]);
 
-  // Funciones de carrito (agregar / eliminar / vaciar)
   const agregarProducto = async (producto_id, cantidad, precio_unitario) => {
     try {
       await axios.post(
@@ -187,6 +176,7 @@ const Carrito = () => {
       setError("No se pudo agregar el producto al carrito.");
     }
   };
+
   const eliminarProducto = async (producto_id) => {
     try {
       await axios.delete(
@@ -198,6 +188,7 @@ const Carrito = () => {
       setError("No se pudo eliminar el producto.");
     }
   };
+
   const vaciarCarrito = async () => {
     try {
       await axios.delete(
@@ -209,6 +200,7 @@ const Carrito = () => {
       setError("No se pudo vaciar el carrito.");
     }
   };
+
   const handleRetry = () => {
     setError(null);
     fetchCarrito();
@@ -218,51 +210,105 @@ const Carrito = () => {
     const n = parseFloat(price);
     return isNaN(n) ? 0 : n;
   };
+
   const total = carrito.reduce(
     (acc, item) => acc + parsePrice(item.precio) * (parseInt(item.cantidad) || 1),
     0
   );
 
-  // Render loading / error / no user
+  // Handler para eliminar producto sin recargar la página
+  const handleEliminarProducto = (event, producto_id) => {
+    event.preventDefault();
+    eliminarProducto(producto_id);
+  };
+
+  // Render loading
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{
-        display:'flex', flexDirection:'column',
-        justifyContent:'center', alignItems:'center',
-        minHeight:'60vh', gap:2
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        minHeight: '60vh',
+        gap: 3,
+        bgcolor: 'background.default',
       }}>
-        <CircularProgress size={60} thickness={4} />
-        <Typography variant="h6" color="text.secondary">
+        <CircularProgress size={80} thickness={4} color="primary" />
+        <Typography variant="h6" color="text.secondary" fontWeight="medium">
           Cargando tu carrito...
         </Typography>
       </Container>
     );
   }
+
+  // Render error
   if (error) {
     return (
-      <Container maxWidth="md" sx={{ py:4 }}>
+      <Container maxWidth="md" sx={{ py: 6 }}>
         <Fade in>
-          <Alert severity="error" action={
-            <Button size="small" onClick={handleRetry} startIcon={<RefreshIcon />}>
-              Reintentar
-            </Button>
-          }>
-            {error}
+          <Alert
+            severity="error"
+            sx={{
+              borderRadius: 2,
+              boxShadow: 2,
+              py: 2,
+              px: 3,
+              display: 'flex',
+              alignItems: 'center',
+            }}
+            action={
+              <Button
+                size="medium"
+                onClick={handleRetry}
+                startIcon={<RefreshIcon />}
+                variant="outlined"
+                color="error"
+                sx={{ borderRadius: 20 }}
+              >
+                Reintentar
+              </Button>
+            }
+          >
+            <Typography variant="body1">{error}</Typography>
           </Alert>
         </Fade>
       </Container>
     );
   }
+
+  // Render no user
   if (!user) {
     return (
-      <Container maxWidth="sm" sx={{ py:6 }}>
+      <Container maxWidth="sm" sx={{ py: 8 }}>
         <Fade in>
-          <Paper elevation={6} sx={{ p:4, textAlign:'center', borderRadius:3 }}>
-            <ShoppingCartIcon sx={{ fontSize:80, mb:2 }} />
-            <Typography variant="h5" gutterBottom>
+          <Paper
+            elevation={8}
+            sx={{
+              p: 4,
+              textAlign: 'center',
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            }}
+          >
+            <ShoppingCartIcon sx={{ fontSize: 100, mb: 3, color: 'primary.main' }} />
+            <Typography variant="h5" gutterBottom fontWeight="bold">
               Inicia sesión para ver tu carrito
             </Typography>
-            <Button variant="contained" onClick={() => navigate('/login')}>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate('/login')}
+              sx={{
+                borderRadius: 20,
+                textTransform: 'none',
+                px: 4,
+                py: 1.5,
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                '&:hover': { boxShadow: '0 4px 15px rgba(0,0,0,0.3)' },
+              }}
+            >
               Iniciar Sesión
             </Button>
           </Paper>
@@ -273,25 +319,50 @@ const Carrito = () => {
 
   return (
     <>
-      {/* ====== CONTENEDOR DEL CARRITO (sin cambios) ====== */}
-      <Container maxWidth="xl" sx={{ py:{ xs:3, md:6 }, px:{ xs:2, sm:3 } }}>
+      {/* Carrito Container */}
+      <Container maxWidth="xl" sx={{ py: { xs: 4, md: 8 }, px: { xs: 2, sm: 4 } }}>
         <Fade in>
-          <Paper elevation={6} sx={{ p:{ xs:2, sm:4 }, borderRadius:3 }}>
-            <Box sx={{
-              display:'flex', justifyContent:'space-between',
-              alignItems:'center', mb:4,
-              flexDirection: isMobile?'column':'row',
-              gap:2
-            }}>
-              <Typography variant={isMobile?"h5":"h4"} fontWeight="bold">
-                Tu Carrito <ShoppingCartIcon sx={{ ml:1, verticalAlign:'middle', fontSize:32 }} />
+          <Paper
+            elevation={8}
+            sx={{
+              p: { xs: 3, sm: 5 },
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+            }}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                mb: 5,
+                flexDirection: isMobile ? 'column' : 'row',
+                gap: 3,
+              }}
+            >
+              <Typography
+                variant={isMobile ? 'h5' : 'h4'}
+                fontWeight="bold"
+                color="text.primary"
+              >
+                Tu Carrito
+                <ShoppingCartIcon
+                  sx={{ ml: 1.5, verticalAlign: 'middle', fontSize: 36, color: 'primary.main' }}
+                />
               </Typography>
               {carrito.length > 0 && (
-                <Box sx={{ display:'flex', gap:2 }}>
+                <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
                   <Button
                     variant="outlined"
                     startIcon={<RefreshIcon />}
                     onClick={fetchCarrito}
+                    sx={{
+                      borderRadius: 20,
+                      textTransform: 'none',
+                      px: 3,
+                      '&:hover': { bgcolor: 'primary.light', color: 'primary.contrastText' },
+                    }}
                   >
                     Actualizar
                   </Button>
@@ -300,6 +371,12 @@ const Carrito = () => {
                     color="error"
                     startIcon={<RemoveShoppingCartIcon />}
                     onClick={vaciarCarrito}
+                    sx={{
+                      borderRadius: 20,
+                      textTransform: 'none',
+                      px: 3,
+                      '&:hover': { bgcolor: 'error.light', color: 'error.contrastText' },
+                    }}
                   >
                     Vaciar Carrito
                   </Button>
@@ -308,43 +385,93 @@ const Carrito = () => {
             </Box>
 
             {carrito.length === 0 ? (
-              <Box sx={{ textAlign:'center', py:8 }}>
-                <ShoppingCartIcon sx={{ fontSize:120, mb:3, opacity:0.7 }} />
-                <Typography variant="h5" gutterBottom>
+              <Box sx={{ textAlign: 'center', py: 10 }}>
+                <ShoppingCartIcon sx={{ fontSize: 140, mb: 4, opacity: 0.6, color: 'text.secondary' }} />
+                <Typography variant="h5" gutterBottom fontWeight="medium" color="text.secondary">
                   Tu carrito está vacío
                 </Typography>
-                <Button variant="contained" onClick={() => navigate('/cliente')}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate('/cliente')}
+                  sx={{
+                    borderRadius: 20,
+                    textTransform: 'none',
+                    px: 4,
+                    py: 1.5,
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                    '&:hover': { boxShadow: '0 4px 15px rgba(0,0,0,0.3)' },
+                  }}
+                >
                   Explorar Productos
                 </Button>
               </Box>
             ) : (
-              <Grid container spacing={3}>
+              <Grid container spacing={4}>
                 <Grid item xs={12} lg={8}>
                   {carrito.map((item, idx) => (
-                    <Card key={idx} sx={{ mb:2 }}>
+                    <Card
+                      key={idx}
+                      sx={{
+                        mb: 3,
+                        borderRadius: 3,
+                        boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                        transition: 'transform 0.2s, box-shadow 0.2s',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+                        },
+                      }}
+                    >
                       <ListItem
                         secondaryAction={
-                          <IconButton edge="end" onClick={() => eliminarProducto(item.producto_id)}>
+                          <IconButton
+                            edge="end"
+                            onClick={(event) => handleEliminarProducto(event, item.producto_id)}
+                            sx={{
+                              bgcolor: 'error.light',
+                              color: 'error.contrastText',
+                              '&:hover': { bgcolor: 'error.main' },
+                            }}
+                          >
                             <DeleteIcon />
                           </IconButton>
                         }
+                        sx={{ py: 2 }}
                       >
                         <CardMedia
                           component="img"
                           image={item.imagen_url || '/placeholder.jpg'}
                           alt={item.nombre_producto}
                           sx={{
-                            width: isMobile?'100%':150,
-                            height:150,
-                            objectFit:'cover',
-                            borderRadius:2
+                            width: isMobile ? '40%' : 180,
+                            height: 180,
+                            objectFit: 'cover',
+                            borderRadius: 2,
+                            mr: 3,
                           }}
                         />
-                        <CardContent sx={{ flex:1 }}>
-                          <Typography variant="h6">{item.nombre_producto}</Typography>
-                          <Box sx={{ display:'flex', gap:2, mt:1 }}>
-                            <Chip label={`Cantidad: ${item.cantidad}`} />
-                            <Chip label={`Precio: ${parsePrice(item.precio).toFixed(2)}`} />
+                        <CardContent sx={{ flex: 1, py: 2 }}>
+                          <Typography variant="h6" fontWeight="bold" color="text.primary">
+                            {item.nombre_producto}
+                          </Typography>
+                          <Box sx={{ display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap' }}>
+                            <Chip
+                              label={`Cantidad: ${item.cantidad}`}
+                              sx={{
+                                bgcolor: 'primary.light',
+                                color: 'primary.contrastText',
+                                fontWeight: 'medium',
+                              }}
+                            />
+                            <Chip
+                              label={`Precio: $${parsePrice(item.precio).toFixed(2)}`}
+                              sx={{
+                                bgcolor: 'secondary.light',
+                                color: 'secondary.contrastText',
+                                fontWeight: 'medium',
+                              }}
+                            />
                           </Box>
                         </CardContent>
                       </ListItem>
@@ -354,25 +481,83 @@ const Carrito = () => {
                 </Grid>
 
                 <Grid item xs={12} lg={4}>
-                  <Paper sx={{ p:3, position:'sticky', top:20 }}>
-                    <Typography variant="h6" gutterBottom>
+                  <Paper
+                    sx={{
+                      p: 4,
+                      position: 'sticky',
+                      top: 20,
+                      borderRadius: 3,
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
+                      bgcolor: 'background.paper',
+                      maxHeight: '70vh',
+                      overflowY: 'auto',
+                      '&::-webkit-scrollbar': { width: '8px' },
+                      '&::-webkit-scrollbar-thumb': {
+                        background: 'grey.400',
+                        borderRadius: '4px',
+                      },
+                    }}
+                  >
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
                       Resumen de la compra
                     </Typography>
-                    <Divider sx={{ my:2 }} />
-                    <Box sx={{ display:'flex', justifyContent:'space-between' }}>
-                      <Typography>Subtotal ({carrito.length} items)</Typography>
-                      <Typography>${total.toFixed(2)}</Typography>
+                    <Divider sx={{ my: 3 }} />
+                    <Typography variant="subtitle1" fontWeight="medium" color="text.secondary" gutterBottom>
+                      Productos
+                    </Typography>
+                    <List dense sx={{ mb: 2 }}>
+                      {carrito.map((item, idx) => (
+                        <ListItem key={idx} sx={{ py: 1, px: 0 }}>
+                          <ListItemText
+                            primary={
+                              <Typography variant="body2" color="text.primary">
+                                {item.nombre_producto}
+                              </Typography>
+                            }
+                            secondary={
+                              <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 0.5 }}>
+                                <Typography variant="caption" color="text.secondary">
+                                  Cantidad: {item.cantidad}
+                                </Typography>
+                                <Typography variant="caption" fontWeight="medium">
+                                  ${(parsePrice(item.precio) * parseInt(item.cantidad)).toFixed(2)}
+                                </Typography>
+                              </Box>
+                            }
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+                    <Divider sx={{ my: 2 }} />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="body1" color="text.secondary">
+                        Subtotal ({carrito.length})
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium">
+                        ${total.toFixed(2)}
+                      </Typography>
                     </Box>
-                    <Box sx={{ display:'flex', justifyContent:'space-between', mt:1 }}>
-                      <Typography>Envío</Typography>
-                      <Typography>Gratis</Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="body1" color="text.secondary">
+                        Envío
+                      </Typography>
+                      <Typography variant="body1" fontWeight="medium" color="success.main">
+                        Gratis
+                      </Typography>
                     </Box>
-                    <Divider sx={{ my:2 }} />
-                    <Box sx={{ mt:3, display:'flex', flexDirection:'column', gap:2 }}>
+                    <Divider sx={{ my: 3 }} />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <Button
                         variant="contained"
                         fullWidth
                         onClick={() => navigate('/cliente/envios')}
+                        sx={{
+                          borderRadius: 20,
+                          textTransform: 'none',
+                          py: 1.5,
+                          boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                          '&:hover': { boxShadow: '0 4px 15px rgba(0,0,0,0.3)' },
+                        }}
                       >
                         Realizar Compra
                       </Button>
@@ -380,6 +565,12 @@ const Carrito = () => {
                         variant="outlined"
                         fullWidth
                         onClick={() => navigate('/cliente')}
+                        sx={{
+                          borderRadius: 20,
+                          textTransform: 'none',
+                          py: 1.5,
+                          '&:hover': { bgcolor: 'primary.light', color: 'primary.contrastText' },
+                        }}
                       >
                         Seguir Comprando
                       </Button>
@@ -392,107 +583,143 @@ const Carrito = () => {
         </Fade>
       </Container>
 
-      {/* ====== BLOQUE DE PRODUCTOS RECOMENDADOS CON DETALLES ====== */}
+      {/* Productos Recomendados */}
       {!detLoading && !detError && detRecs.length > 0 && (
-        <Box sx={{ position: 'relative' }}>
-          {/* Botón flecha izquierda */}
-          <Button
-            onClick={scrollPrev}
-            disabled={scrollIndex === 0}
-            sx={{
-              position: 'absolute',
-              top: '40%',
-              left: 0,
-              zIndex: 10,
-              minWidth: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              bgcolor: 'background.paper',
-              boxShadow: 1,
-            }}
+        <Container maxWidth="xl" sx={{ py: 6 }}>
+          <Typography
+            variant="h5"
+            fontWeight="bold"
+            sx={{ mb: 4, textAlign: 'center', color: 'text.primary' }}
           >
-            &#8592;
-          </Button>
+            Productos Recomendados
+          </Typography>
+          <Box sx={{ position: 'relative', px: { xs: 2, sm: 6 } }}>
+            <Button
+              onClick={scrollPrev}
+              disabled={scrollIndex === 0}
+              sx={{
+                position: 'absolute',
+                top: '40%',
+                left: { xs: -10, sm: 0 },
+                zIndex: 10,
+                minWidth: 48,
+                height: 48,
+                borderRadius: '50%',
+                bgcolor: 'background.paper',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                color: 'text.primary',
+                '&:hover': { bgcolor: 'primary.light', color: 'primary.contrastText' },
+                '&:disabled': { bgcolor: 'grey.200', color: 'grey.500' },
+              }}
+            >
+              ←
+            </Button>
 
-          {/* Contenedor scroll horizontal */}
-          <Box
-            ref={containerRef}
-            sx={{
-              display: 'flex',
-              overflowX: 'auto',
-              scrollBehavior: 'smooth',
-              gap: 2,
-              pb: 1,
-              px: 3, // <-- padding horizontal para separar tarjetas de flechas
-              // Ocultar scrollbar para mejor estética:
-              '&::-webkit-scrollbar': { display: 'none' },
-              '-ms-overflow-style': 'none',
-              'scrollbar-width': 'none',
-            }}
-          >
-            {detRecs.map((prod) => (
-              <Card
-                key={prod.id}
-                sx={{
-                  flex: '0 0 auto',
-                  width: isMobile ? '80vw' : 250,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  height: '100%',
-                }}
-              >
-                <CardMedia
-                  component="img"
-                  image={prod.imagen_url || '/placeholder.jpg'}
-                  alt={prod.nombre_producto}
-                  sx={{ height: 180, objectFit: 'cover' }}
-                />
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography variant="h6" gutterBottom>
-                    {prod.nombre_producto}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                    {prod.descripcion}
-                  </Typography>
-                  <Typography variant="subtitle1" fontWeight="bold">
-                    ${parsePrice(prod.precio).toFixed(2)}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Stock: {prod.stock}
-                  </Typography>
-                </CardContent>
-                <Box sx={{ p: 2 }}>
-                  <Button
-                    fullWidth
-                    variant="outlined"
-                    onClick={() => agregarProducto(prod.id, 1, prod.precio)}
-                  >
-                    Añadir al carrito
-                  </Button>
-                </Box>
-              </Card>
-            ))}
+            <Box
+              ref={containerRef}
+              sx={{
+                display: 'flex',
+                overflowX: 'auto',
+                scrollBehavior: 'smooth',
+                gap: 3,
+                py: 2,
+                px: 1,
+                '&::-webkit-scrollbar': { display: 'none' },
+                '-ms-overflow-style': 'none',
+                'scrollbar-width': 'none',
+              }}
+            >
+              {detRecs.map((prod) => (
+                <Card
+                  key={prod.id}
+                  sx={{
+                    flex: '0 0 auto',
+                    width: isMobile ? '85vw' : 280,
+                    borderRadius: 3,
+                    boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-4px)',
+                      boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+                    },
+                  }}
+                >
+                  <CardMedia
+                    component="img"
+                    image={prod.imagen_url || '/placeholder.jpg'}
+                    alt={prod.nombre_producto}
+                    sx={{
+                      height: 200,
+                      objectFit: 'cover',
+                      borderTopLeftRadius: 3,
+                      borderTopRightRadius: 3,
+                    }}
+                  />
+                  <CardContent sx={{ flexGrow: 1, p: 3 }}>
+                    <Typography variant="h6" fontWeight="bold" gutterBottom>
+                      {prod.nombre_producto}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        mb: 2,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      {prod.descripcion}
+                    </Typography>
+                    <Typography variant="subtitle1" fontWeight="bold" color="primary.main">
+                      ${parsePrice(prod.precio).toFixed(2)}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Stock: {prod.stock}
+                    </Typography>
+                  </CardContent>
+                  <Box sx={{ p: 3, pt: 0 }}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      onClick={() => agregarProducto(prod.id, 1, prod.precio)}
+                      sx={{
+                        borderRadius: 20,
+                        textTransform: 'none',
+                        py: 1,
+                        '&:hover': { bgcolor: 'primary.light', color: 'primary.contrastText' },
+                      }}
+                    >
+                      Añadir al carrito
+                    </Button>
+                  </Box>
+                </Card>
+              ))}
+            </Box>
+
+            <Button
+              onClick={scrollNext}
+              disabled={scrollIndex >= detRecs.length - (isMobile ? 1 : 4)}
+              sx={{
+                position: 'absolute',
+                top: '40%',
+                right: { xs: -10, sm: 0 },
+                zIndex: 10,
+                minWidth: 48,
+                height: 48,
+                borderRadius: '50%',
+                bgcolor: 'background.paper',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+                color: 'text.primary',
+                '&:hover': { bgcolor: 'primary.light', color: 'primary.contrastText' },
+                '&:disabled': { bgcolor: 'grey.200', color: 'grey.500' },
+              }}
+            >
+              →
+            </Button>
           </Box>
-
-          {/* Botón flecha derecha */}
-          <Button
-            onClick={scrollNext}
-            disabled={scrollIndex >= detRecs.length - (isMobile ? 1 : 4)}
-            sx={{
-              position: 'absolute',
-              top: '40%',
-              right: 0,
-              zIndex: 10,
-              minWidth: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              bgcolor: 'background.paper',
-              boxShadow: 1,
-            }}
-          >
-            &#8594;
-          </Button>
-        </Box>
+        </Container>
       )}
     </>
   );
