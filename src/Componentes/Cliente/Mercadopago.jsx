@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
@@ -11,6 +12,7 @@ import {
   useTheme,
   Alert,
   CircularProgress,
+  Fade,
 } from '@mui/material';
 import SecurityIcon from '@mui/icons-material/Security';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -70,161 +72,259 @@ const MercadoPago = () => {
   };
 
   return (
-    <>
-      {/* Botón regresar */}
-      <Box sx={{ maxWidth: '650px', mx: 'auto', mb: 2 }}>
-        <Button
-          onClick={() => navigate('/cliente/envios')}
-          startIcon={<ArrowBackIosIcon sx={{ fontSize: '1rem' }} />}
+    <Fade in timeout={600}>
+      <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', py: isMobile ? 2 : 4 }}>
+        {/* Botón regresar */}
+        <Box sx={{ maxWidth: isMobile ? '100%' : '900px', mx: 'auto', px: isMobile ? 2 : 0, mb: 2 }}>
+          <Button
+            onClick={() => navigate('/cliente/envios')}
+            startIcon={<ArrowBackIosIcon sx={{ fontSize: { xs: '0.9rem', sm: '1rem' } }} />}
+            sx={{
+              textTransform: 'none',
+              color: 'primary.main',
+              fontSize: { xs: '0.9rem', sm: '1rem' },
+              fontWeight: 'medium',
+              pl: 1,
+              py: 1,
+              '&:hover': {
+                bgcolor: 'primary.light',
+                color: 'primary.contrastText',
+                borderRadius: 1,
+              },
+            }}
+          >
+            Regresar al envío
+          </Button>
+        </Box>
+
+        {/* Contenedor principal */}
+        <Box
           sx={{
-            textTransform: 'none',
-            background: 'none',
-            color: 'primary.main',
-            fontSize: '1rem',
-            pl: 0,
-            '&:hover': { textDecoration: 'underline', background: 'none' },
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? 2 : 3,
+            maxWidth: isMobile ? '100%' : '900px',
+            mx: 'auto',
+            px: isMobile ? 2 : 0,
           }}
         >
-          Regresar al envío
-        </Button>
-      </Box>
-
-      {/* Contenedor responsive: pago y resumen lado a lado en desktop */}
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: isMobile ? 'column' : 'row',
-          gap: 3,
-          maxWidth: '950px',
-          mx: 'auto',
-        }}
-      >
-        {/* Bloque de “Pagar con Mercado Pago” (ahora primero) */}
-        <Paper
-          elevation={3}
-          sx={{
-            flex: 1,
-            p: 4,
-            borderRadius: 3,
-            bgcolor: '#fff',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
-          }}
-        >
-          <Stack spacing={3}>
-            {/* Encabezado */}
-            <Box display="flex" alignItems="center" justifyContent="space-between">
-              <Typography variant="h5" fontWeight="bold" color="primary">
-                Pagar con Mercado Pago
-              </Typography>
-              <Box
-                component="img"
-                src="https://logospng.org/download/mercado-pago/logo-mercado-pago-256.png"
-                alt="Mercado Pago"
-                sx={{ height: 50 }}
-              />
-            </Box>
-
-            <Divider />
-
-            {error && <Alert severity="error">{error}</Alert>}
-
-            {/* Botón pagar */}
-            <Box display="flex" justifyContent="center">
-              <Button
-                onClick={pagarConMercadoPago}
-                disabled={total === 0 || carrito.length === 0 || loading}
-                sx={{
-                  bgcolor: '#009ee3',
-                  color: '#fff',
-                  textTransform: 'none',
-                  fontWeight: 'bold',
-                  fontSize: '16px',
-                  px: 4,
-                  py: 1.5,
-                  borderRadius: '8px',
-                  '&:hover': { bgcolor: '#007cb9' },
-                  '&:disabled': { bgcolor: '#ccc' },
-                }}
-              >
-                {loading ? <CircularProgress size={24} sx={{ color: '#fff' }} /> : 'Pagar ahora'}
-              </Button>
-            </Box>
-
-            {/* Seguridad */}
-            <Box display="flex" justifyContent="center" alignItems="center">
-              <SecurityIcon fontSize="small" sx={{ mr: 1 }} />
-              <Typography variant="caption" color="text.secondary">
-                Pago seguro con Mercado Pago
-              </Typography>
-            </Box>
-          </Stack>
-        </Paper>
-
-        {/* Resumen del Pedido (ahora segundo) */}
-        <Paper
-          elevation={1}
-          sx={{
-            flex: 1,
-            p: 3,
-            borderRadius: 2,
-            border: '1px solid',
-            borderColor: 'grey.200',
-          }}
-        >
-          <Typography variant="h6" fontWeight="bold" gutterBottom>
-            Resumen del Pedido
-          </Typography>
-          <Divider sx={{ my: 2 }} />
-          <Box sx={{ mb: 3, maxHeight: 300, overflowY: 'auto' }}>
-            {carrito.map((item, i) => (
-              <Box
-                key={item.producto_id ?? i}
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  py: 1.5,
-                  borderBottom: '1px solid',
-                  borderColor: 'divider',
-                  '&:last-child': { borderBottom: 'none' },
-                }}
-              >
-                <Typography variant="body2" noWrap>
-                  {item.nombre || item.nombre_producto || 'Producto'} x{item.cantidad_carrito}
+          {/* Sección de Pago con Mercado Pago */}
+          <Paper
+            elevation={4}
+            sx={{
+              flex: 1,
+              p: isMobile ? 2.5 : 4,
+              borderRadius: 3,
+              bgcolor: 'background.paper',
+              boxShadow: '0 6px 20px rgba(0,0,0,0.12)',
+            }}
+          >
+            <Stack spacing={isMobile ? 2 : 3}>
+              {/* Encabezado */}
+              <Box display="flex" alignItems="center" justifyContent="space-between">
+                <Typography
+                  variant={isMobile ? 'h6' : 'h5'}
+                  fontWeight="bold"
+                  color="primary.main"
+                >
+                  Pagar con Mercado Pago
                 </Typography>
-                <Typography variant="body2" fontWeight="bold">
-                  ${(parseFloat(item.precio_carrito) * parseInt(item.cantidad_carrito)).toFixed(2)}
+                <Box
+                  component="img"
+                  src="https://logospng.org/download/mercado-pago/logo-mercado-pago-256.png"
+                  alt="Mercado Pago"
+                  sx={{ height: isMobile ? 36 : 48, objectFit: 'contain' }}
+                />
+              </Box>
+
+              <Divider sx={{ borderColor: 'grey.300' }} />
+
+              {/* Error */}
+              {error && (
+                <Alert
+                  severity="error"
+                  sx={{
+                    borderRadius: 2,
+                    fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                    py: 1,
+                  }}
+                >
+                  {error}
+                </Alert>
+              )}
+
+              {/* Botón pagar */}
+              <Box display="flex" justifyContent="center">
+                <Button
+                  onClick={pagarConMercadoPago}
+                  disabled={total === 0 || carrito.length === 0 || loading}
+                  variant="contained"
+                  sx={{
+                    bgcolor: '#00a2ed',
+                    color: '#fff',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    fontSize: { xs: '0.9rem', sm: '1rem' },
+                    px: isMobile ? 3 : 4,
+                    py: isMobile ? 1 : 1.5,
+                    borderRadius: 2,
+                    boxShadow: '0 3px 8px rgba(0,0,0,0.2)',
+                    '&:hover': {
+                      bgcolor: '#0088cc',
+                      boxShadow: '0 5px 12px rgba(0,0,0,0.3)',
+                    },
+                    '&:disabled': {
+                      bgcolor: 'grey.400',
+                      color: 'grey.700',
+                    },
+                  }}
+                >
+                  {loading ? (
+                    <CircularProgress size={isMobile ? 20 : 24} sx={{ color: '#fff' }} />
+                  ) : (
+                    'Pagar ahora'
+                  )}
+                </Button>
+              </Box>
+
+              {/* Seguridad */}
+              <Box display="flex" justifyContent="center" alignItems="center">
+                <SecurityIcon
+                  fontSize={isMobile ? 'small' : 'medium'}
+                  sx={{ mr: 1, color: 'text.secondary' }}
+                />
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' } }}
+                >
+                  Pago seguro con Mercado Pago
                 </Typography>
               </Box>
-            ))}
-          </Box>
-          <Divider sx={{ my: 2 }} />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
-            <Typography variant="body2">
-              Subtotal ({carrito.length} producto{carrito.length !== 1 && 's'})
+            </Stack>
+          </Paper>
+
+          {/* Resumen del Pedido */}
+          <Paper
+            elevation={2}
+            sx={{
+              flex: 1,
+              p: isMobile ? 2 : 3,
+              borderRadius: 2,
+              border: '1px solid',
+              borderColor: 'grey.200',
+              bgcolor: 'background.paper',
+            }}
+          >
+            <Typography
+              variant={isMobile ? 'h6' : 'h6'}
+              fontWeight="bold"
+              gutterBottom
+              sx={{ fontSize: { xs: '1rem', sm: '1.25rem' }, color: 'text.primary' }}
+            >
+              Resumen del Pedido
             </Typography>
-            <Typography variant="body2" fontWeight="medium">
-              ${total.toFixed(2)}
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
-            <Typography variant="body2">Envío</Typography>
-            <Typography variant="body2" fontWeight="medium">
-              Gratis
-            </Typography>
-          </Box>
-          <Divider sx={{ my: 2 }} />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography variant="h6" fontWeight="bold">
-              Total
-            </Typography>
-            <Typography variant="h5" fontWeight="bold">
-              ${total.toFixed(2)}
-            </Typography>
-          </Box>
-        </Paper>
+            <Divider sx={{ my: isMobile ? 1.5 : 2, borderColor: 'grey.300' }} />
+            <Box
+              sx={{
+                mb: isMobile ? 2 : 3,
+                maxHeight: isMobile ? 180 : 300,
+                overflowY: 'auto',
+                '&::-webkit-scrollbar': { width: '6px' },
+                '&::-webkit-scrollbar-thumb': {
+                  background: 'grey.400',
+                  borderRadius: '3px',
+                },
+              }}
+            >
+              {carrito.map((item, i) => (
+                <Box
+                  key={item.producto_id ?? i}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    py: isMobile ? 1 : 1.5,
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
+                    '&:last-child': { borderBottom: 'none' },
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                      color: 'text.primary',
+                      maxWidth: '60%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {item.nombre || item.nombre_producto || 'Producto'} x{item.cantidad_carrito}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    fontWeight="medium"
+                    sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.primary' }}
+                  >
+                    ${(parseFloat(item.precio_carrito) * parseInt(item.cantidad_carrito)).toFixed(2)}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+            <Divider sx={{ my: isMobile ? 1.5 : 2, borderColor: 'grey.300' }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+              <Typography
+                variant="body2"
+                sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.secondary' }}
+              >
+                Subtotal ({carrito.length} producto{carrito.length !== 1 && 's'})
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="medium"
+                sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.primary' }}
+              >
+                ${total.toFixed(2)}
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.secondary' }}
+              >
+                Envío
+              </Typography>
+              <Typography
+                variant="body2"
+                fontWeight="medium"
+                sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'success.main' }}
+              >
+                Gratis
+              </Typography>
+            </Box>
+            <Divider sx={{ my: isMobile ? 1.5 : 2, borderColor: 'grey.300' }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography
+                variant={isMobile ? 'subtitle1' : 'h6'}
+                fontWeight="bold"
+                sx={{ fontSize: { xs: '1rem', sm: '1.25rem' }, color: 'text.primary' }}
+              >
+                Total
+              </Typography>
+              <Typography
+                variant={isMobile ? 'subtitle1' : 'h5'}
+                fontWeight="bold"
+                sx={{ fontSize: { xs: '1.2rem', sm: '1.5rem' }, color: 'primary.main' }}
+              >
+                ${total.toFixed(2)}
+              </Typography>
+            </Box>
+          </Paper>
+        </Box>
       </Box>
-    </>
+    </Fade>
   );
 };
 
