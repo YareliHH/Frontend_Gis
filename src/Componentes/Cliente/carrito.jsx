@@ -5,7 +5,7 @@ import {
   Typography,
   IconButton,
   Button,
-    ListItem, 
+  ListItem,
   CircularProgress,
   Paper,
   Container,
@@ -33,6 +33,10 @@ const Carrito = () => {
   const [error, setError] = useState(null);
   const [usuarioId, setUsuarioId] = useState(null);
 
+  // Justo después de tus otros useState al inicio del componente
+  const [scrollIndex, setScrollIndex] = useState(0);
+  const containerRef = React.useRef(null);
+
   // Estados para nombres de recomendaciones y detalles
   const [recNames, setRecNames] = useState([]);
   const [detRecs, setDetRecs] = useState([]);
@@ -45,6 +49,29 @@ const Carrito = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const scrollNext = () => {
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    const cardWidth = container.firstChild?.offsetWidth || 300; // ancho aproximado de tarjeta
+    const maxIndex = detRecs.length - (isMobile ? 1 : 4);
+    setScrollIndex((prev) => {
+      const next = Math.min(prev + 1, maxIndex);
+      container.scrollTo({ left: next * cardWidth, behavior: 'smooth' });
+      return next;
+    });
+  };
+
+  const scrollPrev = () => {
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    const cardWidth = container.firstChild?.offsetWidth || 300;
+    setScrollIndex((prev) => {
+      const next = Math.max(prev - 1, 0);
+      container.scrollTo({ left: next * cardWidth, behavior: 'smooth' });
+      return next;
+    });
+  };
 
   // 1) Obtener carrito
   const fetchCarrito = async () => {
@@ -78,11 +105,12 @@ const Carrito = () => {
     setRecLoading(true); setRecError(''); setRecNames([]);
     try {
       const { data } = await axios.post(
-        'https://flaskg-v1x1.onrender.com/recomendar',
-        { producto: productoNombre },
+        'https://flask1-yowt.onrender.com/recomendar',
+        { productos: [productoNombre] }, // ✅ lo que Flask espera
         { timeout: 10000 }
       );
-      setRecNames(data.recomendaciones || []);
+      console.log("Productos recomendados:", data);
+      setRecNames(data || []);
     } catch (err) {
       console.error(err);
       setRecError('No se pudieron cargar recomendaciones');
@@ -96,12 +124,17 @@ const Carrito = () => {
   const fetchDetRecs = async (names) => {
     if (!names.length) return setDetRecs([]);
     setDetLoading(true); setDetError(''); setDetRecs([]);
+
+    // Limpiar nombres recibidos: quitar espacios al inicio y fin
+    const cleanedNames = names.map(name => name.trim());
+
     try {
       const { data } = await axios.post(
         "https://backend-gis-1.onrender.com/api/productos/recomendados",
-        { recomendaciones: names },
+        { recomendaciones: cleanedNames },  // envío limpio
         { timeout: 10000 }
       );
+      console.log("Productos recomendados detalles:", data);
       setDetRecs(data);
     } catch (err) {
       console.error(err);
@@ -360,57 +393,107 @@ const Carrito = () => {
       </Container>
 
       {/* ====== BLOQUE DE PRODUCTOS RECOMENDADOS CON DETALLES ====== */}
-      <Container maxWidth="xl" sx={{ mt:4, mb:6 }}>
-        <Typography variant="h5" gutterBottom>
-          Tambien te puede interesar
-        </Typography>
-        {detLoading && <CircularProgress size={32} sx={{ mt:2 }} />}
-        {detError && <Alert severity="warning" sx={{ mt:2 }}>{detError}</Alert>}
-        {!detLoading && !detError && detRecs.length > 0 && (
-          <Grid container spacing={3}>
+      {!detLoading && !detError && detRecs.length > 0 && (
+        <Box sx={{ position: 'relative' }}>
+          {/* Botón flecha izquierda */}
+          <Button
+            onClick={scrollPrev}
+            disabled={scrollIndex === 0}
+            sx={{
+              position: 'absolute',
+              top: '40%',
+              left: 0,
+              zIndex: 10,
+              minWidth: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              bgcolor: 'background.paper',
+              boxShadow: 1,
+            }}
+          >
+            &#8592;
+          </Button>
+
+          {/* Contenedor scroll horizontal */}
+          <Box
+            ref={containerRef}
+            sx={{
+              display: 'flex',
+              overflowX: 'auto',
+              scrollBehavior: 'smooth',
+              gap: 2,
+              pb: 1,
+              px: 3, // <-- padding horizontal para separar tarjetas de flechas
+              // Ocultar scrollbar para mejor estética:
+              '&::-webkit-scrollbar': { display: 'none' },
+              '-ms-overflow-style': 'none',
+              'scrollbar-width': 'none',
+            }}
+          >
             {detRecs.map((prod) => (
-              <Grid item key={prod.id} xs={12} sm={6} md={4} lg={3}>
-                <Card sx={{ height:'100%', display:'flex', flexDirection:'column' }}>
-                  <CardMedia
-                    component="img"
-                    image={prod.imagen_url || '/placeholder.jpg'}
-                    alt={prod.nombre_producto}
-                    sx={{ height: 180, objectFit:'cover' }}
-                  />
-                  <CardContent sx={{ flexGrow:1 }}>
-                    <Typography variant="h6" gutterBottom>
-                      {prod.nombre_producto}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb:1 }}>
-                      {prod.descripcion}
-                    </Typography>
-                    <Typography variant="subtitle1" fontWeight="bold">
-                      ${parsePrice(prod.precio).toFixed(2)}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      Stock: {prod.stock}
-                    </Typography>
-                  </CardContent>
-                  <Box sx={{ p:2 }}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      onClick={() => agregarProducto(prod.id, 1, prod.precio)}
-                    >
-                      Añadir al carrito
-                    </Button>
-                  </Box>
-                </Card>
-              </Grid>
+              <Card
+                key={prod.id}
+                sx={{
+                  flex: '0 0 auto',
+                  width: isMobile ? '80vw' : 250,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%',
+                }}
+              >
+                <CardMedia
+                  component="img"
+                  image={prod.imagen_url || '/placeholder.jpg'}
+                  alt={prod.nombre_producto}
+                  sx={{ height: 180, objectFit: 'cover' }}
+                />
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography variant="h6" gutterBottom>
+                    {prod.nombre_producto}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    {prod.descripcion}
+                  </Typography>
+                  <Typography variant="subtitle1" fontWeight="bold">
+                    ${parsePrice(prod.precio).toFixed(2)}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    Stock: {prod.stock}
+                  </Typography>
+                </CardContent>
+                <Box sx={{ p: 2 }}>
+                  <Button
+                    fullWidth
+                    variant="outlined"
+                    onClick={() => agregarProducto(prod.id, 1, prod.precio)}
+                  >
+                    Añadir al carrito
+                  </Button>
+                </Box>
+              </Card>
             ))}
-          </Grid>
-        )}
-        {!detLoading && !detError && detRecs.length === 0 && (
-          <Typography color="text.secondary" sx={{ mt:2 }}>
-            No hay recomendaciones para mostrar.
-          </Typography>
-        )}
-      </Container>
+          </Box>
+
+          {/* Botón flecha derecha */}
+          <Button
+            onClick={scrollNext}
+            disabled={scrollIndex >= detRecs.length - (isMobile ? 1 : 4)}
+            sx={{
+              position: 'absolute',
+              top: '40%',
+              right: 0,
+              zIndex: 10,
+              minWidth: '36px',
+              height: '36px',
+              borderRadius: '50%',
+              bgcolor: 'background.paper',
+              boxShadow: 1,
+            }}
+          >
+            &#8594;
+          </Button>
+        </Box>
+      )}
     </>
   );
 };
