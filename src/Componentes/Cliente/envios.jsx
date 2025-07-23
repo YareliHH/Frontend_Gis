@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {
   Box, Typography, TextField, Button, Paper, Grid, Checkbox, FormControlLabel,
   Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Card, CardContent,
-  Chip, Divider
+  Chip, Divider, Alert
 } from '@mui/material';
 import { 
   ArrowBackIos as ArrowBackIosIcon,
@@ -12,7 +12,7 @@ import {
   Home as HomeIcon
 } from '@mui/icons-material';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../Autenticacion/AuthContext';
 
 const Direcciones = () => {
@@ -35,13 +35,15 @@ const Direcciones = () => {
   const [modoEdicion, setModoEdicion] = useState(false);
   const [direccionEditando, setDireccionEditando] = useState(null);
 
+  const location = useLocation();
+  const { carrito = [], total = 0 } = location.state || {};
+
   useEffect(() => {
     if (!loading && autenticado) {
       obtenerDirecciones();
     }
   }, [loading, autenticado]);
 
-  // Obtener todas las direcciones del usuario
   const obtenerDirecciones = async () => {
     try {
       const res = await axios.get(
@@ -51,6 +53,8 @@ const Direcciones = () => {
       setDirecciones(res.data);
     } catch (error) {
       console.error('Error al obtener direcciones:', error);
+      setMensaje('Error al cargar direcciones');
+      setColorMensaje('error.main');
     }
   };
 
@@ -67,7 +71,7 @@ const Direcciones = () => {
 
   const validarCampos = () => {
     const nuevos = {};
-    ['calle','numero','codigo_postal','estado','municipio','colonia']
+    ['calle', 'numero', 'codigo_postal', 'estado', 'municipio', 'colonia']
       .forEach(c => {
         if (!form[c]?.trim()) nuevos[c] = 'Este campo es obligatorio';
       });
@@ -85,7 +89,6 @@ const Direcciones = () => {
     setMensaje('');
   };
 
-  // Abrir diálogo para nueva dirección
   const abrirNuevaDireccion = () => {
     limpiarForm();
     setModoEdicion(false);
@@ -93,7 +96,6 @@ const Direcciones = () => {
     setDialogoAbierto(true);
   };
 
-  // Abrir diálogo para editar dirección
   const abrirEditarDireccion = (direccion) => {
     setForm({
       calle: direccion.calle,
@@ -112,7 +114,6 @@ const Direcciones = () => {
     setDialogoAbierto(true);
   };
 
-  // Guardar dirección (crear o actualizar)
   const guardarDireccion = async () => {
     setMensaje('');
     if (!validarCampos()) return;
@@ -126,14 +127,11 @@ const Direcciones = () => {
     try {
       let res;
       if (modoEdicion && direccionEditando) {
-        // Actualizar dirección existente
         res = await axios.put(
           `https://backend-gis-1.onrender.com/api/direcciones/actualizar/${direccionEditando.id}`,
           form,
           { withCredentials: true }
         );
-        
-        // Si se marca como predeterminada, actualizar la relación
         if (form.es_predeterminada) {
           await axios.put(
             `https://backend-gis-1.onrender.com/api/direcciones/predeterminada/${usuarioId}/${direccionEditando.id}`,
@@ -142,7 +140,6 @@ const Direcciones = () => {
           );
         }
       } else {
-        // Crear nueva dirección
         res = await axios.post(
           'https://backend-gis-1.onrender.com/api/direcciones/upsert',
           { usuario_id: usuarioId, ...form },
@@ -164,7 +161,6 @@ const Direcciones = () => {
     }
   };
 
-  // Eliminar dirección
   const eliminarDireccion = async (direccionId) => {
     if (!window.confirm('¿Estás seguro de eliminar esta dirección?')) return;
     
@@ -182,7 +178,6 @@ const Direcciones = () => {
     }
   };
 
-  // Establecer como predeterminada
   const establecerPredeterminada = async (direccionId) => {
     try {
       await axios.put(
@@ -199,6 +194,26 @@ const Direcciones = () => {
     }
   };
 
+  const manejarContinuarPago = () => {
+    if (!carrito || carrito.length === 0 || total <= 0) {
+      setMensaje('El carrito está vacío o el total es inválido. Por favor, verifica tu carrito.');
+      setColorMensaje('error.main');
+      return;
+    }
+    if (!direcciones.find(d => d.es_predeterminada === 1)) {
+      setMensaje('Por favor, selecciona una dirección predeterminada antes de continuar.');
+      setColorMensaje('error.main');
+      return;
+    }
+    navigate('/cliente/mercadopago', {
+      state: {
+        carrito,
+        total,
+        direccionSeleccionada: direcciones.find(d => d.es_predeterminada === 1),
+      },
+    });
+  };
+
   if (loading) {
     return <Typography>Cargando…</Typography>;
   }
@@ -206,7 +221,7 @@ const Direcciones = () => {
   return (
     <Box maxWidth={1000} mx="auto" mt={4} p={2}>
       <Typography
-        onClick={() => navigate('/cliente/carrito-compras')}
+        onClick={() => navigate('/cliente/carrito-compras', { state: { carrito, total } })}
         sx={{
           display: 'flex', alignItems: 'center',
           color: '#1976d2', cursor: 'pointer', mb: 2,
@@ -230,12 +245,14 @@ const Direcciones = () => {
       </Box>
 
       {mensaje && (
-        <Typography sx={{ mb: 2, color: colorMensaje, textAlign: 'center' }}>
+        <Alert
+          severity={colorMensaje === 'success.main' ? 'success' : 'error'}
+          sx={{ mb: 2, textAlign: 'center' }}
+        >
           {mensaje}
-        </Typography>
+        </Alert>
       )}
 
-      {/* Lista de direcciones existentes */}
       {autenticado && direcciones.length > 0 ? (
         <Grid container spacing={2} sx={{ mb: 4 }}>
           {direcciones.map(dir => (
@@ -251,7 +268,6 @@ const Direcciones = () => {
                       sx={{ position: 'absolute', top: 8, right: 8 }}
                     />
                   )}
-                  
                   <Typography variant="h6" gutterBottom>
                     {dir.calle} {dir.numero}
                   </Typography>
@@ -266,9 +282,7 @@ const Direcciones = () => {
                       "{dir.instrucciones}"
                     </Typography>
                   )}
-                  
                   <Divider sx={{ my: 1 }} />
-                  
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
                     <Box>
                       <IconButton
@@ -286,7 +300,6 @@ const Direcciones = () => {
                         <DeleteIcon />
                       </IconButton>
                     </Box>
-                    
                     {dir.es_predeterminada !== 1 && (
                       <Button
                         size="small"
@@ -315,21 +328,15 @@ const Direcciones = () => {
         )
       )}
 
-      {/* Botón continuar pago */}
-      {direcciones.length > 0 && (
-        <Box sx={{ textAlign: 'center' }}>
-          <Button
-            variant="contained"
-            size="large"
-            onClick={() => navigate('/cliente/mercadopago')}
-            sx={{ borderRadius: 2, px: 4, py: 1.5 }}
-          >
-            Continuar con el Pago
-          </Button>
-        </Box>
-      )}
+      <Button
+        variant="contained"
+        size="large"
+        onClick={manejarContinuarPago}
+        sx={{ borderRadius: 2, px: 4, py: 1.5 }}
+      >
+        Continuar con el Pago
+      </Button>
 
-      {/* Diálogo para agregar/editar dirección */}
       <Dialog
         open={dialogoAbierto}
         onClose={() => setDialogoAbierto(false)}
@@ -341,13 +348,13 @@ const Direcciones = () => {
         </DialogTitle>
         <DialogContent>
           <Grid container spacing={2} sx={{ mt: 1 }}>
-            {['calle','numero','codigo_postal','estado','municipio','colonia']
+            {['calle', 'numero', 'codigo_postal', 'estado', 'municipio', 'colonia']
               .map(campo => (
                 <Grid item xs={12} sm={6} key={campo}>
                   <TextField
                     fullWidth
                     name={campo}
-                    label={campo.replace('_',' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    label={campo.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     value={form[campo]}
                     onChange={manejarCambio}
                     error={!!errores[campo]}
@@ -357,7 +364,9 @@ const Direcciones = () => {
             ))}
             <Grid item xs={12}>
               <TextField
-                fullWidth multiline rows={2}
+                fullWidth
+                multiline
+                rows={2}
                 name="instrucciones"
                 label="Instrucciones de Entrega"
                 value={form.instrucciones}

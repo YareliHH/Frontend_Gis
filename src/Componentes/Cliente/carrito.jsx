@@ -71,10 +71,10 @@ const Carrito = () => {
     });
   };
 
-  // Funciones existentes (sin cambios)
   const fetchCarrito = async () => {
     try {
-      setLoading(true); setError(null);
+      setLoading(true);
+      setError(null);
       const usuario_id = user?.id;
       if (!usuario_id) {
         setError('Inicia sesión para ver tu carrito');
@@ -89,7 +89,8 @@ const Carrito = () => {
     } catch (err) {
       console.error(err);
       if (err.response?.status === 404) {
-        setCarrito([]); setError(null);
+        setCarrito([]);
+        setError(null);
       } else {
         setError('No se pudo cargar el carrito. Intenta de nuevo.');
       }
@@ -99,7 +100,9 @@ const Carrito = () => {
   };
 
   const fetchRecNames = async (productoNombre) => {
-    setRecLoading(true); setRecError(''); setRecNames([]);
+    setRecLoading(true);
+    setRecError('');
+    setRecNames([]);
     try {
       const { data } = await axios.post(
         'https://flask1-yowt.onrender.com/recomendar',
@@ -119,7 +122,9 @@ const Carrito = () => {
 
   const fetchDetRecs = async (names) => {
     if (!names.length) return setDetRecs([]);
-    setDetLoading(true); setDetError(''); setDetRecs([]);
+    setDetLoading(true);
+    setDetError('');
+    setDetRecs([]);
     const cleanedNames = names.map(name => name.trim());
     try {
       const { data } = await axios.post(
@@ -216,13 +221,22 @@ const Carrito = () => {
     0
   );
 
-  // Handler para eliminar producto sin recargar la página
   const handleEliminarProducto = (event, producto_id) => {
     event.preventDefault();
     eliminarProducto(producto_id);
   };
 
-  // Render loading
+  // Nuevo handler para "Realizar Compra"
+  const handleRealizarCompra = () => {
+    if (!carrito || carrito.length === 0 || total <= 0) {
+      setError('El carrito está vacío o el total es inválido. Agrega productos para continuar.');
+      return;
+    }
+    navigate('/cliente/envios', {
+      state: { carrito, total },
+    });
+  };
+
   if (loading) {
     return (
       <Container maxWidth="lg" sx={{
@@ -242,7 +256,6 @@ const Carrito = () => {
     );
   }
 
-  // Render error
   if (error) {
     return (
       <Container maxWidth="md" sx={{ py: 6 }}>
@@ -277,7 +290,6 @@ const Carrito = () => {
     );
   }
 
-  // Render no user
   if (!user) {
     return (
       <Container maxWidth="sm" sx={{ py: 8 }}>
@@ -319,7 +331,6 @@ const Carrito = () => {
 
   return (
     <>
-      {/* Carrito Container */}
       <Container maxWidth="xl" sx={{ py: { xs: 4, md: 8 }, px: { xs: 2, sm: 4 } }}>
         <Fade in>
           <Paper
@@ -550,7 +561,7 @@ const Carrito = () => {
                       <Button
                         variant="contained"
                         fullWidth
-                        onClick={() => navigate('/cliente/envios')}
+                        onClick={handleRealizarCompra}
                         sx={{
                           borderRadius: 20,
                           textTransform: 'none',
@@ -583,7 +594,6 @@ const Carrito = () => {
         </Fade>
       </Container>
 
-      {/* Productos Recomendados */}
       {!detLoading && !detError && detRecs.length > 0 && (
         <Container maxWidth="xl" sx={{ py: 6 }}>
           <Typography
