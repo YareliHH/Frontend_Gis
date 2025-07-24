@@ -40,7 +40,7 @@ const BannersAdmin = () => {
   const fetchBanners = async () => {
     setLoading(true);
     try {
-     const response = await axios.get('https://backend-gis-1.onrender.com/api/obtbanner');
+     const response = await axios.get('https://backend-gis-1.onrender.com/api/obtenerbanner');
       setBanners(response.data);
       setLoading(false);
     } catch (error) {
