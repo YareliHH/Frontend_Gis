@@ -108,6 +108,55 @@ const MercadoPago = () => {
           </Button>
         </Box>
 
+        {/* Dirección de envío */}
+        {direccionSeleccionada && (
+          <Box sx={{ maxWidth: isMobile ? '100%' : '900px', mx: 'auto', px: isMobile ? 2 : 0, mb: isMobile ? 2 : 3 }}>
+            <Paper
+              elevation={2}
+              sx={{
+                p: isMobile ? 2 : 3,
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: 'grey.200',
+                bgcolor: 'background.paper',
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                fontWeight="bold"
+                sx={{ fontSize: { xs: '0.9rem', sm: '1rem' }, color: 'text.primary', mb: 1 }}
+              >
+                Dirección de Envío
+              </Typography>
+              <Box display="flex" alignItems="flex-start">
+                <LocationOnIcon sx={{ fontSize: { xs: '1rem', sm: '1.2rem' }, color: 'text.secondary', mr: 1 }} />
+                <Box>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.primary' }}
+                  >
+                    {direccionSeleccionada.calle} {direccionSeleccionada.numero}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.secondary' }}
+                  >
+                    {direccionSeleccionada.colonia}, {direccionSeleccionada.municipio}, {direccionSeleccionada.estado} - {direccionSeleccionada.codigo_postal}
+                  </Typography>
+                  {direccionSeleccionada.instrucciones && (
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.secondary', fontStyle: 'italic' }}
+                    >
+                      "{direccionSeleccionada.instrucciones}"
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+        )}
+
         {/* Contenedor principal */}
         <Box
           sx={{
@@ -145,6 +194,18 @@ const MercadoPago = () => {
               </Box>
 
               <Divider sx={{ borderColor: 'grey.300' }} />
+
+              {/* Texto adicional sobre seguridad */}
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: { xs: '0.8rem', sm: '0.875rem' },
+                  color: 'text.secondary',
+                  textAlign: 'center',
+                }}
+              >
+              Tus transacciones están respaldadas por los más altos estándares de seguridad, garantizando una experiencia de compra sin preocupaciones.
+              </Typography>
 
               {/* Error */}
               {error && (
@@ -228,45 +289,6 @@ const MercadoPago = () => {
             >
               Resumen del Pedido
             </Typography>
-            <Divider sx={{ my: isMobile ? 1.5 : 2, borderColor: 'grey.300' }} />
-
-            {/* Dirección de envío */}
-            {direccionSeleccionada && (
-              <Box sx={{ mb: isMobile ? 2 : 3 }}>
-                <Typography
-                  variant="subtitle2"
-                  fontWeight="bold"
-                  sx={{ fontSize: { xs: '0.9rem', sm: '1rem' }, color: 'text.primary', mb: 1 }}
-                >
-                  Dirección de Envío
-                </Typography>
-                <Box display="flex" alignItems="flex-start">
-                  <LocationOnIcon sx={{ fontSize: { xs: '1rem', sm: '1.2rem' }, color: 'text.secondary', mr: 1 }} />
-                  <Box>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.primary' }}
-                    >
-                      {direccionSeleccionada.calle} {direccionSeleccionada.numero}
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.secondary' }}
-                    >
-                      {direccionSeleccionada.colonia}, {direccionSeleccionada.municipio}, {direccionSeleccionada.estado} - {direccionSeleccionada.codigo_postal}
-                    </Typography>
-                    {direccionSeleccionada.instrucciones && (
-                      <Typography
-                        variant="body2"
-                        sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' }, color: 'text.secondary', fontStyle: 'italic' }}
-                      >
-                        "{direccionSeleccionada.instrucciones}"
-                      </Typography>
-                    )}
-                  </Box>
-                </Box>
-              </Box>
-            )}
             <Divider sx={{ my: isMobile ? 1.5 : 2, borderColor: 'grey.300' }} />
 
             {/* Productos */}
