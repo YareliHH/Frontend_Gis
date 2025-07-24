@@ -52,6 +52,7 @@ const MercadoPago = () => {
       });
       if (!carritoValido) throw new Error('Uno o más productos tienen datos inválidos.');
 
+      console.log(carritoValido);
       const response = await fetch(
         'https://backend-gis-1.onrender.com/api/pago/crear_preferencia',
         {
@@ -61,8 +62,8 @@ const MercadoPago = () => {
             carrito: carrito.map(item => ({
               producto_id: item.producto_id,
               nombre_producto: item.nombre_producto,
-              precio: Number(item.precio),
-              cantidad: Number(item.cantidad),
+              precio_carrito: Number(item.precio),
+              cantidad_carrito: Number(item.cantidad),
             })),
             direccion: direccionSeleccionada,
           }),

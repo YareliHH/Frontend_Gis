@@ -40,7 +40,7 @@ const BannersAdmin = () => {
   const fetchBanners = async () => {
     setLoading(true);
     try {
-     const response = await axios.get('https://backend-gis-1.onrender.com/obtbanner');
+     const response = await axios.get('https://backend-gis-1.onrender.com/api/obtbanner');
       setBanners(response.data);
       setLoading(false);
     } catch (error) {
@@ -68,10 +68,10 @@ const BannersAdmin = () => {
     const formData = new FormData();
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
-    if (imagen) formData.append('imagen', imagen);
+    if (imagen) formData.append('imagen', imagen.file);
 
     try {
-   const response = await axios.post('https://backend-gis-1.onrender.com/agregarbanner', formData, {
+   const response = await axios.post('https://backend-gis-1.onrender.com/api/banner/agregarbanner', formData, {
   headers: { 'Content-Type': 'multipart/form-data' }
 });
       setBanners([...banners, { id: response.data.id, titulo, descripcion, imagen: response.data.imagen || '' }]);
