@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+"use client"
+
+import { useState, useEffect } from "react"
 import {
   Box,
   Typography,
@@ -6,10 +8,6 @@ import {
   Grid,
   Button,
   Paper,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActions,
   Divider,
   IconButton,
   useMediaQuery,
@@ -18,278 +16,341 @@ import {
   ListItem,
   ListItemText,
   useTheme,
-  Chip,
   TextField,
   Fade,
-  Zoom,
-  Slide,
   Avatar,
-} from '@mui/material';
-import { motion } from 'framer-motion';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+  Card,
+  CardContent,
+} from "@mui/material"
+import { styled } from "@mui/material/styles"
+import { motion } from "framer-motion"
+import Slider from "react-slick"
+import "slick-carousel/slick/slick.css"
+import "slick-carousel/slick/slick-theme.css"
 
 // Icons
-import ChatIcon from '@mui/icons-material/Chat';
-import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
-import NewReleasesIcon from '@mui/icons-material/NewReleases';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ChatIcon from "@mui/icons-material/Chat"
+import CloseIcon from "@mui/icons-material/Close"
+import LocalShippingIcon from "@mui/icons-material/LocalShipping"
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser"
+import SupportAgentIcon from "@mui/icons-material/SupportAgent"
+import PriceCheckIcon from "@mui/icons-material/PriceCheck"
+import StarIcon from "@mui/icons-material/Star"
+import LocationOnIcon from "@mui/icons-material/LocationOn"
+import PhoneIcon from "@mui/icons-material/Phone"
 
-// Importar las imágenes locales de los productos y el fondo
-import img1 from '../imagenes/img1.jpg';
-import img2 from '../imagenes/img2.jpg';
-import img3 from '../imagenes/img3.jpg';
-import img4 from '../imagenes/img4.jpg';
-import img5 from '../imagenes/img5.jpg';
-import img6 from '../imagenes/img6.jpg';
-import LogoGL from '../imagenes/LogoGL.jpg';
+// Importar las imágenes locales de los productos
+import img1 from "../imagenes/img1.jpg"
+import img2 from "../imagenes/img2.jpg"
+import img3 from "../imagenes/img3.jpg"
+import img4 from "../imagenes/img4.jpg"
+import img5 from "../imagenes/img5.jpg"
+import img6 from "../imagenes/img6.jpg"
 
-import axios from 'axios'; // Importar axios para hacer las peticiones
+// Componentes estilizados
+const StyledButton = styled(Button)(({ theme }) => ({
+  textTransform: "none",
+  fontWeight: 600,
+  borderRadius: "12px",
+  padding: "12px 32px",
+  fontSize: "1rem",
+  fontFamily: "Montserrat, sans-serif",
+  transition: "all 0.3s ease",
+  boxShadow: "0 4px 15px rgba(64, 224, 208, 0.3)",
+  background: "linear-gradient(135deg, #40E0D0 0%, #4ECDC4 100%)",
+  color: "white",
+  "&:hover": {
+    background: "linear-gradient(135deg, #37BFBF 0%, #45B7B8 100%)",
+    transform: "translateY(-2px)",
+    boxShadow: "0 8px 25px rgba(64, 224, 208, 0.4)",
+  },
+}))
 
-const PaginaPrincipal = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const isTablet = useMediaQuery(theme.breakpoints.between('sm', 'md'));
+const CategoryTag = styled(Box)(({ theme, bgcolor, color }) => ({
+  display: "inline-block",
+  padding: "8px 20px",
+  borderRadius: "25px",
+  backgroundColor: bgcolor || "rgba(64, 224, 208, 0.1)",
+  color: color || "#2C7A7B",
+  fontSize: "0.875rem",
+  fontWeight: 600,
+  marginBottom: "16px",
+  fontFamily: "Montserrat, sans-serif",
+  textTransform: "uppercase",
+  letterSpacing: "0.5px",
+}))
 
-  const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { text: '¡Hola! ¿En qué puedo ayudarte hoy?', sender: 'bot' },
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [cartItems, setCartItems] = useState(0);
-  const [loaded, setLoaded] = useState(false);
-  const [products, setProducts] = useState([]); // Estado para los productos
-  const [activeSlide, setActiveSlide] = useState(0);
+const IconWrapper = styled(Box)(({ theme, bgcolor }) => ({
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  width: "80px",
+  height: "80px",
+  borderRadius: "20px",
+  backgroundColor: bgcolor || "rgba(64, 224, 208, 0.1)",
+  marginBottom: "24px",
+  transition: "all 0.3s ease",
+  "& svg": {
+    fontSize: "2.5rem",
+  },
+  "&:hover": {
+    transform: "scale(1.1) rotate(5deg)",
+  },
+}))
 
-  // Efecto para iniciar animaciones al cargar la página
+const FeatureCard = styled(Card)(({ theme, bordercolor }) => ({
+  border: "none",
+  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+  borderRadius: "20px",
+  overflow: "hidden",
+  transition: "all 0.3s ease",
+  position: "relative",
+  "&:hover": {
+    boxShadow: "0 20px 40px rgba(64, 224, 208, 0.2)",
+    transform: "translateY(-10px)",
+  },
+  "& .MuiCardContent-root": {
+    padding: "32px",
+  },
+  "&::before": {
+    content: '""',
+    display: "block",
+    height: "4px",
+    background: `linear-gradient(90deg, ${bordercolor || "#40E0D0"} 0%, ${bordercolor || "#4ECDC4"} 100%)`,
+    width: "100%",
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "100%", // Tarjetas más anchas en móvil
+  },
+}))
+
+const GradientBox = styled(Box)(({ theme, from, to }) => ({
+  background: `linear-gradient(135deg, ${from || "#F7FAFC"} 0%, ${to || "white"} 100%)`,
+  padding: { xs: "40px 0", md: "80px 0" }, // Reducir padding en móvil
+  position: "relative",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background:
+      'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fillRule="evenodd"%3E%3Cg fill="%2340E0D0" fillOpacity="0.03"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+    opacity: 0.5,
+  },
+}))
+
+const HeroSection = styled(Box)(({ theme }) => ({
+  position: "relative",
+  minHeight: { xs: "auto", md: "70vh" }, // Ajuste para móvil
+  display: "flex",
+  alignItems: "center",
+  background: "linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%)",
+  overflow: "hidden",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(0, 0, 0, 0.4)",
+    zIndex: 1,
+  },
+}))
+
+const TestimonialCard = styled(Card)(({ theme }) => ({
+  background: "white",
+  borderRadius: "20px",
+  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
+  transition: "all 0.3s ease",
+  "&:hover": {
+    transform: "translateY(-5px)",
+    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+  },
+  [theme.breakpoints.down("sm")]: {
+    width: "100%", // Tarjetas más anchas en móvil
+  },
+}))
+
+const SliderImageContainer = styled(Box)(({ theme }) => ({
+  position: "relative",
+  width: "100%",
+  height: { xs: "280px", sm: "350px", md: "450px" }, // Ajuste de altura para móvil
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  backgroundColor: "#f8f9fa",
+  overflow: "hidden",
+  "& img": {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+    borderRadius: "0",
+    transition: "transform 0.3s ease",
+  },
+  "&:hover img": {
+    transform: "scale(1.05)",
+  },
+}))
+
+const PaginaPrincipalMejorada = () => {
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
+  const [chatOpen, setChatOpen] = useState(false)
+  const [messages, setMessages] = useState([{ text: "¡Hola! ¿En qué puedo ayudarte hoy?", sender: "bot" }])
+  const [inputMessage, setInputMessage] = useState("")
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [cartItems, setCartItems] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+
   useEffect(() => {
-    setLoaded(true);
-    // Cargar productos desde la API al montar el componente
-    axios.get('https://backend-gis-1.onrender.com/api/productos')  // URL de la API para obtener los productos
-      .then((response) => {
-        setProducts(response.data);  // Asigna los datos obtenidos de la API a los productos
-      })
-      .catch((error) => {
-        console.error('Error al obtener los productos:', error);
-      });
-  }, []);
+    setLoaded(true)
+  }, [])
 
-  const toggleChat = () => {
-    setChatOpen(!chatOpen);
-  };
-
-  const toggleMenu = () => {
-    setMenuOpen(!menuOpen);
-  };
+  const toggleChat = () => setChatOpen(!chatOpen)
+  const toggleMenu = () => setMenuOpen(!menuOpen)
 
   const sendMessage = () => {
-    if (inputMessage.trim() !== '') {
-      setMessages([...messages, { text: inputMessage, sender: 'user' }]);
+    if (inputMessage.trim() !== "") {
+      setMessages([...messages, { text: inputMessage, sender: "user" }])
       setTimeout(() => {
         setMessages((prev) => [
           ...prev,
-          { text: 'Gracias por contactarnos. Un agente se comunicará contigo pronto.', sender: 'bot' },
-        ]);
-      }, 1000);
-      setInputMessage('');
+          { text: "Gracias por contactarnos. Un agente se comunicará contigo pronto.", sender: "bot" },
+        ])
+      }, 1000)
+      setInputMessage("")
     }
-  };
+  }
 
   const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      sendMessage();
-    }
-  };
+    if (e.key === "Enter") sendMessage()
+  }
 
-  const addToCart = () => {
-    setCartItems(cartItems + 1);
-  };
+  const addToCart = () => setCartItems(cartItems + 1)
 
-  const colors = {
-    background: '#FFFFFF',
-    primaryText: '#000000',
-    secondaryText: '#666666',
-    button: '#40E0D0',
-    buttonHover: '#37BFBF',
-    accent: '#FF6B6B',
-    light: '#F5F5F5',
-    dark: '#333333',
-    gradientStart: '#40E0D0',
-    gradientEnd: '#4ECDC4',
-  };
+  const images = [img1, img2, img3, img4, img5, img6]
 
-  const images = [img1, img2, img3, img4, img5, img6];
-
-  // Componentes personalizados para las flechas del carousel
-  const PrevArrow = (props) => {
-    const { className, style, onClick } = props;
-    return (
-      <Box
-        onClick={onClick}
-        sx={{
-          position: 'absolute',
-          left: { xs: '10px', md: '20px' },
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 2,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: { xs: '36px', md: '48px' },
-          height: { xs: '36px', md: '48px' },
-          borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.8)',
-          boxShadow: '0 3px 10px rgba(0,0,0,0.15)',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            background: 'rgba(255, 255, 255, 0.95)',
-            boxShadow: '0 5px 15px rgba(0,0,0,0.25)',
-            transform: 'translateY(-50%) scale(1.05)',
-          }
-        }}
-      >
-        <ArrowBackIosNewIcon fontSize={isMobile ? "small" : "medium"} sx={{ color: colors.dark, ml: 0.7 }} />
-      </Box>
-    );
-  };
-
-  const NextArrow = (props) => {
-    const { className, style, onClick } = props;
-    return (
-      <Box
-        onClick={onClick}
-        sx={{
-          position: 'absolute',
-          right: { xs: '10px', md: '20px' },
-          top: '50%',
-          transform: 'translateY(-50%)',
-          zIndex: 2,
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: { xs: '36px', md: '48px' },
-          height: { xs: '36px', md: '48px' },
-          borderRadius: '50%',
-          background: 'rgba(255, 255, 255, 0.8)',
-          boxShadow: '0 3px 10px rgba(0,0,0,0.15)',
-          cursor: 'pointer',
-          transition: 'all 0.3s ease',
-          '&:hover': {
-            background: 'rgba(255, 255, 255, 0.95)',
-            boxShadow: '0 5px 15px rgba(0,0,0,0.25)',
-            transform: 'translateY(-50%) scale(1.05)',
-          }
-        }}
-      >
-        <ArrowForwardIosIcon fontSize={isMobile ? "small" : "medium"} sx={{ color: colors.dark }} />
-      </Box>
-    );
-  };
-
-  // Configuración mejorada del slider
   const sliderSettings = {
     dots: true,
     infinite: true,
-    speed: 700,
+    speed: 600,
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 5000,
+    autoplaySpeed: 4000,
     pauseOnHover: true,
     arrows: !isMobile,
-    fade: true,
-    cssEase: 'cubic-bezier(0.7, 0, 0.3, 1)',
-    prevArrow: <PrevArrow />,
-    nextArrow: <NextArrow />,
-    beforeChange: (current, next) => setActiveSlide(next),
-    dotsClass: 'slick-dots custom-dots',
-    appendDots: dots => (
-      <Box 
-        sx={{
-          position: 'absolute',
-          bottom: '25px',
-          width: '100%',
-          padding: '0',
-          margin: '0',
-          listStyle: 'none',
-          textAlign: 'center',
-          zIndex: 1
-        }}
-      >
-        <ul style={{ margin: '0', padding: '0' }}>{dots}</ul>
-      </Box>
-    ),
-    customPaging: i => (
-      <Box
-        sx={{
-          width: i === activeSlide ? '12px' : '8px',
-          height: i === activeSlide ? '12px' : '8px',
-          background: i === activeSlide ? colors.button : 'rgba(255, 255, 255, 0.7)',
-          border: i === activeSlide ? `2px solid white` : 'none',
-          borderRadius: '50%',
-          display: 'inline-block',
-          margin: '0 4px',
-          transition: 'all 0.3s ease',
-          cursor: 'pointer',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+    fade: false,
+    cssEase: "cubic-bezier(0.4, 0, 0.2, 1)",
+    dotsClass: "slick-dots custom-dots",
+    customPaging: (i) => (
+      <div
+        style={{
+          width: "14px",
+          height: "14px",
+          background: "rgba(255, 255, 255, 0.8)",
+          borderRadius: "50%",
+          transition: "all 0.3s ease",
+          border: "2px solid rgba(255, 255, 255, 0.5)",
+          cursor: "pointer",
         }}
       />
     ),
     responsive: [
-      { breakpoint: 600, settings: { dots: true, arrows: false } },
+      {
+        breakpoint: 768,
+        settings: {
+          arrows: false,
+          dots: true,
+        },
+      },
     ],
-  };
+  }
 
-  const menuItems = ['Inicio', 'Productos', 'Clínicos', 'Quirúrgicos', 'Ofertas', 'Contacto'];
+  const menuItems = ["Inicio", "Productos", "Clínicos", "Quirúrgicos", "Ofertas", "Contacto"]
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
-  };
+  const whyChooseUs = [
+    {
+      icon: <LocalShippingIcon sx={{ fontSize: 40, color: "#40E0D0" }} />,
+      title: "Envío Express",
+      description:
+        "Entrega rápida y segura en 24-48 horas. Tu compra llegará en perfectas condiciones con seguimiento en tiempo real.",
+      color: "#40E0D0",
+    },
+    {
+      icon: <VerifiedUserIcon sx={{ fontSize: 40, color: "#667eea" }} />,
+      title: "Garantía de Calidad",
+      description:
+        "Productos de la más alta calidad con garantía de satisfacción. Si no estás satisfecho, te devolvemos tu dinero.",
+      color: "#667eea",
+    },
+    {
+      icon: <SupportAgentIcon sx={{ fontSize: 40, color: "#f093fb" }} />,
+      title: "Atención 24/7",
+      description:
+        "Nuestro equipo de expertos está disponible para asesorarte en todo momento. Te ayudamos a encontrar lo que buscas.",
+      color: "#f093fb",
+    },
+    {
+      icon: <PriceCheckIcon sx={{ fontSize: 40, color: "#4facfe" }} />,
+      title: "Precios Únicos",
+      description:
+        "Los mejores precios del mercado sin comprometer la calidad. Ofertas exclusivas y descuentos especiales.",
+      color: "#4facfe",
+    },
+  ]
 
-  const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { type: 'spring', stiffness: 100, damping: 12 } },
-  };
+  const testimonials = [
+    {
+      name: "María González",
+      role: "Cliente Frecuente",
+      text: "La calidad de los productos es excepcional. Siempre quedo satisfecha con la atención.",
+      rating: 5,
+      avatar: "https://img.freepik.com/foto-gratis/mujer-joven-hermosa-sueter-rosa-calido-aspecto-natural-sonriente-retrato-aislado-cabello-largo_285396-896.jpg",
+    },
+    {
+      name: "Carlos Rodríguez",
+      role: "Médico",
+      text: "Productos clínicos de primera calidad. Los recomiendo ampliamente para uso profesional.",
+      rating: 5,
+      avatar: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/5KCVGAGSP5HFJA7KMALNP7ITS4.jpg",
+    },
+    {
+      name: "Ana Martínez",
+      role: "Enfermera",
+      text: "Excelente servicio y productos de calidad. La entrega siempre es puntual.",
+      rating: 5,
+      avatar: "https://d5tnfl9agh5vb.cloudfront.net/uploads/2016/11/que-hace-una-enfermera.jpg",
+    },
+  ]
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        backgroundColor: colors.background,
-        position: 'relative',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#FFFFFF", position: "relative" }}>
       {/* Mobile menu drawer */}
-      <Drawer anchor="left" open={menuOpen} onClose={toggleMenu} TransitionComponent={Slide} TransitionProps={{ direction: 'right' }}>
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleMenu}>
-          <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box
-              component="img"
-              src={LogoGL}
-              alt="GisLive Boutique"
-              sx={{ height: 40, borderRadius: '50%', transition: 'transform 0.3s ease', '&:hover': { transform: 'scale(1.1)' } }}
-            />
-            <Typography variant="h6" sx={{ fontFamily: 'Montserrat, sans-serif' }}>
+      <Drawer anchor="left" open={menuOpen} onClose={toggleMenu}>
+        <Box sx={{ width: 280, background: "linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%)" }}>
+          <Box sx={{ p: 3, display: "flex", alignItems: "center", gap: 2 }}>
+            <Avatar src="/placeholder.svg?height=50&width=50" sx={{ width: 50, height: 50 }} />
+            <Typography variant="h6" sx={{ fontFamily: "Montserrat, sans-serif", color: "white", fontWeight: "bold" }}>
               GisLive Boutique
             </Typography>
           </Box>
-          <Divider />
+          <Divider sx={{ borderColor: "rgba(255,255,255,0.2)" }} />
           <List>
             {menuItems.map((text, index) => (
-              <Fade in={menuOpen} style={{ transitionDelay: `${index * 50}ms` }} key={text}>
-                <ListItem button>
-                  <ListItemText primary={text} primaryTypographyProps={{ fontFamily: 'Montserrat, sans-serif' }} />
+              <Fade in={menuOpen} style={{ transitionDelay: `${index * 100}ms` }} key={text}>
+                <ListItem button sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" } }}>
+                  <ListItemText
+                    primary={text}
+                    primaryTypographyProps={{
+                      fontFamily: "Montserrat, sans-serif",
+                      color: "white",
+                      fontWeight: 500,
+                    }}
+                  />
                 </ListItem>
               </Fade>
             ))}
@@ -297,248 +358,452 @@ const PaginaPrincipal = () => {
         </Box>
       </Drawer>
 
-      {/* Main content */}
-      <Container maxWidth={false} sx={{ py: 0, flexGrow: 1, width: '100vw', margin: 0 }}>
-        {/* Hero section with full-screen slider */}
-        <Zoom in={loaded} timeout={800}>
-          <Box sx={{ width: '100vw', height: '100vh', position: 'relative', margin: 0 }}>
-            <Paper
-              elevation={5}
-              sx={{
-                borderRadius: 0,
-                overflow: 'hidden',
-                boxShadow: 'none',
-                width: '100%',
-                height: '100%',
-                position: 'relative',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100px',
-                  background: 'linear-gradient(0deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%)',
-                  pointerEvents: 'none',
-                  zIndex: 1
-                }
-              }}
-            >
-              <Box className="carousel-container" sx={{ width: '100%', height: '100%', position: 'relative' }}>
-                <Slider {...sliderSettings}>
-                  {images.map((img, index) => (
-                    <Box key={index} sx={{ width: '100vw', height: '100vh', position: 'relative' }}>
-                      <Box
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          background: `url(${img})`,
-                          backgroundPosition: 'center',
-                          backgroundSize: 'cover',
-                          backgroundRepeat: 'no-repeat',
-                          transition: 'transform 6s ease',
-                          transform: activeSlide === index ? 'scale(1.08)' : 'scale(1)',
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          bottom: { xs: '60px', md: '80px' },
-                          left: { xs: '20px', md: '60px' },
-                          maxWidth: { xs: '80%', md: '50%' },
-                          zIndex: 2,
-                          opacity: activeSlide === index ? 1 : 0,
-                          transform: activeSlide === index ? 'translateY(0)' : 'translateY(20px)',
-                          transition: 'opacity 0.5s ease, transform 0.5s ease',
-                        }}
-                      >
-                        <Typography
-                          variant={isMobile ? "h5" : "h4"}
-                          sx={{
-                            color: 'white',
-                            fontWeight: 'bold',
-                            fontFamily: 'Montserrat, sans-serif',
-                            textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                            mb: 1,
-                          }}
-                        >
-                          {index === 0 ? 'Descubre nuestra nueva colección' : 
-                           index === 1 ? 'Estilos exclusivos para ti' : 
-                           index === 2 ? 'Calidad y diseño inigualables' : 
-                           index === 3 ? 'Las últimas tendencias en moda' : 
-                           index === 4 ? 'Elegancia para cada ocasión' : 
-                           'Tu estilo, tu personalidad'}
-                        </Typography>
-                      </Box>
-                    </Box>
-                  ))}
-                </Slider>
-              </Box>
-            </Paper>
-          </Box>
-        </Zoom>
-
-        {/* Título principal */}
-        <Fade in={loaded} timeout={1000}>
-          <Box sx={{ textAlign: 'center', mb: 6 }}>
-            <Typography
-              variant="h3"
-              component="h1"
-              sx={{
-                color: colors.primaryText,
-                fontWeight: 'bold',
-                fontFamily: 'Montserrat, sans-serif',
-                fontSize: isMobile ? '1.8rem' : '2.5rem',
-                position: 'relative',
-                display: 'inline-block',
-                '&::after': {
-                  content: '""',
-                  position: 'absolute',
-                  bottom: '-10px',
-                  left: '50%',
-                  width: '80px',
-                  height: '3px',
-                  backgroundColor: colors.button,
-                  transform: 'translateX(-50%)',
-                  borderRadius: '2px',
-                },
-              }}
-            >
-              Las mejores prendas de GisLive Boutique
-            </Typography>
-          </Box>
-        </Fade>
-
-        {/* Product Grid */}
-        <Box component={motion.div} variants={containerVariants} initial="hidden" animate="visible" sx={{ mb: 8 }}>
-          <Grid container spacing={3} justifyContent="center">
-            {products.map((product, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <Box component={motion.div} variants={itemVariants} whileHover={{ y: -10, transition: { duration: 0.3 } }}>
-                  <Card
-                    sx={{
-                      height: '100%',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      borderRadius: '16px',
-                      overflow: 'hidden',
-                      boxShadow: '0 5px 15px rgba(0,0,0,0.08)',
-                      transition: 'box-shadow 0.3s ease',
-                      '&:hover': { boxShadow: '0 12px 30px rgba(0,0,0,0.15)' },
-                      position: 'relative',
-                    }}
-                  >
-                    {product.isNew && (
-                      <Chip
-                        icon={<NewReleasesIcon />}
-                        label="Nuevo"
-                        color="error"
-                        size="small"
-                        sx={{ position: 'absolute', top: 10, right: 10, zIndex: 1, fontWeight: 'bold', boxShadow: '0 2px 10px rgba(0,0,0,0.2)' }}
-                      />
-                    )}
-                    <Box sx={{ position: 'relative', overflow: 'hidden' }}>
-                      <CardMedia
-                        component="img"
-                        image={product.url}
-                        alt={product.nombre_producto}
-                        sx={{
-                          height: isMobile ? 180 : 240,
-                          objectFit: 'cover',
-                          transition: 'transform 0.6s ease',
-                          '&:hover': { transform: 'scale(1.05)' },
-                        }}
-                      />
-                      <Box
-                        sx={{
-                          position: 'absolute',
-                          bottom: 0,
-                          left: 0,
-                          width: '100%',
-                          height: '60px',
-                          background: 'linear-gradient(0deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 100%)',
-                        }}
-                      />
-                    </Box>
-                    <CardContent sx={{ flexGrow: 1, p: 3 }}>
-                      <Typography
-                        gutterBottom
-                        variant="h6"
-                        component="div"
-                        sx={{
-                          fontFamily: 'Montserrat, sans-serif',
-                          fontWeight: 'bold',
-                          fontSize: isMobile ? '1rem' : '1.1rem',
-                        }}
-                      >
-                        {product.nombre_producto}
-                      </Typography>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                        <Chip
-                          label={product.nombre_producto}
-                          size="small"
-                          sx={{
-                            backgroundColor: product.type === 'Clínico' ? '#E0F7FA' : '#FFF3E0',
-                            color: product.type === 'Clínico' ? '#00838F' : '#E65100',
-                            fontWeight: 'medium',
+      {/* Hero Section */}
+      <HeroSection>
+        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2, py: { xs: 4, md: 0 } }}>
+          <Grid container spacing={4} alignItems="center">
+            <Grid item xs={12} md={6}>
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <Typography
+                  variant="h1"
+                  sx={{
+                    fontSize: { xs: "2rem", md: "3.5rem", lg: "4rem" }, // Ajuste para móvil
+                    fontWeight: "bold",
+                    color: "white",
+                    mb: 3,
+                    fontFamily: "Montserrat, sans-serif",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  GisLive Boutique
+                </Typography>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    fontSize: { xs: "1rem", md: "1.5rem" }, // Ajuste para móvil
+                    color: "rgba(255, 255, 255, 0.9)",
+                    mb: 4,
+                    fontFamily: "Montserrat, sans-serif",
+                    lineHeight: 1.6,
+                  }}
+                >
+                  Descubre la elegancia y calidad en cada producto. Especialistas en productos clínicos y quirúrgicos.
+                </Typography>
+              </motion.div>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              >
+                <Paper
+                  elevation={10}
+                  sx={{
+                    borderRadius: "20px",
+                    overflow: "hidden",
+                    boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
+                    background: "white",
+                  }}
+                >
+                  <Slider {...sliderSettings}>
+                    {images.map((img, index) => (
+                      <SliderImageContainer key={index}>
+                        <img
+                          src={img || "/placeholder.svg"}
+                          alt={`Producto ${index + 1}`}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            objectFit: "contain",
+                            padding: "20px",
+                            backgroundColor: "white",
                           }}
                         />
-                        <Typography
-                          variant="h6"
-                          color="text.primary"
-                          sx={{
-                            fontWeight: 'bold',
-                            fontFamily: 'Montserrat, sans-serif',
-                            color: colors.dark,
-                          }}
-                        >
-                          {product.precio}
-                        </Typography>
-                      </Box>
+                      </SliderImageContainer>
+                    ))}
+                  </Slider>
+                </Paper>
+              </motion.div>
+            </Grid>
+          </Grid>
+        </Container>
+      </HeroSection>
+
+      {/* Why Choose Us Section */}
+      <GradientBox from="#F7FAFC" to="white">
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: "center", mb: 8 }}>
+            <CategoryTag bgcolor="rgba(64, 224, 208, 0.1)" color="#2C7A7B">
+              Nuestra Diferencia
+            </CategoryTag>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.5rem", md: "3rem" }, // Ajuste para móvil
+                fontWeight: "bold",
+                color: "#2D3748",
+                mb: 3,
+                fontFamily: "Montserrat, sans-serif",
+              }}
+            >
+              ¿Por qué elegirnos?
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "#718096",
+                maxWidth: "600px",
+                mx: "auto",
+                fontFamily: "Montserrat, sans-serif",
+                lineHeight: 1.6,
+              }}
+            >
+              En GisLive Boutique ofrecemos productos de alta calidad, servicio excepcional y precios competitivos.
+            </Typography>
+          </Box>
+
+          <Grid container spacing={4}>
+            {whyChooseUs.map((item, index) => (
+              <Grid item xs={12} sm={6} md={3} key={index}>
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
+                >
+                  <FeatureCard bordercolor={item.color}>
+                    <CardContent sx={{ textAlign: "center", height: "100%", display: "flex", flexDirection: "column" }}>
+                      <IconWrapper bgcolor={`${item.color}15`}>{item.icon}</IconWrapper>
+                      <Typography
+                        variant="h6"
+                        sx={{
+                          fontWeight: "bold",
+                          color: "#2D3748",
+                          mb: 2,
+                          fontFamily: "Montserrat, sans-serif",
+                        }}
+                      >
+                        {item.title}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: "#718096",
+                          fontFamily: "Montserrat, sans-serif",
+                          lineHeight: 1.6,
+                          flexGrow: 1,
+                        }}
+                      >
+                        {item.description}
+                      </Typography>
                     </CardContent>
-                    <CardActions sx={{ justifyContent: 'space-between', px: 3, pb: 3 }}>
-                      <Button
-                        variant="contained"
-                        startIcon={<AddShoppingCartIcon />}
-                        sx={{
-                          background: `linear-gradient(45deg, ${colors.gradientStart} 30%, ${colors.gradientEnd} 90%)`,
-                          color: 'white',
-                          fontFamily: 'Montserrat, sans-serif',
-                          fontWeight: 'medium',
-                          borderRadius: '8px',
-                          textTransform: 'none',
-                          boxShadow: '0 4px 10px rgba(64, 224, 208, 0.3)',
-                          '&:hover': { boxShadow: '0 6px 15px rgba(64, 224, 208, 0.4)' },
-                          transition: 'all 0.3s ease',
-                        }}
-                        onClick={addToCart}
-                      >
-                        Añadir
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        startIcon={<InfoOutlinedIcon />}
-                        sx={{
-                          borderColor: colors.button,
-                          color: colors.button,
-                          fontFamily: 'Montserrat, sans-serif',
-                          borderRadius: '8px',
-                          textTransform: 'none',
-                          '&:hover': { borderColor: colors.buttonHover, backgroundColor: 'rgba(64, 224, 208, 0.1)' },
-                        }}
-                      >
-                        Detalles
-                      </Button>
-                    </CardActions>
-                  </Card>
-                </Box>
+                  </FeatureCard>
+                </motion.div>
               </Grid>
             ))}
           </Grid>
-        </Box>
-      </Container>
-    </Box>
-  );
-};
+        </Container>
+      </GradientBox>
 
-export default PaginaPrincipal;
+      {/* Testimonials Section */}
+      <Box sx={{ py: { xs: 6, md: 10 }, background: "linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%)" }}>
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: "center", mb: 8 }}>
+            <CategoryTag bgcolor="rgba(255,255,255,0.2)" color="white">
+              Experiencias
+            </CategoryTag>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.5rem", md: "3rem" }, // Ajuste para móvil
+                fontWeight: "bold",
+                color: "white",
+                mb: 3,
+                fontFamily: "Montserrat, sans-serif",
+              }}
+            >
+              Lo que dicen nuestros clientes
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "rgba(255,255,255,0.9)",
+                maxWidth: "600px",
+                mx: "auto",
+                fontFamily: "Montserrat, sans-serif",
+              }}
+            >
+              Conoce las experiencias de quienes confían en nosotros
+            </Typography>
+          </Box>
+
+          <Grid container spacing={4}>
+            {testimonials.map((testimonial, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <motion.div
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: index * 0.2 }}
+                >
+                  <TestimonialCard>
+                    <CardContent sx={{ p: 4 }}>
+                      <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                        <Avatar
+                          src={testimonial.avatar}
+                          sx={{
+                            width: 60,
+                            height: 60,
+                            mr: 2,
+                            border: "3px solid #40E0D0",
+                            boxShadow: "0 4px 15px rgba(64, 224, 208, 0.3)",
+                          }}
+                        />
+                        <Box>
+                          <Typography
+                            variant="h6"
+                            sx={{ fontWeight: "bold", color: "#2D3748", fontFamily: "Montserrat, sans-serif" }}
+                          >
+                            {testimonial.name}
+                          </Typography>
+                          <Typography variant="body2" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif" }}>
+                            {testimonial.role}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ display: "flex", mb: 2 }}>
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <StarIcon key={i} sx={{ color: "#F6AD55", fontSize: "1.2rem" }} />
+                        ))}
+                      </Box>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          fontStyle: "italic",
+                          color: "#4A5568",
+                          fontFamily: "Montserrat, sans-serif",
+                          lineHeight: 1.6,
+                        }}
+                      >
+                        "{testimonial.text}"
+                      </Typography>
+                    </CardContent>
+                  </TestimonialCard>
+                </motion.div>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Location Section */}
+      <GradientBox from="white" to="#F7FAFC">
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: "center", mb: 8 }}>
+            <CategoryTag bgcolor="rgba(64, 224, 208, 0.1)" color="#2C7A7B">
+              Ubicación
+            </CategoryTag>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "1.5rem", md: "3rem" }, // Ajuste para móvil
+                fontWeight: "bold",
+                color: "#2D3748",
+                mb: 3,
+                fontFamily: "Montserrat, sans-serif",
+              }}
+            >
+              Encuéntranos
+            </Typography>
+            <Typography
+              variant="h6"
+              sx={{
+                color: "#718096",
+                maxWidth: "600px",
+                mx: "auto",
+                fontFamily: "Montserrat, sans-serif",
+              }}
+            >
+              Visítanos o contáctanos para más información
+            </Typography>
+          </Box>
+
+          <Grid container spacing={6}>
+            <Grid item xs={12} lg={8}>
+              <Paper
+                elevation={10}
+                sx={{
+                  borderRadius: "20px",
+                  overflow: "hidden",
+                  height: { xs: 300, md: 500 }, // Ajuste para móvil
+                }}
+              >
+                <iframe
+                  title="Ubicación GisLive Boutique"
+                  width="100%"
+                  height="100%"
+                  frameBorder="0"
+                  style={{ border: 0 }}
+                  src="https://www.google.com/maps/embed?pb=!3m2!1ses!2smx!4v1738279572591!5m2!1ses!2smx!6m8!1m7!1sfptv_59OOGwWnICTLujcAQ!2m2!1d21.14024956987548!2d-98.42112377080686!3f282.3148371518607!4f7.436404529233116!5f0.7820865974627469"
+                  allowFullScreen
+                />
+              </Paper>
+            </Grid>
+            <Grid item xs={12} lg={4}>
+              <Box sx={{ height: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
+                <FeatureCard bordercolor="#40E0D0">
+                  <CardContent>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <LocationOnIcon sx={{ color: "#40E0D0", mr: 2, fontSize: "2rem" }} />
+                      <Typography
+                        variant="h6"
+                        sx={{ fontWeight: "bold", color: "#2D3748", fontFamily: "Montserrat, sans-serif" }}
+                      >
+                        Dirección
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif" }}>
+                      Velázques Ibarra, #12, Col.Centro, Huejutla de Reyes Centro, México, 43000
+                    </Typography>
+                  </CardContent>
+                </FeatureCard>
+                <FeatureCard bordercolor="#f093fb">
+                  <CardContent>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <PhoneIcon sx={{ color: "#f093fb", mr: 2, fontSize: "2rem" }} />
+                      <Typography
+                        variant="h6"
+                        sx={{ fontWeight: "bold", color: "#2D3748", fontFamily: "Montserrat, sans-serif" }}
+                      >
+                        Contacto
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif", mb: 1 }}>
+                      Tel: 7898964861 ó 2223308869
+                    </Typography>
+                    <Typography variant="body1" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif" }}>
+                      Email: gislive17@gmail.com
+                    </Typography>
+                  </CardContent>
+                </FeatureCard>
+              </Box>
+            </Grid>
+          </Grid>
+        </Container>
+      </GradientBox>
+
+      {/* Chat Button */}
+      <IconButton
+        onClick={toggleChat}
+        sx={{
+          position: "fixed",
+          bottom: 24,
+          right: 24,
+          background: "linear-gradient(135deg, #40E0D0 0%, #4ECDC4 100%)",
+          color: "white",
+          width: 60,
+          height: 60,
+          boxShadow: "0 8px 25px rgba(64, 224, 208, 0.4)",
+          "&:hover": {
+            background: "linear-gradient(135deg, #37BFBF 0%, #45B7B8 100%)",
+            transform: "scale(1.1)",
+          },
+          transition: "all 0.3s ease",
+          zIndex: 1000,
+        }}
+      >
+        <ChatIcon sx={{ fontSize: "1.8rem" }} />
+      </IconButton>
+
+      {/* Chat Window */}
+      {chatOpen && (
+        <Paper
+          elevation={10}
+          sx={{
+            position: "fixed",
+            bottom: 100,
+            right: 24,
+            width: { xs: "85vw", sm: 350 }, // Ajuste para móvil
+            height: { xs: 300, sm: 400 }, // Reducir altura en móvil
+            borderRadius: "20px",
+            overflow: "hidden",
+            zIndex: 1000,
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box
+            sx={{
+              background: "linear-gradient(135deg, #40E0D0 0%, #4ECDC4 100%)",
+              color: "white",
+              p: 2,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <Typography variant="h6" sx={{ fontFamily: "Montserrat, sans-serif", fontWeight: "bold" }}>
+              Chat de Ayuda
+            </Typography>
+            <IconButton onClick={toggleChat} sx={{ color: "white" }}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Box sx={{ flexGrow: 1, p: 2, overflowY: "auto", backgroundColor: "#F7FAFC" }}>
+            {messages.map((message, index) => (
+              <Box
+                key={index}
+                sx={{
+                  mb: 2,
+                  display: "flex",
+                  justifyContent: message.sender === "user" ? "flex-end" : "flex-start",
+                }}
+              >
+                <Paper
+                  sx={{
+                    p: 2,
+                    maxWidth: "80%",
+                    backgroundColor: message.sender === "user" ? "#40E0D0" : "white",
+                    color: message.sender === "user" ? "white" : "#2D3748",
+                    borderRadius: "15px",
+                  }}
+                >
+                  <Typography variant="body2" sx={{ fontFamily: "Montserrat, sans-serif" }}>
+                    {message.text}
+                  </Typography>
+                </Paper>
+              </Box>
+            ))}
+          </Box>
+          <Box sx={{ p: 2, backgroundColor: "white", borderTop: "1px solid #E2E8F0" }}>
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Escribe tu mensaje..."
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    borderRadius: "20px",
+                    fontFamily: "Montserrat, sans-serif",
+                  },
+                }}
+              />
+              <StyledButton variant="contained" onClick={sendMessage} sx={{ minWidth: "auto", px: 2 }}>
+                Enviar
+              </StyledButton>
+            </Box>
+          </Box>
+        </Paper>
+      )}
+    </Box>
+  )
+}
+
+export default PaginaPrincipalMejorada
