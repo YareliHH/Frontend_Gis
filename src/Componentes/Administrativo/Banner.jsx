@@ -97,7 +97,7 @@ const BannersAdmin = () => {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-      const response = await axios.put(`https://backend-gis-1.onrender.com/api/bannersedit/${id}`, formData, {
+      const response = await axios.put(`https://backend-gis-1.onrender.com/api/bannersedit/${currentBannerId}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       fetchBanners();
