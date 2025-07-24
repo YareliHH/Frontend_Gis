@@ -97,7 +97,7 @@ const BannersAdmin = () => {
     if (imagen) formData.append('imagen', imagen);
 
     try {
-      const response = await axios.put(`https://backend-gis-1.onrender.com/bannersedit/${currentBannerId}`, formData, {
+      const response = await axios.put(`https://backend-gis-1.onrender.com/api/bannersedit/${id}`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       fetchBanners();
@@ -114,7 +114,7 @@ const BannersAdmin = () => {
     if (!window.confirm('¿Estás seguro de que deseas eliminar este banner?')) return;
     setLoading(true);
     try {
-      await axios.delete(`https://backend-gis-1.onrender.com/banners/${id}`);
+      await axios.delete(`https://backend-gis-1.onrender.com/api/banner/banners/${id}`);
       setBanners(banners.filter(b => b.id !== id));
       setNotification({ open: true, message: 'Banner eliminado con éxito', severity: 'success' });
     } catch (error) {
