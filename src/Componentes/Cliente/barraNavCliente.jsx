@@ -25,8 +25,6 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import DarkModeIcon from '@mui/icons-material/DarkMode';
-import LightModeIcon from '@mui/icons-material/LightMode';
 import LogoutIcon from '@mui/icons-material/ExitToApp';
 import ManIcon from '@mui/icons-material/Man';
 import WomanIcon from '@mui/icons-material/Woman';
@@ -198,7 +196,6 @@ const SearchResult = ({ product, onClick, darkMode }) => {
 };
 
 const BarraNavCliente = () => {
-  const [darkMode, setDarkMode] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [openSearch, setOpenSearch] = useState(false);
@@ -210,13 +207,6 @@ const BarraNavCliente = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
-
-  useEffect(() => {
-    document.body.style.backgroundColor = darkMode ? '#121212' : '#FFFFFF';
-    document.body.style.color = darkMode ? '#FFFFFF' : '#000000';
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) setDarkMode(savedMode === 'true');
-  }, [darkMode]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -240,12 +230,6 @@ const BarraNavCliente = () => {
       setSearchResults([]);
       setOpenSearch(false);
     }
-  };
-
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('darkMode', newMode.toString());
   };
 
   const handleDrawerToggle = () => {
@@ -288,16 +272,16 @@ const BarraNavCliente = () => {
 
   const customTheme = createTheme({
     palette: {
-      mode: darkMode ? 'dark' : 'light',
-      primary: { main: darkMode ? '#2A7F62' : '#3B8D99' },
+      mode: 'light',
+      primary: { main: '#3B8D99' },
       secondary: { main: '#00695C' },
       background: { 
-        default: darkMode ? '#121212' : '#F4F8FA', 
-        paper: darkMode ? '#1E1E1E' : '#FFFFFF' 
+        default: '#F4F8FA', 
+        paper: '#FFFFFF' 
       },
       text: { 
-        primary: darkMode ? '#FFFFFF' : '#333333', 
-        secondary: darkMode ? '#CCCCCC' : '#555555' 
+        primary: '#333333', 
+        secondary: '#555555' 
       },
       error: { main: '#FF4C4C' },
     },
@@ -320,7 +304,7 @@ const BarraNavCliente = () => {
         styleOverrides: {
           root: {
             '&:hover': {
-              backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+              backgroundColor: 'rgba(0,0,0,0.04)',
             }
           }
         }
@@ -339,9 +323,7 @@ const BarraNavCliente = () => {
       {/* Header del drawer */}
       <Box sx={{ 
         p: 2, 
-        background: darkMode 
-          ? 'linear-gradient(135deg, #2A7F62 0%, #1a5f4a 100%)'
-          : 'linear-gradient(135deg, #3B8D99 0%, #2a6b75 100%)',
+        background: 'linear-gradient(135deg, #3B8D99 0%, #2a6b75 100%)',
         color: 'white',
         display: 'flex',
         alignItems: 'center',
@@ -383,7 +365,7 @@ const BarraNavCliente = () => {
               mb: 1,
               transition: 'all 0.2s',
               '&:hover': {
-                backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                backgroundColor: 'rgba(0,0,0,0.04)',
                 transform: 'translateX(4px)',
               }
             }}
@@ -411,7 +393,7 @@ const BarraNavCliente = () => {
             mb: 1,
             transition: 'all 0.2s',
             '&:hover': {
-              backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+              backgroundColor: 'rgba(0,0,0,0.04)',
               transform: 'translateX(4px)',
             }
           }}
@@ -433,7 +415,7 @@ const BarraNavCliente = () => {
             mb: 1,
             transition: 'all 0.2s',
             '&:hover': {
-              backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+              backgroundColor: 'rgba(0,0,0,0.04)',
               transform: 'translateX(4px)',
             }
           }}
@@ -451,47 +433,24 @@ const BarraNavCliente = () => {
 
         <ListItem 
           button 
-          onClick={toggleDarkMode}
+          onClick={handleLogout}
           sx={{
             borderRadius: '12px',
-            mb: 1,
             transition: 'all 0.2s',
             '&:hover': {
-              backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+              backgroundColor: 'rgba(255, 76, 76, 0.1)',
               transform: 'translateX(4px)',
             }
           }}
         >
-          <ListItemIcon sx={{ color: darkMode ? '#FFC107' : '#5C6BC0', minWidth: 40 }}>
-            {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+          <ListItemIcon sx={{ color: '#FF4C4C', minWidth: 40 }}>
+            <LogoutIcon />
           </ListItemIcon>
           <ListItemText 
-            primary={darkMode ? 'Modo Claro' : 'Modo Oscuro'}
-            primaryTypographyProps={{ fontWeight: 600, fontSize: '15px' }}
+            primary="Cerrar Sesión" 
+            primaryTypographyProps={{ fontWeight: 600, fontSize: '15px', color: '#FF4C4C' }}
           />
         </ListItem>
-
-<ListItem 
-  button 
-  onClick={handleLogout}
-  sx={{
-    borderRadius: '12px',
-    transition: 'all 0.2s',
-    '&:hover': {
-      backgroundColor: 'rgba(255, 76, 76, 0.1)',
-      transform: 'translateX(4px)',
-    }
-  }}
->
-  <ListItemIcon sx={{ color: '#FF4C4C', minWidth: 40 }}>
-    <LogoutIcon />
-  </ListItemIcon>
-  <ListItemText 
-    primary="Cerrar Sesión" 
-    primaryTypographyProps={{ fontWeight: 600, fontSize: '15px', color: '#FF4C4C' }}
-  />
-</ListItem>
-
       </List>
     </Box>
   );
@@ -500,9 +459,7 @@ const BarraNavCliente = () => {
     <ThemeProvider theme={customTheme}>
       {/* Barra de información */}
       <Box sx={{
-        background: darkMode 
-          ? 'linear-gradient(90deg, #333333 0%, #444444 100%)' 
-          : 'linear-gradient(90deg, #3B8D99 0%, #4E7C7F 100%)',
+        background: 'linear-gradient(90deg, #3B8D99 0%, #4E7C7F 100%)',
         color: 'white',
         textAlign: 'center',
         padding: isSmall ? '6px 8px' : '8px 0',
@@ -553,9 +510,7 @@ const BarraNavCliente = () => {
                 width: isMobile ? (isSmall ? 35 : 40) : 50,
                 height: isMobile ? (isSmall ? 35 : 40) : 50,
                 borderRadius: '50%',
-                background: darkMode 
-                  ? 'linear-gradient(45deg, #2A7F62, #3B8D99)' 
-                  : 'linear-gradient(45deg, #3B8D99, #91EAE4)',
+                background: 'linear-gradient(45deg, #3B8D99, #91EAE4)',
                 p: '2px',
                 display: 'flex',
                 alignItems: 'center',
@@ -569,7 +524,7 @@ const BarraNavCliente = () => {
                     width: '100%', 
                     height: '100%', 
                     borderRadius: '50%',
-                    border: `2px solid ${darkMode ? '#333' : 'white'}`,
+                    border: '2px solid white',
                     objectFit: 'cover'
                   }}
                 />
@@ -619,7 +574,7 @@ const BarraNavCliente = () => {
                         boxShadow: '0 12px 24px rgba(0,0,0,0.15)',
                         zIndex: 1300,
                         borderRadius: '12px',
-                        border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+                        border: '1px solid rgba(0,0,0,0.1)',
                       }}
                     >
                       {searchResults.map((product) => (
@@ -627,7 +582,7 @@ const BarraNavCliente = () => {
                           key={product.id}
                           product={product}
                           onClick={handleResultClick}
-                          darkMode={darkMode}
+                          darkMode={false}
                         />
                       ))}
                       {searchResults.length === 0 && (
@@ -678,19 +633,18 @@ const BarraNavCliente = () => {
                     <PersonIcon />
                   </IconButton>
                   <IconButton
-                    onClick={toggleDarkMode}
+                    onClick={handleLogout}
                     size={isMobile ? "medium" : "large"}
-                    aria-label="cambiar tema"
+                    aria-label="cerrar sesión"
                     sx={{ 
-                      color: darkMode ? '#FFC107' : '#5C6BC0',
-                      transition: 'all 0.3s ease',
-                      transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
+                      color: '#FF4C4C',
+                      transition: 'all 0.2s',
                       '&:hover': { 
-                        transform: darkMode ? 'rotate(180deg) scale(1.05)' : 'rotate(0deg) scale(1.05)'
-                      }
+                        transform: 'scale(1.05)'
+                      } 
                     }}
                   >
-                    {darkMode ? <LightModeIcon /> : <DarkModeIcon />}
+                    <LogoutIcon />
                   </IconButton>
                 </>
               )}
@@ -704,7 +658,7 @@ const BarraNavCliente = () => {
                   sx={{ 
                     color: customTheme.palette.text.primary,
                     '&:hover': {
-                      backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: 'rgba(0,0,0,0.04)',
                     }
                   }}
                 >
@@ -721,7 +675,7 @@ const BarraNavCliente = () => {
         <Box sx={{ 
           p: 1.5, 
           backgroundColor: customTheme.palette.background.paper,
-          borderBottom: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
+          borderBottom: '1px solid rgba(0,0,0,0.1)',
           boxShadow: '0 1px 3px rgba(0,0,0,0.1)'
         }}>
           <SearchBox>
@@ -757,7 +711,7 @@ const BarraNavCliente = () => {
                     key={product.id}
                     product={product}
                     onClick={handleResultClick}
-                    darkMode={darkMode}
+                    darkMode={false}
                   />
                 ))}
                 {searchResults.length === 0 && (
@@ -791,7 +745,7 @@ const BarraNavCliente = () => {
                     padding: '10px 16px',
                     borderRadius: '20px',
                     '&:hover': { 
-                      backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
+                      backgroundColor: 'rgba(0,0,0,0.04)',
                       color: customTheme.palette.primary.main,
                       transform: 'translateY(-2px)',
                       '&::after': { transform: 'scaleX(1)', transformOrigin: 'bottom left' }

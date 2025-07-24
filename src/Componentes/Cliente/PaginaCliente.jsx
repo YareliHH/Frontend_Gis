@@ -8,36 +8,24 @@ import {
   Grid,
   Button,
   Paper,
-  Divider,
-  IconButton,
   useMediaQuery,
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
   useTheme,
-  TextField,
-  Fade,
   Avatar,
   Card,
   CardContent,
+  Rating,
+  Stack,
+  Divider
 } from "@mui/material"
-import { styled } from "@mui/material/styles"
-import { motion } from "framer-motion"
-import Slider from "react-slick"
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
-
+import { Link } from "react-router-dom"
 // Icons
-import ChatIcon from "@mui/icons-material/Chat"
-import CloseIcon from "@mui/icons-material/Close"
 import LocalShippingIcon from "@mui/icons-material/LocalShipping"
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser"
 import SupportAgentIcon from "@mui/icons-material/SupportAgent"
 import PriceCheckIcon from "@mui/icons-material/PriceCheck"
-import StarIcon from "@mui/icons-material/Star"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import PhoneIcon from "@mui/icons-material/Phone"
+import EmailIcon from "@mui/icons-material/Email"
 
 // Importar las imágenes locales de los productos
 import img1 from "../imagenes/img1.jpg"
@@ -47,599 +35,583 @@ import img4 from "../imagenes/img4.jpg"
 import img5 from "../imagenes/img5.jpg"
 import img6 from "../imagenes/img6.jpg"
 
-// Componentes estilizados
-const StyledButton = styled(Button)(({ theme }) => ({
-  textTransform: "none",
-  fontWeight: 600,
-  borderRadius: "12px",
-  padding: "12px 32px",
-  fontSize: "1rem",
-  fontFamily: "Montserrat, sans-serif",
-  transition: "all 0.3s ease",
-  boxShadow: "0 4px 15px rgba(64, 224, 208, 0.3)",
-  background: "linear-gradient(135deg, #40E0D0 0%, #4ECDC4 100%)",
-  color: "white",
-  "&:hover": {
-    background: "linear-gradient(135deg, #37BFBF 0%, #45B7B8 100%)",
-    transform: "translateY(-2px)",
-    boxShadow: "0 8px 25px rgba(64, 224, 208, 0.4)",
-  },
-}))
-
-const CategoryTag = styled(Box)(({ theme, bgcolor, color }) => ({
-  display: "inline-block",
-  padding: "8px 20px",
-  borderRadius: "25px",
-  backgroundColor: bgcolor || "rgba(64, 224, 208, 0.1)",
-  color: color || "#2C7A7B",
-  fontSize: "0.875rem",
-  fontWeight: 600,
-  marginBottom: "16px",
-  fontFamily: "Montserrat, sans-serif",
-  textTransform: "uppercase",
-  letterSpacing: "0.5px",
-}))
-
-const IconWrapper = styled(Box)(({ theme, bgcolor }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  width: "80px",
-  height: "80px",
-  borderRadius: "20px",
-  backgroundColor: bgcolor || "rgba(64, 224, 208, 0.1)",
-  marginBottom: "24px",
-  transition: "all 0.3s ease",
-  "& svg": {
-    fontSize: "2.5rem",
-  },
-  "&:hover": {
-    transform: "scale(1.1) rotate(5deg)",
-  },
-}))
-
-const FeatureCard = styled(Card)(({ theme, bordercolor }) => ({
-  border: "none",
-  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-  borderRadius: "20px",
-  overflow: "hidden",
-  transition: "all 0.3s ease",
-  position: "relative",
-  "&:hover": {
-    boxShadow: "0 20px 40px rgba(64, 224, 208, 0.2)",
-    transform: "translateY(-10px)",
-  },
-  "& .MuiCardContent-root": {
-    padding: "32px",
-  },
-  "&::before": {
-    content: '""',
-    display: "block",
-    height: "4px",
-    background: `linear-gradient(90deg, ${bordercolor || "#40E0D0"} 0%, ${bordercolor || "#4ECDC4"} 100%)`,
-    width: "100%",
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "100%", // Tarjetas más anchas en móvil
-  },
-}))
-
-const GradientBox = styled(Box)(({ theme, from, to }) => ({
-  background: `linear-gradient(135deg, ${from || "#F7FAFC"} 0%, ${to || "white"} 100%)`,
-  padding: { xs: "40px 0", md: "80px 0" }, // Reducir padding en móvil
-  position: "relative",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background:
-      'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fillRule="evenodd"%3E%3Cg fill="%2340E0D0" fillOpacity="0.03"%3E%3Ccircle cx="30" cy="30" r="4"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
-    opacity: 0.5,
-  },
-}))
-
-const HeroSection = styled(Box)(({ theme }) => ({
-  position: "relative",
-  minHeight: { xs: "auto", md: "70vh" }, // Ajuste para móvil
-  display: "flex",
-  alignItems: "center",
-  background: "linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%)",
-  overflow: "hidden",
-  "&::before": {
-    content: '""',
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    background: "rgba(0, 0, 0, 0.4)",
-    zIndex: 1,
-  },
-}))
-
-const TestimonialCard = styled(Card)(({ theme }) => ({
-  background: "white",
-  borderRadius: "20px",
-  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
-  transition: "all 0.3s ease",
-  "&:hover": {
-    transform: "translateY(-5px)",
-    boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
-  },
-  [theme.breakpoints.down("sm")]: {
-    width: "100%", // Tarjetas más anchas en móvil
-  },
-}))
-
-const SliderImageContainer = styled(Box)(({ theme }) => ({
-  position: "relative",
-  width: "100%",
-  height: { xs: "280px", sm: "350px", md: "450px" }, // Ajuste de altura para móvil
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  backgroundColor: "#f8f9fa",
-  overflow: "hidden",
-  "& img": {
-    maxWidth: "100%",
-    maxHeight: "100%",
-    objectFit: "contain",
-    borderRadius: "0",
-    transition: "transform 0.3s ease",
-  },
-  "&:hover img": {
-    transform: "scale(1.05)",
-  },
-}))
-
 const PaginaPrincipalMejorada = () => {
   const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"))
-  const [chatOpen, setChatOpen] = useState(false)
-  const [messages, setMessages] = useState([{ text: "¡Hola! ¿En qué puedo ayudarte hoy?", sender: "bot" }])
-  const [inputMessage, setInputMessage] = useState("")
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [cartItems, setCartItems] = useState(0)
-  const [loaded, setLoaded] = useState(false)
-
-  useEffect(() => {
-    setLoaded(true)
-  }, [])
-
-  const toggleChat = () => setChatOpen(!chatOpen)
-  const toggleMenu = () => setMenuOpen(!menuOpen)
-
-  const sendMessage = () => {
-    if (inputMessage.trim() !== "") {
-      setMessages([...messages, { text: inputMessage, sender: "user" }])
-      setTimeout(() => {
-        setMessages((prev) => [
-          ...prev,
-          { text: "Gracias por contactarnos. Un agente se comunicará contigo pronto.", sender: "bot" },
-        ])
-      }, 1000)
-      setInputMessage("")
-    }
-  }
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") sendMessage()
-  }
-
-  const addToCart = () => setCartItems(cartItems + 1)
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
+  const [currentImage, setCurrentImage] = useState(0)
 
   const images = [img1, img2, img3, img4, img5, img6]
 
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 600,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 4000,
-    pauseOnHover: true,
-    arrows: !isMobile,
-    fade: false,
-    cssEase: "cubic-bezier(0.4, 0, 0.2, 1)",
-    dotsClass: "slick-dots custom-dots",
-    customPaging: (i) => (
-      <div
-        style={{
-          width: "14px",
-          height: "14px",
-          background: "rgba(255, 255, 255, 0.8)",
-          borderRadius: "50%",
-          transition: "all 0.3s ease",
-          border: "2px solid rgba(255, 255, 255, 0.5)",
-          cursor: "pointer",
-        }}
-      />
-    ),
-    responsive: [
-      {
-        breakpoint: 768,
-        settings: {
-          arrows: false,
-          dots: true,
-        },
-      },
-    ],
-  }
+  // Auto cambio de imagen cada 5 segundos
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % images.length)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [images.length])
 
-  const menuItems = ["Inicio", "Productos", "Clínicos", "Quirúrgicos", "Ofertas", "Contacto"]
-
-  const whyChooseUs = [
+  const features = [
     {
-      icon: <LocalShippingIcon sx={{ fontSize: 40, color: "#40E0D0" }} />,
-      title: "Envío Express",
-      description:
-        "Entrega rápida y segura en 24-48 horas. Tu compra llegará en perfectas condiciones con seguimiento en tiempo real.",
-      color: "#40E0D0",
+      icon: <LocalShippingIcon sx={{ fontSize: 56, color: "white" }} />,
+      title: "Envío Rápido",
+      description: "Entrega segura en 24-48 horas con seguimiento completo",
+      gradient: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)"
     },
     {
-      icon: <VerifiedUserIcon sx={{ fontSize: 40, color: "#667eea" }} />,
-      title: "Garantía de Calidad",
-      description:
-        "Productos de la más alta calidad con garantía de satisfacción. Si no estás satisfecho, te devolvemos tu dinero.",
-      color: "#667eea",
+      icon: <VerifiedUserIcon sx={{ fontSize: 56, color: "white" }} />,
+      title: "Calidad Garantizada",
+      description: "Productos certificados con garantía total de satisfacción",
+      gradient: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)"
     },
     {
-      icon: <SupportAgentIcon sx={{ fontSize: 40, color: "#f093fb" }} />,
-      title: "Atención 24/7",
-      description:
-        "Nuestro equipo de expertos está disponible para asesorarte en todo momento. Te ayudamos a encontrar lo que buscas.",
-      color: "#f093fb",
+      icon: <SupportAgentIcon sx={{ fontSize: 56, color: "white" }} />,
+      title: "Soporte Especializado",
+      description: "Equipo médico profesional disponible para asesorarte",
+      gradient: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)"
     },
     {
-      icon: <PriceCheckIcon sx={{ fontSize: 40, color: "#4facfe" }} />,
-      title: "Precios Únicos",
-      description:
-        "Los mejores precios del mercado sin comprometer la calidad. Ofertas exclusivas y descuentos especiales.",
-      color: "#4facfe",
-    },
+      icon: <PriceCheckIcon sx={{ fontSize: 56, color: "white" }} />,
+      title: "Precios Competitivos",
+      description: "Las mejores tarifas del mercado sin comprometer calidad",
+      gradient: "linear-gradient(135deg, #B2F5EA 0%, #68D391 100%)"
+    }
   ]
 
   const testimonials = [
     {
-      name: "María González",
-      role: "Cliente Frecuente",
-      text: "La calidad de los productos es excepcional. Siempre quedo satisfecha con la atención.",
+      name: "Dra. María González",
+      role: "Directora Médica",
+      text: "La calidad de los productos es excepcional. Confiabilidad total en cada compra.",
       rating: 5,
-      avatar: "https://img.freepik.com/foto-gratis/mujer-joven-hermosa-sueter-rosa-calido-aspecto-natural-sonriente-retrato-aislado-cabello-largo_285396-896.jpg",
+      avatar: "https://img.freepik.com/foto-gratis/mujer-joven-hermosa-sueter-rosa-calido-aspecto-natural-sonriente-retrato-aislado-cabello-largo_285396-896.jpg"
     },
     {
-      name: "Carlos Rodríguez",
-      role: "Médico",
-      text: "Productos clínicos de primera calidad. Los recomiendo ampliamente para uso profesional.",
+      name: "Dr. Carlos Rodríguez",
+      role: "Cirujano Especialista",
+      text: "Instrumentos de primera calidad. Los recomiendo para uso profesional médico.",
       rating: 5,
-      avatar: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/5KCVGAGSP5HFJA7KMALNP7ITS4.jpg",
+      avatar: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/5KCVGAGSP5HFJA7KMALNP7ITS4.jpg"
     },
     {
-      name: "Ana Martínez",
-      role: "Enfermera",
-      text: "Excelente servicio y productos de calidad. La entrega siempre es puntual.",
+      name: "Enf. Ana Martínez",
+      role: "Supervisora de Enfermería",
+      text: "Servicio impecable y productos que superan las expectativas. Altamente recomendable.",
       rating: 5,
-      avatar: "https://d5tnfl9agh5vb.cloudfront.net/uploads/2016/11/que-hace-una-enfermera.jpg",
-    },
+      avatar: "https://d5tnfl9agh5vb.cloudfront.net/uploads/2016/11/que-hace-una-enfermera.jpg"
+    }
   ]
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#FFFFFF", position: "relative" }}>
-      {/* Mobile menu drawer */}
-      <Drawer anchor="left" open={menuOpen} onClose={toggleMenu}>
-        <Box sx={{ width: 280, background: "linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%)" }}>
-          <Box sx={{ p: 3, display: "flex", alignItems: "center", gap: 2 }}>
-            <Avatar src="/placeholder.svg?height=50&width=50" sx={{ width: 50, height: 50 }} />
-            <Typography variant="h6" sx={{ fontFamily: "Montserrat, sans-serif", color: "white", fontWeight: "bold" }}>
-              GisLive Boutique
-            </Typography>
-          </Box>
-          <Divider sx={{ borderColor: "rgba(255,255,255,0.2)" }} />
-          <List>
-            {menuItems.map((text, index) => (
-              <Fade in={menuOpen} style={{ transitionDelay: `${index * 100}ms` }} key={text}>
-                <ListItem button sx={{ "&:hover": { backgroundColor: "rgba(255,255,255,0.1)" } }}>
-                  <ListItemText
-                    primary={text}
-                    primaryTypographyProps={{
-                      fontFamily: "Montserrat, sans-serif",
-                      color: "white",
-                      fontWeight: 500,
-                    }}
-                  />
-                </ListItem>
-              </Fade>
-            ))}
-          </List>
-        </Box>
-      </Drawer>
+    <Box sx={{ minHeight: "100vh", bgcolor: "#FAFAFA" }}>
 
-      {/* Hero Section */}
-      <HeroSection>
-        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 2, py: { xs: 4, md: 0 } }}>
-          <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <motion.div
-                initial={{ opacity: 0, x: -50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-              >
+      {/* Hero Section Mejorado */}
+      <Box sx={{
+        background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        position: "relative",
+        overflow: "hidden",
+        "&::before": {
+          content: '""',
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: "rgba(0, 0, 0, 0.2)",
+          zIndex: 1
+        }
+      }}>
+        <Container maxWidth="xl" sx={{ position: "relative", zIndex: 2, py: 8 }}>
+          <Grid container spacing={8} alignItems="center" sx={{ minHeight: "80vh" }}>
+
+            {/* Contenido Principal */}
+            <Grid item xs={12} lg={6}>
+              <Box sx={{ textAlign: { xs: "center", lg: "left" } }}>
+
+                {/* Badge Superior */}
+                <Box sx={{
+                  display: "inline-block",
+                  padding: "12px 24px",
+                  borderRadius: "50px",
+                  background: "rgba(255, 255, 255, 0.15)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(255, 255, 255, 0.2)",
+                  mb: 4
+                }}>
+                  <Typography sx={{
+                    color: "white",
+                    fontSize: "0.9rem",
+                    fontWeight: 600,
+                    letterSpacing: "1px",
+                    textTransform: "uppercase"
+                  }}>
+                    Productos Médicos Premium
+                  </Typography>
+                </Box>
+
+                {/* Título Principal */}
                 <Typography
                   variant="h1"
                   sx={{
-                    fontSize: { xs: "2rem", md: "3.5rem", lg: "4rem" }, // Ajuste para móvil
-                    fontWeight: "bold",
+                    fontSize: { xs: "3rem", md: "4rem", lg: "5rem" },
+                    fontWeight: 800,
                     color: "white",
                     mb: 3,
-                    fontFamily: "Montserrat, sans-serif",
-                    lineHeight: 1.2,
+                    lineHeight: 0.9,
+                    letterSpacing: "-0.02em"
                   }}
                 >
-                  GisLive Boutique
+                  GisLive
+                  <Box component="span" sx={{
+                    display: "block",
+                    background: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)",
+                    backgroundClip: "text",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent"
+                  }}>
+                    Boutique
+                  </Box>
                 </Typography>
+
+                {/* Subtítulo */}
                 <Typography
-                  variant="h5"
+                  variant="h4"
                   sx={{
-                    fontSize: { xs: "1rem", md: "1.5rem" }, // Ajuste para móvil
+                    fontSize: { xs: "1.3rem", md: "1.8rem" },
                     color: "rgba(255, 255, 255, 0.9)",
-                    mb: 4,
-                    fontFamily: "Montserrat, sans-serif",
-                    lineHeight: 1.6,
+                    mb: 5,
+                    lineHeight: 1.4,
+                    fontWeight: 300,
+                    maxWidth: "600px",
+                    mx: { xs: "auto", lg: 0 }
                   }}
                 >
-                  Descubre la elegancia y calidad en cada producto. Especialistas en productos clínicos y quirúrgicos.
+                  Especialistas en equipamiento clínico y quirúrgico de alta precisión para profesionales de la salud
                 </Typography>
-              </motion.div>
+
+                {/* Botones de Acción */}
+                <Stack
+                  direction={{ xs: "column", sm: "row" }}
+                  spacing={3}
+                  sx={{ justifyContent: { xs: "center", lg: "flex-start" } }}
+                >
+                  <Button
+                    component={Link}
+                    to="/Ofertasespeciales"
+                    variant="contained"
+                    size="large"
+                    sx={{
+                      py: 2,
+                      px: 6,
+                      fontSize: "1.1rem",
+                      fontWeight: 600,
+                      borderRadius: "50px",
+                      textTransform: "none",
+                      background: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)",
+                      boxShadow: "0 8px 32px rgba(76, 205, 196, 0.4)",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 12px 40px rgba(76, 205, 196, 0.5)"
+                      },
+                      transition: "all 0.3s ease"
+                    }}
+                  >
+                    Ofertas Especiales
+                  </Button>
+                  <Button
+                    component={Link}
+                    to="/contacto"
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                      py: 2,
+                      px: 6,
+                      fontSize: "1.1rem",
+                      fontWeight: 600,
+                      borderRadius: "50px",
+                      textTransform: "none",
+                      borderColor: "rgba(255, 255, 255, 0.3)",
+                      color: "white",
+                      backdropFilter: "blur(10px)",
+                      background: "rgba(255, 255, 255, 0.1)",
+                      "&:hover": {
+                        borderColor: "white",
+                        background: "rgba(255, 255, 255, 0.2)",
+                        transform: "translateY(-2px)"
+                      },
+                      transition: "all 0.3s ease"
+                    }}
+                  >
+                    Contactar Ahora
+                  </Button>
+                </Stack>
+              </Box>
             </Grid>
-            <Grid item xs={12} md={6}>
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: 0.2 }}
-              >
+
+            {/* Carrusel de Imágenes Elegante */}
+            <Grid item xs={12} lg={6}>
+              <Box sx={{
+                position: "relative",
+                display: "flex",
+                justifyContent: "center",
+                mt: { xs: 6, lg: 0 }
+              }}>
                 <Paper
-                  elevation={10}
+                  elevation={0}
                   sx={{
-                    borderRadius: "20px",
+                    borderRadius: "30px",
                     overflow: "hidden",
-                    boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
-                    background: "white",
+                    background: "linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
+                    backdropFilter: "blur(20px)",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                    p: 2
                   }}
                 >
-                  <Slider {...sliderSettings}>
-                    {images.map((img, index) => (
-                      <SliderImageContainer key={index}>
-                        <img
-                          src={img || "/placeholder.svg"}
-                          alt={`Producto ${index + 1}`}
-                          style={{
-                            width: "100%",
-                            height: "auto",
-                            objectFit: "contain",
-                            padding: "20px",
-                            backgroundColor: "white",
+                  <Box sx={{
+                    height: { xs: 350, sm: 450, md: 500 },
+                    width: { xs: 300, sm: 400, md: 450 },
+                    borderRadius: "24px",
+                    overflow: "hidden",
+                    position: "relative",
+                    background: "white"
+                  }}>
+                    <Box
+                      component="img"
+                      src={images[currentImage]}
+                      alt={`Producto médico ${currentImage + 1}`}
+                      sx={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                        p: 3,
+                        transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
+                      }}
+                    />
+
+                    {/* Indicadores minimalistas */}
+                    <Box
+                      sx={{
+                        position: "absolute",
+                        bottom: 20,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        display: "flex",
+                        gap: 1
+                      }}
+                    >
+                      {images.map((_, index) => (
+                        <Box
+                          key={index}
+                          sx={{
+                            width: currentImage === index ? 24 : 8,
+                            height: 8,
+                            borderRadius: "4px",
+                            background: currentImage === index
+                              ? "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)"
+                              : "rgba(0,0,0,0.2)",
+                            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
                           }}
                         />
-                      </SliderImageContainer>
-                    ))}
-                  </Slider>
+                      ))}
+                    </Box>
+                  </Box>
                 </Paper>
-              </motion.div>
+              </Box>
             </Grid>
           </Grid>
         </Container>
-      </HeroSection>
+      </Box>
 
-      {/* Why Choose Us Section */}
-      <GradientBox from="#F7FAFC" to="white">
+      {/* Features Section Rediseñado */}
+      <Box sx={{ py: { xs: 10, md: 15 }, bgcolor: "white" }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: 8 }}>
-            <CategoryTag bgcolor="rgba(64, 224, 208, 0.1)" color="#2C7A7B">
-              Nuestra Diferencia
-            </CategoryTag>
+
+          {/* Header de Sección */}
+          <Box sx={{ textAlign: "center", mb: 10 }}>
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: "1.5rem", md: "3rem" }, // Ajuste para móvil
-                fontWeight: "bold",
-                color: "#2D3748",
+                fontSize: { xs: "2.5rem", md: "3.5rem" },
+                fontWeight: 700,
+                color: "#1a1a1a",
                 mb: 3,
-                fontFamily: "Montserrat, sans-serif",
+                letterSpacing: "-0.02em"
               }}
             >
-              ¿Por qué elegirnos?
+              ¿Por qué elegir
+              <Box component="span" sx={{
+                background: "linear-gradient(45deg, #40E0D0 0%, #2C7A7B 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                ml: 2
+              }}>
+                GisLive?
+              </Box>
             </Typography>
             <Typography
-              variant="h6"
+              variant="h5"
               sx={{
-                color: "#718096",
-                maxWidth: "600px",
+                color: "#666",
+                maxWidth: "700px",
                 mx: "auto",
-                fontFamily: "Montserrat, sans-serif",
                 lineHeight: 1.6,
+                fontWeight: 300
               }}
             >
-              En GisLive Boutique ofrecemos productos de alta calidad, servicio excepcional y precios competitivos.
+              Ofrecemos una experiencia integral en equipamiento médico con los más altos estándares de calidad y servicio profesional
             </Typography>
           </Box>
 
+          {/* Grid de Features */}
           <Grid container spacing={4}>
-            {whyChooseUs.map((item, index) => (
-              <Grid item xs={12} sm={6} md={3} key={index}>
-                <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ y: -10 }}
+            {features.map((feature, index) => (
+              <Grid item xs={12} sm={6} lg={3} key={index}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    borderRadius: "24px",
+                    border: "none",
+                    background: "white",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: "0 30px 80px rgba(0,0,0,0.12)"
+                    }
+                  }}
                 >
-                  <FeatureCard bordercolor={item.color}>
-                    <CardContent sx={{ textAlign: "center", height: "100%", display: "flex", flexDirection: "column" }}>
-                      <IconWrapper bgcolor={`${item.color}15`}>{item.icon}</IconWrapper>
-                      <Typography
-                        variant="h6"
-                        sx={{
-                          fontWeight: "bold",
-                          color: "#2D3748",
-                          mb: 2,
-                          fontFamily: "Montserrat, sans-serif",
-                        }}
-                      >
-                        {item.title}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          color: "#718096",
-                          fontFamily: "Montserrat, sans-serif",
-                          lineHeight: 1.6,
-                          flexGrow: 1,
-                        }}
-                      >
-                        {item.description}
-                      </Typography>
-                    </CardContent>
-                  </FeatureCard>
-                </motion.div>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </GradientBox>
+                  <CardContent sx={{ p: 5, textAlign: "center" }}>
 
-      {/* Testimonials Section */}
-      <Box sx={{ py: { xs: 6, md: 10 }, background: "linear-gradient(135deg, #56ccf2 0%, #2f80ed 100%)" }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: 8 }}>
-            <CategoryTag bgcolor="rgba(255,255,255,0.2)" color="white">
-              Experiencias
-            </CategoryTag>
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: "1.5rem", md: "3rem" }, // Ajuste para móvil
-                fontWeight: "bold",
-                color: "white",
-                mb: 3,
-                fontFamily: "Montserrat, sans-serif",
-              }}
-            >
-              Lo que dicen nuestros clientes
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                color: "rgba(255,255,255,0.9)",
-                maxWidth: "600px",
-                mx: "auto",
-                fontFamily: "Montserrat, sans-serif",
-              }}
-            >
-              Conoce las experiencias de quienes confían en nosotros
-            </Typography>
-          </Box>
+                    {/* Icono con Gradiente */}
+                    <Box sx={{
+                      width: 100,
+                      height: 100,
+                      borderRadius: "24px",
+                      background: feature.gradient,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      margin: "0 auto 24px auto",
+                      boxShadow: "0 16px 40px rgba(0,0,0,0.15)"
+                    }}>
+                      {feature.icon}
+                    </Box>
 
-          <Grid container spacing={4}>
-            {testimonials.map((testimonial, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <motion.div
-                  initial={{ opacity: 0, y: 50 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.2 }}
-                >
-                  <TestimonialCard>
-                    <CardContent sx={{ p: 4 }}>
-                      <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                        <Avatar
-                          src={testimonial.avatar}
-                          sx={{
-                            width: 60,
-                            height: 60,
-                            mr: 2,
-                            border: "3px solid #40E0D0",
-                            boxShadow: "0 4px 15px rgba(64, 224, 208, 0.3)",
-                          }}
-                        />
-                        <Box>
-                          <Typography
-                            variant="h6"
-                            sx={{ fontWeight: "bold", color: "#2D3748", fontFamily: "Montserrat, sans-serif" }}
-                          >
-                            {testimonial.name}
-                          </Typography>
-                          <Typography variant="body2" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif" }}>
-                            {testimonial.role}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      <Box sx={{ display: "flex", mb: 2 }}>
-                        {[...Array(testimonial.rating)].map((_, i) => (
-                          <StarIcon key={i} sx={{ color: "#F6AD55", fontSize: "1.2rem" }} />
-                        ))}
-                      </Box>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontStyle: "italic",
-                          color: "#4A5568",
-                          fontFamily: "Montserrat, sans-serif",
-                          lineHeight: 1.6,
-                        }}
-                      >
-                        "{testimonial.text}"
-                      </Typography>
-                    </CardContent>
-                  </TestimonialCard>
-                </motion.div>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 700,
+                        color: "#1a1a1a",
+                        mb: 2,
+                        fontSize: "1.3rem"
+                      }}
+                    >
+                      {feature.title}
+                    </Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: "#666",
+                        lineHeight: 1.7,
+                        fontSize: "1rem"
+                      }}
+                    >
+                      {feature.description}
+                    </Typography>
+                  </CardContent>
+                </Card>
               </Grid>
             ))}
           </Grid>
         </Container>
       </Box>
 
-      {/* Location Section */}
-      <GradientBox from="white" to="#F7FAFC">
+      {/* Testimonials Section Premium */}
+      <Box sx={{
+        py: { xs: 10, md: 15 },
+        background: "linear-gradient(135deg, #E6FFFA 0%, #B2F5EA 100%)"
+      }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: 8 }}>
-            <CategoryTag bgcolor="rgba(64, 224, 208, 0.1)" color="#2C7A7B">
-              Ubicación
-            </CategoryTag>
+
+          {/* Header */}
+          <Box sx={{ textAlign: "center", mb: 10 }}>
             <Typography
               variant="h2"
               sx={{
-                fontSize: { xs: "1.5rem", md: "3rem" }, // Ajuste para móvil
-                fontWeight: "bold",
-                color: "#2D3748",
+                fontSize: { xs: "2.5rem", md: "3.5rem" },
+                fontWeight: 700,
+                color: "#1a1a1a",
                 mb: 3,
-                fontFamily: "Montserrat, sans-serif",
+                letterSpacing: "-0.02em"
               }}
             >
-              Encuéntranos
+              Testimonios
+              <Box component="span" sx={{
+                background: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                ml: 2
+              }}>
+                Profesionales
+              </Box>
             </Typography>
             <Typography
-              variant="h6"
+              variant="h5"
               sx={{
-                color: "#718096",
+                color: "#666",
                 maxWidth: "600px",
                 mx: "auto",
-                fontFamily: "Montserrat, sans-serif",
+                lineHeight: 1.6,
+                fontWeight: 300
               }}
             >
-              Visítanos o contáctanos para más información
+              La confianza de profesionales médicos respalda nuestra excelencia
+            </Typography>
+          </Box>
+
+          {/* Grid de Testimonios */}
+          <Grid container spacing={4}>
+            {testimonials.map((testimonial, index) => (
+              <Grid item xs={12} md={4} key={index}>
+                <Card
+                  sx={{
+                    height: "100%",
+                    borderRadius: "24px",
+                    background: "white",
+                    boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    "&:hover": {
+                      transform: "translateY(-8px)",
+                      boxShadow: "0 30px 80px rgba(0,0,0,0.12)"
+                    }
+                  }}
+                >
+                  <CardContent sx={{ p: 5 }}>
+
+                    {/* Header del testimonio */}
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+                      <Avatar
+                        src={testimonial.avatar}
+                        sx={{
+                          width: 70,
+                          height: 70,
+                          mr: 3,
+                          border: "4px solid",
+                          borderImageSlice: 1,
+                          borderImageSource: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)"
+                        }}
+                      />
+                      <Box>
+                        <Typography
+                          variant="h6"
+                          sx={{
+                            fontWeight: 700,
+                            color: "#1a1a1a",
+                            mb: 0.5
+                          }}
+                        >
+                          {testimonial.name}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: "#666",
+                            fontSize: "0.9rem"
+                          }}
+                        >
+                          {testimonial.role}
+                        </Typography>
+                      </Box>
+                    </Box>
+
+                    {/* Rating */}
+                    <Rating
+                      value={testimonial.rating}
+                      readOnly
+                      sx={{
+                        mb: 3,
+                        "& .MuiRating-iconFilled": {
+                          color: "#ffc107"
+                        }
+                      }}
+                    />
+
+                    {/* Texto del testimonio */}
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: "#444",
+                        lineHeight: 1.7,
+                        fontStyle: "italic",
+                        fontSize: "1.1rem"
+                      }}
+                    >
+                      "{testimonial.text}"
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      </Box>
+
+      {/* Contact Section Elegante */}
+      <Box sx={{ py: { xs: 10, md: 15 }, bgcolor: "white" }}>
+        <Container maxWidth="lg">
+
+          {/* Header */}
+          <Box sx={{ textAlign: "center", mb: 10 }}>
+            <Typography
+              variant="h2"
+              sx={{
+                fontSize: { xs: "2.5rem", md: "3.5rem" },
+                fontWeight: 700,
+                color: "#1a1a1a",
+                mb: 3,
+                letterSpacing: "-0.02em"
+              }}
+            >
+              Nuestra
+              <Box component="span" sx={{
+                background: "linear-gradient(45deg, #40E0D0 0%, #4ECDC4 100%)",
+                backgroundClip: "text",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                ml: 2
+              }}>
+                Ubicación
+              </Box>
+            </Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                color: "#666",
+                maxWidth: "600px",
+                mx: "auto",
+                lineHeight: 1.6,
+                fontWeight: 300
+              }}
+            >
+              Visítanos o contáctanos para una atención personalizada
             </Typography>
           </Box>
 
           <Grid container spacing={6}>
+
+            {/* Mapa */}
             <Grid item xs={12} lg={8}>
               <Paper
-                elevation={10}
+                elevation={0}
                 sx={{
-                  borderRadius: "20px",
+                  borderRadius: "24px",
                   overflow: "hidden",
-                  height: { xs: 300, md: 500 }, // Ajuste para móvil
+                  height: { xs: 350, md: 500 },
+                  boxShadow: "0 20px 60px rgba(0,0,0,0.08)"
                 }}
               >
                 <iframe
@@ -653,155 +625,79 @@ const PaginaPrincipalMejorada = () => {
                 />
               </Paper>
             </Grid>
+
+            {/* Información de Contacto */}
             <Grid item xs={12} lg={4}>
-              <Box sx={{ height: "100%", display: "flex", flexDirection: "column", gap: 3 }}>
-                <FeatureCard bordercolor="#40E0D0">
-                  <CardContent>
+              <Stack spacing={4}>
+
+                {/* Dirección */}
+                <Card sx={{
+                  borderRadius: "20px",
+                  background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)",
+                  color: "white",
+                  boxShadow: "0 16px 40px rgba(64, 224, 208, 0.3)"
+                }}>
+                  <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                      <LocationOnIcon sx={{ color: "#40E0D0", mr: 2, fontSize: "2rem" }} />
-                      <Typography
-                        variant="h6"
-                        sx={{ fontWeight: "bold", color: "#2D3748", fontFamily: "Montserrat, sans-serif" }}
-                      >
+                      <LocationOnIcon sx={{ fontSize: 32, mr: 2 }} />
+                      <Typography variant="h6" fontWeight="bold">
                         Dirección
                       </Typography>
                     </Box>
-                    <Typography variant="body1" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif" }}>
-                      Velázques Ibarra, #12, Col.Centro, Huejutla de Reyes Centro, México, 43000
+                    <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.9 }}>
+                      Velázques Ibarra #12<br />
+                      Col. Centro<br />
+                      Huejutla de Reyes<br />
+                      México, CP 43000
                     </Typography>
                   </CardContent>
-                </FeatureCard>
-                <FeatureCard bordercolor="#f093fb">
-                  <CardContent>
+                </Card>
+
+                {/* Teléfono */}
+                <Card sx={{
+                  borderRadius: "20px",
+                  background: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)",
+                  color: "white",
+                  boxShadow: "0 16px 40px rgba(76, 205, 196, 0.3)"
+                }}>
+                  <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                      <PhoneIcon sx={{ color: "#f093fb", mr: 2, fontSize: "2rem" }} />
-                      <Typography
-                        variant="h6"
-                        sx={{ fontWeight: "bold", color: "#2D3748", fontFamily: "Montserrat, sans-serif" }}
-                      >
-                        Contacto
+                      <PhoneIcon sx={{ fontSize: 32, mr: 2 }} />
+                      <Typography variant="h6" fontWeight="bold">
+                        Teléfono
                       </Typography>
                     </Box>
-                    <Typography variant="body1" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif", mb: 1 }}>
-                      Tel: 7898964861 ó 2223308869
-                    </Typography>
-                    <Typography variant="body1" sx={{ color: "#718096", fontFamily: "Montserrat, sans-serif" }}>
-                      Email: gislive17@gmail.com
+                    <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.9 }}>
+                      789 896 4861<br />
+                      222 330 8869
                     </Typography>
                   </CardContent>
-                </FeatureCard>
-              </Box>
+                </Card>
+
+                {/* Email */}
+                <Card sx={{
+                  borderRadius: "20px",
+                  background: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)",
+                  color: "white",
+                  boxShadow: "0 16px 40px rgba(129, 230, 217, 0.3)"
+                }}>
+                  <CardContent sx={{ p: 4 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <EmailIcon sx={{ fontSize: 32, mr: 2 }} />
+                      <Typography variant="h6" fontWeight="bold">
+                        Email
+                      </Typography>
+                    </Box>
+                    <Typography variant="body1" sx={{ opacity: 0.9 }}>
+                      gislive17@gmail.com
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Stack>
             </Grid>
           </Grid>
         </Container>
-      </GradientBox>
-
-      {/* Chat Button */}
-      <IconButton
-        onClick={toggleChat}
-        sx={{
-          position: "fixed",
-          bottom: 24,
-          right: 24,
-          background: "linear-gradient(135deg, #40E0D0 0%, #4ECDC4 100%)",
-          color: "white",
-          width: 60,
-          height: 60,
-          boxShadow: "0 8px 25px rgba(64, 224, 208, 0.4)",
-          "&:hover": {
-            background: "linear-gradient(135deg, #37BFBF 0%, #45B7B8 100%)",
-            transform: "scale(1.1)",
-          },
-          transition: "all 0.3s ease",
-          zIndex: 1000,
-        }}
-      >
-        <ChatIcon sx={{ fontSize: "1.8rem" }} />
-      </IconButton>
-
-      {/* Chat Window */}
-      {chatOpen && (
-        <Paper
-          elevation={10}
-          sx={{
-            position: "fixed",
-            bottom: 100,
-            right: 24,
-            width: { xs: "85vw", sm: 350 }, // Ajuste para móvil
-            height: { xs: 300, sm: 400 }, // Reducir altura en móvil
-            borderRadius: "20px",
-            overflow: "hidden",
-            zIndex: 1000,
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <Box
-            sx={{
-              background: "linear-gradient(135deg, #40E0D0 0%, #4ECDC4 100%)",
-              color: "white",
-              p: 2,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <Typography variant="h6" sx={{ fontFamily: "Montserrat, sans-serif", fontWeight: "bold" }}>
-              Chat de Ayuda
-            </Typography>
-            <IconButton onClick={toggleChat} sx={{ color: "white" }}>
-              <CloseIcon />
-            </IconButton>
-          </Box>
-          <Box sx={{ flexGrow: 1, p: 2, overflowY: "auto", backgroundColor: "#F7FAFC" }}>
-            {messages.map((message, index) => (
-              <Box
-                key={index}
-                sx={{
-                  mb: 2,
-                  display: "flex",
-                  justifyContent: message.sender === "user" ? "flex-end" : "flex-start",
-                }}
-              >
-                <Paper
-                  sx={{
-                    p: 2,
-                    maxWidth: "80%",
-                    backgroundColor: message.sender === "user" ? "#40E0D0" : "white",
-                    color: message.sender === "user" ? "white" : "#2D3748",
-                    borderRadius: "15px",
-                  }}
-                >
-                  <Typography variant="body2" sx={{ fontFamily: "Montserrat, sans-serif" }}>
-                    {message.text}
-                  </Typography>
-                </Paper>
-              </Box>
-            ))}
-          </Box>
-          <Box sx={{ p: 2, backgroundColor: "white", borderTop: "1px solid #E2E8F0" }}>
-            <Box sx={{ display: "flex", gap: 1 }}>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder="Escribe tu mensaje..."
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                sx={{
-                  "& .MuiOutlinedInput-root": {
-                    borderRadius: "20px",
-                    fontFamily: "Montserrat, sans-serif",
-                  },
-                }}
-              />
-              <StyledButton variant="contained" onClick={sendMessage} sx={{ minWidth: "auto", px: 2 }}>
-                Enviar
-              </StyledButton>
-            </Box>
-          </Box>
-        </Paper>
-      )}
+      </Box>
     </Box>
   )
 }
