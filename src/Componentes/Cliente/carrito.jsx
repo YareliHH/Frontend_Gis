@@ -42,6 +42,10 @@ const Carrito = () => {
   const [detLoading, setDetLoading] = useState(false);
   const [recError, setRecError] = useState('');
   const [detError, setDetError] = useState('');
+
+  const [shippingCost, setShippingCost] = useState(0);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingError, setShippingError] = useState(null);
   
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -96,6 +100,47 @@ const Carrito = () => {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const parsePrice = (price) => {
+    const n = parseFloat(price);
+    return isNaN(n) ? 0 : n;
+  };
+
+  const total = carrito.reduce(
+    (acc, item) => acc + parsePrice(item.precio) * (parseInt(item.cantidad) || 1),
+    0
+  );
+
+  const calculateShippingCost = async () => {
+    if (!carrito.length) {
+      setShippingCost(0);
+      return;
+    }
+    try {
+      setShippingLoading(true);
+      setShippingError(null);
+      const totalQuantity = carrito.reduce((acc, item) => acc + parseInt(item.cantidad), 0);
+      const payload = {
+        num_items: carrito.length,
+        subtotal: total,
+        total_quantity: totalQuantity,
+        total: total,
+        estado: 0.0,
+      };
+      const { data } = await axios.post(
+        'https://flaskenvios.onrender.com/calcular_envio',
+        payload,
+        { timeout: 10000 }
+      );
+      setShippingCost(typeof data.costo_envio === 'number' ? data.costo_envio : 0);
+    } catch (err) {
+      console.error(err);
+      setShippingError(err.response?.data?.message || 'No se pudo calcular el costo de envío. Intenta de nuevo.');
+      setShippingCost(0);
+    } finally {
+      setShippingLoading(false);
     }
   };
 
@@ -155,11 +200,13 @@ const Carrito = () => {
   useEffect(() => {
     if (carrito.length) {
       fetchRecNames(carrito[0].nombre_producto);
+      calculateShippingCost();
     } else {
       setRecNames([]);
       setDetRecs([]);
+      setShippingCost(0);
     }
-  }, [carrito]);
+  }, [carrito, total]);
 
   useEffect(() => {
     if (recNames.length) {
@@ -211,29 +258,20 @@ const Carrito = () => {
     fetchCarrito();
   };
 
-  const parsePrice = (price) => {
-    const n = parseFloat(price);
-    return isNaN(n) ? 0 : n;
-  };
-
-  const total = carrito.reduce(
-    (acc, item) => acc + parsePrice(item.precio) * (parseInt(item.cantidad) || 1),
-    0
-  );
+  const totalWithShipping = total + (parseFloat(shippingCost) || 0);
 
   const handleEliminarProducto = (event, producto_id) => {
     event.preventDefault();
     eliminarProducto(producto_id);
   };
 
-  // Nuevo handler para "Realizar Compra"
   const handleRealizarCompra = () => {
     if (!carrito || carrito.length === 0 || total <= 0) {
       setError('El carrito está vacío o el total es inválido. Agrega productos para continuar.');
       return;
     }
     navigate('/cliente/envios', {
-      state: { carrito, total },
+      state: { carrito, total: totalWithShipping, shippingCost },
     });
   };
 
@@ -552,16 +590,42 @@ const Carrito = () => {
                       <Typography variant="body1" color="text.secondary">
                         Envío
                       </Typography>
-                      <Typography variant="body1" fontWeight="medium" color="success.main">
-                        Gratis
+                      {shippingLoading ? (
+                        <CircularProgress size={20} />
+                      ) : shippingError ? (
+                        <Typography variant="body1" color="error.main">
+                          Error
+                        </Typography>
+                      ) : (
+                        <Typography variant="body1" fontWeight="medium" color="success.main">
+                          ${shippingCost.toFixed(2)}
+                        </Typography>
+                      )}
+                    </Box>
+                    <Divider sx={{ my: 2 }} />
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                      <Typography variant="body1" color="text.secondary">
+                        Total
+                      </Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        ${totalWithShipping.toFixed(2)}
                       </Typography>
                     </Box>
+                    {shippingError && (
+                      <Alert severity="error" sx={{ mb: 2 }}>
+                        {shippingError}
+                        <Button size="small" onClick={calculateShippingCost}>
+                          Reintentar
+                        </Button>
+                      </Alert>
+                    )}
                     <Divider sx={{ my: 3 }} />
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       <Button
                         variant="contained"
                         fullWidth
                         onClick={handleRealizarCompra}
+                        disabled={shippingLoading || shippingError}
                         sx={{
                           borderRadius: 20,
                           textTransform: 'none',
