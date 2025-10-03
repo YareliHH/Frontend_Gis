@@ -131,25 +131,7 @@ const PaginaPrincipalMejorada = () => {
               <Box sx={{ textAlign: { xs: "center", lg: "left" } }}>
 
                 {/* Badge Superior */}
-                <Box sx={{
-                  display: "inline-block",
-                  padding: "12px 24px",
-                  borderRadius: "50px",
-                  background: "rgba(255, 255, 255, 0.15)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255, 255, 255, 0.2)",
-                  mb: 4
-                }}>
-                  <Typography sx={{
-                    color: "white",
-                    fontSize: "0.9rem",
-                    fontWeight: 600,
-                    letterSpacing: "1px",
-                    textTransform: "uppercase"
-                  }}>
-                    Productos Médicos Premium
-                  </Typography>
-                </Box>
+               
 
                 {/* Título Principal */}
                 <Typography
@@ -197,29 +179,6 @@ const PaginaPrincipalMejorada = () => {
                   spacing={3}
                   sx={{ justifyContent: { xs: "center", lg: "flex-start" } }}
                 >
-                  <Button
-                    component={Link}
-                    to="/Ofertasespeciales"
-                    variant="contained"
-                    size="large"
-                    sx={{
-                      py: 2,
-                      px: 6,
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                      borderRadius: "50px",
-                      textTransform: "none",
-                      background: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)",
-                      boxShadow: "0 8px 32px rgba(76, 205, 196, 0.4)",
-                      "&:hover": {
-                        transform: "translateY(-2px)",
-                        boxShadow: "0 12px 40px rgba(76, 205, 196, 0.5)"
-                      },
-                      transition: "all 0.3s ease"
-                    }}
-                  >
-                    Ofertas Especiales
-                  </Button>
                   <Button
                     component={Link}
                     to="/contacto"
@@ -420,137 +379,6 @@ const PaginaPrincipalMejorada = () => {
                       }}
                     >
                       {feature.description}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* Testimonials Section Premium */}
-      <Box sx={{
-        py: { xs: 10, md: 15 },
-        background: "linear-gradient(135deg, #E6FFFA 0%, #B2F5EA 100%)"
-      }}>
-        <Container maxWidth="lg">
-
-          {/* Header */}
-          <Box sx={{ textAlign: "center", mb: 10 }}>
-            <Typography
-              variant="h2"
-              sx={{
-                fontSize: { xs: "2.5rem", md: "3.5rem" },
-                fontWeight: 700,
-                color: "#1a1a1a",
-                mb: 3,
-                letterSpacing: "-0.02em"
-              }}
-            >
-              Testimonios
-              <Box component="span" sx={{
-                background: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)",
-                backgroundClip: "text",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                ml: 2
-              }}>
-                Profesionales
-              </Box>
-            </Typography>
-            <Typography
-              variant="h5"
-              sx={{
-                color: "#666",
-                maxWidth: "600px",
-                mx: "auto",
-                lineHeight: 1.6,
-                fontWeight: 300
-              }}
-            >
-              La confianza de profesionales médicos respalda nuestra excelencia
-            </Typography>
-          </Box>
-
-          {/* Grid de Testimonios */}
-          <Grid container spacing={4}>
-            {testimonials.map((testimonial, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Card
-                  sx={{
-                    height: "100%",
-                    borderRadius: "24px",
-                    background: "white",
-                    boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
-                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                    "&:hover": {
-                      transform: "translateY(-8px)",
-                      boxShadow: "0 30px 80px rgba(0,0,0,0.12)"
-                    }
-                  }}
-                >
-                  <CardContent sx={{ p: 5 }}>
-
-                    {/* Header del testimonio */}
-                    <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
-                      <Avatar
-                        src={testimonial.avatar}
-                        sx={{
-                          width: 70,
-                          height: 70,
-                          mr: 3,
-                          border: "4px solid",
-                          borderImageSlice: 1,
-                          borderImageSource: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)"
-                        }}
-                      />
-                      <Box>
-                        <Typography
-                          variant="h6"
-                          sx={{
-                            fontWeight: 700,
-                            color: "#1a1a1a",
-                            mb: 0.5
-                          }}
-                        >
-                          {testimonial.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          sx={{
-                            color: "#666",
-                            fontSize: "0.9rem"
-                          }}
-                        >
-                          {testimonial.role}
-                        </Typography>
-                      </Box>
-                    </Box>
-
-                    {/* Rating */}
-                    <Rating
-                      value={testimonial.rating}
-                      readOnly
-                      sx={{
-                        mb: 3,
-                        "& .MuiRating-iconFilled": {
-                          color: "#ffc107"
-                        }
-                      }}
-                    />
-
-                    {/* Texto del testimonio */}
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        color: "#444",
-                        lineHeight: 1.7,
-                        fontStyle: "italic",
-                        fontSize: "1.1rem"
-                      }}
-                    >
-                      "{testimonial.text}"
                     </Typography>
                   </CardContent>
                 </Card>
