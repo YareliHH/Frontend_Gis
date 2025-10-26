@@ -171,6 +171,15 @@ const EncabezadoAdministrativo = () => {
 
       ]
     },
+     {
+      id: 'Insignias',
+      title: 'Insignias',
+      icon: MonetizationOnIcon,
+      items: [
+        { icon: MonetizationOnIcon, text: 'Insignias', path: '/admin/insignias' },
+
+      ]
+    },
     {
       id: 'support',
       title: 'Soporte',
