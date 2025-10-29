@@ -71,6 +71,7 @@ export default function App() {
 
   useEffect(() => {
     obtenerInsignias();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ====== SNACKBAR ======

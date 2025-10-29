@@ -24,7 +24,6 @@ import FAQ from './Componentes/Inicio/FAQ.jsx';
 import Busqueda from './Componentes/Inicio/Busqueda.jsx';
 import Chat from './Componentes/Inicio/chat.jsx';
 import OfertasEspeciales from './Componentes/Inicio/OfertasEspeciales.jsx';
-import DetallesPrin from './Componentes/Inicio/DetallesPrin.jsx';
 import Breadcrumbs from './Componentes/Navegacion/Breadcrumbs.jsx';
 import DynamicBreadcrumbsDetector from './Componentes/Navegacion/DynamicBreadcrumbs.jsx';
 import SectionTracker from './Componentes/Navegacion/SectionTracker .jsx';
@@ -113,7 +112,7 @@ const App = () => {
             <Route path="/deslindelegal" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Deslinde legal' }]} /><DeslindeLegal /></LayoutEncabezado>} />
             <Route path="/terminoscondiciones" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Terminos y condiciones' }]} /><TerminosYCondiciones /></LayoutEncabezado>} />
             <Route path="/avisosprivacidad" element={<LayoutEncabezado><Breadcrumbs paths={[{ name: 'Inicio', path: '/' }, { name: 'Avisos de privacidad' }]} /> <AvisosdePrivacidad /> </LayoutEncabezado>} />
-            <Route path="/detalles" element={<DetallesPrin />} />
+
 
             {/* Páginas de error */}
             <Route path="/error-auth" element={<LayoutEncabezado><AuthError /></LayoutEncabezado>} />
