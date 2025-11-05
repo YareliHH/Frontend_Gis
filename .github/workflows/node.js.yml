@@ -36,7 +36,9 @@ jobs:
         continue-on-error: true
 
       - name: Build project
-        run: CI=false npm run build --if-present
+        run: npm run build --if-present
+        env:
+          CI: false
 
       - name: Run unit tests with coverage
         run: npm run test:ci || true
@@ -70,57 +72,31 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
-  # Nuevo job para pruebas E2E con Cypress
-  cypress-tests:
+  pruebas-integracion:
+    name: Pruebas de Integración
     runs-on: ubuntu-latest
-    needs: build  # Espera a que termine el build
+    needs: build
     
-    strategy:
-      matrix:
-        node-version: [20.x]
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
           cache: 'npm'
-
-      - name: Cypress run
-        uses: cypress-io/github-action@v6
-        with:
-          build: CI=false npm run build  # ← Cambia esto
-          start: npm start
-          wait-on: 'http://localhost:3000'
-          wait-on-timeout: 120
-          browser: chrome
-          record: false
+      
+      - run: npm ci
+      
+      - name: Ejecutar pruebas de integración
+        run: npm test -- --testPathPattern="integration.test.jsx"
         env:
-          CI: false  # ← Cambia de true a false
-
-      - name: Upload Cypress screenshots
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-          retention-days: 30
-
-      - name: Upload Cypress videos
+          NODE_ENV: test
+          CI: true
+      
+      - name: Subir cobertura de integración
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-videos
-          path: cypress/videos
-          retention-days: 30
-
-      - name: Upload Cypress coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: cypress-coverage
+          name: integration-coverage
           path: coverage/
           retention-days: 30
