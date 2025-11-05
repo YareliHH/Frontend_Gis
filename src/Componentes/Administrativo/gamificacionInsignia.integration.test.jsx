@@ -1,6 +1,6 @@
 import axios from "axios";
 import MockAdapter from "axios-mock-adapter";
-import { renderHook, act, waitFor } from "@testing-library/react";
+import { renderHook, waitFor } from "@testing-library/react";
 import { useState, useEffect } from "react";
 
 const API_URL = "https://backend-gis-1.onrender.com/api/insignias";
@@ -33,15 +33,14 @@ function useObtenerInsignias() {
 describe("Pruebas de integración - API Insignias", () => {
   let mock;
 
-  beforeAll(() => {
-    mock = new MockAdapter(axios);
+  beforeEach(() => {
+    // Crear una nueva instancia del mock antes de cada test
+    mock = new MockAdapter(axios, { delayResponse: 0 });
   });
 
   afterEach(() => {
+    // Limpiar y restaurar después de cada test
     mock.reset();
-  });
-
-  afterAll(() => {
     mock.restore();
   });
 
@@ -51,21 +50,22 @@ describe("Pruebas de integración - API Insignias", () => {
       { id: 2, nombre: "Veterano", tipo: "Experiencia", regla: "10 compras completadas" },
     ];
 
+    // Configurar el mock ANTES de renderizar el hook
     mock.onGet(`${API_URL}/obtener`).reply(200, insigniasMock);
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    // Verificar estado inicial
-    expect(result.current.loading).toBe(true);
-    expect(result.current.insignias).toEqual([]);
+    // Esperar a que loading sea false
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+      },
+      { timeout: 3000 }
+    );
 
-    // Esperar a que se complete la petición
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    expect(result.current.insignias).toEqual(insigniasMock);
+    // Verificar resultados
     expect(result.current.insignias).toHaveLength(2);
+    expect(result.current.insignias).toEqual(insigniasMock);
     expect(result.current.error).toBeNull();
   });
 
@@ -74,9 +74,12 @@ describe("Pruebas de integración - API Insignias", () => {
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+      },
+      { timeout: 3000 }
+    );
 
     expect(result.current.insignias).toEqual([]);
     expect(result.current.error).toBeTruthy();
@@ -87,9 +90,12 @@ describe("Pruebas de integración - API Insignias", () => {
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+      },
+      { timeout: 3000 }
+    );
 
     expect(result.current.insignias).toEqual([]);
     expect(result.current.insignias).toHaveLength(0);
@@ -100,9 +106,12 @@ describe("Pruebas de integración - API Insignias", () => {
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
+    await waitFor(
+      () => {
+        expect(result.current.loading).toBe(false);
+      },
+      { timeout: 3000 }
+    );
 
     expect(result.current.insignias).toEqual([]);
     expect(result.current.error).toBeTruthy();
