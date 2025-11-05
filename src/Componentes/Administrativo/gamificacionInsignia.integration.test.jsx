@@ -1,7 +1,9 @@
-import axios from "axios";
-import MockAdapter from "axios-mock-adapter";
 import { renderHook, waitFor } from "@testing-library/react";
 import { useState, useEffect } from "react";
+import axios from "axios";
+
+// Mock de axios
+jest.mock("axios");
 
 const API_URL = "https://backend-gis-1.onrender.com/api/insignias";
 
@@ -31,17 +33,10 @@ function useObtenerInsignias() {
 }
 
 describe("Pruebas de integración - API Insignias", () => {
-  let mock;
-
+  
   beforeEach(() => {
-    // Crear una nueva instancia del mock antes de cada test
-    mock = new MockAdapter(axios, { delayResponse: 0 });
-  });
-
-  afterEach(() => {
-    // Limpiar y restaurar después de cada test
-    mock.reset();
-    mock.restore();
+    // Limpiar todos los mocks antes de cada test
+    jest.clearAllMocks();
   });
 
   test("Debe obtener correctamente las insignias desde la API", async () => {
@@ -50,8 +45,51 @@ describe("Pruebas de integración - API Insignias", () => {
       { id: 2, nombre: "Veterano", tipo: "Experiencia", regla: "10 compras completadas" },
     ];
 
-    // Configurar el mock ANTES de renderizar el hook
-    mock.onGet(`${API_URL}/obtener`).reply(200, insigniasMock);
+    // Configurar el mock para que resuelva con los datos
+    axios.get.mockResolvedValueOnce({ data: insigniasMock });
+
+    const { result } = renderHook(() => useObtenerInsignias());
+
+    // Esperar a que las insignias se carguen
+    await waitFor(
+      () => {
+        expect(result.current.insignias).toHaveLength(2);
+      },
+      { timeout: 5000 }
+    );
+
+    // Verificar que los datos son correctos
+    expect(result.current.insignias).toEqual(insigniasMock);
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBeNull();
+    
+    // Verificar que se llamó con la URL correcta
+    expect(axios.get).toHaveBeenCalledWith(`${API_URL}/obtener`);
+  });
+
+  test("Debe manejar errores al obtener insignias", async () => {
+    // Configurar el mock para que rechace con un error
+    const errorMessage = "Request failed with status code 500";
+    axios.get.mockRejectedValueOnce(new Error(errorMessage));
+
+    const { result } = renderHook(() => useObtenerInsignias());
+
+    // Esperar a que el error se establezca
+    await waitFor(
+      () => {
+        expect(result.current.error).not.toBeNull();
+      },
+      { timeout: 5000 }
+    );
+
+    expect(result.current.insignias).toEqual([]);
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).toBe(errorMessage);
+  });
+
+  test("Debe manejar respuesta vacía de la API", async () => {
+    // Configurar mock para devolver array vacío
+    axios.get.mockResolvedValueOnce({ data: [] });
 
     const { result } = renderHook(() => useObtenerInsignias());
 
@@ -60,60 +98,32 @@ describe("Pruebas de integración - API Insignias", () => {
       () => {
         expect(result.current.loading).toBe(false);
       },
-      { timeout: 3000 }
-    );
-
-    // Verificar resultados
-    expect(result.current.insignias).toHaveLength(2);
-    expect(result.current.insignias).toEqual(insigniasMock);
-    expect(result.current.error).toBeNull();
-  });
-
-  test("Debe manejar errores al obtener insignias", async () => {
-    mock.onGet(`${API_URL}/obtener`).reply(500);
-
-    const { result } = renderHook(() => useObtenerInsignias());
-
-    await waitFor(
-      () => {
-        expect(result.current.loading).toBe(false);
-      },
-      { timeout: 3000 }
-    );
-
-    expect(result.current.insignias).toEqual([]);
-    expect(result.current.error).toBeTruthy();
-  });
-
-  test("Debe manejar respuesta vacía de la API", async () => {
-    mock.onGet(`${API_URL}/obtener`).reply(200, []);
-
-    const { result } = renderHook(() => useObtenerInsignias());
-
-    await waitFor(
-      () => {
-        expect(result.current.loading).toBe(false);
-      },
-      { timeout: 3000 }
+      { timeout: 5000 }
     );
 
     expect(result.current.insignias).toEqual([]);
     expect(result.current.insignias).toHaveLength(0);
+    expect(result.current.error).toBeNull();
   });
 
   test("Debe manejar timeout de la API", async () => {
-    mock.onGet(`${API_URL}/obtener`).timeout();
+    // Configurar mock para timeout
+    const timeoutError = new Error("timeout of 5000ms exceeded");
+    timeoutError.code = "ECONNABORTED";
+    axios.get.mockRejectedValueOnce(timeoutError);
 
     const { result } = renderHook(() => useObtenerInsignias());
 
+    // Esperar a que el error de timeout se establezca
     await waitFor(
       () => {
-        expect(result.current.loading).toBe(false);
+        expect(result.current.error).not.toBeNull();
       },
-      { timeout: 3000 }
+      { timeout: 5000 }
     );
 
+    expect(result.current.loading).toBe(false);
     expect(result.current.insignias).toEqual([]);
-    expect(result.current.error).toBeTruthy();
+    expect(result.current.error).toContain("timeout");
   });
 });
