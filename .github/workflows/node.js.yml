@@ -137,5 +137,5 @@ jobs:
           lftp -c "
           set ssl:verify-certificate no;
           open -u $HOSTINGER_USER,$HOSTINGER_PASS $HOSTINGER_HOST;
-          mirror -R ./build /public_html/romero --delete --verbose --exclude-glob=.htaccess
+          mirror -R ./build /public_html/ --delete --verbose --exclude-glob=.htaccess
           "
