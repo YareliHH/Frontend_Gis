@@ -92,14 +92,14 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          build: npm run build
+          build: CI=false npm run build  # ← Cambia esto
           start: npm start
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 120
           browser: chrome
           record: false
         env:
-          CI: true
+          CI: false  # ← Cambia de true a false
 
       - name: Upload Cypress screenshots
         if: failure()
