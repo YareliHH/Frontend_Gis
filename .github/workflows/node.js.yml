@@ -11,7 +11,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  build:
+  # 1️⃣ PRIMERO: Pruebas Unitarias
+  test-unitarias:
+    name: Pruebas Unitarias
     runs-on: ubuntu-latest
 
     strategy:
@@ -35,13 +37,8 @@ jobs:
         run: npm run lint --if-present
         continue-on-error: true
 
-      - name: Build project
-        run: npm run build --if-present
-        env:
-          CI: false
-
       - name: Run unit tests with coverage
-        run: npm run test:ci || true
+        run: npm run test:ci
 
       - name: Upload coverage reports to Codecov
         if: matrix.node-version == '20.x'
@@ -72,10 +69,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
+  # 2️⃣ SEGUNDO: Pruebas de Integración
   pruebas-integracion:
     name: Pruebas de Integración
     runs-on: ubuntu-latest
-    needs: build
+    needs: test-unitarias  # 👈 Espera a que las pruebas unitarias terminen
     
     steps:
       - uses: actions/checkout@v4
@@ -101,10 +99,47 @@ jobs:
           path: coverage/
           retention-days: 30
 
+  # 3️⃣ TERCERO: Build
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    needs: pruebas-integracion  # 👈 Espera a que las pruebas de integración terminen
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+        env:
+          CI: false
+
+      - name: Upload build artifact
+        if: matrix.node-version == '20.x'
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifact
+          path: build/
+          retention-days: 7
+
+  # 4️⃣ CUARTO: Deploy
   deploy-hostinger:
     name: Deploy a Hostinger vía SFTP
     runs-on: ubuntu-latest
-    needs: [build, pruebas-integracion]
+    needs: build  # 👈 Espera a que el build termine
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     
     steps:
