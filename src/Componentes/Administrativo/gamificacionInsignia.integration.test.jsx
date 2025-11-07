@@ -7,6 +7,7 @@ jest.mock("axios");
 
 const API_URL = "https://backend-gis-1.onrender.com/api/insignias";
 
+// Hook real
 function useObtenerInsignias() {
   const [insignias, setInsignias] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -42,7 +43,7 @@ describe("Pruebas de integración - API Insignias", () => {
   test("Debe obtener correctamente las insignias desde la API", async () => {
     const insigniasMock = [
       { id: 1, nombre: "Explorador", tipo: "Logro", regla: "Visitar 5 lugares" },
-      { id: 2, nombre: "Veterano", tipo: "Experiencia", regla: "10 compras completadas" },
+      { id: 2, nombre: "Veteranoooo", tipo: "Experiencia", regla: "10 compras completadas" },
     ];
 
     axios.get.mockResolvedValueOnce({ data: insigniasMock });
