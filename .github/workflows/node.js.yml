@@ -59,7 +59,7 @@ jobs:
           path: |
             coverage/
             junit.xml
-          retention-days: 30
+          retention-days: 10
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request' && matrix.node-version == '20.x'
