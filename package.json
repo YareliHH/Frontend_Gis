@@ -41,11 +41,12 @@
   },
   "scripts": {
     "start": "react-scripts start",
-     "test": "react-scripts test",
+    "test": "react-scripts test --watchAll=false",
+    "prebuild": "npm test",
     "build": "react-scripts build",
     "test:coverage": "react-scripts test --coverage --watchAll=false",
     "test:integration": "react-scripts test --testPathPattern='integration.test.jsx' --watchAll=false",
-     "test:ci": "CI=true react-scripts test --coverage --coverageThreshold='{}'",
+    "test:ci": "CI=true react-scripts test --coverage --coverageThreshold='{}'",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -99,10 +100,10 @@
     ],
     "coverageThreshold": {
       "global": {
-       "branches": 3,
-      "functions": 3,
-      "lines": 7,
-      "statements": 6
+        "branches": 3,
+        "functions": 3,
+        "lines": 7,
+        "statements": 6
       }
     }
   }
