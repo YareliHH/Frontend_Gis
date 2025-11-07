@@ -33,15 +33,16 @@ function useObtenerInsignias() {
 }
 
 describe("Pruebas de integración - API Insignias", () => {
-
+  
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
+  // ✅ TEST PRINCIPAL: marca error si editas id, nombre, tipo o regla
   test("Debe obtener correctamente las insignias desde la API", async () => {
     const insigniasMock = [
       { id: 1, nombre: "Explorador", tipo: "Logro", regla: "Visitar 5 lugares" },
-      { id: 2, nombre: "Veterano", tipo: "Experiencia", regla: "10 compras completadas" }
+      { id: 2, nombre: "Veterano", tipo: "Experiencia", regla: "10 compras completadas" },
     ];
 
     axios.get.mockResolvedValueOnce({ data: insigniasMock });
@@ -49,42 +50,33 @@ describe("Pruebas de integración - API Insignias", () => {
     const { result } = renderHook(() => useObtenerInsignias());
 
     await waitFor(() => {
-      expect(result.current.insignias).toHaveLength(2);
+      expect(result.current.loading).toBe(false);
     });
 
-    // ✅ Validar estructura y tipos
-    result.current.insignias.forEach((insignia) => {
-      expect(typeof insignia.id).toBe("number");
-      expect(typeof insignia.nombre).toBe("string");
-      expect(typeof insignia.tipo).toBe("string");
-      expect(typeof insignia.regla).toBe("string");
+    // ✅ Validación exacta (si cambias cualquier valor → falla)
+    expect(result.current.insignias).toEqual(insigniasMock);
 
-      expect(insignia.nombre.length).toBeGreaterThan(0);
-      expect(insignia.regla.length).toBeGreaterThan(0);
+    // ✅ Validación de estructura (por si agregan o quitan campos)
+    expect(result.current.insignias).toMatchObject([
+      {
+        id: expect.any(Number),
+        nombre: expect.any(String),
+        tipo: expect.any(String),
+        regla: expect.any(String),
+      },
+      {
+        id: expect.any(Number),
+        nombre: expect.any(String),
+        tipo: expect.any(String),
+        regla: expect.any(String),
+      },
+    ]);
 
-      // ✅ Tipos válidos
-      expect(["Logro", "Experiencia", "Nivel"]).toContain(insignia.tipo);
-    });
-
-    // ✅ Validación exacta (fallará si editas algo)
-    expect(result.current.insignias[0]).toEqual({
-      id: 1,
-      nombre: "Explorador",
-      tipo: "Logro",
-      regla: "Visitar 5 lugares"
-    });
-
-    expect(result.current.insignias[1]).toEqual({
-      id: 2,
-      nombre: "Veterano",
-      tipo: "Experiencia",
-      regla: "10 compras completadas"
-    });
-
-    expect(result.current.loading).toBe(false);
     expect(result.current.error).toBeNull();
+    expect(axios.get).toHaveBeenCalledWith(`${API_URL}/obtener`);
   });
 
+  // ✅ Error del servidor
   test("Debe manejar errores al obtener insignias", async () => {
     const errorMessage = "Request failed with status code 500";
     axios.get.mockRejectedValueOnce(new Error(errorMessage));
@@ -100,6 +92,7 @@ describe("Pruebas de integración - API Insignias", () => {
     expect(result.current.error).toBe(errorMessage);
   });
 
+  // ✅ API sin datos
   test("Debe manejar respuesta vacía de la API", async () => {
     axios.get.mockResolvedValueOnce({ data: [] });
 
@@ -114,9 +107,11 @@ describe("Pruebas de integración - API Insignias", () => {
     expect(result.current.error).toBeNull();
   });
 
+  // ✅ Timeout
   test("Debe manejar timeout de la API", async () => {
     const timeoutError = new Error("timeout of 5000ms exceeded");
     timeoutError.code = "ECONNABORTED";
+
     axios.get.mockRejectedValueOnce(timeoutError);
 
     const { result } = renderHook(() => useObtenerInsignias());
