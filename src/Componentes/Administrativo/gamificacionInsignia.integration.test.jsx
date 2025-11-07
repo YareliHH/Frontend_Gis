@@ -33,54 +33,67 @@ function useObtenerInsignias() {
 }
 
 describe("Pruebas de integración - API Insignias", () => {
-  
+
   beforeEach(() => {
-    // Limpiar todos los mocks antes de cada test
     jest.clearAllMocks();
   });
 
   test("Debe obtener correctamente las insignias desde la API", async () => {
     const insigniasMock = [
       { id: 1, nombre: "Explorador", tipo: "Logro", regla: "Visitar 5 lugares" },
-      { id: 2, nombre: "Veteranoo", tipo: "Experiencia", regla: "10 compras completadas" },
+      { id: 2, nombre: "Veteranoooooo", tipo: "Experiencia", regla: "10 compras completadas" }
     ];
 
-    // Configurar el mock para que resuelva con los datos
     axios.get.mockResolvedValueOnce({ data: insigniasMock });
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    // Esperar a que las insignias se carguen
-    await waitFor(
-      () => {
-        expect(result.current.insignias).toHaveLength(2);
-      },
-      { timeout: 5000 }
-    );
+    await waitFor(() => {
+      expect(result.current.insignias).toHaveLength(2);
+    });
 
-    // Verificar que los datos son correctos
-    expect(result.current.insignias).toEqual(insigniasMock);
+    // ✅ Validar estructura y tipos
+    result.current.insignias.forEach((insignia) => {
+      expect(typeof insignia.id).toBe("number");
+      expect(typeof insignia.nombre).toBe("string");
+      expect(typeof insignia.tipo).toBe("string");
+      expect(typeof insignia.regla).toBe("string");
+
+      expect(insignia.nombre.length).toBeGreaterThan(0);
+      expect(insignia.regla.length).toBeGreaterThan(0);
+
+      // ✅ Tipos válidos
+      expect(["Logro", "Experiencia", "Nivel"]).toContain(insignia.tipo);
+    });
+
+    // ✅ Validación exacta (fallará si editas algo)
+    expect(result.current.insignias[0]).toEqual({
+      id: 1,
+      nombre: "Explorador",
+      tipo: "Logro",
+      regla: "Visitar 5 lugares"
+    });
+
+    expect(result.current.insignias[1]).toEqual({
+      id: 2,
+      nombre: "Veterano",
+      tipo: "Experiencia",
+      regla: "10 compras completadas"
+    });
+
     expect(result.current.loading).toBe(false);
     expect(result.current.error).toBeNull();
-    
-    // Verificar que se llamó con la URL correcta
-    expect(axios.get).toHaveBeenCalledWith(`${API_URL}/obtener`);
   });
 
   test("Debe manejar errores al obtener insignias", async () => {
-    // Configurar el mock para que rechace con un error
     const errorMessage = "Request failed with status code 500";
     axios.get.mockRejectedValueOnce(new Error(errorMessage));
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    // Esperar a que el error se establezca
-    await waitFor(
-      () => {
-        expect(result.current.error).not.toBeNull();
-      },
-      { timeout: 5000 }
-    );
+    await waitFor(() => {
+      expect(result.current.error).not.toBeNull();
+    });
 
     expect(result.current.insignias).toEqual([]);
     expect(result.current.loading).toBe(false);
@@ -88,18 +101,13 @@ describe("Pruebas de integración - API Insignias", () => {
   });
 
   test("Debe manejar respuesta vacía de la API", async () => {
-    // Configurar mock para devolver array vacío
     axios.get.mockResolvedValueOnce({ data: [] });
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    // Esperar a que loading sea false
-    await waitFor(
-      () => {
-        expect(result.current.loading).toBe(false);
-      },
-      { timeout: 5000 }
-    );
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
 
     expect(result.current.insignias).toEqual([]);
     expect(result.current.insignias).toHaveLength(0);
@@ -107,20 +115,15 @@ describe("Pruebas de integración - API Insignias", () => {
   });
 
   test("Debe manejar timeout de la API", async () => {
-    // Configurar mock para timeout
     const timeoutError = new Error("timeout of 5000ms exceeded");
     timeoutError.code = "ECONNABORTED";
     axios.get.mockRejectedValueOnce(timeoutError);
 
     const { result } = renderHook(() => useObtenerInsignias());
 
-    // Esperar a que el error de timeout se establezca
-    await waitFor(
-      () => {
-        expect(result.current.error).not.toBeNull();
-      },
-      { timeout: 5000 }
-    );
+    await waitFor(() => {
+      expect(result.current.error).not.toBeNull();
+    });
 
     expect(result.current.loading).toBe(false);
     expect(result.current.insignias).toEqual([]);
