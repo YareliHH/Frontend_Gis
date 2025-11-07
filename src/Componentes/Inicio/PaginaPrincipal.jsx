@@ -10,14 +10,12 @@ import {
   Paper,
   useMediaQuery,
   useTheme,
-  Avatar,
   Card,
   CardContent,
-  Rating,
-  Stack,
-  Divider
+  Stack
 } from "@mui/material"
 import { Link } from "react-router-dom"
+
 // Icons
 import LocalShippingIcon from "@mui/icons-material/LocalShipping"
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser"
@@ -27,7 +25,10 @@ import LocationOnIcon from "@mui/icons-material/LocationOn"
 import PhoneIcon from "@mui/icons-material/Phone"
 import EmailIcon from "@mui/icons-material/Email"
 
-// Importar las imágenes locales de los productos
+// Componentes
+import Geocalizacion from "./geocalizacion.jsx"
+
+// Importar imágenes locales
 import img1 from "../imagenes/img1.jpg"
 import img2 from "../imagenes/img2.jpg"
 import img3 from "../imagenes/img3.jpg"
@@ -42,7 +43,6 @@ const PaginaPrincipalMejorada = () => {
 
   const images = [img1, img2, img3, img4, img5, img6]
 
-  // Auto cambio de imagen cada 5 segundos
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length)
@@ -77,34 +77,10 @@ const PaginaPrincipalMejorada = () => {
     }
   ]
 
-  const testimonials = [
-    {
-      name: "Dra. María González",
-      role: "Directora Médica",
-      text: "La calidad de los productos es excepcional. Confiabilidad total en cada compra.",
-      rating: 5,
-      avatar: "https://img.freepik.com/foto-gratis/mujer-joven-hermosa-sueter-rosa-calido-aspecto-natural-sonriente-retrato-aislado-cabello-largo_285396-896.jpg"
-    },
-    {
-      name: "Dr. Carlos Rodríguez",
-      role: "Cirujano Especialista",
-      text: "Instrumentos de primera calidad. Los recomiendo para uso profesional médico.",
-      rating: 5,
-      avatar: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/5KCVGAGSP5HFJA7KMALNP7ITS4.jpg"
-    },
-    {
-      name: "Enf. Ana Martínez",
-      role: "Supervisora de Enfermería",
-      text: "Servicio impecable y productos que superan las expectativas. Altamente recomendable.",
-      rating: 5,
-      avatar: "https://d5tnfl9agh5vb.cloudfront.net/uploads/2016/11/que-hace-una-enfermera.jpg"
-    }
-  ]
-
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#FAFAFA" }}>
-
-      {/* Hero Section Mejorado */}
+      
+      {/* Hero Section */}
       <Box sx={{
         background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)",
         minHeight: "100vh",
@@ -125,15 +101,10 @@ const PaginaPrincipalMejorada = () => {
       }}>
         <Container maxWidth="xl" sx={{ position: "relative", zIndex: 2, py: 8 }}>
           <Grid container spacing={8} alignItems="center" sx={{ minHeight: "80vh" }}>
-
-            {/* Contenido Principal */}
+            
+            {/* Contenido principal */}
             <Grid item xs={12} lg={6}>
               <Box sx={{ textAlign: { xs: "center", lg: "left" } }}>
-
-                {/* Badge Superior */}
-               
-
-                {/* Título Principal */}
                 <Typography
                   variant="h1"
                   sx={{
@@ -157,7 +128,6 @@ const PaginaPrincipalMejorada = () => {
                   </Box>
                 </Typography>
 
-                {/* Subtítulo */}
                 <Typography
                   variant="h4"
                   sx={{
@@ -173,7 +143,6 @@ const PaginaPrincipalMejorada = () => {
                   Especialistas en equipamiento clínico y quirúrgico de alta precisión para profesionales de la salud
                 </Typography>
 
-                {/* Botones de Acción */}
                 <Stack
                   direction={{ xs: "column", sm: "row" }}
                   spacing={3}
@@ -209,14 +178,9 @@ const PaginaPrincipalMejorada = () => {
               </Box>
             </Grid>
 
-            {/* Carrusel de Imágenes Elegante */}
+            {/* Carrusel de imágenes */}
             <Grid item xs={12} lg={6}>
-              <Box sx={{
-                position: "relative",
-                display: "flex",
-                justifyContent: "center",
-                mt: { xs: 6, lg: 0 }
-              }}>
+              <Box sx={{ position: "relative", display: "flex", justifyContent: "center", mt: { xs: 6, lg: 0 } }}>
                 <Paper
                   elevation={0}
                   sx={{
@@ -248,18 +212,14 @@ const PaginaPrincipalMejorada = () => {
                         transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
                       }}
                     />
-
-                    {/* Indicadores minimalistas */}
-                    <Box
-                      sx={{
-                        position: "absolute",
-                        bottom: 20,
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        display: "flex",
-                        gap: 1
-                      }}
-                    >
+                    <Box sx={{
+                      position: "absolute",
+                      bottom: 20,
+                      left: "50%",
+                      transform: "translateX(-50%)",
+                      display: "flex",
+                      gap: 1
+                    }}>
                       {images.map((_, index) => (
                         <Box
                           key={index}
@@ -283,11 +243,9 @@ const PaginaPrincipalMejorada = () => {
         </Container>
       </Box>
 
-      {/* Features Section Rediseñado */}
+      {/* Features Section */}
       <Box sx={{ py: { xs: 10, md: 15 }, bgcolor: "white" }}>
         <Container maxWidth="lg">
-
-          {/* Header de Sección */}
           <Box sx={{ textAlign: "center", mb: 10 }}>
             <Typography
               variant="h2"
@@ -324,7 +282,6 @@ const PaginaPrincipalMejorada = () => {
             </Typography>
           </Box>
 
-          {/* Grid de Features */}
           <Grid container spacing={4}>
             {features.map((feature, index) => (
               <Grid item xs={12} sm={6} lg={3} key={index}>
@@ -332,7 +289,6 @@ const PaginaPrincipalMejorada = () => {
                   sx={{
                     height: "100%",
                     borderRadius: "24px",
-                    border: "none",
                     background: "white",
                     boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
                     transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
@@ -343,8 +299,6 @@ const PaginaPrincipalMejorada = () => {
                   }}
                 >
                   <CardContent sx={{ p: 5, textAlign: "center" }}>
-
-                    {/* Icono con Gradiente */}
                     <Box sx={{
                       width: 100,
                       height: 100,
@@ -358,26 +312,10 @@ const PaginaPrincipalMejorada = () => {
                     }}>
                       {feature.icon}
                     </Box>
-
-                    <Typography
-                      variant="h5"
-                      sx={{
-                        fontWeight: 700,
-                        color: "#1a1a1a",
-                        mb: 2,
-                        fontSize: "1.3rem"
-                      }}
-                    >
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#1a1a1a", mb: 2, fontSize: "1.3rem" }}>
                       {feature.title}
                     </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        color: "#666",
-                        lineHeight: 1.7,
-                        fontSize: "1rem"
-                      }}
-                    >
+                    <Typography variant="body1" sx={{ color: "#666", lineHeight: 1.7, fontSize: "1rem" }}>
                       {feature.description}
                     </Typography>
                   </CardContent>
@@ -388,11 +326,9 @@ const PaginaPrincipalMejorada = () => {
         </Container>
       </Box>
 
-      {/* Contact Section Elegante */}
+      {/* Contact Section */}
       <Box sx={{ py: { xs: 10, md: 15 }, bgcolor: "white" }}>
         <Container maxWidth="lg">
-
-          {/* Header */}
           <Box sx={{ textAlign: "center", mb: 10 }}>
             <Typography
               variant="h2"
@@ -417,20 +353,13 @@ const PaginaPrincipalMejorada = () => {
             </Typography>
             <Typography
               variant="h5"
-              sx={{
-                color: "#666",
-                maxWidth: "600px",
-                mx: "auto",
-                lineHeight: 1.6,
-                fontWeight: 300
-              }}
+              sx={{ color: "#666", maxWidth: "600px", mx: "auto", lineHeight: 1.6, fontWeight: 300 }}
             >
               Visítanos o contáctanos para una atención personalizada
             </Typography>
           </Box>
 
           <Grid container spacing={6}>
-
             {/* Mapa */}
             <Grid item xs={12} lg={8}>
               <Paper
@@ -442,83 +371,44 @@ const PaginaPrincipalMejorada = () => {
                   boxShadow: "0 20px 60px rgba(0,0,0,0.08)"
                 }}
               >
-                <iframe
-                  title="Ubicación GisLive Boutique"
-                  width="100%"
-                  height="100%"
-                  frameBorder="0"
-                  style={{ border: 0 }}
-                  src="https://www.google.com/maps/embed?pb=!3m2!1ses!2smx!4v1738279572591!5m2!1ses!2smx!6m8!1m7!1sfptv_59OOGwWnICTLujcAQ!2m2!1d21.14024956987548!2d-98.42112377080686!3f282.3148371518607!4f7.436404529233116!5f0.7820865974627469"
-                  allowFullScreen
-                />
+                <Geocalizacion lat={21.140249} lng={-98.421124} zoom={15} width="100%" height="100%" />
               </Paper>
             </Grid>
 
             {/* Información de Contacto */}
             <Grid item xs={12} lg={4}>
               <Stack spacing={4}>
-
-                {/* Dirección */}
-                <Card sx={{
-                  borderRadius: "20px",
-                  background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)",
-                  color: "white",
-                  boxShadow: "0 16px 40px rgba(64, 224, 208, 0.3)"
-                }}>
+                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)", color: "white", boxShadow: "0 16px 40px rgba(64, 224, 208, 0.3)" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <LocationOnIcon sx={{ fontSize: 32, mr: 2 }} />
-                      <Typography variant="h6" fontWeight="bold">
-                        Dirección
-                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">Dirección</Typography>
                     </Box>
                     <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.9 }}>
-                      Velázques Ibarra #12<br />
-                      Col. Centro<br />
-                      Huejutla de Reyes<br />
-                      México, CP 43000
+                      Velázques Ibarra #12<br />Col. Centro<br />Huejutla de Reyes<br />México, CP 43000
                     </Typography>
                   </CardContent>
                 </Card>
 
-                {/* Teléfono */}
-                <Card sx={{
-                  borderRadius: "20px",
-                  background: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)",
-                  color: "white",
-                  boxShadow: "0 16px 40px rgba(76, 205, 196, 0.3)"
-                }}>
+                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)", color: "white", boxShadow: "0 16px 40px rgba(76, 205, 196, 0.3)" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <PhoneIcon sx={{ fontSize: 32, mr: 2 }} />
-                      <Typography variant="h6" fontWeight="bold">
-                        Teléfono
-                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">Teléfono</Typography>
                     </Box>
                     <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.9 }}>
-                      789 896 4861<br />
-                      222 330 8869
+                      789 896 4861<br />222 330 8869
                     </Typography>
                   </CardContent>
                 </Card>
 
-                {/* Email */}
-                <Card sx={{
-                  borderRadius: "20px",
-                  background: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)",
-                  color: "white",
-                  boxShadow: "0 16px 40px rgba(129, 230, 217, 0.3)"
-                }}>
+                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)", color: "white", boxShadow: "0 16px 40px rgba(129, 230, 217, 0.3)" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <EmailIcon sx={{ fontSize: 32, mr: 2 }} />
-                      <Typography variant="h6" fontWeight="bold">
-                        Email
-                      </Typography>
+                      <Typography variant="h6" fontWeight="bold">Email</Typography>
                     </Box>
-                    <Typography variant="body1" sx={{ opacity: 0.9 }}>
-                      gislive17@gmail.com
-                    </Typography>
+                    <Typography variant="body1" sx={{ opacity: 0.9 }}>gislive17@gmail.com</Typography>
                   </CardContent>
                 </Card>
               </Stack>

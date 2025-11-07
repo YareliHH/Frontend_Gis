@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
   Dialog,
@@ -10,6 +10,8 @@ import {
 import LocationIcon from '@mui/icons-material/LocationOn';
 
 const LocationPermission = ({ onPermissionGranted, onPermissionDenied }) => {
+  const [open, setOpen] = useState(false);
+
   useEffect(() => {
     const hasAsked = localStorage.getItem('locationPermissionAsked');
     if (hasAsked) {
@@ -19,21 +21,24 @@ const LocationPermission = ({ onPermissionGranted, onPermissionDenied }) => {
       } else if (status === 'denied') {
         onPermissionDenied?.(new Error('Ubicación previamente denegada'));
       }
-      return;
+    } else {
+      setOpen(true); // Mostrar diálogo si no se ha preguntado antes
     }
   }, [onPermissionDenied, onPermissionGranted]);
 
-  const requestLocation = () => {
-    localStorage.setItem('locationPermissionAsked', 'true');
-
+  const handleAllow = () => {
     if ('geolocation' in navigator) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          localStorage.setItem('locationPermissionAsked', 'true');
           localStorage.setItem('locationPermission', 'granted');
+          setOpen(false);
           onPermissionGranted?.(position);
         },
         (error) => {
+          localStorage.setItem('locationPermissionAsked', 'true');
           localStorage.setItem('locationPermission', 'denied');
+          setOpen(false);
           onPermissionDenied?.(error);
         },
         {
@@ -42,13 +47,22 @@ const LocationPermission = ({ onPermissionGranted, onPermissionDenied }) => {
         }
       );
     } else {
+      localStorage.setItem('locationPermissionAsked', 'true');
       localStorage.setItem('locationPermission', 'denied');
+      setOpen(false);
       onPermissionDenied?.(new Error('Geolocalización no soportada'));
     }
   };
 
+  const handleDeny = () => {
+    localStorage.setItem('locationPermissionAsked', 'true');
+    localStorage.setItem('locationPermission', 'denied');
+    setOpen(false);
+    onPermissionDenied?.(new Error('Permiso de ubicación denegado por el usuario'));
+  };
+
   return (
-    <Dialog open>
+    <Dialog open={open} onClose={handleDeny}>
       <DialogTitle>
         <LocationIcon color="primary" sx={{ verticalAlign: 'middle', mr: 1 }} />
         Permiso de ubicación
@@ -60,15 +74,10 @@ const LocationPermission = ({ onPermissionGranted, onPermissionDenied }) => {
         </Typography>
       </DialogContent>
       <DialogActions>
-        <Button onClick={requestLocation} variant="contained" color="primary">
+        <Button onClick={handleAllow} variant="contained" color="primary">
           Permitir
         </Button>
-        <Button
-          onClick={() =>
-            onPermissionDenied?.(new Error('Permiso de ubicación denegado por el usuario'))
-          }
-          color="error"
-        >
+        <Button onClick={handleDeny} color="error">
           Denegar
         </Button>
       </DialogActions>
