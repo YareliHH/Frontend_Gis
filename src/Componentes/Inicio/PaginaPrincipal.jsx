@@ -1,3 +1,4 @@
+"use client"
 
 import { useState, useEffect } from "react"
 import {
@@ -14,6 +15,7 @@ import {
   Stack
 } from "@mui/material"
 import { Link } from "react-router-dom"
+import Geocalizacion from "./geocalizacion.jsx"
 
 // Icons
 import LocalShippingIcon from "@mui/icons-material/LocalShipping"
@@ -23,9 +25,6 @@ import PriceCheckIcon from "@mui/icons-material/PriceCheck"
 import LocationOnIcon from "@mui/icons-material/LocationOn"
 import PhoneIcon from "@mui/icons-material/Phone"
 import EmailIcon from "@mui/icons-material/Email"
-
-// Componentes
-import Geocalizacion from "./geocalizacion.jsx"
 
 // Importar imágenes locales
 import img1 from "../imagenes/img1.jpg"
@@ -177,7 +176,7 @@ const PaginaPrincipalMejorada = () => {
               </Box>
             </Grid>
 
-            {/* Carrusel de imágenes */}
+            {/* Carrusel */}
             <Grid item xs={12} lg={6}>
               <Box sx={{ position: "relative", display: "flex", justifyContent: "center", mt: { xs: 6, lg: 0 } }}>
                 <Paper
@@ -202,7 +201,7 @@ const PaginaPrincipalMejorada = () => {
                     <Box
                       component="img"
                       src={images[currentImage]}
-                      alt={`Producto médico ${currentImage + 1}`}
+                      alt="GisLive Producto"
                       sx={{
                         width: "100%",
                         height: "100%",
@@ -211,33 +210,11 @@ const PaginaPrincipalMejorada = () => {
                         transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)"
                       }}
                     />
-                    <Box sx={{
-                      position: "absolute",
-                      bottom: 20,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      display: "flex",
-                      gap: 1
-                    }}>
-                      {images.map((_, index) => (
-                        <Box
-                          key={index}
-                          sx={{
-                            width: currentImage === index ? 24 : 8,
-                            height: 8,
-                            borderRadius: "4px",
-                            background: currentImage === index
-                              ? "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)"
-                              : "rgba(0,0,0,0.2)",
-                            transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
-                          }}
-                        />
-                      ))}
-                    </Box>
                   </Box>
                 </Paper>
               </Box>
             </Grid>
+
           </Grid>
         </Container>
       </Box>
@@ -311,10 +288,10 @@ const PaginaPrincipalMejorada = () => {
                     }}>
                       {feature.icon}
                     </Box>
-                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#1a1a1a", mb: 2, fontSize: "1.3rem" }}>
+                    <Typography variant="h5" sx={{ fontWeight: 700, color: "#1a1a1a", mb: 2 }}>
                       {feature.title}
                     </Typography>
-                    <Typography variant="body1" sx={{ color: "#666", lineHeight: 1.7, fontSize: "1rem" }}>
+                    <Typography variant="body1" sx={{ color: "#666", lineHeight: 1.7 }}>
                       {feature.description}
                     </Typography>
                   </CardContent>
@@ -322,12 +299,14 @@ const PaginaPrincipalMejorada = () => {
               </Grid>
             ))}
           </Grid>
+
         </Container>
       </Box>
 
       {/* Contact Section */}
       <Box sx={{ py: { xs: 10, md: 15 }, bgcolor: "white" }}>
         <Container maxWidth="lg">
+
           <Box sx={{ textAlign: "center", mb: 10 }}>
             <Typography
               variant="h2"
@@ -335,8 +314,7 @@ const PaginaPrincipalMejorada = () => {
                 fontSize: { xs: "2.5rem", md: "3.5rem" },
                 fontWeight: 700,
                 color: "#1a1a1a",
-                mb: 3,
-                letterSpacing: "-0.02em"
+                mb: 3
               }}
             >
               Nuestra
@@ -350,16 +328,18 @@ const PaginaPrincipalMejorada = () => {
                 Ubicación
               </Box>
             </Typography>
+
             <Typography
               variant="h5"
-              sx={{ color: "#666", maxWidth: "600px", mx: "auto", lineHeight: 1.6, fontWeight: 300 }}
+              sx={{ color: "#666", maxWidth: "600px", mx: "auto", lineHeight: 1.6 }}
             >
               Visítanos o contáctanos para una atención personalizada
             </Typography>
           </Box>
 
           <Grid container spacing={6}>
-            {/* Mapa */}
+
+            {/* Mapa con tu URL */}
             <Grid item xs={12} lg={8}>
               <Paper
                 elevation={0}
@@ -370,48 +350,63 @@ const PaginaPrincipalMejorada = () => {
                   boxShadow: "0 20px 60px rgba(0,0,0,0.08)"
                 }}
               >
-                <Geocalizacion lat={21.140249} lng={-98.421124} zoom={15} width="100%" height="100%" />
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!3m2!1ses!2smx!4v1738279572591!5m2!1ses!2smx!6m8!1m7!1sfptv_59OOGwWnICTLujcAQ!2m2!1d21.14024956987548!2d-98.42112377080686!3f282.3148371518607!4f7.436404529233116!5f0.7820865974627469"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen=""
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                ></iframe>
               </Paper>
             </Grid>
 
-            {/* Información de Contacto */}
+            {/* Información de contacto */}
             <Grid item xs={12} lg={4}>
               <Stack spacing={4}>
-                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)", color: "white", boxShadow: "0 16px 40px rgba(64, 224, 208, 0.3)" }}>
+
+                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)", color: "white" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <LocationOnIcon sx={{ fontSize: 32, mr: 2 }} />
                       <Typography variant="h6" fontWeight="bold">Dirección</Typography>
                     </Box>
-                    <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.9 }}>
-                      Velázques Ibarra #12<br />Col. Centro<br />Huejutla de Reyes<br />México, CP 43000
+                    <Typography variant="body1">
+                      Velázques Ibarra #12<br />
+                      Col. Centro<br />
+                      Huejutla de Reyes, Hidalgo<br />
+                      México, CP 43000
                     </Typography>
                   </CardContent>
                 </Card>
 
-                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)", color: "white", boxShadow: "0 16px 40px rgba(76, 205, 196, 0.3)" }}>
+                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)", color: "white" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <PhoneIcon sx={{ fontSize: 32, mr: 2 }} />
                       <Typography variant="h6" fontWeight="bold">Teléfono</Typography>
                     </Box>
-                    <Typography variant="body1" sx={{ lineHeight: 1.6, opacity: 0.9 }}>
-                      789 896 4861<br />222 330 8869
+                    <Typography variant="body1">
+                      789 896 4861<br />
+                      222 330 8869
                     </Typography>
                   </CardContent>
                 </Card>
 
-                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)", color: "white", boxShadow: "0 16px 40px rgba(129, 230, 217, 0.3)" }}>
+                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)", color: "white" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <EmailIcon sx={{ fontSize: 32, mr: 2 }} />
                       <Typography variant="h6" fontWeight="bold">Email</Typography>
                     </Box>
-                    <Typography variant="body1" sx={{ opacity: 0.9 }}>gislive17@gmail.com</Typography>
+                    <Typography variant="body1">gislive17@gmail.com</Typography>
                   </CardContent>
                 </Card>
+
               </Stack>
             </Grid>
+
           </Grid>
         </Container>
       </Box>
