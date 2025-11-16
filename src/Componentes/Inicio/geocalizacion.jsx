@@ -22,7 +22,7 @@ const LocationPermission = ({ onPermissionGranted, onPermissionDenied }) => {
         onPermissionDenied?.(new Error('Ubicación previamente denegada'));
       }
     } else {
-      setOpen(true); // Mostrar diálogo si no se ha preguntado antes
+      setOpen(true);
     }
   }, [onPermissionDenied, onPermissionGranted]);
 
