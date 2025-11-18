@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/iframe-has-title */
 import { useState, useEffect } from "react"
 import {
   Box,
@@ -288,11 +289,13 @@ const PaginaPrincipalMejorada = () => {
                 }}
               >
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!3m2!1ses!2smx!4v1738279572591!5m2!1ses!2smx!6m8!1m7!1sfptv_59OOGwWnICTLujcAQ!2m2!1d21.14024956987548!2d-98.42112377080686!3f282.3148371518607!4f7.436404529233116!5f0.7820865974627469"
                   width="100%"
                   height="100%"
-                  style={{ border: 0 }}
                   loading="lazy"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3761.322779761064!2d-98.42107362496012!3d21.140215285112363!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d76f57f600e3d7%3A0xade6208ab7e3a0c1!2sRopa%20Cl%C3%ADnica%20Gis%20Live!5e0!3m2!1ses-419!2smx!4v1738279572591"
                 ></iframe>
               </Paper>
             </Grid>
