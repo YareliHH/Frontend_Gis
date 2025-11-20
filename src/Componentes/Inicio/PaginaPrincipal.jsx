@@ -1,5 +1,5 @@
-/* eslint-disable jsx-a11y/iframe-has-title */
-import { useState, useEffect } from "react"
+// PaginaPrincipalMejorada.jsx
+import { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -11,71 +11,77 @@ import {
   useTheme,
   Card,
   CardContent,
-  Stack
-} from "@mui/material"
-import { Link } from "react-router-dom"
+  Stack,
+} from "@mui/material";
+import { Link } from "react-router-dom";
 
-// Icons
-import LocalShippingIcon from "@mui/icons-material/LocalShipping"
-import VerifiedUserIcon from "@mui/icons-material/VerifiedUser"
-import SupportAgentIcon from "@mui/icons-material/SupportAgent"
-import PriceCheckIcon from "@mui/icons-material/PriceCheck"
-import LocationOnIcon from "@mui/icons-material/LocationOn"
-import PhoneIcon from "@mui/icons-material/Phone"
-import EmailIcon from "@mui/icons-material/Email"
+// IMPORTAMOS Geocalizacion (pero no mostramos nada)
+import Geocalizacion from "./geocalizacion";
 
-// Imágenes
-import img1 from "../imagenes/img1.jpg"
-import img2 from "../imagenes/img2.jpg"
-import img3 from "../imagenes/img3.jpg"
-import img4 from "../imagenes/img4.jpg"
-import img5 from "../imagenes/img5.jpg"
-import img6 from "../imagenes/img6.jpg"
+// Iconos
+import LocalShippingIcon from "@mui/icons-material/LocalShipping";
+import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
+import PriceCheckIcon from "@mui/icons-material/PriceCheck";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import PhoneIcon from "@mui/icons-material/Phone";
+import EmailIcon from "@mui/icons-material/Email";
+
+// Imágenes del carrusel
+import img1 from "../imagenes/img1.jpg";
+import img2 from "../imagenes/img2.jpg";
+import img3 from "../imagenes/img3.jpg";
+import img4 from "../imagenes/img4.jpg";
+import img5 from "../imagenes/img5.jpg";
+import img6 from "../imagenes/img6.jpg";
 
 const PaginaPrincipalMejorada = () => {
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"))
-  const [currentImage, setCurrentImage] = useState(0)
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [currentImage, setCurrentImage] = useState(0);
 
-  const images = [img1, img2, img3, img4, img5, img6]
+  // Guardamos las coordenadas (en silencio, sin mostrar nada)
+  const [coords, setCoords] = useState(null);
 
+  const images = [img1, img2, img3, img4, img5, img6];
+
+  // Carrusel automático
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length)
-    }, 5000)
-    return () => clearInterval(timer)
-  }, [])
+      setCurrentImage((prev) => (prev + 1) % images.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   const features = [
     {
       icon: <LocalShippingIcon sx={{ fontSize: 56, color: "white" }} />,
       title: "Envío Rápido",
       description: "Entrega segura en 24-48 horas con seguimiento completo",
-      gradient: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)"
+      gradient: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)",
     },
     {
       icon: <VerifiedUserIcon sx={{ fontSize: 56, color: "white" }} />,
       title: "Calidad Garantizada",
       description: "Productos certificados con garantía total de satisfacción",
-      gradient: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)"
+      gradient: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)",
     },
     {
       icon: <SupportAgentIcon sx={{ fontSize: 56, color: "white" }} />,
       title: "Soporte Especializado",
       description: "Equipo médico profesional disponible para asesorarte",
-      gradient: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)"
+      gradient: "linear-gradient(135deg, #81E6D9 0%, #4FD1C7 100%)",
     },
     {
       icon: <PriceCheckIcon sx={{ fontSize: 56, color: "white" }} />,
       title: "Precios Competitivos",
       description: "Las mejores tarifas del mercado sin comprometer calidad",
-      gradient: "linear-gradient(135deg, #B2F5EA 0%, #68D391 100%)"
-    }
-  ]
+      gradient: "linear-gradient(135deg, #B2F5EA 0%, #68D391 100%)",
+    },
+  ];
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "#FAFAFA" }}>
-      
       {/* HERO */}
       <Box
         sx={{
@@ -90,14 +96,12 @@ const PaginaPrincipalMejorada = () => {
             position: "absolute",
             inset: 0,
             background: "rgba(0, 0, 0, 0.2)",
-            zIndex: 1
-          }
+            zIndex: 1,
+          },
         }}
       >
         <Container maxWidth="xl" sx={{ position: "relative", zIndex: 2, py: 8 }}>
           <Grid container spacing={8} alignItems="center" sx={{ minHeight: "80vh" }}>
-
-            {/* TEXTO */}
             <Grid item xs={12} lg={6}>
               <Box sx={{ textAlign: { xs: "center", lg: "left" } }}>
                 <Typography
@@ -107,7 +111,7 @@ const PaginaPrincipalMejorada = () => {
                     fontWeight: 800,
                     color: "white",
                     mb: 3,
-                    lineHeight: 0.9
+                    lineHeight: 0.9,
                   }}
                 >
                   GisLive
@@ -117,7 +121,7 @@ const PaginaPrincipalMejorada = () => {
                       display: "block",
                       background: "linear-gradient(45deg, #4ECDC4 0%, #40E0D0 100%)",
                       backgroundClip: "text",
-                      WebkitTextFillColor: "transparent"
+                      WebkitTextFillColor: "transparent",
                     }}
                   >
                     Boutique
@@ -130,42 +134,39 @@ const PaginaPrincipalMejorada = () => {
                     fontSize: { xs: "1.3rem", md: "1.8rem" },
                     color: "rgba(255,255,255,0.9)",
                     mb: 5,
-                    fontWeight: 300
+                    fontWeight: 300,
                   }}
                 >
                   Especialistas en equipamiento clínico y quirúrgico de alta precisión
                 </Typography>
 
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
-                  <Button
-                    component={Link}
-                    to="/contacto"
-                    variant="outlined"
-                    size="large"
-                    sx={{
-                      py: 2,
-                      px: 6,
-                      fontSize: "1.1rem",
-                      fontWeight: 600,
-                      borderRadius: "50px",
-                      color: "white",
-                      borderColor: "rgba(255,255,255,0.3)",
-                      backdropFilter: "blur(10px)",
-                      background: "rgba(255,255,255,0.1)",
-                      "&:hover": {
-                        borderColor: "white",
-                        background: "rgba(255,255,255,0.2)",
-                        transform: "translateY(-2px)"
-                      }
-                    }}
-                  >
-                    Contactar Ahora
-                  </Button>
-                </Stack>
+                <Button
+                  component={Link}
+                  to="/contacto"
+                  variant="outlined"
+                  size="large"
+                  sx={{
+                    py: 2,
+                    px: 6,
+                    fontSize: "1.1rem",
+                    fontWeight: 600,
+                    borderRadius: "50px",
+                    color: "white",
+                    borderColor: "rgba(255,255,255,0.3)",
+                    backdropFilter: "blur(10px)",
+                    background: "rgba(255,255,255,0.1)",
+                    "&:hover": {
+                      borderColor: "white",
+                      background: "rgba(255,255,255,0.2)",
+                      transform: "translateY(-3px)",
+                    },
+                  }}
+                >
+                  Contactar Ahora
+                </Button>
               </Box>
             </Grid>
 
-            {/* CARRUSEL */}
             <Grid item xs={12} lg={6}>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
                 <Paper
@@ -176,35 +177,33 @@ const PaginaPrincipalMejorada = () => {
                     p: 2,
                     backdropFilter: "blur(20px)",
                     background: "rgba(255,255,255,0.1)",
-                    border: "1px solid rgba(255,255,255,0.2)"
+                    border: "1px solid rgba(255,255,255,0.2)",
                   }}
                 >
                   <Box
                     sx={{
-                      height: { xs: 350, sm: 450, md: 500 },
-                      width: { xs: 300, sm: 400, md: 450 },
+                      height: { xs: 350, sm: 450, md: 520 },
+                      width: { xs: 320, sm: 420, md: 480 },
                       borderRadius: "24px",
                       background: "white",
-                      overflow: "hidden"
+                      overflow: "hidden",
                     }}
                   >
-                    <Box
-                      component="img"
+                    <img
                       src={images[currentImage]}
-                      alt="GisLive"
-                      sx={{
+                      alt="Producto GisLive"
+                      style={{
                         width: "100%",
                         height: "100%",
                         objectFit: "contain",
-                        p: 3,
-                        transition: "0.8s"
+                        padding: "20px",
+                        transition: "opacity 0.8s ease-in-out",
                       }}
                     />
                   </Box>
                 </Paper>
               </Box>
             </Grid>
-
           </Grid>
         </Container>
       </Box>
@@ -214,11 +213,16 @@ const PaginaPrincipalMejorada = () => {
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center", mb: 10 }}>
             <Typography variant="h2" sx={{ fontWeight: 700 }}>
-              ¿Por qué elegir <span style={{
-                background: "linear-gradient(45deg, #40E0D0 0%, #2C7A7B 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
-              }}>GisLive?</span>
+              ¿Por qué elegir{" "}
+              <span
+                style={{
+                  background: "linear-gradient(45deg, #40E0D0 0%, #2C7A7B 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                GisLive?
+              </span>
             </Typography>
           </Box>
 
@@ -230,21 +234,23 @@ const PaginaPrincipalMejorada = () => {
                     borderRadius: "24px",
                     boxShadow: "0 20px 60px rgba(0,0,0,0.08)",
                     transition: "0.3s",
-                    "&:hover": { transform: "translateY(-8px)" }
+                    "&:hover": { transform: "translateY(-8px)" },
                   }}
                 >
                   <CardContent sx={{ textAlign: "center", p: 4 }}>
-                    <Box sx={{
-                      width: 100,
-                      height: 100,
-                      borderRadius: "24px",
-                      background: f.gradient,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      mx: "auto",
-                      mb: 4
-                    }}>
+                    <Box
+                      sx={{
+                        width: 100,
+                        height: 100,
+                        borderRadius: "24px",
+                        background: f.gradient,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        mx: "auto",
+                        mb: 4,
+                      }}
+                    >
                       {f.icon}
                     </Box>
                     <Typography variant="h5" fontWeight={700}>{f.title}</Typography>
@@ -259,52 +265,59 @@ const PaginaPrincipalMejorada = () => {
         </Container>
       </Box>
 
-      {/* CONTACTO */}
+      {/* UBICACIÓN - SOLO EL MAPA DE TU TIENDA */}
       <Box sx={{ py: 15, bgcolor: "white" }}>
         <Container maxWidth="lg">
-
           <Box sx={{ textAlign: "center", mb: 10 }}>
             <Typography variant="h2" fontWeight={700}>
-              Nuestra <span style={{
-                background: "linear-gradient(45deg, #40E0D0 0%, #4ECDC4 100%)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent"
-              }}>Ubicación</span>
+              Nuestra{" "}
+              <span
+                style={{
+                  background: "linear-gradient(45deg, #40E0D0 0%, #4ECDC4 100%)",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                }}
+              >
+                Ubicación
+              </span>
             </Typography>
             <Typography variant="h5" sx={{ color: "#666", mt: 2 }}>
               Visítanos o contáctanos para una atención personalizada
             </Typography>
           </Box>
 
-          <Grid container spacing={6}>
+          {/* SOLO PEDIMOS LA UBICACIÓN EN SILENCIO (sin mostrar nada) */}
+          <Geocalizacion onCoords={setCoords} />
 
-            {/* MAPA */}
+          <Grid container spacing={6} alignItems="flex-start">
+            {/* MAPA DE LA TIENDA (Street View real) */}
             <Grid item xs={12} lg={8}>
-              <Paper
+              <Box
                 sx={{
+                  width: "100%",
+                  height: { xs: "450px", md: "600px" },
+                  borderRadius: "28px",
                   overflow: "hidden",
-                  borderRadius: "24px",
-                  height: { xs: 350, md: 500 },
-                  boxShadow: "0 20px 60px rgba(0,0,0,0.08)"
+                  boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
                 }}
               >
                 <iframe
+                  title="GisLive Boutique - Huejutla de Reyes"
                   width="100%"
                   height="100%"
                   loading="lazy"
-                  style={{ border: 0 }}
                   allowFullScreen
                   referrerPolicy="no-referrer-when-downgrade"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3761.322779761064!2d-98.42107362496012!3d21.140215285112363!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d76f57f600e3d7%3A0xade6208ab7e3a0c1!2sRopa%20Cl%C3%ADnica%20Gis%20Live!5e0!3m2!1ses-419!2smx!4v1738279572591"
+                  src="https://www.google.com/maps/embed?pb=!3m2!1ses!2smx!4v1738279572591!5m2!1ses!2smx!6m8!1m7!1sfptv_59OOGwWnICTLujcAQ!2m2!1d21.14024956987548!2d-98.42112377080686!3f282.3148371518607!4f7.436404529233116!5f0.7820865974627469"
+                  style={{ border: 0 }}
                 ></iframe>
-              </Paper>
+              </Box>
             </Grid>
 
             {/* TARJETAS DE CONTACTO */}
             <Grid item xs={12} lg={4}>
               <Stack spacing={4}>
-
-                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg,#40E0D0,#2C7A7B)", color: "white" }}>
+                <Card sx={{ borderRadius: "24px", background: "linear-gradient(135deg, #40E0D0, #2C7A7B)", color: "white" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <LocationOnIcon sx={{ fontSize: 32, mr: 2 }} />
@@ -318,7 +331,7 @@ const PaginaPrincipalMejorada = () => {
                   </CardContent>
                 </Card>
 
-                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg,#4ECDC4,#38B2AC)", color: "white" }}>
+                <Card sx={{ borderRadius: "24px", background: "linear-gradient(135deg, #4ECDC4, #38B2AC)", color: "white" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <PhoneIcon sx={{ fontSize: 32, mr: 2 }} />
@@ -331,7 +344,7 @@ const PaginaPrincipalMejorada = () => {
                   </CardContent>
                 </Card>
 
-                <Card sx={{ borderRadius: "20px", background: "linear-gradient(135deg,#81E6D9,#4FD1C7)", color: "white" }}>
+                <Card sx={{ borderRadius: "24px", background: "linear-gradient(135deg, #81E6D9, #4FD1C7)", color: "white" }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
                       <EmailIcon sx={{ fontSize: 32, mr: 2 }} />
@@ -340,16 +353,13 @@ const PaginaPrincipalMejorada = () => {
                     <Typography>gislive17@gmail.com</Typography>
                   </CardContent>
                 </Card>
-
               </Stack>
             </Grid>
-
           </Grid>
         </Container>
       </Box>
-
     </Box>
-  )
-}
+  );
+};
 
-export default PaginaPrincipalMejorada
+export default PaginaPrincipalMejorada;
