@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GisLive Boutique - Sin conexión</title>
   <style>
     body {
       margin: 0;
-      font-family: system-ui;
-      background: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: linear-gradient(135deg, #3B8D99 0%, #2C7A7B 100%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -16,46 +17,53 @@
     }
     .card {
       background: white;
-      padding: 2rem;
-      border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 2.5rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
       text-align: center;
-      max-width: 380px;
+      max-width: 400px;
       width: 100%;
     }
     img {
-      width: 80px;
-      margin-bottom: 1rem;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 1.5rem;
+      border: 3px solid #3B8D99;
     }
     h1 {
-      margin: 0 0 0.5rem;
-      color: #1E40AF; /* color principal de la marca */
+      margin: 0 0 1rem;
+      color: #3B8D99;
+      font-size: 24px;
     }
     p {
-      color: #64748b;
+      color: #666;
       margin: 0.5rem 0;
+      line-height: 1.6;
     }
     button {
-      background: #1E40AF;
+      background: linear-gradient(135deg, #3B8D99 0%, #2C7A7B 100%);
       color: white;
       border: none;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      margin-top: 1rem;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 1.5rem;
       cursor: pointer;
+      transition: transform 0.2s;
     }
     button:hover {
-      background: #1d4ed8;
+      transform: scale(1.05);
     }
   </style>
 </head>
 <body>
   <div class="card">
     <img src="/LogoGL.jpg" alt="GisLive Boutique">
-    <h1>GisLive Boutique</h1>
-    <p>No hay conexión a internet</p>
-    <p>Puedes ver los productos que ya cargaste previamente.</p>
+    <h1>Sin conexión a Internet</h1>
+    <p>No tienes conexión a internet en este momento.</p>
+    <p>Puedes seguir navegando por los productos que ya cargaste previamente.</p>
     <button onclick="location.reload()">Reintentar</button>
   </div>
 </body>

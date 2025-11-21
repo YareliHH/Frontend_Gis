@@ -15,9 +15,6 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 
-// IMPORTAMOS Geocalizacion (pero no mostramos nada)
-import Geocalizacion from "./geocalizacion";
-
 // Iconos
 import LocalShippingIcon from "@mui/icons-material/LocalShipping";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
@@ -26,6 +23,7 @@ import PriceCheckIcon from "@mui/icons-material/PriceCheck";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
+import MyLocationIcon from "@mui/icons-material/MyLocation";
 
 // Imágenes del carrusel
 import img1 from "../imagenes/img1.jpg";
@@ -39,9 +37,7 @@ const PaginaPrincipalMejorada = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [currentImage, setCurrentImage] = useState(0);
-
-  // Guardamos las coordenadas (en silencio, sin mostrar nada)
-  const [coords, setCoords] = useState(null);
+  const [userCoords, setUserCoords] = useState(null);
 
   const images = [img1, img2, img3, img4, img5, img6];
 
@@ -52,6 +48,32 @@ const PaginaPrincipalMejorada = () => {
     }, 5000);
     return () => clearInterval(timer);
   }, []);
+
+  // Solicitar ubicación con modal nativo del navegador
+  const requestLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Tu navegador no soporta geolocalización");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setUserCoords({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      },
+      (error) => {
+        console.error("Error obteniendo ubicación:", error);
+        if (error.code === 1) {
+          alert("Permiso de ubicación denegado");
+        } else {
+          alert("No se pudo obtener tu ubicación");
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   const features = [
     {
@@ -265,10 +287,10 @@ const PaginaPrincipalMejorada = () => {
         </Container>
       </Box>
 
-      {/* UBICACIÓN - SOLO EL MAPA DE TU TIENDA */}
+      {/* UBICACIÓN */}
       <Box sx={{ py: 15, bgcolor: "white" }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: 10 }}>
+          <Box sx={{ textAlign: "center", mb: 6 }}>
             <Typography variant="h2" fontWeight={700}>
               Nuestra{" "}
               <span
@@ -286,11 +308,29 @@ const PaginaPrincipalMejorada = () => {
             </Typography>
           </Box>
 
-          {/* SOLO PEDIMOS LA UBICACIÓN EN SILENCIO (sin mostrar nada) */}
-          <Geocalizacion onCoords={setCoords} />
+          {/* Botón Mi Ubicación */}
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Button
+              variant="contained"
+              size="large"
+              startIcon={<MyLocationIcon />}
+              onClick={requestLocation}
+              sx={{
+                py: 1.5,
+                px: 4,
+                borderRadius: "50px",
+                background: "linear-gradient(135deg, #40E0D0 0%, #2C7A7B 100%)",
+                "&:hover": {
+                  background: "linear-gradient(135deg, #4ECDC4 0%, #38B2AC 100%)",
+                },
+              }}
+            >
+              Ver mi ubicación
+            </Button>
+          </Box>
 
           <Grid container spacing={6} alignItems="flex-start">
-            {/* MAPA DE LA TIENDA (Street View real) */}
+            {/* MAPA */}
             <Grid item xs={12} lg={8}>
               <Box
                 sx={{
@@ -301,16 +341,29 @@ const PaginaPrincipalMejorada = () => {
                   boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
                 }}
               >
-                <iframe
-                  title="GisLive Boutique - Huejutla de Reyes"
-                  width="100%"
-                  height="100%"
-                  loading="lazy"
-                  allowFullScreen
-                  referrerPolicy="no-referrer-when-downgrade"
-                  src="https://www.google.com/maps/embed?pb=!3m2!1ses!2smx!4v1738279572591!5m2!1ses!2smx!6m8!1m7!1sfptv_59OOGwWnICTLujcAQ!2m2!1d21.14024956987548!2d-98.42112377080686!3f282.3148371518607!4f7.436404529233116!5f0.7820865974627469"
-                  style={{ border: 0 }}
-                ></iframe>
+                {userCoords ? (
+                  <iframe
+                    title="Tu ubicación"
+                    width="100%"
+                    height="100%"
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps?q=${userCoords.lat},${userCoords.lng}&output=embed&z=15`}
+                    style={{ border: 0 }}
+                  />
+                ) : (
+                  <iframe
+                    title="GisLive Boutique - Huejutla de Reyes"
+                    width="100%"
+                    height="100%"
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps/embed?pb=!3m2!1ses!2smx!4v1738279572591!5m2!1ses!2smx!6m8!1m7!1sfptv_59OOGwWnICTLujcAQ!2m2!1d21.14024956987548!2d-98.42112377080686!3f282.3148371518607!4f7.436404529233116!5f0.7820865974627469"
+                    style={{ border: 0 }}
+                  />
+                )}
               </Box>
             </Grid>
 

@@ -20,7 +20,8 @@ import {
   ListItemText,
   Divider,
   Avatar,
-  Collapse
+  Collapse,
+  Slide
 } from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -34,6 +35,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import CloseIcon from '@mui/icons-material/Close';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import SignalWifiOffIcon from '@mui/icons-material/SignalWifiOff';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import logo from '../imagenes/LogoGL.jpg';
@@ -104,7 +106,6 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   }
 }));
 
-// Componente estilizado para la barra secundaria
 const SecondaryBar = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   borderBottom: `1px solid ${theme.palette.mode === 'dark' ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)'}`,
@@ -115,7 +116,6 @@ const SecondaryBar = styled(Box)(({ theme }) => ({
   }
 }));
 
-// Componente para el drawer móvil
 const StyledDrawer = styled(Drawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
     width: 280,
@@ -202,11 +202,26 @@ const BarraNavCliente = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [expandedMenu, setExpandedMenu] = useState(null);
   const [cartCount, setCartCount] = useState(2);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const navigate = useNavigate();
   const { logout } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
+
+  // Detectar estado de conexión
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -320,7 +335,6 @@ const BarraNavCliente = () => {
 
   const drawer = (
     <Box>
-      {/* Header del drawer */}
       <Box sx={{ 
         p: 2, 
         background: 'linear-gradient(135deg, #3B8D99 0%, #2a6b75 100%)',
@@ -353,7 +367,6 @@ const BarraNavCliente = () => {
 
       <Divider />
 
-      {/* Navegación principal */}
       <List sx={{ px: 1, py: 2 }}>
         {menuItems.map((item, index) => (
           <ListItem 
@@ -383,7 +396,6 @@ const BarraNavCliente = () => {
 
       <Divider />
 
-      {/* Acciones del usuario */}
       <List sx={{ px: 1, py: 1 }}>
         <ListItem 
           button 
@@ -457,6 +469,27 @@ const BarraNavCliente = () => {
 
   return (
     <ThemeProvider theme={customTheme}>
+      {/* Banner Sin Internet */}
+      <Slide direction="down" in={!isOnline} mountOnEnter unmountOnExit>
+        <Box sx={{
+          background: 'linear-gradient(90deg, #FF4C4C 0%, #D32F2F 100%)',
+          color: 'white',
+          textAlign: 'center',
+          padding: '10px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 1,
+          boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+          zIndex: 1400,
+        }}>
+          <SignalWifiOffIcon sx={{ fontSize: 20 }} />
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            Sin conexión a Internet
+          </Typography>
+        </Box>
+      </Slide>
+
       {/* Barra de información */}
       <Box sx={{
         background: 'linear-gradient(90deg, #3B8D99 0%, #4E7C7F 100%)',
@@ -649,7 +682,6 @@ const BarraNavCliente = () => {
                 </>
               )}
               
-              {/* Menú hamburguesa para móvil */}
               {isMobile && (
                 <IconButton
                   color="inherit"
@@ -778,7 +810,7 @@ const BarraNavCliente = () => {
         open={mobileOpen}
         onClose={handleDrawerToggle}
         ModalProps={{
-          keepMounted: true, // Better open performance on mobile.
+          keepMounted: true,
         }}
         sx={{
           display: { xs: 'block', md: 'none' },

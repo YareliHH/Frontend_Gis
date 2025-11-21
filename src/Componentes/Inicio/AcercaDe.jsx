@@ -4,54 +4,89 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MissionIcon from '@mui/icons-material/EmojiFlags';
 import VisionIcon from '@mui/icons-material/Visibility';
 import ValuesIcon from '@mui/icons-material/Stars';
+import WifiOffIcon from '@mui/icons-material/WifiOff';
 
 const AcercaDe = () => {
     const [data, setData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [animated, setAnimated] = useState(false);
+    const [isOffline, setIsOffline] = useState(false);
 
     const colors = {
         primaryText: '#000000',
-        highlightText: '#1565C0', // Azul para resaltar títulos en hover
+        highlightText: '#1565C0',
         misionCard: 'linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%)',
         visionCard: 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)',
         valuesCard: 'linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%)',
         iconColor: '#0d47a1',
-        textHover: '#1976D2' // Color para los textos cuando el cursor está encima
+    };
+
+    // Guarda datos en cache
+    const saveToCache = (data) => {
+        try {
+            localStorage.setItem('acerca_de_cache', JSON.stringify(data));
+            localStorage.setItem('acerca_de_timestamp', Date.now().toString());
+        } catch (e) {
+            console.error('Error guardando cache:', e);
+        }
+    };
+
+    // Obtiene datos del cache
+    const getFromCache = () => {
+        try {
+            const cached = localStorage.getItem('acerca_de_cache');
+            return cached ? JSON.parse(cached) : null;
+        } catch (e) {
+            console.error('Error leyendo cache:', e);
+            return null;
+        }
     };
 
     useEffect(() => {
-        fetch('https://backend-gis-1.onrender.com/api/acerca_de')
-            .then((response) => {
+        const loadData = async () => {
+            try {
+                const response = await fetch('https://backend-gis-1.onrender.com/api/acerca_de');
+                
                 if (!response.ok) {
                     throw new Error('Error al obtener los datos');
                 }
-                return response.json();
-            })
-            .then((data) => {
-                console.log('Datos recibidos:', data); // Verifica los datos en la consola
-                setData(data[0]); // Actualiza el estado con el primer registro
-                setLoading(false); // Indica que la carga ha terminado
-                // Activar animaciones después de cargar datos
+                
+                const result = await response.json();
+                setData(result[0]);
+                saveToCache(result[0]);
+                setIsOffline(false);
+                setLoading(false);
                 setTimeout(() => setAnimated(true), 300);
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error('Error fetching data:', error);
-                setError(error.message); // Actualiza el estado de error
-                setLoading(false); // Indica que la carga ha terminado
-            });
+                
+                // Intenta cargar desde cache
+                const cachedData = getFromCache();
+                if (cachedData) {
+                    setData(cachedData);
+                    setIsOffline(true);
+                    setLoading(false);
+                    setTimeout(() => setAnimated(true), 300);
+                } else {
+                    setError(error.message);
+                    setLoading(false);
+                }
+            }
+        };
+
+        loadData();
     }, []);
 
     if (loading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column' }}>
                 <CircularProgress 
-                    size={60} // Tamaño del ícono
-                    thickness={4} // Grosor de la línea
+                    size={60}
+                    thickness={4}
                     sx={{ 
-                        color: colors.highlightText, // Color del ícono
-                        animationDuration: '1.5s', // Velocidad de la animación
+                        color: colors.highlightText,
+                        animationDuration: '1.5s',
                     }} 
                 />
                 <Typography variant="h6" sx={{ mt: 2, color: colors.primaryText }}>
@@ -61,15 +96,21 @@ const AcercaDe = () => {
         );
     }
     
-    if (error) {
-        return <Box sx={{ p: 3, textAlign: 'center' }}><Typography color="error">Error: {error}</Typography></Box>;
+    if (error && !data) {
+        return (
+            <Box sx={{ p: 3, textAlign: 'center' }}>
+                <Typography color="error">Error: {error}</Typography>
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                    No hay datos disponibles offline
+                </Typography>
+            </Box>
+        );
     }
     
     if (!data) {
         return <Box sx={{ p: 3, textAlign: 'center' }}><Typography>No se encontraron datos.</Typography></Box>;
     }
 
-    // Procesar valores para convertirlos en lista
     const valoresList = data.valores.split('\n').filter(item => item.trim() !== '');
 
     return (
@@ -84,6 +125,32 @@ const AcercaDe = () => {
                 background: 'linear-gradient(to bottom, #f5f5f5,)',
             }}
         >
+            {/* Banner offline */}
+            {isOffline && (
+                <Paper
+                    elevation={2}
+                    sx={{
+                        position: 'fixed',
+                        top: 80,
+                        left: '50%',
+                        transform: 'translateX(-50%)',
+                        padding: '10px 20px',
+                        backgroundColor: '#ff9800',
+                        color: 'white',
+                        zIndex: 1300,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        borderRadius: '8px'
+                    }}
+                >
+                    <WifiOffIcon />
+                    <Typography variant="body2">
+                        Modo offline - Mostrando datos guardados
+                    </Typography>
+                </Paper>
+            )}
+
             <Fade in={animated} timeout={1000}>
                 <Paper
                     elevation={4}
@@ -101,12 +168,11 @@ const AcercaDe = () => {
                         alignItems: 'center',
                         justifyContent: 'center',
                         '&:hover': {
-                            transform: { xs: 'none', sm: 'scale(1.02)' }, // Efecto hover solo en pantallas grandes
+                            transform: { xs: 'none', sm: 'scale(1.02)' },
                             boxShadow: { xs: '0 10px 30px rgba(0, 0, 0, 0.1)', sm: '0 15px 40px rgba(0, 0, 0, 0.2)' },
                         }
                     }}
                 >
-                    {/* Título dinámico */}
                     <Typography
                         variant="h3"
                         sx={{
@@ -135,7 +201,6 @@ const AcercaDe = () => {
                         {data.nombre}
                     </Typography>
 
-                    {/* Descripción */}
                     <Fade in={animated} timeout={1500}>
                         <Typography
                             variant="body1"
@@ -147,16 +212,12 @@ const AcercaDe = () => {
                                 lineHeight: 1.6,
                                 maxWidth: '800px',
                                 padding: '0 16px',
-                                '&:hover': {
-                                  
-                                }
                             }}
                         >
                             {data.descripcion}
                         </Typography>
                     </Fade>
 
-                    {/* Misión y Visión */}
                     <Grid container spacing={4} sx={{ mt: 4, justifyContent: 'center' }}>
                         {[
                             { title: 'Misión', text: data.mision, icon: <MissionIcon sx={{ fontSize: 40, color: colors.iconColor }} />, background: colors.misionCard },
@@ -175,7 +236,7 @@ const AcercaDe = () => {
                                             width: '100%',
                                             transition: 'all 0.3s ease',
                                             '&:hover': {
-                                                transform: { xs: 'none', sm: 'scale(1.05)' }, // Efecto hover solo en pantallas grandes
+                                                transform: { xs: 'none', sm: 'scale(1.05)' },
                                                 boxShadow: { xs: '0 5px 15px rgba(0, 0, 0, 0.1)', sm: '0 10px 20px rgba(0, 0, 0, 0.2)' },
                                             }
                                         }}
@@ -193,7 +254,6 @@ const AcercaDe = () => {
                         ))}
                     </Grid>
 
-                    {/* Valores */}
                     <Zoom in={animated}>
                         <Paper
                             elevation={3}
@@ -207,8 +267,8 @@ const AcercaDe = () => {
                                 mt: 4,
                                 transition: 'all 0.3s ease',
                                 '&:hover': {
-                                    transform: { xs: 'none', sm: 'scale(1.02)' }, // Efecto hover solo en pantallas grandes
-                                    boxShadow: { xs: '0 5px 15px rgba(0, 0, 0, 0.1)', sm: '0 10px 20px rgba(0, 0, 0, 0.2)' },
+                                    transform: { xs: 'none', sm: 'scale(1.02)' },
+                                    boxShadow: { xs: '0 5 15px rgba(0, 0, 0, 0.1)', sm: '0 10px 20px rgba(0, 0, 0, 0.2)' },
                                 }
                             }}
                         >
@@ -232,7 +292,7 @@ const AcercaDe = () => {
                                             sx={{
                                                 transition: 'all 0.3s ease',
                                                 '&:hover': {
-                                                    transform: { xs: 'none', sm: 'translateX(8px)' }, // Efecto hover solo en pantallas grandes
+                                                    transform: { xs: 'none', sm: 'translateX(8px)' },
                                                     '& .MuiListItemIcon-root': {
                                                         transform: { xs: 'none', sm: 'scale(1.2)' },
                                                     }
@@ -247,24 +307,7 @@ const AcercaDe = () => {
                                             >
                                                 <CheckCircleIcon sx={{ color: colors.highlightText }} />
                                             </ListItemIcon>
-                                            <ListItemText 
-                                                primary={
-                                                    <Typography
-                                                        variant="body1"
-                                                        sx={{
-                                                            '& span': {
-                                                                display: 'inline',
-                                                                transition: 'color 0.3s ease',
-                                                                '&:hover': {
-                                                                   
-                                                                }
-                                                            }
-                                                        }}
-                                                    >
-                                                        {valor}
-                                                    </Typography>
-                                                }
-                                            />
+                                            <ListItemText primary={valor} />
                                         </ListItem>
                                     </Fade>
                                 ))}

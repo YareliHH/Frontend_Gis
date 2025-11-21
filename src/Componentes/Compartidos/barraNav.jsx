@@ -1,4 +1,4 @@
-// BarraNav.jsx
+// BarraNav.jsx con indicador de estado offline
 import React, { useState, useEffect } from 'react';
 import { 
   AppBar, 
@@ -13,15 +13,20 @@ import {
   MenuItem,
   Badge,
   Fade,
-  Tooltip
+  Tooltip,
+  Alert,
+  Slide
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import ChatIcon from '@mui/icons-material/Chat';
+import WifiOffIcon from '@mui/icons-material/WifiOff';
+import WifiIcon from '@mui/icons-material/Wifi';
 import { useNavigate } from 'react-router-dom';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import useOnlineStatus from '../../hooks/useOnlineStatus';
 import logo from '../imagenes/LogoGL.jpg';
 
 // Datos de navegación
@@ -44,6 +49,7 @@ const BarraNav = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
+  const isOnline = useOnlineStatus();
 
   // Efecto para aplicar el tema al body
   useEffect(() => {
@@ -60,7 +66,6 @@ const BarraNav = () => {
     handleClose();
   };
 
-  // Tema igual que en el original
   const theme = createTheme({
     palette: {
       mode: darkMode ? 'dark' : 'light',
@@ -120,7 +125,6 @@ const BarraNav = () => {
 
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
-  // Estilos como objetos para mejor organización
   const styles = {
     infoBar: {
       background: darkMode 
@@ -172,72 +176,60 @@ const BarraNav = () => {
       width: '100%', 
       height: '100%', 
       borderRadius: '50%',
-      border: `2px solid ${darkMode ? '#333' : 'white'}`,
+      border: `2px solid ${darkMode ? '#1E1E1E' : 'white'}`,
       objectFit: 'cover'
     },
     brandName: { 
-      display: { xs: 'none', sm: 'block' },
-      fontSize: { sm: '1.2rem', md: '1.5rem' },
       fontWeight: 700,
-      color: theme.palette.text.primary,
-      background: darkMode 
-        ? 'linear-gradient(90deg, #2A7F62, #3B8D99)' 
-        : 'linear-gradient(90deg, #3B8D99, #91EAE4)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
+      fontSize: isMobile ? '18px' : '24px',
+      color: theme.palette.primary.main,
+      display: isMobile ? 'none' : 'block',
       letterSpacing: '0.5px'
     },
     desktopNav: { 
-      display: { xs: 'none', md: 'flex' }, 
-      alignItems: 'center',
-      gap: { md: 1, lg: 2 }
+      display: { xs: 'none', md: 'flex' },
+      gap: 2,
+      flexGrow: 1,
+      justifyContent: 'center',
+      ml: 4
     },
-    navButton: {
-      color: theme.palette.text.primary,
-      fontSize: '0.9rem',
-      fontWeight: '600',
+    navButton: { 
+      color: theme.palette.text.primary, 
+      fontWeight: 600,
+      fontSize: '16px',
       position: 'relative',
-      padding: '8px 12px',
-      overflow: 'hidden',
-      '&:hover': { 
-        backgroundColor: 'transparent',
-        color: theme.palette.primary.main,
-        '&::after': {
-          transform: 'scaleX(1)',
-          transformOrigin: 'bottom left',
-        }
-      },
-      '&::after': {
+      '&:after': {
         content: '""',
         position: 'absolute',
-        bottom: '5px',
-        left: '8px',
-        right: '8px',
+        bottom: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: 0,
         height: '2px',
         backgroundColor: theme.palette.primary.main,
-        transform: 'scaleX(0)',
-        transformOrigin: 'bottom right',
-        transition: 'transform 0.3s',
+        transition: 'width 0.3s ease'
+      },
+      '&:hover:after': {
+        width: '80%'
       }
     },
     actionIcons: { 
-      display: 'flex',
+      display: 'flex', 
       alignItems: 'center',
       gap: 1
     },
     iconButton: { 
-      color: theme.palette.primary.main,
+      color: theme.palette.text.primary,
       transition: 'all 0.2s',
-      '&:hover': { 
+      '&:hover': {
         backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
         transform: 'scale(1.05)'
-      } 
+      }
     },
     themeButton: { 
-      color: darkMode ? '#FFC107' : '#5C6BC0',
+      color: theme.palette.text.primary,
       transition: 'all 0.3s ease',
-      transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
-      '&:hover': { 
+      '&:hover': {
         backgroundColor: darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)',
         transform: darkMode ? 'rotate(180deg) scale(1.05)' : 'rotate(0deg) scale(1.05)'
       }
@@ -260,11 +252,37 @@ const BarraNav = () => {
         backgroundColor: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
         color: theme.palette.primary.main
       }
+    },
+    offlineAlert: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      zIndex: 9999,
+      borderRadius: 0,
+      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      py: 1
     }
   };
 
   return (
     <ThemeProvider theme={theme}>
+      {/* Indicador de estado offline */}
+      <Slide direction="down" in={!isOnline} mountOnEnter unmountOnExit>
+        <Alert 
+          severity="warning" 
+          icon={<WifiOffIcon />}
+          sx={styles.offlineAlert}
+        >
+          <Typography variant="body2" fontWeight={600}>
+            Sin conexión a internet - Modo offline activado
+          </Typography>
+        </Alert>
+      </Slide>
+
       {/* Barra de información de contacto */}
       <Box sx={styles.infoBar}>
         <Container maxWidth="lg">
@@ -310,6 +328,17 @@ const BarraNav = () => {
 
             {/* Iconos de acción */}
             <Box sx={styles.actionIcons}>
+              {/* Indicador de conexión (icono pequeño) */}
+              <Tooltip title={isOnline ? 'Conectado' : 'Sin conexión'} arrow>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  {isOnline ? (
+                    <WifiIcon sx={{ fontSize: 20, color: theme.palette.success.main }} />
+                  ) : (
+                    <WifiOffIcon sx={{ fontSize: 20, color: theme.palette.warning.main }} />
+                  )}
+                </Box>
+              </Tooltip>
+
               {/* Icono de Chat */}
               <Tooltip title="Chat" arrow>
                 <IconButton 
